@@ -6,12 +6,14 @@ import {Image, Platform, StyleSheet, Text, View} from 'react-native';
 import {colors} from '../../styles';
 import TabNavigator from './TabNavigator';
 import tabNavigationData from './tabNavigationData';
+import {useTheme} from '../../hooks/useTheme';
 const Tab = createBottomTabNavigator();
 export default function BottomTabs() {
   const isFocused = useIsFocused();
+  const theme = useTheme();
   const [Data, setData] = useState(null);
   useEffect(() => {
-    AsyncStorage.getItem('LoginInformation').then(function(res) {
+    AsyncStorage.getItem('LoginInformation').then(function (res) {
       let Asyncdata = JSON.parse(res);
       setData(Asyncdata);
     });
@@ -19,13 +21,13 @@ export default function BottomTabs() {
   if (Data == null) {
     return (
       <Tab.Navigator
-        tabBarOptions={{
-          style: {
+        screenOptions={{
+          tabBarStyle: {
             height: Platform.OS === 'ios' ? 90 : 50,
-            backgroundColor: colors.TopNavbar,
+            backgroundColor: theme.navBarBack,
           },
-        }}
-      >
+          headerShown: false,
+        }}>
         {TabNavigator.map((item, idx) => (
           <Tab.Screen
             key={`tab_item${idx + 1}`}
@@ -40,6 +42,9 @@ export default function BottomTabs() {
                     style={[
                       styles.tabBarIcon,
                       focused && styles.tabBarIconFocused,
+                      {
+                        tintColor: !focused ? 'gray' : theme.tintColor,
+                      },
                     ]}
                   />
                 </View>
@@ -49,9 +54,8 @@ export default function BottomTabs() {
                   style={{
                     fontSize: 12,
                     bottom: 2,
-                    color: focused ? colors.NavbarTextColor : 'gray',
-                  }}
-                >
+                    color: focused ? theme.textColor : 'gray',
+                  }}>
                   {item.name}
                 </Text>
               ),
@@ -65,13 +69,13 @@ export default function BottomTabs() {
     //{item.name}
     return (
       <Tab.Navigator
-        tabBarOptions={{
-          style: {
+        screenOptions={{
+          tabBarStyle: {
             height: Platform.OS === 'ios' ? 90 : 50,
             backgroundColor: colors.TopNavbar,
           },
-        }}
-      >
+          headerShown: false,
+        }}>
         {tabNavigationData.map((item, idx) => (
           <Tab.Screen
             key={`tab_item${idx + 1}`}
@@ -96,8 +100,7 @@ export default function BottomTabs() {
                     fontSize: 12,
                     bottom: 2,
                     color: focused ? colors.NavbarTextColor : 'gray',
-                  }}
-                >
+                  }}>
                   {item.name}
                 </Text>
               ),

@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import Breadcrumb from 'react-native-breadcrumb';
+import AppBreadcrumb from '../../components/AppBreadcrumb';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Compaigndetail from '../../components/Compaigndetail';
 import {colors} from '../../styles';
@@ -67,20 +67,18 @@ export default function CompaigndetailScreen(props) {
         textStyle={styles.spinnerTextStyle}
       />
       <TouchableOpacity>
-        <Breadcrumb
-          entities={['Success', 'In Progress', 'Failed']}
-          crumbsContainerStyle={crumbsContainerStyle}
-          crumbStyle={crumbStyle}
-          activeCrumbStyle={activeCrumbStyle}
-          crumbTextStyle={crumbTextStyle}
-          activeCrumbTextStyle={activeCrumbTextStyle}
-          isTouchable={true}
-          flowDepth={Index}
-          height={35}
-          onCrumbPress={index => {
+        <AppBreadcrumb
+          crumbs={[
+            {
+              text: 'Success',
+            },
+            {text: 'In Progress'},
+            {text: 'Failed'},
+          ]}
+          onSelect={index => {
             handlePress(index);
           }}
-          borderRadius={1}
+          selectedIndex={Index}
         />
       </TouchableOpacity>
       <FlatList

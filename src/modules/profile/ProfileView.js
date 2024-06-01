@@ -23,6 +23,7 @@ import Alert from '../../components/Alert';
 import TermsAndConditions from '../../components/Terms&Conditions';
 import {colors} from '../../styles';
 import servicesettings from '../dataservices/servicesettings';
+import {useTheme} from '../../hooks/useTheme';
 const profileIcon = require('../../../assets/images/defaultUser.png');
 const arrowback = require('../../../assets/images/icons/BackArrow.png');
 //import messaging from '@react-native-firebase/messaging';
@@ -30,6 +31,7 @@ const CurrentDate = new Date();
 var filterID = null;
 export default function VehicalSallerScreen(props) {
   //console.log('props new ' + JSON.stringify(props));
+  const theme = useTheme();
   const [spinner, setspinner] = useState(false);
   const [img, setimg] = useState('');
   const [cityindex, setcityindex] = useState(-1);
@@ -183,7 +185,7 @@ export default function VehicalSallerScreen(props) {
     getdata();
   }, []);
   function getdata() {
-    AsyncStorage.getItem('OrgInformation').then(function(res) {
+    AsyncStorage.getItem('OrgInformation').then(function (res) {
       let Asyncdata = JSON.parse(res);
       if (Asyncdata != null) {
         let Asyncdata = JSON.parse(res);
@@ -328,10 +330,13 @@ export default function VehicalSallerScreen(props) {
   return (
     <KeyboardAwareScrollView
       resetScrollToCoords={{x: 0, y: 0}}
-      contentContainerStyle={styles.container}
-      scrollEnabled={true}
-    >
-      <View Style={styles.container}>
+      contentContainerStyle={[
+        styles.container,
+        {backgroundColor: theme.backgroundColor},
+      ]}
+      scrollEnabled={true}>
+      <View
+        Style={[styles.container, {backgroundColor: theme.backgroundColor}]}>
         <ScrollView>
           <Spinner
             visible={spinner}
@@ -340,8 +345,9 @@ export default function VehicalSallerScreen(props) {
           />
           <TermsAndConditions
             modalVisible={modalVisible}
-            TermsAndConditionsClose={TermsAndConditionsClose}
-          ></TermsAndConditions>
+            TermsAndConditionsClose={
+              TermsAndConditionsClose
+            }></TermsAndConditions>
           <Alert
             massagetype={'warning'}
             hide={hidepermission}
@@ -349,8 +355,7 @@ export default function VehicalSallerScreen(props) {
             Visible={permissionVisible}
             alerttype={'confirmation'}
             Title={'Confirmation'}
-            Massage={'"BDMT" Would like to access camera ?'}
-          ></Alert>
+            Massage={'"BDMT" Would like to access camera ?'}></Alert>
           <Alert
             massagetype={'warning'}
             hide={hide}
@@ -358,29 +363,25 @@ export default function VehicalSallerScreen(props) {
             Visible={confirmationVisible}
             alerttype={'confirmation'}
             Title={'Confirmation'}
-            Massage={'Do you want to Discard ?'}
-          ></Alert>
+            Massage={'Do you want to Discard ?'}></Alert>
           <Alert
             massagetype={'warning'}
             OK={successhide}
             Visible={successVisible}
             alerttype={'error'}
             Title={'Submit'}
-            Massage={'User registered successfully'}
-          ></Alert>
+            Massage={'User registered successfully'}></Alert>
           <Alert
             massagetype={'error'}
             OK={OK}
             Visible={errorVisible}
             alerttype={'error'}
             Title={'Error'}
-            Massage={'Email already has been taken!'}
-          ></Alert>
+            Massage={'Email already has been taken!'}></Alert>
           <View style={styles.ProfileImgView}>
             <TouchableOpacity
               selectable={true}
-              onPress={() => requestCameraPermission()}
-            >
+              onPress={() => requestCameraPermission()}>
               <Image
                 source={
                   img == '' || img == undefined
@@ -392,8 +393,11 @@ export default function VehicalSallerScreen(props) {
             </TouchableOpacity>
           </View>
           <TextInput
-            placeholderTextColor={colors.TextBoxPlaceholderColor}
-            style={customestyleusername}
+            placeholderTextColor={theme.placeholderColor}
+            style={[
+              customestyleusername,
+              {backgroundColor: theme.inputBackColor, color: theme.textColor},
+            ]}
             value={firstName}
             onChangeText={value => setFirstName(value)}
             placeholder="First name"
@@ -403,8 +407,11 @@ export default function VehicalSallerScreen(props) {
             maxLength={50}
           />
           <TextInput
-            placeholderTextColor={colors.TextBoxPlaceholderColor}
-            style={customestyleusername}
+            placeholderTextColor={theme.placeholderColor}
+            style={[
+              customestyleusername,
+              {backgroundColor: theme.inputBackColor, color: theme.textColor},
+            ]}
             value={lastName}
             onChangeText={value => setLastName(value)}
             placeholder="Last name"
@@ -414,10 +421,12 @@ export default function VehicalSallerScreen(props) {
             maxLength={50}
           />
           <TextInput
-            placeholderTextColor={colors.TextBoxPlaceholderColor}
+            placeholderTextColor={theme.placeholderColor}
             style={[
               customestyleusername,
               username == '' ? styles.mandatoryControl : null,
+              ,
+              {backgroundColor: theme.inputBackColor, color: theme.textColor},
             ]}
             value={username}
             onChangeText={value => setusername(value)}
@@ -430,7 +439,7 @@ export default function VehicalSallerScreen(props) {
             maxLength={50}
           />
           <TextInput
-            placeholderTextColor={colors.TextBoxPlaceholderColor}
+            placeholderTextColor={theme.placeholderColor}
             value={Email}
             onChangeText={value => setEmail(value)}
             onEndEditing={() => setEmailFocus(false)}
@@ -438,6 +447,8 @@ export default function VehicalSallerScreen(props) {
             style={[
               customestyleEmail,
               Email == '' ? styles.mandatoryControl : null,
+              ,
+              {backgroundColor: theme.inputBackColor, color: theme.textColor},
             ]}
             placeholder="Email"
             clearTextOnFocus={true}
@@ -445,10 +456,12 @@ export default function VehicalSallerScreen(props) {
             maxLength={40}
           />
           <TextInput
-            placeholderTextColor={colors.TextBoxPlaceholderColor}
+            placeholderTextColor={theme.placeholderColor}
             style={[
               customestyleContact,
               Contact == '' ? styles.mandatoryControl : null,
+
+              {backgroundColor: theme.inputBackColor, color: theme.textColor},
             ]}
             value={Contact}
             onChangeText={value => setContact(value)}
@@ -461,11 +474,14 @@ export default function VehicalSallerScreen(props) {
             maxLength={50}
           />
           <Dropdown
-            placeholderTextColor={colors.TextBoxPlaceholderColor}
+            placeholderTextColor={theme.placeholderColor}
             onSelect={value => setorgindex(value)}
             selectedIndex={orgindex}
-            style={styles.Pickerstyle}
-            items={orgdata.sort(function(obj1, obj2) {
+            style={[
+              styles.Pickerstyle,
+              {backgroundColor: theme.inputBackColor, color: theme.textColor},
+            ]}
+            items={orgdata.sort(function (obj1, obj2) {
               return obj1.id - obj2.id;
             })}
             placeholder="Select organization..."
@@ -475,11 +491,15 @@ export default function VehicalSallerScreen(props) {
             maxLength={5}
           />
           <Dropdown
-            placeholderTextColor={colors.TextBoxPlaceholderColor}
+            placeholderTextColor={theme.placeholderColor}
             onSelect={value => setcityindex(value)}
             selectedIndex={cityindex}
-            style={[styles.Pickerstyle, styles.mandatoryControl]}
-            items={cities.sort(function(obj1, obj2) {
+            style={[
+              styles.Pickerstyle,
+              styles.mandatoryControl,
+              {backgroundColor: theme.inputBackColor, color: theme.textColor},
+            ]}
+            items={cities.sort(function (obj1, obj2) {
               return obj1.id - obj2.id;
             })}
             placeholder="Select City..."
@@ -491,16 +511,20 @@ export default function VehicalSallerScreen(props) {
             style={[
               customestylePassword,
               Password == '' ? styles.mandatoryControl : null,
-            ]}
-          >
+              ,
+              {backgroundColor: theme.inputBackColor, color: theme.textColor},
+            ]}>
             <TextInput
-              placeholderTextColor={colors.TextBoxPlaceholderColor}
+              placeholderTextColor={theme.placeholderColor}
               value={Password}
               onChangeText={value => setPassword(value)}
               onEndEditing={() => setPasswordFocus(false)}
               onFocus={() => setPasswordFocus(true)}
               secureTextEntry={true}
-              style={styles.FieldText}
+              style={[
+                styles.FieldText,
+                {backgroundColor: theme.inputBackColor, color: theme.textColor},
+              ]}
               placeholder="Password"
               clearTextOnFocus={true}
               keyboardAppearance={'dark'}
@@ -524,13 +548,13 @@ export default function VehicalSallerScreen(props) {
           <View style={styles.ButtonView}>
             <Button
               style={[styles.btnCancel, {flexBasis: '47%'}]}
-              bgColor={colors.Blazorbutton}
+              bgColor={theme.buttonBackColor}
               caption="Cancel"
               onPress={() => CancelClick()}
             />
             <Button
               style={[styles.btnSubmit, {flexBasis: '47%'}]}
-              bgColor={colors.Blazorbutton}
+              bgColor={theme.buttonBackColor}
               caption="Submit"
               onPress={() => submit()}
             />

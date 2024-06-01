@@ -1,35 +1,46 @@
 import {Header, createStackNavigator} from '@react-navigation/stack';
-import React, {useState} from 'react';
-import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
+import React from 'react';
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import 'react-native-gesture-handler';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import {useGlobal} from 'reactn';
+import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
+import {useDispatch, useSelector} from 'react-redux';
+import {useTheme} from '../../hooks/useTheme';
+import {toggleTheme} from '../../redux/features/theme/themeSlice';
 import {colors} from '../../styles';
 import StackNavigationData from './stackNavigationData';
+
 const Stack = createStackNavigator();
 global.SampleVar = 0;
 export default function NavigatorView(props) {
-  const [Visible, setVisible] = useState(false);
-  const [global, setGlobal] = useGlobal('false');
-  const VisibleSidebarr = () => {
-    if (Visible == false) {
-      setGlobal({num: 1});
-    }
-    if (Visible == true) {
-      setGlobal({num: 0});
-    }
-  };
-  const headerRightComponentMenu = () => {
+  const theme = useTheme();
+
+  const headerRightComponentMenu = props => {
+    const dispatch = useDispatch();
+    const appTheme = useSelector(state => state.theme.mode);
+
     return (
-      <TouchableOpacity
-        onPress={() => VisibleSidebarr()}
+      <View
         style={{
-          paddingHorizontal: 16,
-          paddingVertical: 12,
-        }}
-      >
-        <Icon name="search" style={styles.imageStyle} />
-      </TouchableOpacity>
+          flexDirection: 'row',
+          alignItems: 'center',
+          marginRight: 10,
+        }}>
+        <Text
+          style={{
+            color: theme.textColor,
+            fontSize: 16,
+            marginRight: 5,
+          }}>
+          {appTheme === 'dark' ? 'Dark' : 'Light'}
+        </Text>
+        <TouchableOpacity onPress={() => dispatch(toggleTheme())}>
+          <IconFontAwesome
+            name={appTheme == 'dark' ? 'toggle-on' : 'toggle-off'}
+            size={28}
+            color={theme.textColor}
+          />
+        </TouchableOpacity>
+      </View>
     );
   };
 
@@ -40,19 +51,19 @@ export default function NavigatorView(props) {
         style={{
           paddingHorizontal: 16,
           paddingVertical: 12,
-        }}
-      >
+        }}>
         <Image
           source={require('../../../assets/images/drawer/menu.png')}
           resizeMode="contain"
           style={{
             height: 20,
-            tintColor: colors.NavbarTextColor,
+            tintColor: theme.tintColor,
           }}
         />
       </TouchableOpacity>
     );
   };
+
   //item.name
   return (
     <Stack.Navigator>
@@ -63,9 +74,18 @@ export default function NavigatorView(props) {
           component={item.component}
           options={{
             headerLeft: item.headerLeft || headerLeftComponentMenu,
-            headerBackground: () => <View style={styles.headerImage}></View>,
-            // headerRight: headerRightComponentMenu,
-            headerTitleStyle: item.headerTitleStyle,
+            headerBackground: () => (
+              <View
+                style={[
+                  styles.headerImage,
+                  {backgroundColor: theme.navBarBack},
+                ]}></View>
+            ),
+            headerRight: headerRightComponentMenu,
+            headerTitleStyle: {
+              ...item.headerTitleStyle,
+              color: theme.textColor,
+            },
           }}
         />
       ))}
@@ -75,7 +95,6 @@ export default function NavigatorView(props) {
 // <Image style={styles.headerImage} source={item.headerBackground.source} />
 const styles = StyleSheet.create({
   headerImage: {
-    backgroundColor: colors.TopNavbar,
     position: 'absolute',
     top: 0,
     left: 0,

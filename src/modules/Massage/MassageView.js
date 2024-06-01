@@ -10,7 +10,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import Breadcrumb from 'react-native-breadcrumb';
+
+import AppBreadcrumb from '../../components/AppBreadcrumb';
 import Icon from 'react-native-vector-icons/Entypo';
 import Icons from 'react-native-vector-icons/FontAwesome';
 import {Button, Dropdown, TextInput} from '../../components';
@@ -110,17 +111,13 @@ export default function MassageScreen(props) {
   const [User, setUser] = useState('');
   const [Password, setPassword] = useState('');
   const [Visible, setVisible] = useState(false);
-  const [isStartDatePickerVisible, setStartDatePickerVisibility] = useState(
-    false,
-  );
+  const [isStartDatePickerVisible, setStartDatePickerVisibility] =
+    useState(false);
   const [isEndDatePickerVisible, setEndDatePickerVisibility] = useState(false);
-  const [isSelectTimePickerVisible, setSelectTimePickerVisibility] = useState(
-    false,
-  );
-  const [
-    isCompaigntimePickerVisible,
-    setisCompaigntimePickerVisible,
-  ] = useState(false);
+  const [isSelectTimePickerVisible, setSelectTimePickerVisibility] =
+    useState(false);
+  const [isCompaigntimePickerVisible, setisCompaigntimePickerVisible] =
+    useState(false);
   const [updatetimePickerVisible, setupdatetimePickerVisible] = useState(false);
   const [StartTime, setStartTime] = useState('');
   const [EndTime, setEndTime] = useState('');
@@ -145,10 +142,8 @@ export default function MassageScreen(props) {
     setpermissionVisible(false);
     Linking.openSettings();
   };
-  const [
-    microphonepermissionVisible,
-    setmicrophonepermissionVisible,
-  ] = useState(false);
+  const [microphonepermissionVisible, setmicrophonepermissionVisible] =
+    useState(false);
   const hidemicrophonepermission = () => {
     setmicrophonepermissionVisible(false);
   };
@@ -355,7 +350,7 @@ onCancel={hideCampaignTimePicker}
       Toast.show('Please select Status');
       return;
     }
-    AsyncStorage.getItem('LoginInformation').then(function(res) {
+    AsyncStorage.getItem('LoginInformation').then(function (res) {
       let Asyncdata = JSON.parse(res);
 
       var headerFetch = {
@@ -406,8 +401,7 @@ onCancel={hideCampaignTimePicker}
       <KeyboardAwareScrollView
         resetScrollToCoords={{x: 0, y: 0}}
         contentContainerStyle={styles.container}
-        scrollEnabled={false}
-      >
+        scrollEnabled={false}>
         <View style={styles.container}>
           <Alert
             massagetype={'warning'}
@@ -416,23 +410,20 @@ onCancel={hideCampaignTimePicker}
             Visible={permissionVisible}
             alerttype={'confirmation'}
             Title={'Confirmation'}
-            Massage={'"Spentem" would like to access camera ?'}
-          ></Alert>
+            Massage={'"Spentem" would like to access camera ?'}></Alert>
           <TouchableOpacity>
-            <Breadcrumb
-              entities={['Template', 'Interval & Frequency', 'Dispatch']}
-              crumbsContainerStyle={crumbsContainerStyle}
-              crumbStyle={crumbStyle}
-              activeCrumbStyle={activeCrumbStyle}
-              crumbTextStyle={crumbTextStyle}
-              activeCrumbTextStyle={activeCrumbTextStyle}
-              isTouchable={true}
-              flowDepth={Index}
-              height={35}
-              borderRadius={5}
-              onCrumbPress={index => {
+            <AppBreadcrumb
+              crumbs={[
+                {
+                  text: 'Template',
+                },
+                {text: 'Interval & Frequency'},
+                {text: 'Dispatch'},
+              ]}
+              onSelect={index => {
                 handlePress(index);
               }}
+              selectedIndex={Index}
             />
           </TouchableOpacity>
           <View style={styles.container}>
@@ -444,14 +435,12 @@ onCancel={hideCampaignTimePicker}
                 Visible={Visible}
                 alerttype={'confirmation'}
                 Title={'Confirmation'}
-                Massage={'Do you want to discard ?'}
-              ></Alert>
+                Massage={'Do you want to discard ?'}></Alert>
               <View style={styles.uploadmodelcontainer}>
                 <View style={styles.sectionStyle}>
                   <Image
                     source={require('../../../assets/images/icons/Subject.png')}
-                    style={styles.imageStyle}
-                  ></Image>
+                    style={styles.imageStyle}></Image>
                   <TextInput
                     placeholderTextColor="#a2a2a2"
                     style={styles.FieldText}
@@ -505,20 +494,18 @@ onCancel={hideCampaignTimePicker}
       <View style={styles.container}>
         <ScrollView>
           <TouchableOpacity>
-            <Breadcrumb
-              entities={['Template', 'Interval & Frequency', 'Dispatch']}
-              crumbsContainerStyle={crumbsContainerStyle}
-              crumbStyle={crumbStyle}
-              activeCrumbStyle={activeCrumbStyle}
-              crumbTextStyle={crumbTextStyle}
-              activeCrumbTextStyle={activeCrumbTextStyle}
-              isTouchable={true}
-              flowDepth={Index}
-              height={35}
-              borderRadius={5}
-              onCrumbPress={index => {
+            <AppBreadcrumb
+              crumbs={[
+                {
+                  text: 'Template',
+                },
+                {text: 'Interval & Frequency'},
+                {text: 'Dispatch'},
+              ]}
+              onSelect={index => {
                 handlePress(index);
               }}
+              selectedIndex={Index}
             />
           </TouchableOpacity>
           <View style={styles.container}>
@@ -529,8 +516,7 @@ onCancel={hideCampaignTimePicker}
               Visible={Visible}
               alerttype={'confirmation'}
               Title={'Confirmation'}
-              Massage={'Do you want to close ?'}
-            ></Alert>
+              Massage={'Do you want to close ?'}></Alert>
             <View style={styles.radiostyle}>
               <View style={{marginTop: 10, height: 45, flexDirection: 'row'}}>
                 <RadioForm
@@ -581,8 +567,7 @@ onCancel={hideCampaignTimePicker}
                   <View style={styles.datepickercustome}>
                     <TouchableOpacity
                       style={styles.btntime}
-                      onPress={() => showSelectTimePicker()}
-                    >
+                      onPress={() => showSelectTimePicker()}>
                       <Text style={styles.TimeText}>{SelectTime}</Text>
                     </TouchableOpacity>
                     <DateTimePickerModal
@@ -606,8 +591,7 @@ onCancel={hideCampaignTimePicker}
                   </Text>
                   <TouchableOpacity
                     onPress={() => ShowUpdateTimePicker(item.id)}
-                    style={{position: 'absolute', right: 15 + '%'}}
-                  >
+                    style={{position: 'absolute', right: 15 + '%'}}>
                     <Icon
                       name="pencil"
                       style={{fontSize: 40, color: colors.white}}
@@ -615,8 +599,7 @@ onCancel={hideCampaignTimePicker}
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => removeRecurringTime(item.id)}
-                    style={{position: 'absolute', right: 10}}
-                  >
+                    style={{position: 'absolute', right: 10}}>
                     <Icons
                       name="minus-circle"
                       style={{fontSize: 35, color: colors.red}}
@@ -651,8 +634,7 @@ onCancel={hideCampaignTimePicker}
       <KeyboardAwareScrollView
         resetScrollToCoords={{x: 0, y: 0}}
         contentContainerStyle={styles.container}
-        scrollEnabled={false}
-      >
+        scrollEnabled={false}>
         <View style={styles.container}>
           <Alert
             massagetype={'warning'}
@@ -661,23 +643,20 @@ onCancel={hideCampaignTimePicker}
             Visible={Visible}
             alerttype={'confirmation'}
             Title={'Confirmation'}
-            Massage={'Do you want to close ?'}
-          ></Alert>
+            Massage={'Do you want to close ?'}></Alert>
           <TouchableOpacity>
-            <Breadcrumb
-              entities={['Template', 'Interval & Frequency', 'Dispatch']}
-              isTouchable={true}
-              crumbsContainerStyle={crumbsContainerStyle}
-              crumbStyle={crumbStyle}
-              activeCrumbStyle={activeCrumbStyle}
-              crumbTextStyle={crumbTextStyle}
-              activeCrumbTextStyle={activeCrumbTextStyle}
-              flowDepth={Index}
-              height={35}
-              borderRadius={5}
-              onCrumbPress={index => {
+            <AppBreadcrumb
+              crumbs={[
+                {
+                  text: 'Template',
+                },
+                {text: 'Interval & Frequency'},
+                {text: 'Dispatch'},
+              ]}
+              onSelect={index => {
                 handlePress(index);
               }}
+              selectedIndex={Index}
             />
           </TouchableOpacity>
           <View style={styles.container}>
@@ -699,8 +678,7 @@ onCancel={hideCampaignTimePicker}
                   <View style={styles.datepickercustome}>
                     <TouchableOpacity
                       style={styles.btntime}
-                      onPress={() => showStartDatePicker()}
-                    >
+                      onPress={() => showStartDatePicker()}>
                       <Text style={styles.TimeText}>
                         {StartTime != ''
                           ? moment(StartTime).format('hh:mm:ss')
@@ -722,8 +700,7 @@ onCancel={hideCampaignTimePicker}
                   <View style={styles.datepickercustome}>
                     <TouchableOpacity
                       style={styles.btntime}
-                      onPress={() => showEndDatePicker()}
-                    >
+                      onPress={() => showEndDatePicker()}>
                       <Text style={styles.TimeText}>
                         {EndTime != ''
                           ? moment(EndTime).format('hh:mm:ss')

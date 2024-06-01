@@ -14,12 +14,14 @@ import Video from 'react-native-video';
 import {Text} from '../../components/StyledText';
 import {colors} from '../../styles';
 import servicesettings from '../dataservices/servicesettings';
+import {useTheme} from '../../hooks/useTheme';
 const BuyVehicleIcon = require('../../../assets/images/BDMT.png');
 const NetworkFailed = require('../../../assets/images/BDMT.png');
 const mycampaignIcon = require('../../../assets/images/drawer/mycampaign.png');
 const compaign = require('../../../assets/images/drawer/compaign.png');
 const SellVehicleIcon = require('../../../assets/images/BDMT.png');
 export default function HomeScreen(props) {
+  const theme = useTheme();
   const [Visible, setVisible] = useState(false);
   const [tintColorChange, setTintColorChange] = useState('red');
   const [storeUrl, setstoreUrl] = useState('');
@@ -28,12 +30,11 @@ export default function HomeScreen(props) {
   const navigation = useNavigation();
   //const image = require('../../../assets/images/background.png');
   const image = {
-    uri:
-      'https://images.squarespace-cdn.com/content/v1/57f2dfd5d1758e267f3e8c68/1546989620686-NIVBIIEEIT2EEOZTK9WT/ke17ZwdGBToddI8pDm48kNZHyWCsxgfaVsw2n_GHaQpZw-zPPgdn4jUwVcJE1ZvWEtT5uBSRWt4vQZAgTJucoTqqXjS3CfNDSuuf31e0tVEGqZQu-a0HhO1lRw-F9VJFjoM1OHlSBW7GvmhU6cX5cZuG45vQwBxdpDrCGUSSl5w/snapchat+ad+gif.gif',
+    uri: 'https://images.squarespace-cdn.com/content/v1/57f2dfd5d1758e267f3e8c68/1546989620686-NIVBIIEEIT2EEOZTK9WT/ke17ZwdGBToddI8pDm48kNZHyWCsxgfaVsw2n_GHaQpZw-zPPgdn4jUwVcJE1ZvWEtT5uBSRWt4vQZAgTJucoTqqXjS3CfNDSuuf31e0tVEGqZQu-a0HhO1lRw-F9VJFjoM1OHlSBW7GvmhU6cX5cZuG45vQwBxdpDrCGUSSl5w/snapchat+ad+gif.gif',
   };
   const home = require('../../../assets/images/home.mp4');
   useEffect(() => {
-    AsyncStorage.getItem('LoginInformation').then(function(res) {
+    AsyncStorage.getItem('LoginInformation').then(function (res) {
       let Asyncdata = res;
       if (Asyncdata == null) {
         console.log(' Async Login Data Check ');
@@ -45,7 +46,7 @@ export default function HomeScreen(props) {
   });
   //console.log(props);
   navigation.addListener('focus', route => {
-    AsyncStorage.getItem('LoginInformation').then(function(res) {
+    AsyncStorage.getItem('LoginInformation').then(function (res) {
       let Asyncdata = JSON.parse(res);
       if (Asyncdata == null) {
         global.Storeid = '0';
@@ -60,7 +61,7 @@ export default function HomeScreen(props) {
   });
   //function LoadBundLing() {
   const LoadBundLing = async () => {
-    AsyncStorage.getItem('LoginInformation').then(function(res) {
+    AsyncStorage.getItem('LoginInformation').then(function (res) {
       if (res == null) {
         console.log('Asyncdata Asyncdata Asyncdata empty  ');
       } else {
@@ -159,21 +160,26 @@ export default function HomeScreen(props) {
           ignoreSilentSwitch={'obey'}
         />
       )}
-      <View style={styles.Buttoncontainer}>
-        {Visible == false ? (
+      <View
+        style={[styles.Buttoncontainer, {backgroundColor: theme.navBarBack}]}>
+        {!Visible ? (
           <View style={styles.Buttoncontainer2}>
             {global.NetworkFailed == 1 ? null : (
               <View>
                 <TouchableOpacity
                   onPress={() => LoginClick()}
-                  style={styles.loginbutton}
-                >
+                  style={[
+                    styles.loginbutton,
+                    {backgroundColor: theme.buttonBackColor},
+                  ]}>
                   <Text style={styles.buttonText}>LOGIN</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => opensignup()}
-                  style={styles.loginbutton}
-                >
+                  style={[
+                    styles.loginbutton,
+                    {backgroundColor: theme.buttonBackColor},
+                  ]}>
                   <Text style={styles.buttonText}>SIGNUP</Text>
                 </TouchableOpacity>
               </View>
@@ -183,8 +189,10 @@ export default function HomeScreen(props) {
           <View style={styles.Buttoncontainer2}>
             <TouchableOpacity
               onPress={() => AddCampaignClick()}
-              style={styles.Buy_SellButton}
-            >
+              style={[
+                styles.Buy_SellButton,
+                {backgroundColor: theme.buttonBackColor},
+              ]}>
               <View style={styles.Buy_SellView1}>
                 <Image source={compaign} style={styles.BuyVehicleImg} />
               </View>
@@ -195,16 +203,17 @@ export default function HomeScreen(props) {
                     Platform.OS === 'ios'
                       ? styles.Buy_SellHeadDetailIOS
                       : styles.Buy_SellHeadDetail
-                  }
-                >
+                  }>
                   Settings & management of media campaigns
                 </Text>
               </View>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => props.navigation.navigate('My Campaigns')}
-              style={styles.Buy_SellButton}
-            >
+              style={[
+                styles.Buy_SellButton,
+                {backgroundColor: theme.buttonBackColor},
+              ]}>
               <View style={styles.Buy_SellView}>
                 <Image
                   resizeMode="contain"
@@ -215,12 +224,11 @@ export default function HomeScreen(props) {
               <View style={styles.Buy_SellDetail}>
                 <Text style={styles.Buy_SellHead}>My Campaigns</Text>
                 <Text
-                  style={
+                  style={[
                     Platform.OS === 'ios'
                       ? styles.Buy_SellHeadDetailIOS
-                      : styles.Buy_SellHeadDetail
-                  }
-                >
+                      : styles.Buy_SellHeadDetail,
+                  ]}>
                   My compaigns, see status of campaigns
                 </Text>
               </View>
@@ -235,12 +243,13 @@ export default function HomeScreen(props) {
             alignItems: 'center',
             width: 100 + '%',
             justifyContent: 'center',
-          }}
-        >
-          <Text style={styles.copyrirgttext}>
+          }}>
+          <Text style={[styles.copyrirgttext, {color: theme.textColor}]}>
             {'\u00A9'} Blazor Technologies Inc,{' '}
           </Text>
-          <Text style={styles.copyrirgttext}>{new Date().getFullYear()}</Text>
+          <Text style={[styles.copyrirgttext, {color: theme.textColor}]}>
+            {new Date().getFullYear()}
+          </Text>
         </View>
       </View>
     </View>

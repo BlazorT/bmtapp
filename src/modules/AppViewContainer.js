@@ -13,4 +13,4 @@ const EnhancedAppView = () => {
   return <AppView />;
 };
 
-export default EnhancedAppView;
+export default AppView;

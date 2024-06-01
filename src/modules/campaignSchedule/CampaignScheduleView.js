@@ -13,7 +13,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import Breadcrumb from 'react-native-breadcrumb';
+import AppBreadcrumb from '../../components/AppBreadcrumb';
 import DocumentPicker from 'react-native-document-picker';
 import {Button, Dropdown, TextInput} from '../../components';
 import AddScheduleList from '../../components/AddScheduleList';
@@ -125,10 +125,8 @@ const itemsContainerStyle = {
   //elevation: 2,
 };
 export default function CampaignScheduleScreen(props) {
-  const [
-    compaignExecutionSchedules11,
-    setCompaignExecutionSchedules11,
-  ] = useState('');
+  const [compaignExecutionSchedules11, setCompaignExecutionSchedules11] =
+    useState('');
   var defaultDateTime = new Date();
   const [selectedItems, setSelectedItems] = useState([]);
   //const [timeupdateid, settimeupdateid] = useState(0);
@@ -160,9 +158,8 @@ export default function CampaignScheduleScreen(props) {
   const [Index, setIndex] = useState(0);
   //const [indexCount, setIndexCount] = useState('');
   const [template, settemplate] = useState('');
-  const [NetworkSelectedAddSchedule, setNetworkSelectedAddSchedule] = useState(
-    '',
-  );
+  const [NetworkSelectedAddSchedule, setNetworkSelectedAddSchedule] =
+    useState('');
   const [selectStatus, setSelectStatus] = useState('');
   const [campaignStatus, setCampaignStatus] = useState('');
   const [selectAutoGenerate, setSelectAutoGenerate] = useState('');
@@ -183,10 +180,8 @@ export default function CampaignScheduleScreen(props) {
   const [PdfUri, setPdfUri] = useState('');
   const [attatchmentAutoGenerate, setAttatchmentAutoGenerate] = useState('');
   const [Visible, setVisible] = useState(false);
-  const [
-    networkEditWithScheduleDisabled,
-    setNetworkEditWithScheduleDisabled,
-  ] = useState(false);
+  const [networkEditWithScheduleDisabled, setNetworkEditWithScheduleDisabled] =
+    useState(false);
   const [AttachmentsEnabled, setAttachmentsEnabled] = useState(false);
   const [SelectAreaEnabled, setSelectAreaEnabled] = useState(false);
   const [Buttonsvisible, setButtonsvisible] = useState(false);
@@ -200,29 +195,22 @@ export default function CampaignScheduleScreen(props) {
   const [selectSaturday, setSelectSaturday] = useState(false);
   //const [isStartDatePickerVisible, setStartDatePickerVisibility] = useState(false);
   const [modalVisiblecamera, setModalVisiblecamera] = useState(false);
-  const [
-    scheduleSummaryDetailVisible,
-    setScheduleSummaryDetailVisible,
-  ] = useState(false);
+  const [scheduleSummaryDetailVisible, setScheduleSummaryDetailVisible] =
+    useState(false);
   const [isEndDatePickerVisible, setEndDatePickerVisibility] = useState(false);
   //const [isSelectTimePickerVisible, setSelectTimePickerVisibility] = useState(false);
-  const [
-    isSelectStartTimePickerVisible,
-    setSelectStartTimePickerVisibility,
-  ] = useState(false);
-  const [
-    isSelectEndTimePickerVisible,
-    setSelectEndTimePickerVisibility,
-  ] = useState(false);
+  const [isSelectStartTimePickerVisible, setSelectStartTimePickerVisibility] =
+    useState(false);
+  const [isSelectEndTimePickerVisible, setSelectEndTimePickerVisibility] =
+    useState(false);
   //const [updatetimePickerVisible, setupdatetimePickerVisible] = useState(false);
   //const [updatetimePickerEndVisible, setupdatetimePickerEndVisible] = useState(false);
   const [reportmodalVisible, setreportmodalVisible] = useState(false);
   const [pic, setpic] = useState('');
   const [scheduleAddData, setScheduleAddData] = useState('');
   const [imageSelectedData, setImageSelectedData] = useState('');
-  const [imageSelectedDataFlatelist, setImageSelectedDataFlatelist] = useState(
-    '',
-  );
+  const [imageSelectedDataFlatelist, setImageSelectedDataFlatelist] =
+    useState('');
   const [SelectStartTime, setSelectStartTime] = useState('');
   const [SelectEndTime, setSelectEndTime] = useState('');
   const [SelectEndDate, setSelectEndDate] = useState('');
@@ -240,9 +228,8 @@ export default function CampaignScheduleScreen(props) {
   const [isFixedSummary, setIsFixedSummary] = useState('');
   const [totalMessageCountAdd, setTotalMessageCountAdd] = useState('');
 
-  const [SelectNetworkQuotaVisible, setSelectNetworkQuotaVisible] = useState(
-    false,
-  );
+  const [SelectNetworkQuotaVisible, setSelectNetworkQuotaVisible] =
+    useState(false);
   const [modalSpinner_Load, setModalSpinner_Load] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [spinner, setspinner] = useState(false);
@@ -254,21 +241,18 @@ export default function CampaignScheduleScreen(props) {
   //const [selectSMS, setSelectSMS] = useState(false);
   //const [selectEmail, setSelectEmail] = useState(false);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  const [IsCampaignStartDateVisible, setIsCampaignStartDateVisible] = useState(
-    false,
-  );
-  const [IsCampaignEndDateVisible, setIsCampaignEndDateVisible] = useState(
-    false,
-  );
+  const [IsCampaignStartDateVisible, setIsCampaignStartDateVisible] =
+    useState(false);
+  const [IsCampaignEndDateVisible, setIsCampaignEndDateVisible] =
+    useState(false);
   const [gallery, setgallery] = useState(false);
   const [showclender, setshowclender] = useState(false);
   const [showinterval, setshowinterval] = useState(true);
   //const [successVisible, setsuccessVisible] = useState(false);
   const [DataNetwork, setDataNetwork] = useState('');
   const [intervalTypeCustom, setIntervalTypeCustom] = useState('');
-  const [selectIntervalTypeForDays, setSelectIntervalTypeForDays] = useState(
-    '',
-  );
+  const [selectIntervalTypeForDays, setSelectIntervalTypeForDays] =
+    useState('');
   const [selectIntervalTypeEdit, setSelectIntervalTypeEdit] = useState('');
   const [noOfDayRepeateInTime, setNoOfDayRepeateInTime] = useState('');
   const [addScheduleBudget, setAddScheduleBudget] = useState('');
@@ -306,9 +290,8 @@ export default function CampaignScheduleScreen(props) {
   const [selectState, setSelectState] = useState('');
   const [myBundlingsData, setMyBundlingsData] = useState('');
   const [checkNetworkBudget, setCheckNetworkBudget] = useState('');
-  const [selectedNetworkShowBudget, setSelectedNetworkShowBudget] = useState(
-    '',
-  );
+  const [selectedNetworkShowBudget, setSelectedNetworkShowBudget] =
+    useState('');
   //const [selectStatusArray, setSelectStatusArray] = useState('');
   const [orgCurrencyName, setOrgCurrencyName] = useState('');
   const [orgCurrencyId, setOrgCurrencyId] = useState('');
@@ -429,7 +412,7 @@ export default function CampaignScheduleScreen(props) {
     setIndex(2);
   }
   function LoginInfoLoad() {
-    AsyncStorage.getItem('LoginInformation').then(function(res) {
+    AsyncStorage.getItem('LoginInformation').then(function (res) {
       let Asyncdata = JSON.parse(res);
       if (Asyncdata != null) {
         let Asyncdata = JSON.parse(res);
@@ -511,7 +494,7 @@ export default function CampaignScheduleScreen(props) {
       });
   }
   function LoadBundLing() {
-    AsyncStorage.getItem('myBundlingsAsync').then(function(res) {
+    AsyncStorage.getItem('myBundlingsAsync').then(function (res) {
       if (res != null) {
         let Asyncdata = JSON.parse(res);
         console.log('Asyncdata Asyncdata Asyncdata  ', Asyncdata);
@@ -565,7 +548,7 @@ export default function CampaignScheduleScreen(props) {
       setEndDateForAlert(EndDatePick);
       //console.log('Retrieved value selectedWeekDayListVal:', selectedWeekDayListVal.length);
       //ScheduleStartEndDate();
-      AsyncStorage.getItem('WeekendDayDataList').then(function(res) {
+      AsyncStorage.getItem('WeekendDayDataList').then(function (res) {
         if (AsyncStorage != null) {
           let Asyncdata = JSON.parse(res);
           var selectedWeekDayListVal = Asyncdata;
@@ -976,7 +959,7 @@ export default function CampaignScheduleScreen(props) {
     setSelectStateId(selectState[value].id);
   }
   function LoadOrgData() {
-    AsyncStorage.getItem('OrgInformation').then(function(res) {
+    AsyncStorage.getItem('OrgInformation').then(function (res) {
       let Asyncdata = JSON.parse(res);
       console.log(
         'LoadOrgData LoadOrgData Asyncdata  ',
@@ -997,7 +980,7 @@ export default function CampaignScheduleScreen(props) {
     });
   }
   const UpdateCampaignDetail = async AllNetworkList => {
-    AsyncStorage.getItem('CampaignUpdate').then(function(res) {
+    AsyncStorage.getItem('CampaignUpdate').then(function (res) {
       let Asyncdata = JSON.parse(res);
       if (Asyncdata != null) {
         var currentdate = new Date();
@@ -1262,12 +1245,12 @@ export default function CampaignScheduleScreen(props) {
           'unitPriceInclTax',
           'usedQuota',
         ];
-        var resultAllNetwork = AllNetworkList.filter(function(o1) {
-          return NetworkDetailList.some(function(o2) {
+        var resultAllNetwork = AllNetworkList.filter(function (o1) {
+          return NetworkDetailList.some(function (o2) {
             return o1.networkId === o2.networkId;
           });
-        }).map(function(o) {
-          return Allprops.reduce(function(newo, name) {
+        }).map(function (o) {
+          return Allprops.reduce(function (newo, name) {
             newo[name] = o[name];
             return newo;
           }, {});
@@ -1309,7 +1292,7 @@ export default function CampaignScheduleScreen(props) {
     });
   };
   function NetworkDetailLoad() {
-    AsyncStorage.getItem('NetworksDetailData').then(function(res) {
+    AsyncStorage.getItem('NetworksDetailData').then(function (res) {
       let Asyncdata = JSON.parse(res);
       if (Asyncdata != null) {
         console.log(
@@ -1503,85 +1486,88 @@ export default function CampaignScheduleScreen(props) {
       //await networkFinalData.map((nwk) => (
       console.log('networkSelectSocialMedia ', networkSelectSocialMedia);
       await networkSelectSocialMedia.map(
-        nwk => (
-          //console.log('randomIdSchedule in array ', randomIdSchedule),
-          //console.log('scheduleListAddArray before update ', scheduleListAddArray),
-          // setScheduleListAddArray(networkData.filter((e, i) => e.networkId !== SelectProps.networkId));
-          //setScheduleListAddArray(prevv => [...prevv, scheduleListAddArray.filter((e, i) => e.randomId !== {'id':0,'rowVer':0,'days':((allweekDays=="" || allweekDays==null) ?"":allweekDays),'networkId':(nwk=="" || nwk==null) ?"":nwk.networkId,'compaignDetailId':0,'isFixedTime':(selectStatus==1?1:0),'startTime':moment.utc(SelectStartDate==''?SelectCampaignStartDate:SelectStartDate).format(),'finishTime':moment.utc(SelectEndDate==''?SelectCampaignEndDate:SelectEndDate).format(),'interval':Number(intervalVal),'status':selectStatus==null||selectStatus==''?1:selectStatus,intervalTypeId:IntervalType[selectIntervalType].id,randomId:randomIdSchedule}.randomId)])
-          setScheduleListAddArray(prevv => [
-            ...prevv,
-            {
-              id: editId == '' || editId == null ? 0 : editId,
-              rowVer: 0,
-              budget: nwk.unitPriceInclTax * scheduleMessageCount,
-              messageCount: scheduleMessageCount,
-              orgId: Number(organizationId),
-              days: allweekDays == '' || allweekDays == null ? '' : allweekDays,
-              networkId: nwk == '' || nwk == null ? '' : nwk.networkId,
-              compaignDetailId:
-                compaignDetailIdEdit == '' || compaignDetailIdEdit == null
-                  ? 0
-                  : compaignDetailIdEdit,
-              isFixedTime: IntervalType[selectIntervalType].id == 1 ? 1 : 0,
-              startTime: moment
-                .utc(
-                  SelectStartDate == ''
-                    ? SelectCampaignStartDate
-                    : SelectStartDate,
-                )
-                .format('yyyy-MM-DDTHH:mm:ss'),
-              finishTime: moment
-                .utc(
-                  SelectEndDate == '' ? SelectCampaignEndDate : SelectEndDate,
-                )
-                .format('yyyy-MM-DDTHH:mm:ss'),
-              interval: Number(intervalVal),
-              status: 1,
-              intervalTypeId: IntervalType[selectIntervalType].id,
-              randomId: randomIdSchedule,
-              CompaignNetworks: networkSelectSocialMedia,
-            },
-          ]),
-          setScheduleListAddArrayZZZ(prevv => [
-            ...prevv,
-            {
-              id: editId == '' || editId == null ? 0 : editId,
-              rowVer: 0,
-              budget: nwk.unitPriceInclTax * scheduleMessageCount,
-              messageCount: scheduleMessageCount,
-              orgId: Number(organizationId),
-              days: allweekDays == '' || allweekDays == null ? '' : allweekDays,
-              networkId: nwk == '' || nwk == null ? '' : nwk.networkId,
-              compaignDetailId:
-                compaignDetailIdEdit == '' || compaignDetailIdEdit == null
-                  ? 0
-                  : compaignDetailIdEdit,
-              isFixedTime: IntervalType[selectIntervalType].id == 1 ? 1 : 0,
-              startTime: moment
-                .utc(
-                  SelectStartDate == ''
-                    ? SelectCampaignStartDate
-                    : SelectStartDate,
-                )
-                .format('yyyy-MM-DDTHH:mm:ss'),
-              finishTime: moment
-                .utc(
-                  SelectEndDate == '' ? SelectCampaignEndDate : SelectEndDate,
-                )
-                .format('yyyy-MM-DDTHH:mm:ss'),
-              interval: Number(intervalVal),
-              status: 1,
-              intervalTypeId: IntervalType[selectIntervalType].id,
-              randomId: randomIdSchedule,
-              CompaignNetworks: networkSelectSocialMedia,
-            },
-          ]),
-          console.log(
-            'scheduleListAddArrayZZZ after update ',
-            scheduleListAddArrayZZZ,
+        nwk =>
+          (
+            //console.log('randomIdSchedule in array ', randomIdSchedule),
+            //console.log('scheduleListAddArray before update ', scheduleListAddArray),
+            // setScheduleListAddArray(networkData.filter((e, i) => e.networkId !== SelectProps.networkId));
+            //setScheduleListAddArray(prevv => [...prevv, scheduleListAddArray.filter((e, i) => e.randomId !== {'id':0,'rowVer':0,'days':((allweekDays=="" || allweekDays==null) ?"":allweekDays),'networkId':(nwk=="" || nwk==null) ?"":nwk.networkId,'compaignDetailId':0,'isFixedTime':(selectStatus==1?1:0),'startTime':moment.utc(SelectStartDate==''?SelectCampaignStartDate:SelectStartDate).format(),'finishTime':moment.utc(SelectEndDate==''?SelectCampaignEndDate:SelectEndDate).format(),'interval':Number(intervalVal),'status':selectStatus==null||selectStatus==''?1:selectStatus,intervalTypeId:IntervalType[selectIntervalType].id,randomId:randomIdSchedule}.randomId)])
+            setScheduleListAddArray(prevv => [
+              ...prevv,
+              {
+                id: editId == '' || editId == null ? 0 : editId,
+                rowVer: 0,
+                budget: nwk.unitPriceInclTax * scheduleMessageCount,
+                messageCount: scheduleMessageCount,
+                orgId: Number(organizationId),
+                days:
+                  allweekDays == '' || allweekDays == null ? '' : allweekDays,
+                networkId: nwk == '' || nwk == null ? '' : nwk.networkId,
+                compaignDetailId:
+                  compaignDetailIdEdit == '' || compaignDetailIdEdit == null
+                    ? 0
+                    : compaignDetailIdEdit,
+                isFixedTime: IntervalType[selectIntervalType].id == 1 ? 1 : 0,
+                startTime: moment
+                  .utc(
+                    SelectStartDate == ''
+                      ? SelectCampaignStartDate
+                      : SelectStartDate,
+                  )
+                  .format('yyyy-MM-DDTHH:mm:ss'),
+                finishTime: moment
+                  .utc(
+                    SelectEndDate == '' ? SelectCampaignEndDate : SelectEndDate,
+                  )
+                  .format('yyyy-MM-DDTHH:mm:ss'),
+                interval: Number(intervalVal),
+                status: 1,
+                intervalTypeId: IntervalType[selectIntervalType].id,
+                randomId: randomIdSchedule,
+                CompaignNetworks: networkSelectSocialMedia,
+              },
+            ]),
+            setScheduleListAddArrayZZZ(prevv => [
+              ...prevv,
+              {
+                id: editId == '' || editId == null ? 0 : editId,
+                rowVer: 0,
+                budget: nwk.unitPriceInclTax * scheduleMessageCount,
+                messageCount: scheduleMessageCount,
+                orgId: Number(organizationId),
+                days:
+                  allweekDays == '' || allweekDays == null ? '' : allweekDays,
+                networkId: nwk == '' || nwk == null ? '' : nwk.networkId,
+                compaignDetailId:
+                  compaignDetailIdEdit == '' || compaignDetailIdEdit == null
+                    ? 0
+                    : compaignDetailIdEdit,
+                isFixedTime: IntervalType[selectIntervalType].id == 1 ? 1 : 0,
+                startTime: moment
+                  .utc(
+                    SelectStartDate == ''
+                      ? SelectCampaignStartDate
+                      : SelectStartDate,
+                  )
+                  .format('yyyy-MM-DDTHH:mm:ss'),
+                finishTime: moment
+                  .utc(
+                    SelectEndDate == '' ? SelectCampaignEndDate : SelectEndDate,
+                  )
+                  .format('yyyy-MM-DDTHH:mm:ss'),
+                interval: Number(intervalVal),
+                status: 1,
+                intervalTypeId: IntervalType[selectIntervalType].id,
+                randomId: randomIdSchedule,
+                CompaignNetworks: networkSelectSocialMedia,
+              },
+            ]),
+            console.log(
+              'scheduleListAddArrayZZZ after update ',
+              scheduleListAddArrayZZZ,
+            ),
+            ClearDataAfterAddSchedule()
           ),
-          ClearDataAfterAddSchedule()
-        ),
       );
     }
     //console.log('data show ', ({'id':0,'rowVer':0,'days':((allweekDays=="" || allweekDays==null) ?"":allweekDays),'compaignDetailId':0,'isFixedTime':(selectStatus==1?1:0),'startTime':moment.utc(SelectStartDate==''?SelectCampaignStartDate:SelectStartDate).format(),'finishTime':moment.utc(SelectEndDate==''?SelectCampaignEndDate:SelectEndDate).format(),'interval':Number(intervalVal),'status':selectStatus==null||selectStatus==''?1:selectStatus,intervalTypeId:IntervalType[selectIntervalType].id,randomId:randomIdSchedule}))
@@ -1826,7 +1812,7 @@ export default function CampaignScheduleScreen(props) {
   };
   function ClickSubmitData() {
     checkdataclick();
-    AsyncStorage.getItem('SubmitDataArray').then(function(res) {
+    AsyncStorage.getItem('SubmitDataArray').then(function (res) {
       let Asyncdata = JSON.parse(res);
       console.log(
         'Asyncdata SubmitDataArray  data ',
@@ -3403,8 +3389,7 @@ export default function CampaignScheduleScreen(props) {
       <TouchableOpacity
         style={styles.CrossIconStyleFlatlistView}
         value={ImageId}
-        onPress={() => DeletePicture(ImageId)}
-      >
+        onPress={() => DeletePicture(ImageId)}>
         <Image source={Crossicon} style={styles.CrossIconStyle} />
       </TouchableOpacity>
       <View style={{textAlign: 'center'}} selectable={true}>
@@ -3452,8 +3437,7 @@ export default function CampaignScheduleScreen(props) {
   const renderItemsss = ({item}) => (
     <TouchableOpacity
       style={styles.NetworkQuotaViewTouch}
-      onPress={() => MakeBudget()}
-    >
+      onPress={() => MakeBudget()}>
       <View style={styles.NetworkQuotaView}>
         <View style={{width: 50 + '%', marginRight: 8}}>
           <Text style={{fontSize: 15}}>
@@ -3475,8 +3459,7 @@ export default function CampaignScheduleScreen(props) {
       <KeyboardAwareScrollView
         resetScrollToCoords={{x: 0, y: 0}}
         contentContainerStyle={styles.container}
-        scrollEnabled={false}
-      >
+        scrollEnabled={false}>
         <View style={styles.container}>
           <ScrollView>
             <Alert
@@ -3486,10 +3469,22 @@ export default function CampaignScheduleScreen(props) {
               Visible={permissionVisible}
               alerttype={'confirmation'}
               Title={'Confirmation'}
-              Massage={'"Spentem" would like to access camera ?'}
-            ></Alert>
+              Massage={'"Spentem" would like to access camera ?'}></Alert>
             <TouchableOpacity>
-              <Breadcrumb
+              <AppBreadcrumb
+                crumbs={[
+                  {
+                    text: 'Campaign',
+                  },
+                  {text: 'Networks'},
+                  {text: 'Schedule'},
+                ]}
+                onSelect={index => {
+                  handlePress(index);
+                }}
+                selectedIndex={Index}
+              />
+              {/* <Breadcrumb
                 entities={['   Campaign', 'Networks', 'Schedule ']}
                 crumbsContainerStyle={crumbsContainerStyle}
                 crumbStyle={crumbStyle}
@@ -3503,7 +3498,7 @@ export default function CampaignScheduleScreen(props) {
                 onCrumbPress={index => {
                   handlePress(index);
                 }}
-              />
+              /> */}
             </TouchableOpacity>
             <View style={styles.container}>
               <Alert
@@ -3513,8 +3508,7 @@ export default function CampaignScheduleScreen(props) {
                 Visible={Visible}
                 alerttype={'confirmation'}
                 Title={'Confirmation'}
-                Massage={'Do you want to discard ?'}
-              ></Alert>
+                Massage={'Do you want to discard ?'}></Alert>
               <View style={styles.uploadmodelcontainer}>
                 <TextInput
                   placeholderTextColor={colors.TextBoxPlaceholderColor}
@@ -3571,8 +3565,7 @@ export default function CampaignScheduleScreen(props) {
                       flexDirection: 'row',
                       textAlign: 'center',
                     }}
-                    onPress={() => CampaignAudienceEnabledClick()}
-                  >
+                    onPress={() => CampaignAudienceEnabledClick()}>
                     <View style={{flexDirection: 'row', width: 90 + '%'}}>
                       <Text style={styles.AttachmentHeading}>
                         Campaign Audience
@@ -3590,16 +3583,14 @@ export default function CampaignScheduleScreen(props) {
                     style={{
                       width: Dimensions.get('window').width - 50,
                       marginHorizontal: 25,
-                    }}
-                  >
+                    }}>
                     <TouchableOpacity
                       style={{
                         textAlign: 'center',
                         flexDirection: 'row',
                         marginTop: 10,
                       }}
-                      onPress={() => CampaignAudienceEnabledClick()}
-                    >
+                      onPress={() => CampaignAudienceEnabledClick()}>
                       <View style={{flexDirection: 'row', width: 90 + '%'}}>
                         <Text style={styles.AttachmentHeading}>
                           Campaign Audience
@@ -3657,8 +3648,7 @@ export default function CampaignScheduleScreen(props) {
                       flexDirection: 'row',
                       textAlign: 'center',
                     }}
-                    onPress={() => AttachmentsEnabledClick()}
-                  >
+                    onPress={() => AttachmentsEnabledClick()}>
                     <View style={{flexDirection: 'row', width: 90 + '%'}}>
                       <Text style={styles.AttachmentHeading}>Attachments</Text>
                       <Image
@@ -3681,8 +3671,7 @@ export default function CampaignScheduleScreen(props) {
                         flexDirection: 'row',
                         marginTop: 5,
                       }}
-                      onPress={() => AttachmentsEnabledClick()}
-                    >
+                      onPress={() => AttachmentsEnabledClick()}>
                       <View style={{flexDirection: 'row', width: 90 + '%'}}>
                         <Text style={styles.AttachmentHeading}>
                           Attachments
@@ -3708,8 +3697,7 @@ export default function CampaignScheduleScreen(props) {
                             style={styles.ProfileStyleView}
                             onPress={() => {
                               CapturePhoto();
-                            }}
-                          >
+                            }}>
                             <Image
                               source={
                                 img == '' || img == undefined
@@ -3723,8 +3711,7 @@ export default function CampaignScheduleScreen(props) {
                           <View style={{textAlign: 'center'}}>
                             <TouchableOpacity
                               style={styles.CrossIconStyleView}
-                              onPress={() => CapturePhoto()}
-                            >
+                              onPress={() => CapturePhoto()}>
                               <Image
                                 source={PlusIcon}
                                 style={styles.CrossIconStyle}
@@ -3732,8 +3719,7 @@ export default function CampaignScheduleScreen(props) {
                             </TouchableOpacity>
                             <TouchableOpacity
                               style={styles.ProfileStylePreviewView}
-                              onPress={() => CapturePhoto()}
-                            >
+                              onPress={() => CapturePhoto()}>
                               <Image
                                 source={{
                                   uri: 'data:image/png;base64,' + ImgUriBase64,
@@ -3750,8 +3736,7 @@ export default function CampaignScheduleScreen(props) {
                           <TouchableOpacity
                             selectable={true}
                             style={styles.ProfileStyleView}
-                            onPress={() => AttatchmentVideo()}
-                          >
+                            onPress={() => AttatchmentVideo()}>
                             <Image
                               source={
                                 img1 == '' || img1 == undefined
@@ -3769,8 +3754,7 @@ export default function CampaignScheduleScreen(props) {
                           <View style={{textAlign: 'center', marginLeft: 20}}>
                             <TouchableOpacity
                               style={styles.CrossIconStyleView}
-                              onPress={() => AttatchmentVideo()}
-                            >
+                              onPress={() => AttatchmentVideo()}>
                               <Image
                                 source={PlusIcon}
                                 style={styles.CrossIconStyle}
@@ -3778,8 +3762,7 @@ export default function CampaignScheduleScreen(props) {
                             </TouchableOpacity>
                             <TouchableOpacity
                               style={styles.VideoControlView}
-                              onPress={() => AttatchmentVideo()}
-                            >
+                              onPress={() => AttatchmentVideo()}>
                               <Video
                                 playableDuration={0.5}
                                 resizeMode="cover"
@@ -3800,8 +3783,7 @@ export default function CampaignScheduleScreen(props) {
                           <TouchableOpacity
                             selectable={true}
                             style={styles.ProfileStyleView}
-                            onPress={() => AttatchmentPdf()}
-                          >
+                            onPress={() => AttatchmentPdf()}>
                             <Image
                               source={PdfIcon}
                               style={styles.ProfileStyle}
@@ -3811,16 +3793,14 @@ export default function CampaignScheduleScreen(props) {
                           <View style={{textAlign: 'center', marginLeft: 20}}>
                             <TouchableOpacity
                               style={styles.CrossIconStyleView}
-                              onPress={() => DeletePdfAttachment()}
-                            >
+                              onPress={() => DeletePdfAttachment()}>
                               <Image
                                 source={Crossicon}
                                 style={styles.CrossIconStyle}
                               />
                             </TouchableOpacity>
                             <TouchableOpacity
-                              style={styles.ProfileStylePreviewView}
-                            >
+                              style={styles.ProfileStylePreviewView}>
                               <Image
                                 source={pdfViewIcon}
                                 style={styles.ProfileStylePreview}
@@ -3840,12 +3820,10 @@ export default function CampaignScheduleScreen(props) {
                         SelectCampaignStartDate == ''
                           ? styles.mandatoryControl
                           : null,
-                      ]}
-                    >
+                      ]}>
                       <TouchableOpacity
                         style={styles.btnStartTime}
-                        onPress={() => showCampaignStartDatePicker()}
-                      >
+                        onPress={() => showCampaignStartDatePicker()}>
                         <Text style={styles.StartTimeText}>
                           {SelectCampaignStartDate != ''
                             ? moment(SelectCampaignStartDate).format(
@@ -3872,12 +3850,10 @@ export default function CampaignScheduleScreen(props) {
                         SelectCampaignEndDate == ''
                           ? styles.mandatoryControl
                           : null,
-                      ]}
-                    >
+                      ]}>
                       <TouchableOpacity
                         style={styles.btnStartTime}
-                        onPress={() => showCampaignEndDatePicker()}
-                      >
+                        onPress={() => showCampaignEndDatePicker()}>
                         <Text style={styles.StartTimeText}>
                           {SelectCampaignEndDate != ''
                             ? moment(SelectCampaignEndDate).format('DD-MM-YYYY')
@@ -3899,8 +3875,7 @@ export default function CampaignScheduleScreen(props) {
                 <View style={styles.radiostyleView}>
                   <View style={styles.radiostyle}>
                     <View
-                      style={{marginTop: 13, height: 45, flexDirection: 'row'}}
-                    >
+                      style={{marginTop: 13, height: 45, flexDirection: 'row'}}>
                       <RadioForm
                         radio_props={Statustype}
                         initial={selectStatusValue}
@@ -3931,15 +3906,13 @@ export default function CampaignScheduleScreen(props) {
                       paddingLeft: 5,
                       paddingTop: 5,
                       zIndex: 902,
-                    }}
-                  >
+                    }}>
                     <Text
                       style={
                         Platform.OS === 'ios'
                           ? styles.lblDayNameIos
                           : styles.lblDayName
-                      }
-                    >
+                      }>
                       {' '}
                       Auto Generate Lead
                     </Text>
@@ -3978,8 +3951,7 @@ export default function CampaignScheduleScreen(props) {
               animationType="fade"
               transparent={true}
               supportedOrientations={['portrait']}
-              visible={modalVisiblecamera}
-            >
+              visible={modalVisiblecamera}>
               <View style={styles.centeredView}>
                 <View style={styles.modalView}>
                   <View style={styles.textview}>
@@ -3995,8 +3967,7 @@ export default function CampaignScheduleScreen(props) {
                       imageSelectedDataFlatelist == '' ? null : (
                         <View>
                           <TouchableOpacity
-                            style={styles.ClearAllPhoto}
-                          ></TouchableOpacity>
+                            style={styles.ClearAllPhoto}></TouchableOpacity>
                           <FlatList
                             data={imageSelectedDataFlatelist}
                             renderItem={({item}) => (
@@ -4015,8 +3986,7 @@ export default function CampaignScheduleScreen(props) {
                       <View style={styles.textview}>
                         <TouchableOpacity
                           selectable={true}
-                          onPress={() => OpencameraClick()}
-                        >
+                          onPress={() => OpencameraClick()}>
                           <Text style={styles.cameraopention}>
                             Take Photo...
                           </Text>
@@ -4025,8 +3995,7 @@ export default function CampaignScheduleScreen(props) {
                       <View style={styles.textview}>
                         <TouchableOpacity
                           selectable={true}
-                          onPress={() => OpenGalleryClick()}
-                        >
+                          onPress={() => OpenGalleryClick()}>
                           <Text style={styles.cameraopention}>
                             Choose from Library...
                           </Text>
@@ -4041,8 +4010,7 @@ export default function CampaignScheduleScreen(props) {
                           imageSelectedData.length >= '2'
                             ? AttachmentComplate()
                             : GetVideoFromCamera();
-                        }}
-                      >
+                        }}>
                         <Text style={styles.cameraopention}>
                           Choose Video ...
                         </Text>
@@ -4053,8 +4021,7 @@ export default function CampaignScheduleScreen(props) {
                           imageSelectedData.length >= '2'
                             ? AttachmentComplate()
                             : GetVideoFromGallery();
-                        }}
-                      >
+                        }}>
                         <Text style={styles.cameraopention}>
                           Choose Video from Gallery...
                         </Text>
@@ -4063,8 +4030,7 @@ export default function CampaignScheduleScreen(props) {
                         <View>
                           <TouchableOpacity
                             style={styles.CrossIconStyleVideoView}
-                            onPress={() => DeleteVideoAttachment()}
-                          >
+                            onPress={() => DeleteVideoAttachment()}>
                             <Image
                               source={Crossicon}
                               style={styles.CrossIconStyle}
@@ -4086,8 +4052,7 @@ export default function CampaignScheduleScreen(props) {
                   <View style={styles.cancelview}>
                     <TouchableOpacity
                       selectable={true}
-                      onPress={() => CloseAttachment()}
-                    >
+                      onPress={() => CloseAttachment()}>
                       <Text style={styles.cameracancel}>OK</Text>
                     </TouchableOpacity>
                   </View>
@@ -4104,7 +4069,26 @@ export default function CampaignScheduleScreen(props) {
       <View style={styles.container}>
         <ScrollView>
           <TouchableOpacity>
-            <Breadcrumb
+            <AppBreadcrumb
+              crumbs={[
+                {
+                  text: 'Campaign',
+                },
+                {
+                  text:
+                    'Networks' +
+                    (totalNetworkSelect == null || totalNetworkSelect == ''
+                      ? ''
+                      : '(' + totalNetworkSelect + ')'),
+                },
+                {text: 'Schedule'},
+              ]}
+              onSelect={index => {
+                handlePress(index);
+              }}
+              selectedIndex={Index}
+            />
+            {/* <Breadcrumb
               entities={[
                 '   Campaign',
                 'Networks' +
@@ -4125,7 +4109,7 @@ export default function CampaignScheduleScreen(props) {
               onCrumbPress={index => {
                 handlePress(index);
               }}
-            />
+            /> */}
           </TouchableOpacity>
           <View style={styles.container}>
             <FlatList
@@ -4153,8 +4137,7 @@ export default function CampaignScheduleScreen(props) {
                   status={item.status}
                   createdBy={item.createdBy}
                   createdAt={item.createdAt}
-                  lastUpdatedAt={item.lastUpdatedAt}
-                ></NetworksView>
+                  lastUpdatedAt={item.lastUpdatedAt}></NetworksView>
               )}
               numColumns={1}
               horizontal={false}
@@ -4188,8 +4171,7 @@ export default function CampaignScheduleScreen(props) {
           Visible={Visible}
           alerttype={'confirmation'}
           Title={'Confirmation'}
-          Massage={'Do you want to close ?'}
-        ></Alert>
+          Massage={'Do you want to close ?'}></Alert>
         <AlertBMT
           massagetype={'warning'}
           hide={hideAddSchedule}
@@ -4203,8 +4185,7 @@ export default function CampaignScheduleScreen(props) {
             ' to ' +
             moment(endDateForAlert).format('DD-MM-YYYY') +
             ' added successfully'
-          }
-        ></AlertBMT>
+          }></AlertBMT>
         <AlertBMT
           massagetype={'warning'}
           hide={hideDeleteSchedule}
@@ -4212,10 +4193,28 @@ export default function CampaignScheduleScreen(props) {
           Visible={deleteScheduleVisible}
           alerttype={'confirmation'}
           Title={'Confirmation'}
-          Massage={'Schedule delete successfully'}
-        ></AlertBMT>
+          Massage={'Schedule delete successfully'}></AlertBMT>
         <TouchableOpacity>
-          <Breadcrumb
+          <AppBreadcrumb
+            crumbs={[
+              {
+                text: 'Campaign',
+              },
+              {
+                text:
+                  'Networks' +
+                  (totalNetworkSelect != null || totalNetworkSelect != ''
+                    ? '(' + totalNetworkSelect + ')'
+                    : ''),
+              },
+              {text: 'Schedule'},
+            ]}
+            onSelect={index => {
+              handlePress(index);
+            }}
+            selectedIndex={Index}
+          />
+          {/* <Breadcrumb
             entities={[
               '   Campaign',
               'Networks' +
@@ -4236,7 +4235,7 @@ export default function CampaignScheduleScreen(props) {
             onCrumbPress={index => {
               handlePress(index);
             }}
-          />
+          /> */}
         </TouchableOpacity>
         <View style={styles.containerView}>
           <View>
@@ -4247,8 +4246,7 @@ export default function CampaignScheduleScreen(props) {
               Visible={Visible}
               alerttype={'confirmation'}
               Title={'Confirmation'}
-              Massage={'Do you want to close ?'}
-            ></Alert>
+              Massage={'Do you want to close ?'}></Alert>
             <View style={styles.ButtonViewstyle}>
               <TouchableOpacity
                 style={
@@ -4256,8 +4254,7 @@ export default function CampaignScheduleScreen(props) {
                     ? styles.btnNetWork
                     : styles.btnNetWorkClick
                 }
-                onPress={() => AddScheduleClick()}
-              >
+                onPress={() => AddScheduleClick()}>
                 <Text style={styles.NetWork_DetailText}>Add Schedule</Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -4266,8 +4263,7 @@ export default function CampaignScheduleScreen(props) {
                     ? styles.btnCampaignDetail
                     : styles.btnCampaignDetailClick
                 }
-                onPress={() => ScheduleSummaryListClick()}
-              >
+                onPress={() => ScheduleSummaryListClick()}>
                 <Text style={styles.NetWork_DetailText}>
                   Schedules{' '}
                   {totalIndex == null || totalIndex == ''
@@ -4306,8 +4302,9 @@ export default function CampaignScheduleScreen(props) {
                           status={item.status}
                           createdBy={item.createdBy}
                           createdAt={item.createdAt}
-                          lastUpdatedAt={item.lastUpdatedAt}
-                        ></NetworksSelectedView>
+                          lastUpdatedAt={
+                            item.lastUpdatedAt
+                          }></NetworksSelectedView>
                       )
                       //<NetworksSelectedView NetworkSelectedAddSchedule={networkSelectSocialMedia} networkSelectSocialMedia={networkSelectSocialMedia} ActionNetworkSelectedDataClick={ActionNetworkSelectedDataClick} ActionNetworkSelectedDataRemoveClick={ActionNetworkSelectedDataRemoveClick} data={item.data} id={item.id} networkId={item.networkId} name={item.networkName} purchasedQouta={item.purchasedQouta} unitPriceInclTax={item.unitPriceInclTax} usedQuota={item.usedQuota} IconName={item.networkName} description={item.networkDesc} categoryId={item.categoryId} status={item.status} createdBy={item.createdBy} createdAt={item.createdAt} lastUpdatedAt={item.lastUpdatedAt} ></NetworksSelectedView>
                     }
@@ -4352,8 +4349,7 @@ export default function CampaignScheduleScreen(props) {
                       Platform.OS === 'ios'
                         ? styles.TitleDayNameIOS
                         : styles.TitleDayName
-                    }
-                  >
+                    }>
                     {' '}
                     Days{' '}
                   </Text>
@@ -4365,8 +4361,7 @@ export default function CampaignScheduleScreen(props) {
                         width: 25 + '%',
                         paddingLeft: 5,
                         zIndex: 902,
-                      }}
-                    >
+                      }}>
                       {selectSunday == true ? (
                         <Image
                           resizeMode="contain"
@@ -4385,8 +4380,7 @@ export default function CampaignScheduleScreen(props) {
                           Platform.OS === 'ios'
                             ? styles.lblDayNameIos
                             : styles.lblDayName
-                        }
-                      >
+                        }>
                         {' '}
                         Sun
                       </Text>
@@ -4398,8 +4392,7 @@ export default function CampaignScheduleScreen(props) {
                         width: 25 + '%',
                         paddingLeft: 5,
                         zIndex: 902,
-                      }}
-                    >
+                      }}>
                       {selectMonday == true ? (
                         <Image
                           resizeMode="contain"
@@ -4418,8 +4411,7 @@ export default function CampaignScheduleScreen(props) {
                           Platform.OS === 'ios'
                             ? styles.lblDayNameIos
                             : styles.lblDayName
-                        }
-                      >
+                        }>
                         {' '}
                         Mon
                       </Text>
@@ -4431,8 +4423,7 @@ export default function CampaignScheduleScreen(props) {
                         width: 25 + '%',
                         paddingLeft: 5,
                         zIndex: 902,
-                      }}
-                    >
+                      }}>
                       {selectTuesday == true ? (
                         <Image
                           resizeMode="contain"
@@ -4451,8 +4442,7 @@ export default function CampaignScheduleScreen(props) {
                           Platform.OS === 'ios'
                             ? styles.lblDayNameIos
                             : styles.lblDayName
-                        }
-                      >
+                        }>
                         {' '}
                         Tue
                       </Text>
@@ -4464,8 +4454,7 @@ export default function CampaignScheduleScreen(props) {
                         width: 25 + '%',
                         paddingLeft: 5,
                         zIndex: 902,
-                      }}
-                    >
+                      }}>
                       {selectWednesday == true ? (
                         <Image
                           resizeMode="contain"
@@ -4484,8 +4473,7 @@ export default function CampaignScheduleScreen(props) {
                           Platform.OS === 'ios'
                             ? styles.lblDayNameIos
                             : styles.lblDayName
-                        }
-                      >
+                        }>
                         {' '}
                         Wed
                       </Text>
@@ -4501,8 +4489,7 @@ export default function CampaignScheduleScreen(props) {
                         width: 25 + '%',
                         paddingLeft: 5,
                         zIndex: 902,
-                      }}
-                    >
+                      }}>
                       {selectThursday == true ? (
                         <Image
                           resizeMode="contain"
@@ -4521,8 +4508,7 @@ export default function CampaignScheduleScreen(props) {
                           Platform.OS === 'ios'
                             ? styles.lblDayNameIos
                             : styles.lblDayName
-                        }
-                      >
+                        }>
                         {' '}
                         Thu
                       </Text>
@@ -4536,8 +4522,7 @@ export default function CampaignScheduleScreen(props) {
                         width: 25 + '%',
                         paddingLeft: 5,
                         zIndex: 902,
-                      }}
-                    >
+                      }}>
                       {selectFriday == true ? (
                         <Image
                           resizeMode="contain"
@@ -4556,8 +4541,7 @@ export default function CampaignScheduleScreen(props) {
                           Platform.OS === 'ios'
                             ? styles.lblDayNameIos
                             : styles.lblDayName
-                        }
-                      >
+                        }>
                         {' '}
                         Fri
                       </Text>
@@ -4571,8 +4555,7 @@ export default function CampaignScheduleScreen(props) {
                         width: 25 + '%',
                         paddingLeft: 5,
                         zIndex: 902,
-                      }}
-                    >
+                      }}>
                       {selectSaturday == true ? (
                         <Image
                           resizeMode="contain"
@@ -4591,8 +4574,7 @@ export default function CampaignScheduleScreen(props) {
                           Platform.OS === 'ios'
                             ? styles.lblDayNameIos
                             : styles.lblDayName
-                        }
-                      >
+                        }>
                         {' '}
                         Sat
                       </Text>
@@ -4604,8 +4586,7 @@ export default function CampaignScheduleScreen(props) {
                     <View style={styles.sectionStyleTime_End}>
                       <TouchableOpacity
                         style={styles.btnStartTime}
-                        onPress={() => showDatePicker()}
-                      >
+                        onPress={() => showDatePicker()}>
                         <Text style={styles.StartTimeText}>
                           {SelectStartDate == ''
                             ? moment(SelectCampaignStartDate).format(
@@ -4632,8 +4613,7 @@ export default function CampaignScheduleScreen(props) {
                     <View style={styles.sectionStyleTime_End}>
                       <TouchableOpacity
                         style={styles.btnStartTime}
-                        onPress={() => showEndDatePicker()}
-                      >
+                        onPress={() => showEndDatePicker()}>
                         <Text style={styles.StartTimeText}>
                           {SelectEndDate == ''
                             ? moment(SelectCampaignEndDate).format(
@@ -4660,8 +4640,7 @@ export default function CampaignScheduleScreen(props) {
                     width: Dimensions.get('window').width - 30,
                     marginHorizontal: 15,
                     marginTop: 8,
-                  }}
-                >
+                  }}>
                   <FlatList
                     data={networkSelectSocialMedia}
                     renderItem={renderItemsss}
@@ -4693,8 +4672,9 @@ export default function CampaignScheduleScreen(props) {
                           scheduleStartDate={item.startTime}
                           scheduleEndDate={item.finishTime}
                           scheduleStartTime={item.scheduleStartTime}
-                          scheduleEndTime={item.scheduleEndTime}
-                        ></AddScheduleList>
+                          scheduleEndTime={
+                            item.scheduleEndTime
+                          }></AddScheduleList>
                       )}
                       //renderItem={({item,index}) => <AddScheduleList UpdateScheduleList={UpdateScheduleList} DeleteScheduleList={DeleteScheduleList} networkCount={networkCount} networkSelectSocialMedia={networkSelectSocialMedia} setScheduleCount={index} index={index} networkId={item.networkId} props={item} randomId={item.randomId} intervalType={item.intervalType} scheduleStartDate={item.startTime} scheduleEndDate={item.finishTime} scheduleStartTime={item.scheduleStartTime} scheduleEndTime={item.scheduleEndTime} ></AddScheduleList>}
                       numColumns={1}

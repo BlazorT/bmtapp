@@ -18,6 +18,7 @@ import Logout from '../../../assets/images/pages/Logout.png';
 import Alert from '../../components/Alert';
 import servicesettings from '../dataservices/servicesettings';
 import NavigatorView from './RootNavigation';
+import {useTheme} from '../../hooks/useTheme';
 
 const drawerData = [
   {
@@ -43,6 +44,7 @@ const drawerData = [
 ];
 const Drawer = createDrawerNavigator();
 function CustomDrawerContent(props) {
+  const theme = useTheme();
   const [Email, setEmail] = useState('Jhondoe345@gmail.com');
   const [Name, setName] = useState('Jhon Doe');
   const [img, setimg] = useState('');
@@ -64,7 +66,7 @@ function CustomDrawerContent(props) {
   };
   useEffect(() => {
     //global.UpdateCampaign = 0,
-    AsyncStorage.getItem('LoginInformation').then(function(res) {
+    AsyncStorage.getItem('LoginInformation').then(function (res) {
       let Asyncdata = JSON.parse(res);
       console.log('Asyncdata new ', Asyncdata);
       if (Asyncdata != null) {
@@ -92,7 +94,7 @@ function CustomDrawerContent(props) {
   });
   function ProfileEdit() {
     console.log('click');
-    AsyncStorage.getItem('LoginInformation').then(function(res) {
+    AsyncStorage.getItem('LoginInformation').then(function (res) {
       let Asyncdata = JSON.parse(res);
       if (Asyncdata == null) {
         Toast.showWithGravity('Please Login First', Toast.LONG, Toast.CENTER);
@@ -103,7 +105,7 @@ function CustomDrawerContent(props) {
     });
   }
   function OpenSell() {
-    AsyncStorage.getItem('LoginInformation').then(function(res) {
+    AsyncStorage.getItem('LoginInformation').then(function (res) {
       let Asyncdata = JSON.parse(res);
       if (Asyncdata == null) {
         Toast.showWithGravity('Please Login First', Toast.LONG, Toast.CENTER);
@@ -118,16 +120,18 @@ function CustomDrawerContent(props) {
         <Image source={{uri: img}} style={styles.avatar} />
         <View style={{paddingLeft: 6}}>
           <View style={{paddingLeft: 6, flexDirection: 'row'}}>
-            <Text style={styles.userName}>{Name}</Text>
+            <Text style={[styles.userName, {color: theme.textColor}]}>
+              {Name}
+            </Text>
             <TouchableOpacity onPress={() => ProfileEdit()}>
               <Image
                 style={styles.EditIcon}
                 source={iconAbout}
-                tintColor={colors.NavbarTextColor}
+                tintColor={theme.tintColor}
               />
             </TouchableOpacity>
           </View>
-          <Text style={{color: colors.NavbarTextColor}}>{Email}</Text>
+          <Text style={{color: theme.textColor}}>{Email}</Text>
         </View>
       </View>
       <Alert
@@ -137,37 +141,48 @@ function CustomDrawerContent(props) {
         Visible={Visible}
         alerttype={'confirmation'}
         Title={'Confirmation'}
-        Massage={'Are you sure want to logout?'}
-      ></Alert>
+        Massage={'Are you sure want to logout?'}></Alert>
       {drawerData.map((item, idx) => (
         <DrawerItem
           key={`drawer_item-${idx + 1}`}
           label={() => (
-            <View style={styles.menuLabelFlex}>
+            <View
+              style={[
+                styles.menuLabelFlex,
+                {borderBottomColor: theme.textColor},
+              ]}>
               <Image
                 style={styles.imgStyle}
                 source={item.icon}
-                tintColor={colors.NavbarTextColor}
+                tintColor={theme.tintColor}
               />
-              <Text style={styles.menuTitle}>{item.name}</Text>
+              <Text style={[styles.menuTitle, {color: theme.textColor}]}>
+                {item.name}
+              </Text>
             </View>
           )}
           onPress={() => props.navigation.navigate(item.name)}
         />
       ))}
-      <TouchableOpacity
+      <DrawerItem
+        label={() => (
+          <View
+            style={[
+              styles.menuLabelFlex,
+              {borderBottomColor: theme.textColor},
+            ]}>
+            <Image
+              style={styles.imgStyle}
+              source={Logout}
+              tintColor={theme.tintColor}
+            />
+            <Text style={[styles.menuTitle, {color: theme.textColor}]}>
+              Log Out
+            </Text>
+          </View>
+        )}
         onPress={() => CancelClick()}
-        style={{marginLeft: 12, marginTop: 12, width: 80 + '%'}}
-      >
-        <View style={styles.menuLabelFlex}>
-          <Image
-            style={styles.imgStyle}
-            source={Logout}
-            tintColor={colors.NavbarTextColor}
-          />
-          <Text style={styles.menuTitle}>Log Out</Text>
-        </View>
-      </TouchableOpacity>
+      />
     </DrawerContentScrollView>
   );
 }
@@ -188,11 +203,17 @@ function CustomDrawerContent(props) {
         />
  */
 export default function App() {
+  const theme = useTheme();
   return (
     <Drawer.Navigator
-      drawerStyle={{backgroundColor: '#ffffffcf', opacity: 1}}
       drawerContent={props => <CustomDrawerContent {...props} />}
-    >
+      screenOptions={{
+        drawerStyle: {
+          backgroundColor: theme.backgroundColor,
+          opacity: 0.7,
+        },
+        headerShown: false,
+      }}>
       <Drawer.Screen name="Splashs" component={NavigatorView} />
     </Drawer.Navigator>
   );

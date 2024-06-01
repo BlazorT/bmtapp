@@ -2,16 +2,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, {useEffect, useState} from 'react';
 import {Dimensions, StyleSheet, Text, View} from 'react-native';
 import {LineChart} from 'react-native-chart-kit';
-import ProgressCircle from 'react-native-progress-circle';
+// import ProgressCircle from 'react-native-progress-circle';
 import Toast from 'react-native-simple-toast';
 import Icon from 'react-native-vector-icons/EvilIcons';
 import {colors} from '../../styles';
 import servicesettings from '../dataservices/servicesettings';
 export default function DashboardScreen(props) {
-  const [
-    DashboardSummaryDisabled,
-    SetDashboardSummaryDisabled,
-  ] = React.useState(false);
+  const [DashboardSummaryDisabled, SetDashboardSummaryDisabled] =
+    React.useState(false);
 
   const [percent, setpercent] = useState(0);
   const [currentMonthData, setCurrentMonthData] = useState('');
@@ -53,7 +51,7 @@ export default function DashboardScreen(props) {
     SetDashboardSummaryDisabled(true);
   }
   function DashboardCall() {
-    AsyncStorage.getItem('LoginInformation').then(function(res) {
+    AsyncStorage.getItem('LoginInformation').then(function (res) {
       let Asyncdata = JSON.parse(res);
       const date = new Date();
       var headerFetch = {
@@ -261,7 +259,7 @@ export default function DashboardScreen(props) {
               </View>
             </View>
             <View style={styles.circleview}>
-              <ProgressCircle
+              {/* <ProgressCircle
                 percent={percent}
                 radius={60}
                 borderWidth={12}
@@ -272,7 +270,7 @@ export default function DashboardScreen(props) {
                 <Text style={{fontSize: 20, color: colors.TextColorOther}}>
                   {percent + '%'}
                 </Text>
-              </ProgressCircle>
+              </ProgressCircle> */}
             </View>
           </View>
           {DashboardSummaryDisabled == false ? (

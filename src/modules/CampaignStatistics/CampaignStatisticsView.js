@@ -4,7 +4,7 @@ import Base64 from 'Base64';
 import React, {useEffect, useState} from 'react';
 import {Dimensions, StyleSheet, Text, View} from 'react-native';
 import {BarChart} from 'react-native-chart-kit';
-import ProgressCircle from 'react-native-progress-circle';
+// import ProgressCircle from 'react-native-progress-circle';
 import Toast from 'react-native-simple-toast';
 import Icona from 'react-native-vector-icons/EvilIcons';
 import {colors} from '../../styles';
@@ -38,7 +38,7 @@ export default function CampaignStatisticsScreen(props) {
     labels: ['WA', 'Massage', 'Twitter', 'FB', 'Email', 'SMS', 'SMS'],
   };
   function Loaddata() {
-    AsyncStorage.getItem('LoginInformation').then(function(res) {
+    AsyncStorage.getItem('LoginInformation').then(function (res) {
       let Asyncdata = JSON.parse(res);
       console.log('res  =>', Asyncdata[0].id);
       //const date = new Date();
@@ -142,7 +142,7 @@ export default function CampaignStatisticsScreen(props) {
           </View>
         </View>
         <View style={styles.circleview}>
-          <ProgressCircle
+          {/* <ProgressCircle
             percent={percent}
             radius={60}
             borderWidth={12}
@@ -153,7 +153,7 @@ export default function CampaignStatisticsScreen(props) {
             <Text style={{fontSize: 20, color: colors.TextColorOther}}>
               {percent + '%'}
             </Text>
-          </ProgressCircle>
+          </ProgressCircle> */}
         </View>
       </View>
       <View style={styles.itemMainView}>

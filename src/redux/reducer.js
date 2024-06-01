@@ -1,11 +1,7 @@
 import {combineReducers} from '@reduxjs/toolkit';
-
-// Import your individual reducers here
 import themeReducer from './features/theme/themeSlice';
-
-const rootReducer = combineReducers({
+// ## Generator Reducer Imports
+const rootReducers = combineReducers({
   theme: themeReducer,
-  // Add more reducers as needed
 });
-
-export default rootReducer;
+export default rootReducers;

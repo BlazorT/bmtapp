@@ -6,6 +6,7 @@ import Toast from 'react-native-simple-toast';
 import Alert from '../../components/Alert';
 import {colors, fonts} from '../../styles';
 import servicesettings from '../dataservices/servicesettings';
+import {useTheme} from '../../hooks/useTheme';
 const chartIcon = require('../../../assets/images/pages/chart.png');
 const compaign = require('../../../assets/images/drawer/compaign.png');
 const compaignstatus = require('../../../assets/images/drawer/compaignstatus.png');
@@ -17,6 +18,7 @@ const mycampaignIcon = require('../../../assets/images/drawer/mycampaign.png');
 const SettingIcon = require('../../../assets/images/tabbar/settings.png');
 const signup = require('../../../assets/images/drawer/SignUp.png');
 export default function PagesScreen(props) {
+  const theme = useTheme();
   const [loginlbl, setloginlbl] = useState('');
   const [Profilelbl, setProfilelbl] = useState('');
   const [Visible, setVisible] = useState(false);
@@ -38,7 +40,7 @@ export default function PagesScreen(props) {
   };
   const navigation = useNavigation();
   navigation.addListener('focus', route => {
-    AsyncStorage.getItem('LoginInformation').then(function(res) {
+    AsyncStorage.getItem('LoginInformation').then(function (res) {
       let Asyncdata = JSON.parse(res);
       if (Asyncdata == null) {
         setLoginDisabled(true);
@@ -52,7 +54,7 @@ export default function PagesScreen(props) {
   });
   useEffect(() => {}, []);
   function OpenLogin() {
-    AsyncStorage.getItem('LoginInformation').then(function(res) {
+    AsyncStorage.getItem('LoginInformation').then(function (res) {
       let Asyncdata = JSON.parse(res);
       if (Asyncdata == null) {
         global.SignUp_Login = 1;
@@ -63,7 +65,7 @@ export default function PagesScreen(props) {
     });
   }
   function LogoutClick() {
-    AsyncStorage.getItem('LoginInformation').then(function(res) {
+    AsyncStorage.getItem('LoginInformation').then(function (res) {
       let Asyncdata = JSON.parse(res);
       if (Asyncdata == null) {
         global.SignUp_Login = 1;
@@ -74,7 +76,7 @@ export default function PagesScreen(props) {
     });
   }
   function AddNewCampaign() {
-    AsyncStorage.getItem('LoginInformation').then(function(res) {
+    AsyncStorage.getItem('LoginInformation').then(function (res) {
       let Asyncdata = JSON.parse(res);
       if (Asyncdata == null) {
         Toast.show('Please login first');
@@ -88,7 +90,7 @@ export default function PagesScreen(props) {
     });
   }
   function EditProfile() {
-    AsyncStorage.getItem('LoginInformation').then(function(res) {
+    AsyncStorage.getItem('LoginInformation').then(function (res) {
       let Asyncdata = JSON.parse(res);
       if (Asyncdata == null) {
         Toast.show('Please login first');
@@ -100,7 +102,7 @@ export default function PagesScreen(props) {
     });
   }
   function MyCampaignClick() {
-    AsyncStorage.getItem('LoginInformation').then(function(res) {
+    AsyncStorage.getItem('LoginInformation').then(function (res) {
       let Asyncdata = JSON.parse(res);
       if (Asyncdata == null) {
         Toast.show('Please login first');
@@ -112,7 +114,7 @@ export default function PagesScreen(props) {
     });
   }
   function ClickOrganization() {
-    AsyncStorage.getItem('LoginInformation').then(function(res) {
+    AsyncStorage.getItem('LoginInformation').then(function (res) {
       let Asyncdata = JSON.parse(res);
       if (Asyncdata == null) {
         Toast.show('Please login first');
@@ -123,7 +125,7 @@ export default function PagesScreen(props) {
     });
   }
   function DashboardClick() {
-    AsyncStorage.getItem('LoginInformation').then(function(res) {
+    AsyncStorage.getItem('LoginInformation').then(function (res) {
       let Asyncdata = JSON.parse(res);
       if (Asyncdata == null) {
         Toast.show('Please login first');
@@ -135,7 +137,7 @@ export default function PagesScreen(props) {
     });
   }
   function CampaignStatisticsClick() {
-    AsyncStorage.getItem('LoginInformation').then(function(res) {
+    AsyncStorage.getItem('LoginInformation').then(function (res) {
       let Asyncdata = JSON.parse(res);
       if (Asyncdata == null) {
         Toast.show('Please login first');
@@ -147,7 +149,7 @@ export default function PagesScreen(props) {
     });
   }
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {backgroundColor: theme.backgroundColor}]}>
       <Alert
         massagetype={'warning'}
         hide={hide}
@@ -155,108 +157,129 @@ export default function PagesScreen(props) {
         Visible={Visible}
         alerttype={'confirmation'}
         Title={'Confirmation'}
-        Massage={'Are you sure want to logout?'}
-      ></Alert>
+        Massage={'Are you sure want to logout?'}></Alert>
       <View style={styles.row}>
-        <TouchableOpacity onPress={() => OpenLogin()} style={styles.item}>
+        <TouchableOpacity
+          onPress={() => OpenLogin()}
+          style={[styles.item, {backgroundColor: theme.cardBackColor}]}>
           <Image
             resizeMode="contain"
             source={loginIcon}
-            tintColor={colors.NavbarIconColor}
+            tintColor={theme.tintColor}
             style={styles.itemImage}
           />
-          <Text style={styles.itemText}>{loginlbl}</Text>
+          <Text style={[styles.itemText, {color: theme.textColor}]}>
+            {loginlbl}
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => AddNewCampaign()} style={styles.item}>
+        <TouchableOpacity
+          onPress={() => AddNewCampaign()}
+          style={[styles.item, {backgroundColor: theme.cardBackColor}]}>
           <Image
             resizeMode="contain"
             source={compaign}
-            tintColor={colors.NavbarIconColor}
+            tintColor={theme.tintColor}
             style={styles.itemImage}
           />
-          <Text style={styles.itemText}>New Campaign</Text>
+          <Text style={[styles.itemText, {color: theme.textColor}]}>
+            New Campaign
+          </Text>
         </TouchableOpacity>
         {loginDisabled == true ? (
           <TouchableOpacity
             onPress={() => props.navigation.navigate('Signup')}
-            style={styles.item}
-          >
+            style={[styles.item, {backgroundColor: theme.cardBackColor}]}>
             <Image
               resizeMode="contain"
               source={signup}
-              tintColor={colors.NavbarIconColor}
+              tintColor={theme.tintColor}
               style={styles.itemImage}
             />
-            <Text style={styles.itemText}>Sign Up</Text>
+            <Text style={[styles.itemText, {color: theme.textColor}]}>
+              Sign Up
+            </Text>
           </TouchableOpacity>
         ) : (
-          <TouchableOpacity onPress={() => EditProfile()} style={styles.item}>
+          <TouchableOpacity
+            onPress={() => EditProfile()}
+            style={[styles.item, {backgroundColor: theme.cardBackColor}]}>
             <Image
               resizeMode="contain"
               source={signup}
-              tintColor={colors.NavbarIconColor}
+              tintColor={theme.tintColor}
               style={styles.itemImage}
             />
-            <Text style={styles.itemText}>Profile</Text>
+            <Text style={[styles.itemText, {color: theme.textColor}]}>
+              Profile
+            </Text>
           </TouchableOpacity>
         )}
       </View>
       <View style={styles.row}>
         <TouchableOpacity
           onPress={() => ClickOrganization()}
-          style={styles.item}
-        >
+          style={[styles.item, {backgroundColor: theme.cardBackColor}]}>
           <Image
             resizeMode="contain"
             source={organizationIcon}
-            tintColor={colors.NavbarIconColor}
+            tintColor={theme.tintColor}
             style={styles.itemImage}
           />
-          <Text style={styles.itemText}>Organization</Text>
+          <Text style={[styles.itemText, {color: theme.textColor}]}>
+            Organization
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => MyCampaignClick()} style={styles.item}>
+        <TouchableOpacity
+          onPress={() => MyCampaignClick()}
+          style={[styles.item, {backgroundColor: theme.cardBackColor}]}>
           <Image
             resizeMode="contain"
             source={mycampaignIcon}
-            tintColor={colors.NavbarIconColor}
+            tintColor={theme.tintColor}
             style={styles.itemImage}
           />
-          <Text style={styles.itemText}>My Campaigns</Text>
+          <Text style={[styles.itemText, {color: theme.textColor}]}>
+            My Campaigns
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => DashboardClick()} style={styles.item}>
+        <TouchableOpacity
+          onPress={() => DashboardClick()}
+          style={[styles.item, {backgroundColor: theme.cardBackColor}]}>
           <Image
             resizeMode="contain"
             source={dashboardIcon}
-            tintColor={colors.NavbarIconColor}
+            tintColor={theme.tintColor}
             style={styles.itemImage}
           />
-          <Text style={styles.itemText}>Dashboard</Text>
+          <Text style={[styles.itemText, {color: theme.textColor}]}>
+            Dashboard
+          </Text>
         </TouchableOpacity>
       </View>
       <View style={styles.row}>
         <TouchableOpacity
           onPress={() => CampaignStatisticsClick()}
-          style={styles.item}
-        >
+          style={[styles.item, {backgroundColor: theme.cardBackColor}]}>
           <Image
             resizeMode="contain"
             source={compaignstatus}
-            tintColor={colors.NavbarIconColor}
+            tintColor={theme.tintColor}
             style={styles.itemImage}
           />
-          <Text style={styles.itemText}>Statistics</Text>
+          <Text style={[styles.itemText, {color: theme.textColor}]}>
+            Statistics
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => props.navigation.navigate('About')}
-          style={styles.item}
-        >
+          style={[styles.item, {backgroundColor: theme.cardBackColor}]}>
           <Image
             resizeMode="contain"
             source={aboutIcon}
-            tintColor={colors.NavbarIconColor}
+            tintColor={theme.tintColor}
             style={styles.itemImage}
           />
-          <Text style={styles.itemText}>About</Text>
+          <Text style={[styles.itemText, {color: theme.textColor}]}>About</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.itemEmpty}></TouchableOpacity>
       </View>
@@ -324,6 +347,5 @@ const styles = StyleSheet.create({
   },
   itemImage: {
     height: 45,
-    tintColor: colors.NavbarIconColor,
   },
 });

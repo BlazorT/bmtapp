@@ -1,16 +1,15 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NavigationContainer } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import {NavigationContainer} from '@react-navigation/native';
+import React, {useEffect, useState} from 'react';
+import {ActivityIndicator, StyleSheet, View} from 'react-native';
 import Toast from 'react-native-simple-toast';
-import { Provider } from 'react-redux';
-import { persistStore } from 'redux-persist';
-import { PersistGate } from 'redux-persist/integration/react';
+import {Provider} from 'react-redux';
+import {persistStore} from 'redux-persist';
+import {PersistGate} from 'redux-persist/integration/react';
 import AppView from './src/modules/AppViewContainer';
 import servicesettings from './src/modules/dataservices/servicesettings';
-import { store } from './src/redux/store';
+import store from './src/redux/store';
 export default function App(props) {
-  const [Visible, setVisible] = useState(false);
   useEffect(() => {
     Loaddata();
     getbmtlovsdata();
@@ -19,7 +18,6 @@ export default function App(props) {
     global.Storeid = 0;
   }, []);
   function Loaddata() {
-    setVisible(true);
     var headerFetch = {
       method: 'POST',
       body: JSON.stringify({Id: 0, Name: '', Status: 1}),
@@ -40,10 +38,8 @@ export default function App(props) {
             'OrgInformation',
             JSON.stringify(responseJson.data),
           );
-          setVisible(false);
         } else {
           global.OrgData = [];
-          setVisible(false);
         }
       })
       .catch(error => {
@@ -53,7 +49,6 @@ export default function App(props) {
           Toast.LONG,
           Toast.CENTER,
         );
-        setVisible(false);
       });
   }
   function getbmtlovsdata() {
@@ -150,7 +145,6 @@ export default function App(props) {
         if (responseJson.data != null) {
           // global.OrgData=responseJson.data;
           // AsyncStorage.setItem('OrgInformation', JSON.stringify(responseJson.data));
-          //setVisible(false);
         } else {
           console.log('empty data response mybundlings =>');
         }
@@ -162,25 +156,23 @@ export default function App(props) {
           Toast.LONG,
           Toast.CENTER,
         );
-        setVisible(false);
       });
   }
   let persistor = persistStore(store);
 
   return (
     <Provider store={store}>
-      <NavigationContainer>
-        <PersistGate
-          loading={
-            <View style={styles.container}>
-              <ActivityIndicator />
-            </View>
-          }
-          persistor={persistor}
-        >
+      <PersistGate
+        loading={
+          <View style={styles.container}>
+            <ActivityIndicator />
+          </View>
+        }
+        persistor={persistor}>
+        <NavigationContainer>
           <AppView />
-        </PersistGate>
-      </NavigationContainer>
+        </NavigationContainer>
+      </PersistGate>
     </Provider>
   );
 }

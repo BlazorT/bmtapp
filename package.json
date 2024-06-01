@@ -17,6 +17,7 @@
     "e2e:test": "detox test --configuration ios.sim.debug"
   },
   "dependencies": {
+    "@babel/preset-typescript": "^7.24.6",
     "@react-native-async-storage/async-storage": "^1.23.1",
     "@react-native-community/checkbox": "^0.5.9",
     "@react-native-community/datetimepicker": "8.0.1",
@@ -35,8 +36,8 @@
     "react": "^18.2.0",
     "react-native": "^0.74.0",
     "react-native-appstore-version-checker": "^3.0.0",
-    "react-native-breadcrumb": "^1.2.0",
     "react-native-chart-kit": "^6.9.0",
+    "react-native-circular-progress": "^1.4.0",
     "react-native-device-info": "^11.1.0",
     "react-native-document-picker": "9.3.0",
     "react-native-fbsdk-next": "^13.0.0",
@@ -48,7 +49,6 @@
     "react-native-modal-datetime-picker": "^17.1.0",
     "react-native-modal-dropdown": "1.0.2",
     "react-native-permissions": "^4.1.5",
-    "react-native-progress-circle": "^2.1.0",
     "react-native-reanimated": "3.11.0",
     "react-native-safe-area-context": "^4.10.3",
     "react-native-screens": "^3.31.1",
@@ -67,7 +67,8 @@
     "redux-persist": "^6.0.0",
     "redux-thunk": "^3.1.0",
     "rn-double-click": "^1.0.3",
-    "rn-fetch-blob": "^0.12.0"
+    "rn-fetch-blob": "^0.12.0",
+    "typescript": "^5.4.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

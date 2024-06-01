@@ -10,8 +10,10 @@ import {
 import {getAppstoreAppMetadata} from 'react-native-appstore-version-checker';
 import Toast from 'react-native-simple-toast';
 import {colors, fonts} from '../../styles';
+import {useTheme} from '../../hooks/useTheme';
 export default function AboutScreen(props) {
   const [AppVersion, setAppVersion] = useState('');
+  const theme = useTheme();
   useEffect(() => {
     if (Platform.OS != 'ios') {
       getAppstoreAppMetadata('com.spentem.streaming') //put any apps packageId here
@@ -52,7 +54,7 @@ export default function AboutScreen(props) {
   }, []);
   //***************************************************** View ********************************************************************//
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {backgroundColor: theme.backgroundColor}]}>
       <View style={styles.componentsSection}>
         <Image
           style={styles.logo}
@@ -60,23 +62,36 @@ export default function AboutScreen(props) {
         />
       </View>
       <View style={{paddingBottom: 5}}>
-        <Text style={styles.headertitle}>Who We Are?</Text>
-        <Text style={styles.header}>BMT is advertisement app</Text>
+        <Text style={[styles.headertitle, {color: theme.textColor}]}>
+          Who We Are?
+        </Text>
+        <Text style={[styles.header, {color: theme.textColor}]}>
+          BMT is advertisement app
+        </Text>
       </View>
       <View style={styles.BottomView}>
-        <Text style={{color: colors.TextColorOther, fontSize: 22}}>
+        <Text style={{color: theme.textColor, fontSize: 22}}>
           ✆{' '}
           <TouchableOpacity>
-            <Text style={styles.ContactNo}>+923337069742</Text>
+            <Text style={[styles.ContactNo, {color: theme.textColor}]}>
+              +923337069742
+            </Text>
           </TouchableOpacity>
         </Text>
-        <Text style={styles.link}> www.blazortech.com</Text>
+        <Text style={[styles.link, {color: theme.textColor}]}>
+          {' '}
+          www.blazortech.com
+        </Text>
       </View>
       <View style={{paddingBottom: 5}}>
-        <Text>{'Version ' + (AppVersion == '' ? '2.5' : AppVersion)}</Text>
+        <Text style={{color: theme.textColor}}>
+          {'Version ' + (AppVersion == '' ? '2.5' : AppVersion)}
+        </Text>
       </View>
       <View style={{paddingBottom: 5}}>
-        <Text ellipsizeMode="tail" style={styles.Paragraph}>
+        <Text
+          ellipsizeMode="tail"
+          style={[styles.Paragraph, {color: theme.textColor}]}>
           Blazor Media Toolkit Campaign plays nice with others and integrates
           with over 700 apps and services like
           whatsapp,facebook,tweeter,messenger,youtube etc. Effective, seamless

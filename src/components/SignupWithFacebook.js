@@ -100,49 +100,49 @@ export default class SignupWithFacebook extends PureComponent {
   };
   SignupFacebookPicture = async () => {
     LoginManager.setLoginBehavior('web_only');
-    const currentProfile = Profile.getCurrentProfile().then(function(
-      currentProfile,
-    ) {
-      if (currentProfile) {
-        AsyncStorage.removeItem('SignupWithGoogle_Facebook');
-        AsyncStorage.getItem('SignupWithFacebookEmail').then(function(res) {
-          let Asyncdata = JSON.parse(res);
-          //var fcmToken = servicesettings.fcmToken;
-          //console.log('SignupWithFacebookEmail ',Asyncdata);
-          if (Asyncdata != null) {
-            AsyncStorage.removeItem('SignupWithGoogle_Facebook');
-            //var imgurl = Asyncdata.user.photo;
-            // console.log('Async Asyncdata', Asyncdata);
-            // console.log('Async Asyncdata. authtoken ', Asyncdata.authtoken);
-            // console.log('Async Asyncdata. email ', Asyncdata.email);
-            //console.log("The current profile " + JSON.stringify(currentProfile));
-            //console.log("The current firstName " + JSON.stringify(currentProfile.firstName));
-            //console.log("The current lastName " + JSON.stringify(currentProfile.lastName));
-            //console.log("The current imageURL " + JSON.stringify(currentProfile.imageURL));
-            // console.log("The current userID " + JSON.stringify(currentProfile.userID));
-            var userName =
-              currentProfile.firstName + '.' + currentProfile.lastName;
-            var facebookOS = 4;
-            var facebookdata = {
-              firstName: currentProfile.firstName,
-              lastName: currentProfile.lastName,
-              userName: userName,
-              facebookOS: facebookOS,
-              userID: currentProfile.userID,
-              picture: currentProfile.imageURL,
-              email: Asyncdata.email,
-              authtoken: Asyncdata.authtoken,
-            };
-            console.log('facebookdata ' + JSON.stringify(facebookdata));
-            //var SignupFacebook = (this.state.userInfo + global.USEREMAIL);
-            AsyncStorage.setItem(
-              'SignupWithGoogle_Facebook',
-              JSON.stringify(facebookdata),
-            );
-          }
-        });
-      }
-    });
+    const currentProfile = Profile.getCurrentProfile().then(
+      function (currentProfile) {
+        if (currentProfile) {
+          AsyncStorage.removeItem('SignupWithGoogle_Facebook');
+          AsyncStorage.getItem('SignupWithFacebookEmail').then(function (res) {
+            let Asyncdata = JSON.parse(res);
+            //var fcmToken = servicesettings.fcmToken;
+            //console.log('SignupWithFacebookEmail ',Asyncdata);
+            if (Asyncdata != null) {
+              AsyncStorage.removeItem('SignupWithGoogle_Facebook');
+              //var imgurl = Asyncdata.user.photo;
+              // console.log('Async Asyncdata', Asyncdata);
+              // console.log('Async Asyncdata. authtoken ', Asyncdata.authtoken);
+              // console.log('Async Asyncdata. email ', Asyncdata.email);
+              //console.log("The current profile " + JSON.stringify(currentProfile));
+              //console.log("The current firstName " + JSON.stringify(currentProfile.firstName));
+              //console.log("The current lastName " + JSON.stringify(currentProfile.lastName));
+              //console.log("The current imageURL " + JSON.stringify(currentProfile.imageURL));
+              // console.log("The current userID " + JSON.stringify(currentProfile.userID));
+              var userName =
+                currentProfile.firstName + '.' + currentProfile.lastName;
+              var facebookOS = 4;
+              var facebookdata = {
+                firstName: currentProfile.firstName,
+                lastName: currentProfile.lastName,
+                userName: userName,
+                facebookOS: facebookOS,
+                userID: currentProfile.userID,
+                picture: currentProfile.imageURL,
+                email: Asyncdata.email,
+                authtoken: Asyncdata.authtoken,
+              };
+              console.log('facebookdata ' + JSON.stringify(facebookdata));
+              //var SignupFacebook = (this.state.userInfo + global.USEREMAIL);
+              AsyncStorage.setItem(
+                'SignupWithGoogle_Facebook',
+                JSON.stringify(facebookdata),
+              );
+            }
+          });
+        }
+      },
+    );
   };
   SendBackPage = () => {
     this.props.PressSignUp();
@@ -157,16 +157,17 @@ export default class SignupWithFacebook extends PureComponent {
           <View style={styles.fieldView}>
             <TouchableOpacity
               onPress={() => this.loginWithFacebook()}
-              style={styles.btnfacebook}
-            >
+              style={[
+                styles.btnfacebook,
+                {backgroundColor: this.props.theme.buttonBackColor},
+              ]}>
               <Icon name={'facebook'} style={styles.Iconfacebook} />
               <Text
                 style={
                   Platform.OS === 'ios'
                     ? styles.textfacebookIOS
                     : styles.textfacebook
-                }
-              >
+                }>
                 Sign Up With Facebook
               </Text>
             </TouchableOpacity>

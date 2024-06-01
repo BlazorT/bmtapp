@@ -1,0 +1,30 @@
+const darkVersion = {
+  backgroundColor: '#000000',
+  placeholderColor: '#ffffffba',
+  buttonBackColor: '#657786', //8899ac
+  inputBackColor: '#22303c',
+  navBarBack: '#15202b',
+  textColor: '#ffffff',
+  focusText: '#a4a5a9',
+  shadowText: '#00FFFF',
+  tabNavigationText: '#ffffff',
+  tabBackground: '#333436',
+  cardBackColor: '#15202b',
+  modalBackColor: '#AAB8C2',
+  tintColor: '#ffffff',
+  blue: '#1DA1F2',
+  black: '#14171A',
+  darkGray: '#657786',
+  lightGray: '#AAB8C2',
+  extraLightGray: '#E1E8ED',
+  thinLightGray: '#F5F8FA',
+  white: '#fff',
+  breadCrumbContainer: '#E1E8ED',
+  containerBorderColor: '#D3D3D3',
+  activeBreadCrumb: '#AAB8C2',
+  breadcrumbText: '#14171A',
+  selectedCheckBox: '#1DA1F2',
+  green: '#6DD0A3',
+};
+
+export default darkVersion;

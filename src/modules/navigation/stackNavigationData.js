@@ -20,21 +20,22 @@ import AboutScreen from '../about/AboutViewContainer';
 import HomeScreen from '../home/HomeViewContainer';
 import ProfileScreen from '../profile/ProfileViewContainer';
 import TabNavigator from './MainTabNavigator';
+import {useTheme} from '../../hooks/useTheme';
 const headerLeftComponent = props => {
+  const theme = useTheme();
   return (
     <TouchableOpacity
       onPress={props.onPress}
       style={{
         paddingHorizontal: 16,
         paddingVertical: 12,
-      }}
-    >
+      }}>
       <Image
         source={require('../../../assets/images/icons/arrow-back.png')}
         resizeMode="contain"
         style={{
           height: 20,
-          tintColor: colors.NavbarTextColor,
+          tintColor: theme.tintColor,
         }}
       />
     </TouchableOpacity>
