@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "344400656576",
+    "project_id": "bdmt-e2e8f",
+    "storage_bucket": "bdmt-e2e8f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:344400656576:android:b9ad0cf5a82b23e122d525",
+        "android_client_info": {
+          "package_name": "com.blazor.bdmt"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "344400656576-7qsg04j4ro83sarp2kfjj0ofmhknnl8p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.blazor.bdmt",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "344400656576-n1btnvu3unr8ioidunk8i6d6ne6qb903.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-MP7z-DAzFf6VAsi2-bPCoSG13HzemI8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "344400656576-n1btnvu3unr8ioidunk8i6d6ne6qb903.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

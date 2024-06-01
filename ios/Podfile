@@ -1,0 +1,96 @@
+# # Uncomment the next line to define a global platform for your project
+# platform :ios, '10.0'
+# require_relative '../node_modules/react-native/scripts/react_native_pods'
+# require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+
+# target 'BDMT' do
+#   # Comment the next line if you don't want to use dynamic frameworks
+#   # use_frameworks!
+
+#   config = use_native_modules!
+#   use_react_native!(:path => config["reactNativePath"])
+
+#   permissions_path = '../node_modules/react-native-permissions/ios'
+
+#    #pod 'Permission-AppTrackingTransparency', :path => "#{permissions_path}/AppTrackingTransparency"
+#    # pod 'Permission-BluetoothPeripheral', :path => "#{permissions_path}/BluetoothPeripheral"
+   
+#    pod 'Permission-Calendars', :path => "#{permissions_path}/Calendars"
+#    pod 'Permission-Camera', :path => "#{permissions_path}/Camera"
+#    # pod 'Permission-Contacts', :path => "#{permissions_path}/Contacts"
+#    # pod 'Permission-FaceID', :path => "#{permissions_path}/FaceID"
+#    pod 'Permission-LocationAccuracy', :path => "#{permissions_path}/LocationAccuracy"
+#    pod 'Permission-LocationAlways', :path => "#{permissions_path}/LocationAlways"
+#    pod 'Permission-LocationWhenInUse', :path => "#{permissions_path}/LocationWhenInUse"
+#    pod 'Permission-MediaLibrary', :path => "#{permissions_path}/MediaLibrary"
+#    pod 'Permission-Microphone', :path => "#{permissions_path}/Microphone"
+#   # pod 'Permission-Motion', :path => "#{permissions_path}/Motion"
+#    pod 'Permission-Notifications', :path => "#{permissions_path}/Notifications"
+#    pod 'Permission-PhotoLibrary', :path => "#{permissions_path}/PhotoLibrary"
+#    pod 'Permission-PhotoLibraryAddOnly', :path => "#{permissions_path}/PhotoLibraryAddOnly"
+#  #  pod 'Permission-Reminders', :path => "#{permissions_path}/Reminders"
+#   # pod 'Permission-Siri', :path => "#{permissions_path}/Siri"
+#   # pod 'Permission-SpeechRecognition', :path => "#{permissions_path}/SpeechRecognition"
+#   # pod 'Permission-StoreKit', :path => "#{permissions_path}/StoreKit"
+
+
+
+#   # pod 'react-native-camera', :path => '../node_modules/react-native-camera'
+#   pod 'react-native-pdf', :path => '../node_modules/react-native-pdf'
+
+#   pod 'react-native-document-picker', :path => '../node_modules/react-native-document-picker'
+
+#   pod 'react-native-maps', :path => '../node_modules/react-native-maps'
+
+#   target 'BDMTTests' do
+#     inherit! :search_paths
+#     # Pods for testing
+#   end
+#   use_native_modules!
+# end
+# target 'BDMT-tvOS' do
+#   target 'BDMT-tvOSTests' do
+#     inherit! :search_paths
+#     # Pods for testing
+#   end
+# end
+# Resolve react_native_pods.rb with node to allow for hoisting
+require Pod::Executable.execute_command('node', ['-p',
+  'require.resolve(
+    "react-native/scripts/react_native_pods.rb",
+    {paths: [process.argv[1]]},
+  )', __dir__]).strip
+
+platform :ios, min_ios_version_supported
+prepare_react_native_project!
+
+linkage = ENV['USE_FRAMEWORKS']
+if linkage != nil
+  Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
+  use_frameworks! :linkage => linkage.to_sym
+end
+
+target 'BDMT' do
+  config = use_native_modules!
+
+  use_react_native!(
+    :path => config[:reactNativePath],
+    # An absolute path to your application root.
+    :app_path => "#{Pod::Config.instance.installation_root}/.."
+  )
+
+  target 'BDMTTests' do
+    inherit! :complete
+    # Pods for testing
+  end
+
+  post_install do |installer|
+    # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
+    react_native_post_install(
+      installer,
+      config[:reactNativePath],
+      :mac_catalyst_enabled => false,
+      # :ccache_enabled => true
+    )
+  end
+end
