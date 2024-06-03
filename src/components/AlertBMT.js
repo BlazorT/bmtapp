@@ -3,7 +3,11 @@ import {Dimensions, Modal, StyleSheet, Text, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {Button} from '../components';
 import {colors} from '../styles';
+import {useSelector} from 'react-redux';
+import {useTheme} from '../hooks/useTheme';
 export default function CustomeAlert(props) {
+  const theme = useTheme();
+  const isMode = useSelector(state => state.theme.mode);
   const [customestyle, setcustomestyle] = useState(styles.Alert_Message);
 
   useEffect(() => {
@@ -29,17 +33,29 @@ export default function CustomeAlert(props) {
           style={styles.modalView}
           visible={props.Visible}
           transparent={true}
-          animationType={'fade'}
-        >
+          animationType={'fade'}>
           <View
-            style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}
-          >
+            style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
             <LinearGradient
-              colors={['#cdcdcd', '#f5f5f5', '#cdcdcd']}
-              style={styles.Alert_Main_View}
-            >
-              <Text style={styles.Alert_Title}>{props.Title}</Text>
-              <Text style={[customestyle, styles.customestyleMessage]}>
+              colors={
+                isMode == 'dark'
+                  ? [
+                      theme.cardBackColor,
+                      theme.cardBackColor,
+                      theme.cardBackColor,
+                    ]
+                  : ['#cdcdcd', '#f5f5f5', '#cdcdcd']
+              }
+              style={styles.Alert_Main_View}>
+              <Text style={[styles.Alert_Title, {color: theme.textColor}]}>
+                {props.Title}
+              </Text>
+              <Text
+                style={[
+                  customestyle,
+                  styles.customestyleMessage,
+                  {color: theme.textColor},
+                ]}>
                 {props.Massage}
               </Text>
               <View
@@ -48,7 +64,7 @@ export default function CustomeAlert(props) {
               <View style={styles.ButtonView}>
                 <Button
                   style={styles.btnButton}
-                  bgColor={colors.Blazorbutton}
+                  bgColor={theme.buttonBackColor}
                   caption="OK"
                   onPress={() => confirmation()}
                 />

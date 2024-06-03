@@ -303,9 +303,7 @@ export default function TwitterScreen(props) {
     setSelectedItems(selectedItems);
     for (let i = 0; i < selectedItems.length; i++) {
       var tempItem = DATA.find(item => item.id === selectedItems[i]);
-      console.log(tempItem);
     }
-    console.log('selectedItems', selectedItems);
   };
   /******************************************************************  views  *****************************************************/
   /*
@@ -374,11 +372,9 @@ onCancel={hideCampaignTimePicker}
           Authorization: servicesettings.AuthorizationKey,
         },
       };
-      console.log('headerFetch from login', headerFetch.body);
       fetch(servicesettings.baseuri + 'createcompaign', headerFetch)
         .then(response => response.json())
         .then(responseJson => {
-          console.log('data response creat compaign =>', responseJson);
           if (responseJson.status == true) {
             setStartTime('');
             setEndTime('');

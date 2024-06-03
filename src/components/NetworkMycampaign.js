@@ -17,14 +17,13 @@ const pauseicon = require('../../assets/images/pauseicon.png');
 //import CustomeAlert from './Alert';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icons from 'react-native-vector-icons/AntDesign';
+import {useTheme} from '../hooks/useTheme';
 //import { RNVoiceRecorder } from 'react-native-voice-recorder'
 //const iconwave = require('../../assets/images/pages/wave.png');
 export default function Myvehicle(props) {
+  const theme = useTheme();
   const [networkIcon, setNetworkIcon] = useState('');
   useEffect(() => {
-    console.log('network my data ' + JSON.stringify(props));
-    console.log('network my data ' + JSON.stringify(props.compaignQouta));
-    console.log('network my data ' + JSON.stringify(props.networkName));
     if (props.networkId == 1) {
       setNetworkIcon(SMS);
     }
@@ -53,8 +52,6 @@ export default function Myvehicle(props) {
       setNetworkIcon(SNAPCHAT);
     }
     //var NetworkDetail = data.data;
-    //console.log('NetworkDetail NetworkDetail ' + JSON.stringify(NetworkDetail));
-    //console.log('NetworkDetail .NetworkDetail is set ' + JSON.stringify(NetworkDetail[0].id));
   }, []);
   const [sidebarshowhide, setsidebarshowhide] = useState(false);
   const [modalVisibleButton, setModalVisibleButton] = useState(true);
@@ -63,10 +60,8 @@ export default function Myvehicle(props) {
     value.then(data => {
       let Asyncdata = JSON.parse(data);
     });
-    console.log('Asyncdata click ');
   }
   function sidebarshowhidefunction() {
-    console.log('sidebarshowhidefunction click ' + JSON.stringify(props));
     // if(sidebarshowhide == true)
     // {
     //      setsidebarshowhide(false)
@@ -79,43 +74,68 @@ export default function Myvehicle(props) {
   }
   return (
     <Fragment>
-      <View style={styles.ModalMainView}>
+      <View style={[styles.ModalMainView]}>
         <View
           style={{
-            backgroundColor: colors.PagePanelTab,
+            backgroundColor: theme.cardBackColor,
             paddingVertical: 12,
             paddingHorizontal: 12,
             borderRadius: 8,
-          }}
-        >
+          }}>
           <View style={{flexDirection: 'row'}}>
             <Image
               resizeMode="contain"
               source={networkIcon}
               style={styles.socialMediaIcon}
             />
-            <Text style={{fontSize: 14, marginTop: 3, width: 9 + '%'}}></Text>
-            <Text style={{fontSize: 16, marginTop: 3, width: 25 + '%'}}>
+            <Text
+              style={{
+                color: theme.textColor,
+                fontSize: 14,
+                marginTop: 3,
+                width: 9 + '%',
+              }}></Text>
+            <Text
+              style={{
+                color: theme.textColor,
+                fontSize: 16,
+                marginTop: 3,
+                width: 25 + '%',
+              }}>
               {props.compaignQouta != null || props.compaignQouta != ''
                 ? '0'
                 : props.compaignQouta}
             </Text>
-            <Text style={{fontSize: 16, marginTop: 3, width: 25 + '%'}}>
+            <Text
+              style={{
+                color: theme.textColor,
+                fontSize: 16,
+                marginTop: 3,
+                width: 25 + '%',
+              }}>
               {props.freeQouta != null || props.freeQouta != ''
                 ? ''
                 : props.freeQouta}
               {props.freeQouta}
             </Text>
-            <Text style={{fontSize: 16, marginTop: 3, width: 21 + '%'}}>
+            <Text
+              style={{
+                color: theme.textColor,
+                fontSize: 16,
+                marginTop: 3,
+                width: 21 + '%',
+              }}>
               {props.compaignQouta != null || props.compaignQouta != ''
                 ? '0'
                 : props.compaignQouta - props.freeQouta}
             </Text>
             <TouchableOpacity
               style={styles.SettingIconView}
-              onPress={() => sidebarshowhidefunction()}
-            >
-              <Icons style={styles.SettingIcon} name="setting" />
+              onPress={() => sidebarshowhidefunction()}>
+              <Icons
+                style={[styles.SettingIcon, {color: theme.tintColor}]}
+                name="setting"
+              />
             </TouchableOpacity>
           </View>
         </View>

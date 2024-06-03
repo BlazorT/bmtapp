@@ -15,18 +15,8 @@ const deleteicon = require('../../assets/images/deleteicon.png');
 const playicon = require('../../assets/images/playicon.png');
 const pauseicon = require('../../assets/images/pauseicon.png');
 const AttachmentIcon = require('../../assets/images/attachment.png');
-const EMAIL = require('../../assets/images/Email.png');
-const INSTAGRAM = require('../../assets/images/instagram.png');
-const LINKEDIN = require('../../assets/images/linkedin.png');
-const SNAPCHAT = require('../../assets/images/snapchat.png');
-const TIKTOK = require('../../assets/images/tiktok.png');
-const WHATSAPP = require('../../assets/images/Whatsapp.png');
-const TWITTER = require('../../assets/images/Twitter.png');
-const SMS = require('../../assets/images/SMS.png');
-const FACEBOOK = require('../../assets/images/Facebook.png');
-const Crossicon = require('../../assets/images/crossicon.png');
+
 const AutoGenerateYes = require('../../assets/images/autogenerateyes.png');
-const AutoGenerateNo = require('../../assets/images/autogenerateno.png');
 //import NumericInput from 'react-native-numeric-input'
 import GestureRecognizer from 'react-native-swipe-gestures';
 import DoubleClick from 'rn-double-click';
@@ -90,11 +80,10 @@ export default function OrganizationDetail(props) {
   const [networkIDList4, setNetworkIDList4] = useState([]);
   //const [compaignNetworksAllData, setcompaignNetworksAllData] = useState('');
   function Edit_CancelClick() {
-    console.log('Edit_CancelClick click ');
     setButtonsvisible(true);
   }
   function clickButtonsvisible() {
-    //console.log('ButtonShow click ');
+    //
     setButtonsvisible(false);
   }
   function ButtonShowxx() {
@@ -102,14 +91,13 @@ export default function OrganizationDetail(props) {
     value.then(data => {
       let Asyncdata = JSON.parse(data);
     });
-    console.log('Asyncdata click ');
   }
   const clickForDetailother = async () => {
     //console.log('clickForDetailother clickForDetailother ' + JSON.stringify(props.data));
     //console.log('clickForDetailother clickForDetailother networkData ' + JSON.stringify(networkData));
     var AttachmentCount = props.data.attachments.length;
     setAttachmentDataList(AttachmentCount);
-    // console.log('attachmentDataList ' + props.data.attachments);
+    //
     var networkcount = JSON.parse(props.data.compaignsdetails);
     const itemCount = networkcount.length;
     setNetworkCount(itemCount);
@@ -145,7 +133,7 @@ export default function OrganizationDetail(props) {
       setNetworkIDList4(
         JSON.parse(myCampaignDetail.compaignNetworks)[4].networkId,
       );
-      // console.log('networkIDList ' + networkIDList);
+      //
       //console.log('myCampaignDetail ' + JSON.stringify(JSON.parse(myCampaignDetail.compaignNetworks)));
       // MyData(JSON.parse(myCampaignDetail.compaignNetworks));
     }
@@ -187,10 +175,9 @@ export default function OrganizationDetail(props) {
     setApprovalTime(myCampaignDetail.approvalTime);
     setStartTime(myCampaignDetail.startTime);
     setFinishTime(myCampaignDetail.finishTime);
-    console.log('networkData ', networkData);
+
     const namesArray = networkData.map(item => item.networkName.split(','));
     setNetworkName(namesArray);
-    console.log('namesArray ' + namesArray);
   };
   function CancelShow() {
     setButtonsvisible(false);
@@ -245,7 +232,7 @@ export default function OrganizationDetail(props) {
     //if(ContactNumber == )
     var ContactNum = ContactNumber.replace(/^0+/, '');
     //var ContactNum = '92' + this.props.contact.replace(/^0+/, '');
-    console.log('ContactNum ' + ContactNum);
+
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
     myHeaders.append(
@@ -285,13 +272,12 @@ export default function OrganizationDetail(props) {
       .catch(error => console.log('error', error));
   }
   function SuccessMessage() {
-    console.log('SuccessMessage');
     setModalVisible(true);
     setTimeout(() => {
       setModalVisible(false);
     }, 4000);
     var Number = this.props.contact;
-    console.log(Number);
+
     Toast.show('Your message to ' + Number + ' has been send successfully!');
   }
   function checkloginfordelete() {
@@ -316,11 +302,9 @@ export default function OrganizationDetail(props) {
     console.log('sidebarshowhidefunction click ' + JSON.stringify(props));
     if (sidebarshowhide == true) {
       setsidebarshowhide(false);
-      console.log('true click ');
     }
     if (sidebarshowhide == false) {
       setsidebarshowhide(true);
-      console.log('false click ');
     }
   }
   function openShare() {
@@ -338,8 +322,7 @@ export default function OrganizationDetail(props) {
       <GestureRecognizer
         onSwipeLeft={() => Edit_CancelClick()}
         onSwipeRight={() => Edit_CancelClick()}
-        config={config}
-      >
+        config={config}>
         <DoubleClick onClick={() => CompleteShow(props)}>
           <View style={styles.item}>
             {Buttonsvisible == true ? (
@@ -349,13 +332,11 @@ export default function OrganizationDetail(props) {
                     width: 100 + '%',
                     flexDirection: 'row',
                     justifyContent: 'center',
-                  }}
-                >
+                  }}>
                   <TouchableOpacity
                     value={4}
                     onPress={() => ClickDeleteData(props)}
-                    style={{width: 33 + '%', paddingVertical: 5}}
-                  >
+                    style={{width: 33 + '%', paddingVertical: 5}}>
                     <View style={styles.Deletebtn}>
                       {props.data.status != 1 ? (
                         <Text style={styles.btnResend}>Active</Text>
@@ -366,16 +347,14 @@ export default function OrganizationDetail(props) {
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => clickButtonsvisible()}
-                    style={{width: 33 + '%', paddingVertical: 5}}
-                  >
+                    style={{width: 33 + '%', paddingVertical: 5}}>
                     <View style={styles.Cancelbtn}>
                       <Text style={styles.btnResend}>Cancel</Text>
                     </View>
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => UpdateCampaign(props)}
-                    style={{width: 33 + '%', paddingVertical: 5}}
-                  >
+                    style={{width: 33 + '%', paddingVertical: 5}}>
                     <View style={styles.Completebtn}>
                       <Text style={styles.btnResend}>Update</Text>
                     </View>
@@ -389,8 +368,7 @@ export default function OrganizationDetail(props) {
                   ? styles.CampaignStatusInactive
                   : styles.CampaignStatusActive
               }
-              onPress={() => clickForDetail(props)}
-            >
+              onPress={() => clickForDetail(props)}>
               <View style={{width: 15 + '%'}}>
                 {props.logoAvatar == '' || props.logoAvatar == null ? (
                   <Image source={BDMT} style={styles.ProfileStyle} />
@@ -417,8 +395,7 @@ export default function OrganizationDetail(props) {
                     {attachmentDataList != 0 || attachmentDataList != '' ? (
                       <TouchableOpacity
                         style={styles.settingIconView}
-                        onPress={() => AttachmentPreview(props)}
-                      >
+                        onPress={() => AttachmentPreview(props)}>
                         <Image
                           source={AttachmentIcon}
                           style={styles.attachmentIcon}
@@ -426,8 +403,7 @@ export default function OrganizationDetail(props) {
                       </TouchableOpacity>
                     ) : (
                       <TouchableOpacity
-                        style={styles.settingIconView}
-                      ></TouchableOpacity>
+                        style={styles.settingIconView}></TouchableOpacity>
                     )}
                     <View style={{width: 35 + '%', paddingLeft: 5}}>
                       <Text style={styles.NetworkCountView}>
@@ -436,8 +412,7 @@ export default function OrganizationDetail(props) {
                     </View>
                     <TouchableOpacity
                       style={styles.settingIconView}
-                      onPress={() => SettingClickForChange(props)}
-                    >
+                      onPress={() => SettingClickForChange(props)}>
                       <Icons style={styles.SettingIcon} name="setting" />
                     </TouchableOpacity>
                   </View>
@@ -470,8 +445,7 @@ export default function OrganizationDetail(props) {
         visible={modalVisiblecamera}
         onRequestClose={() => {
           ({modalVisiblecamera: !modalVisiblecamera});
-        }}
-      >
+        }}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <View style={styles.Img_OrgView}>
@@ -503,8 +477,7 @@ export default function OrganizationDetail(props) {
                         ? styles.btnCampaignDetailClick
                         : styles.btnCampaignDetail
                     }
-                    onPress={() => NotNetworkDetailClick()}
-                  >
+                    onPress={() => NotNetworkDetailClick()}>
                     <Text style={styles.NetWork_DetailText}>
                       Campaign Detail
                     </Text>
@@ -515,8 +488,7 @@ export default function OrganizationDetail(props) {
                         ? styles.btnNetWorkClick
                         : styles.btnNetWork
                     }
-                    onPress={() => NetworkDetailClick()}
-                  >
+                    onPress={() => NetworkDetailClick()}>
                     <Text style={styles.NetWork_DetailText}>Networks</Text>
                   </TouchableOpacity>
                 </View>
@@ -524,16 +496,14 @@ export default function OrganizationDetail(props) {
                 <View style={{flexDirection: 'row'}}>
                   <TouchableOpacity
                     style={styles.btnCampaignDetailClick}
-                    onPress={() => NotNetworkDetailClick()}
-                  >
+                    onPress={() => NotNetworkDetailClick()}>
                     <Text style={styles.NetWork_DetailText}>
                       Campaign Detail
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.btnNetWorkClick}
-                    onPress={() => NetworkDetailClick()}
-                  >
+                    onPress={() => NetworkDetailClick()}>
                     <Text style={styles.NetWork_DetailText}>Networks</Text>
                   </TouchableOpacity>
                 </View>
@@ -544,8 +514,7 @@ export default function OrganizationDetail(props) {
                     ? styles.btnScheduleDetail
                     : styles.btnScheduleDetailClick
                 }
-                onPress={() => ScheduleDetail()}
-              >
+                onPress={() => ScheduleDetail()}>
                 <Text style={styles.NetWork_DetailText}>Schedules</Text>
               </TouchableOpacity>
             </View>
@@ -557,16 +526,14 @@ export default function OrganizationDetail(props) {
                     marginHorizontal: 10,
                     marginTop: 6,
                     flexDirection: 'row',
-                  }}
-                >
+                  }}>
                   <Text
                     style={{
                       fontSize: 15,
                       fontWeight: 'bold',
                       color: 'black',
                       width: 17 + '%',
-                    }}
-                  >
+                    }}>
                     Network
                   </Text>
                   <Text
@@ -575,8 +542,7 @@ export default function OrganizationDetail(props) {
                       fontWeight: 'bold',
                       color: 'black',
                       width: 23 + '%',
-                    }}
-                  >
+                    }}>
                     {' '}
                     Total
                   </Text>
@@ -586,8 +552,7 @@ export default function OrganizationDetail(props) {
                       fontWeight: 'bold',
                       color: 'black',
                       width: 22 + '%',
-                    }}
-                  >
+                    }}>
                     Delivered
                   </Text>
                   <Text
@@ -596,8 +561,7 @@ export default function OrganizationDetail(props) {
                       fontWeight: 'bold',
                       color: 'black',
                       width: 23 + '%',
-                    }}
-                  >
+                    }}>
                     Remaining
                   </Text>
                 </View>
@@ -615,8 +579,7 @@ export default function OrganizationDetail(props) {
                       compaignQouta={item.compaignQouta}
                       networkId={item.networkId}
                       networkName={item.networkName}
-                      lastUpdatedAt={item.lastUpdatedAt}
-                    ></NetworkMycampaign>
+                      lastUpdatedAt={item.lastUpdatedAt}></NetworkMycampaign>
                   )}
                   numColumns={1}
                   horizontal={false}
@@ -626,14 +589,12 @@ export default function OrganizationDetail(props) {
                     <View style={styles.sidebarViewRight}>
                       <TouchableOpacity
                         style={styles.closeIconView}
-                        onPress={() => ActionButtonClick()}
-                      >
+                        onPress={() => ActionButtonClick()}>
                         <Icon name="close" style={styles.closeIcon} />
                       </TouchableOpacity>
                       <TouchableOpacity
                         style={styles.ChangeActionView}
-                        onPress={() => openShare()}
-                      >
+                        onPress={() => openShare()}>
                         <View style={styles.SidebarIconView}>
                           <Image
                             source={deleteicon}
@@ -649,8 +610,7 @@ export default function OrganizationDetail(props) {
                       </TouchableOpacity>
                       <TouchableOpacity
                         style={styles.ChangeActionView}
-                        onPress={() => openShare()}
-                      >
+                        onPress={() => openShare()}>
                         <View style={styles.SidebarIconView}>
                           <Image
                             source={deleteicon}
@@ -666,8 +626,7 @@ export default function OrganizationDetail(props) {
                       </TouchableOpacity>
                       <TouchableOpacity
                         style={styles.ChangeActionView}
-                        onPress={() => openShare()}
-                      >
+                        onPress={() => openShare()}>
                         <View style={styles.SidebarIconView}>
                           <Image source={playicon} style={styles.ribbonIcon} />
                         </View>
@@ -680,8 +639,7 @@ export default function OrganizationDetail(props) {
                       </TouchableOpacity>
                       <TouchableOpacity
                         style={styles.ChangeActionView}
-                        onPress={() => openShare()}
-                      >
+                        onPress={() => openShare()}>
                         <View style={styles.SidebarIconView}>
                           <Image source={pauseicon} style={styles.ribbonIcon} />
                         </View>
@@ -706,8 +664,7 @@ export default function OrganizationDetail(props) {
                     flexDirection: 'row',
                     marginHorizontal: 10,
                     paddingTop: 10,
-                  }}
-                >
+                  }}>
                   <Text style={styles.titleHeading}>Description</Text>
                   <Text style={styles.titleDetail}>{name}</Text>
                 </View>
@@ -781,8 +738,7 @@ export default function OrganizationDetail(props) {
                     marginBottom: 2,
                     marginTop: 15,
                     backgroundColor: colors.PagePanelTab,
-                  }}
-                ></View>
+                  }}></View>
                 <View style={styles.CampaignDetailStyle}>
                   <Text style={styles.titleHeading}>Discount</Text>
                   <Text style={styles.titleDetail}>
@@ -811,8 +767,7 @@ export default function OrganizationDetail(props) {
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.btnDetail_Delete}
-                    onPress={() => CloseModalDetail()}
-                  >
+                    onPress={() => CloseModalDetail()}>
                     <Text style={styles.Delete_Play_PauseTxt}>Cancel</Text>
                   </TouchableOpacity>
                 </View>
@@ -826,8 +781,7 @@ export default function OrganizationDetail(props) {
                     marginHorizontal: 10,
                     marginTop: 6,
                     flexDirection: 'row',
-                  }}
-                ></View>
+                  }}></View>
                 <FlatList
                   data={campaignScheduleData}
                   keyExtractor={(item, id) => id.toString()}
@@ -845,8 +799,7 @@ export default function OrganizationDetail(props) {
                       intervalTypeId={item.IntervalTypeId}
                       startTime={item.StartTime}
                       finishTime={item.FinishTime}
-                      days={item.days}
-                    ></MycampaignScheduleList>
+                      days={item.days}></MycampaignScheduleList>
                   )}
                   numColumns={1}
                   horizontal={false}
@@ -856,14 +809,12 @@ export default function OrganizationDetail(props) {
                     <View style={styles.sidebarViewRight}>
                       <TouchableOpacity
                         style={styles.closeIconView}
-                        onPress={() => ActionButtonClick()}
-                      >
+                        onPress={() => ActionButtonClick()}>
                         <Icon name="close" style={styles.closeIcon} />
                       </TouchableOpacity>
                       <TouchableOpacity
                         style={styles.ChangeActionView}
-                        onPress={() => openShare()}
-                      >
+                        onPress={() => openShare()}>
                         <View style={styles.SidebarIconView}>
                           <Image
                             source={deleteicon}
@@ -879,8 +830,7 @@ export default function OrganizationDetail(props) {
                       </TouchableOpacity>
                       <TouchableOpacity
                         style={styles.ChangeActionView}
-                        onPress={() => openShare()}
-                      >
+                        onPress={() => openShare()}>
                         <View style={styles.SidebarIconView}>
                           <Image
                             source={deleteicon}
@@ -896,8 +846,7 @@ export default function OrganizationDetail(props) {
                       </TouchableOpacity>
                       <TouchableOpacity
                         style={styles.ChangeActionView}
-                        onPress={() => openShare()}
-                      >
+                        onPress={() => openShare()}>
                         <View style={styles.SidebarIconView}>
                           <Image source={playicon} style={styles.ribbonIcon} />
                         </View>
@@ -910,8 +859,7 @@ export default function OrganizationDetail(props) {
                       </TouchableOpacity>
                       <TouchableOpacity
                         style={styles.ChangeActionView}
-                        onPress={() => openShare()}
-                      >
+                        onPress={() => openShare()}>
                         <View style={styles.SidebarIconView}>
                           <Image source={pauseicon} style={styles.ribbonIcon} />
                         </View>

@@ -27,11 +27,10 @@ export default function App(props) {
         Authorization: servicesettings.AuthorizationKey,
       },
     };
-    console.log('headerFetch from orgs', headerFetch.body);
+
     fetch(servicesettings.baseuri + 'orgs', headerFetch)
       .then(response => response.json())
       .then(responseJson => {
-        console.log('data response orgnization orgs =>', responseJson);
         if (responseJson.data != null) {
           global.OrgData = responseJson.data;
           AsyncStorage.setItem(
@@ -78,10 +77,6 @@ export default function App(props) {
       .then(response => response.json())
       .then(responseJson => {
         if (responseJson != null) {
-          console.log(
-            'responseJson bmtlovs  ',
-            JSON.stringify(responseJson.data),
-          );
           var changeCountryName = responseJson.data.countries;
           var changeStateName = responseJson.data.states;
           var changeStatusList = responseJson.data.statuses;
@@ -96,8 +91,8 @@ export default function App(props) {
             name: element.desc,
           }));
           var IntervalTypeData = responseJson.data.intervals;
-          //console.log('responseJson bmtlovs  ', JSON.stringify(responseJson.data));
-          //console.log('changecurrencies ', JSON.stringify(changecurrencies));
+          //);
+          //);
           AsyncStorage.setItem(
             'AllStateListData',
             JSON.stringify(changeStateName),
@@ -137,16 +132,15 @@ export default function App(props) {
         Authorization: servicesettings.AuthorizationKey,
       },
     };
-    console.log('headerFetch from mybundlings', headerFetch.body);
+
     fetch(servicesettings.baseuri + 'mybundlings', headerFetch)
       .then(response => response.json())
       .then(responseJson => {
-        //console.log("data response mybundlings =>",responseJson.data);
+        //
         if (responseJson.data != null) {
           // global.OrgData=responseJson.data;
           // AsyncStorage.setItem('OrgInformation', JSON.stringify(responseJson.data));
         } else {
-          console.log('empty data response mybundlings =>');
         }
       })
       .catch(error => {

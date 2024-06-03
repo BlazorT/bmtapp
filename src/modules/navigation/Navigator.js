@@ -68,7 +68,6 @@ function CustomDrawerContent(props) {
     //global.UpdateCampaign = 0,
     AsyncStorage.getItem('LoginInformation').then(function (res) {
       let Asyncdata = JSON.parse(res);
-      console.log('Asyncdata new ', Asyncdata);
       if (Asyncdata != null) {
         // global.img =  'data:image/png;base64,'+ Asyncdata.profileImage;
         // global.Email = Asyncdata[0].email;
@@ -93,7 +92,6 @@ function CustomDrawerContent(props) {
     });
   });
   function ProfileEdit() {
-    console.log('click');
     AsyncStorage.getItem('LoginInformation').then(function (res) {
       let Asyncdata = JSON.parse(res);
       if (Asyncdata == null) {

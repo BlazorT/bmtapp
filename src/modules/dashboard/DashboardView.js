@@ -1,13 +1,16 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, {useEffect, useState} from 'react';
-import {Dimensions, StyleSheet, Text, View} from 'react-native';
+import {Dimensions, Easing, StyleSheet, Text, View} from 'react-native';
 import {LineChart} from 'react-native-chart-kit';
-// import ProgressCircle from 'react-native-progress-circle';
+import {AnimatedCircularProgress} from 'react-native-circular-progress';
+
 import Toast from 'react-native-simple-toast';
 import Icon from 'react-native-vector-icons/EvilIcons';
 import {colors} from '../../styles';
+import {useTheme} from '../../hooks/useTheme';
 import servicesettings from '../dataservices/servicesettings';
 export default function DashboardScreen(props) {
+  const theme = useTheme();
   const [DashboardSummaryDisabled, SetDashboardSummaryDisabled] =
     React.useState(false);
 
@@ -68,14 +71,13 @@ export default function DashboardScreen(props) {
           Authorization: servicesettings.AuthorizationKey,
         },
       };
-      console.log('headerFetch from dashboard ', headerFetch.body);
+
       fetch(servicesettings.baseuri + 'dashboard', headerFetch)
         .then(response => response.json())
         .then(responseJson => {
-          console.log('responseJson dashboard ', responseJson);
           if (responseJson.data != null) {
             var DashboardData = responseJson.data;
-            console.log('DashboardData ', DashboardData.dataOfMonth);
+
             setGraphLabelMonth(DashboardData[0].dataOfMonth);
             setGraphLabelMonth1(DashboardData[1].dataOfMonth);
             setGraphLabelMonth2(DashboardData[2].dataOfMonth);
@@ -88,24 +90,19 @@ export default function DashboardScreen(props) {
             var NewCampaignsListXX = responseJson.data;
             var GraphCampaignsList = responseJson.data;
             // var filteredItem = GraphCampaignsList.map(item => item.newCompaigns);
-            //console.log('filteredItem ', filteredItem);
+            //
             setGraphValueTotal(responseJson.data.newCompaigns);
             var filteredGraphCampaignsLItem = GraphCampaignsList.map(
               item => item.dataOfMonth,
             );
             //setLabelNameGraph(filteredGraphCampaignsLItem);
-            console.log(
-              'filteredGraphCampaignsLItem ',
-              filteredGraphCampaignsLItem,
-            );
+
             var CurrentMonthPercentage =
               responseJson.data[0].percentageIncrease;
             setGraphNewCampaigns(NewCampaignsList);
             var CurrentMonthPercentage =
               responseJson.data[0].percentageIncrease;
-            console.log('CurrentMonthPercentage ', responseJson.data[0]);
-            console.log('CurrentMonthDetail ', CurrentMonthDetail);
-            console.log('CurrentMonth ', CurrentMonth);
+
             // setCurrentMonthData(CurrentMonthDetail);
             setCurrentMonthData(CurrentMonth.fundsAmount);
             setCurrentVolume(CurrentMonthDetail);
@@ -192,7 +189,7 @@ export default function DashboardScreen(props) {
               ),
             );
 
-            // console.log('graphLabelMonthx ' + graphLabelMonthx);
+            //
           }
         })
         .catch(error => {
@@ -224,93 +221,145 @@ export default function DashboardScreen(props) {
 
   /***************************************************** View *************************************************************/
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {backgroundColor: theme.backgroundColor}]}>
       <View style={styles.DivMain}>
         <View style={styles.ChartMainView}>
           <View style={styles.graphview}>
             <View style={styles.CircleDetailview}>
-              <View style={styles.DetailView}>
+              <View
+                style={[
+                  styles.DetailView,
+                  {backgroundColor: theme.cardBackColor},
+                ]}>
                 <View style={styles.DetailViewTitle}>
-                  <Text style={styles.ViewTitle}>{' Current Volume'}</Text>
+                  <Text style={[styles.ViewTitle, {color: theme.textColor}]}>
+                    {' Current Volume'}
+                  </Text>
                   <Icon
                     onPress={() => SaleSummary()}
                     name={'arrow-up'}
-                    style={styles.ViewTitleIcon}
+                    style={[styles.ViewTitleIcon, {color: theme.tintColor}]}
                   />
                 </View>
-                <Text style={styles.availableLable}>
+                <Text style={[styles.availableLable, {color: theme.textColor}]}>
                   {parseFloat(currentVolume)
                     .toFixed(1)
                     .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}
                 </Text>
               </View>
-              <View style={styles.DetailView}>
+              <View
+                style={[
+                  styles.DetailView,
+                  {backgroundColor: theme.cardBackColor},
+                ]}>
                 <View style={styles.DetailViewTitle}>
-                  <Text style={styles.ViewTitle}>
+                  <Text style={[styles.ViewTitle, {color: theme.textColor}]}>
                     {' Sales of current month'}
                   </Text>
-                  <Icon name={'arrow-up'} style={styles.ViewTitleIcon} />
+                  <Icon
+                    name={'arrow-up'}
+                    style={[styles.ViewTitleIcon, {color: theme.tintColor}]}
+                  />
                 </View>
-                <Text style={styles.availableLable}>
+                <Text style={[styles.availableLable, {color: theme.textColor}]}>
                   {parseFloat(currentMonthData)
                     .toFixed(1)
                     .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}
                 </Text>
               </View>
             </View>
-            <View style={styles.circleview}>
-              {/* <ProgressCircle
-                percent={percent}
-                radius={60}
-                borderWidth={12}
-                color={colors.BlazorbuttonOpacity}
-                shadowColor="#999"
-                bgColor={colors.PagePanelTab}
-              >
-                <Text style={{fontSize: 20, color: colors.TextColorOther}}>
-                  {percent + '%'}
-                </Text>
-              </ProgressCircle> */}
+            <View
+              style={[
+                styles.circleview,
+                {backgroundColor: theme.cardBackColor},
+              ]}>
+              <AnimatedCircularProgress
+                size={120}
+                width={15}
+                rotation={360}
+                delay={500}
+                prefill={0}
+                // lineCap="square"
+                fillLineCap="round"
+                easing={Easing.out(Easing.ease)}
+                fill={percent}
+                tintColor={theme.buttonBackColor}
+                backgroundColor={theme.backgroundColor}>
+                {fill => (
+                  <Text style={{fontSize: 30, color: theme.textColor}}>
+                    {fill.toFixed(0) + '%'}
+                  </Text>
+                )}
+              </AnimatedCircularProgress>
             </View>
           </View>
           {DashboardSummaryDisabled == false ? (
-            <View style={styles.ChartView}>
+            <View
+              style={[
+                styles.ChartView,
+                {backgroundColor: theme.cardBackColor},
+              ]}>
               <LineChart
                 data={data}
                 bezier
                 width={Dimensions.get('window').width - 28}
-                height={Dimensions.get('window').height - 260}
+                height={Dimensions.get('window').height - 350}
                 chartConfig={{
                   backgroundGradientToOpacity: 0.6,
                   backgroundGradientFromOpacity: 1,
                   decimalPlaces: 0,
-                  color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                  backgroundGradientFrom: colors.PagePanelTab,
-                  backgroundGradientTo: colors.PagePanelTab,
+                  color: (opacity = 1) => theme.tintColor,
+                  backgroundGradientFrom: theme.cardBackColor,
+                  backgroundGradientTo: theme.cardBackColor,
                 }}
               />
             </View>
           ) : (
-            <View style={styles.BottomView}>
+            <View
+              style={[
+                styles.BottomView,
+                {backgroundColor: theme.cardBackColor},
+              ]}>
               <View style={styles.DashboardTitleView}>
-                <Text style={styles.DashboardTitle}>Dashboard Summary</Text>
-                <Icon name={'arrow-up'} style={styles.DashboardIcon} />
+                <Text style={[styles.DashboardTitle, {color: theme.textColor}]}>
+                  Dashboard Summary
+                </Text>
+                <Icon
+                  name={'arrow-up'}
+                  style={[styles.DashboardIcon, {color: theme.tintColor}]}
+                />
               </View>
               <View style={styles.TitleValue}>
-                <Text style={styles.Title}>Total Campaign:</Text>
-                <Text style={styles.Value}>{Campaign}</Text>
+                <Text style={[styles.Title, {color: theme.textColor}]}>
+                  Total Campaign:
+                </Text>
+                <Text style={[styles.Value, {color: theme.textColor}]}>
+                  {Campaign}
+                </Text>
               </View>
               <View style={styles.TitleValue}>
-                <Text style={styles.Title}>Inprogress:</Text>
-                <Text style={styles.Value}>{Campaign}</Text>
+                <Text style={[styles.Title, {color: theme.textColor}]}>
+                  Inprogress:
+                </Text>
+                <Text style={[styles.Value, {color: theme.textColor}]}>
+                  {Campaign}
+                </Text>
               </View>
               <View style={styles.TitleValue}>
-                <Text style={styles.Title}>Close Campaign:</Text>
-                <Text style={styles.Value}>{Campaign}</Text>
+                <Text style={[styles.Title, {color: theme.textColor}]}>
+                  Close Campaign:
+                </Text>
+                <Text style={[styles.Value, {color: theme.textColor}]}>
+                  {Campaign}
+                </Text>
               </View>
               <View style={styles.TitleValue}>
-                <Text style={styles.Title}>Budget Total:</Text>
-                <Text style={styles.Value}>{Organization}</Text>
+                <Text style={[styles.Title, {color: theme.textColor}]}>
+                  Budget Total:
+                </Text>
+                <Text style={[styles.Value, {color: theme.textColor}]}>
+                  {Organization}
+                </Text>
               </View>
             </View>
           )}
@@ -381,7 +430,7 @@ const styles = StyleSheet.create({
     borderColor: colors.borderColor,
     padding: 4,
     marginHorizontal: 10,
-    height: Dimensions.get('window').height - 250,
+    // height: Dimensions.get('window').height - 250,
     borderWidth: 0,
     borderRadius: 5,
     backgroundColor: colors.PagePanelTab,

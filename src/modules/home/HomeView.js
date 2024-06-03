@@ -15,6 +15,7 @@ import {Text} from '../../components/StyledText';
 import {colors} from '../../styles';
 import servicesettings from '../dataservices/servicesettings';
 import {useTheme} from '../../hooks/useTheme';
+import {head} from 'lodash';
 const BuyVehicleIcon = require('../../../assets/images/BDMT.png');
 const NetworkFailed = require('../../../assets/images/BDMT.png');
 const mycampaignIcon = require('../../../assets/images/drawer/mycampaign.png');
@@ -37,14 +38,13 @@ export default function HomeScreen(props) {
     AsyncStorage.getItem('LoginInformation').then(function (res) {
       let Asyncdata = res;
       if (Asyncdata == null) {
-        console.log(' Async Login Data Check ');
-        // console.log(' Async Login Data Check '+ JSON.stringify(Asyncdata) );
+        //  );
         global.Storeid = '0';
         setVisible(false);
       } //
     });
   });
-  //console.log(props);
+  //
   navigation.addListener('focus', route => {
     AsyncStorage.getItem('LoginInformation').then(function (res) {
       let Asyncdata = JSON.parse(res);
@@ -63,28 +63,25 @@ export default function HomeScreen(props) {
   const LoadBundLing = async () => {
     AsyncStorage.getItem('LoginInformation').then(function (res) {
       if (res == null) {
-        console.log('Asyncdata Asyncdata Asyncdata empty  ');
       } else {
         let Asyncdata = JSON.parse(res);
-        console.log(
-          'Asyncdata Asyncdata Asyncdata empty  ',
-          Asyncdata[0].orgid,
-        );
+
         var SelectOrgID = Asyncdata[0].orgid;
         var headerFetch = {
           method: 'POST',
-          body: JSON.stringify({Id: SelectOrgID, rowVer: 0, Status: 1}),
+          body: JSON.stringify({Id: 0, rowVer: 0, Status: 1}),
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json; charset=utf-8',
             Authorization: servicesettings.AuthorizationKey,
           },
         };
-        console.log('headerFetch from mybundlings', headerFetch.body);
+
         fetch(servicesettings.baseuri + 'mybundlings', headerFetch)
           .then(response => response.json())
           .then(responseJson => {
-            //console.log("data response mybundlings  =>",responseJson.data);
+            console.log('data response mybundlings  =>', headerFetch.body);
+            console.log('data response mybundlings  =>', responseJson);
             if (responseJson.data != null) {
               //var mybundlingsList = responseJson.data;
               //await AsyncStorage.setItem('mybundlingsList', mybundlingsList);
@@ -93,7 +90,6 @@ export default function HomeScreen(props) {
                 JSON.stringify(responseJson.data),
               );
             } else {
-              console.log('empty data response mybundlings =>');
             }
           })
           .catch(error => {
@@ -120,7 +116,6 @@ export default function HomeScreen(props) {
     const latestVersion = await VersionCheck.getLatestVersion();
     const currentVersion = VersionCheck.getCurrentVersion();
     let updateNeeded = await VersionCheck.needUpdate();
-    console.log('latestVersion ' + JSON.stringify(latestVersion));
 
     if (updateNeeded.isNeeded == true) {
       setsuccessVisible(true);

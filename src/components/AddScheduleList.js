@@ -14,13 +14,13 @@ import GestureRecognizer from 'react-native-swipe-gestures';
 import Icons from 'react-native-vector-icons/AntDesign';
 import DoubleClick from 'rn-double-click';
 import {colors} from '../styles';
+import {useTheme} from '../hooks/useTheme';
 //const iconwave = require('../../assets/images/pages/wave.png');
 export default function AddScheduleList(props) {
+  const theme = useTheme();
   const [intervalValue, setIntervalValue] = useState();
-  const [
-    scheduleSummaryDetailVisible,
-    setScheduleSummaryDetailVisible,
-  ] = useState(false);
+  const [scheduleSummaryDetailVisible, setScheduleSummaryDetailVisible] =
+    useState(false);
   const [networksSummary, setNetworksSummary] = useState('');
   const [selectedNetwork, setSelectedNetwork] = useState('');
   const [intervalTypeIdSummary, setIntervalTypeIdSummary] = useState('');
@@ -42,24 +42,17 @@ export default function AddScheduleList(props) {
   const [networkTotalPrice, setNetworkTotalPrice] = useState();
   const [statusSummary, setStatusSummary] = useState('');
   const [isFixedSummary, setIsFixedSummary] = useState('');
-  //console.log('props all list ' + JSON.stringify(props));
-  //console.log('props all list props ' + JSON.stringify(props.props.days.replace(" ", "")));
-  //console.log('props props all list ', JSON.stringify(props.props));
-  //console.log('props all list CompaignNetworks ', JSON.stringify(props.props.CompaignNetworks[0].unitPriceInclTax));
 
-  //console.log('props networkSelectSocialMedia ' + JSON.stringify(props.networkSelectSocialMedia));
   // var propsdetail = props.props;
   //const uniqueNames = propsdetail.filter((val, randomId, array) => {
   //return array.indexOf(val) == randomId;
   //});
-  //console.log(getUnique(uniqueNames, 'randomId'));
 
   useEffect(() => {
     if (
       props.props.intervalTypeId == '' ||
       props.props.intervalTypeId == null
     ) {
-      console.log('empty');
     } else {
       var IntervalTypeCampaignnew = props.props.intervalTypeId;
       if (IntervalTypeCampaignnew == 1) {
@@ -77,12 +70,10 @@ export default function AddScheduleList(props) {
       } else if (IntervalTypeCampaignnew == 7) {
         setIntervalValue('Other');
       }
-      //console.log('intervalValue ', intervalValue);
     }
     setSelectedNetwork(props.networkSelectSocialMedia);
     var NetworkTotalBudget = props.budget;
     setNetworkTotalPrice(NetworkTotalBudget);
-    console.log('NetworkTotalBudget ', NetworkTotalBudget);
     //var networkcountVal = props.networkSelectSocialMedia;
     if (
       props.props.CompaignNetworks == '' ||
@@ -90,9 +81,7 @@ export default function AddScheduleList(props) {
       props.props.CompaignNetworks == 'undefined'
     ) {
       setNetworkCount('1');
-      console.log('props.CompaignNetworks ==');
     } else {
-      console.log('props.CompaignNetworks else ', intervalValue);
       var networkcountVal = props.props.CompaignNetworks;
       if (networkcountVal.length >= 1) {
         let counter = 0;
@@ -103,11 +92,9 @@ export default function AddScheduleList(props) {
       }
     }
     //setNetworkCount('2');
-    //console.log('networkCount ', networkCount);
   }, []);
   //export default class Myvehicle extends PureComponent {
   //const Condition = [{src: 0},{src: 1}];
-  //console.log('props ' + JSON.stringify(props));
 
   const [Buttonsvisible, setButtonsvisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -147,22 +134,17 @@ export default function AddScheduleList(props) {
     setButtonsvisible(false);
   }
   function UpdateSchedule(props) {
-    console.log('UpdateSchedule 135  ', props);
-    console.log('UpdateSchedule 135 network  ', props.props.CompaignNetworks);
     var propsUpdate = props;
     props.UpdateScheduleList(propsUpdate);
     setButtonsvisible(false);
   }
   function ClickDeleteData(props) {
-    console.log('ClickDeleteData ', props.props.days);
     var propsDelete = props.props;
     props.DeleteScheduleList(propsDelete);
     setButtonsvisible(false);
   }
   function ScheduleDetail(props) {
-    console.log('props Detail ', props);
     var PropsDetail = props.props;
-    console.log('PropsDetail add schedule ', PropsDetail);
     setNetworksSummary(PropsDetail.networkId);
     setIntervalSummary(PropsDetail.interval);
     setNetworkTotalPriceSummary(PropsDetail.NetworkTotalBudget);
@@ -191,12 +173,11 @@ export default function AddScheduleList(props) {
       } else if (IntervalTypeIdCheck == 7) {
         setIntervalTypeIdSummary('Other');
       }
-      // console.log('intervalTypeIdSummary ', IntervalTypeIdCheck);
-      AsyncStorage.getItem('networkDataForDetail').then(function(res) {
+      //
+      AsyncStorage.getItem('networkDataForDetail').then(function (res) {
         let Asyncdata = JSON.parse(res);
         if (Asyncdata != null) {
-          // console.log('networkDataForDetail networkDataForDetail ' + JSON.stringify(Asyncdata));
-          //console.log('networkDataForDetail networkDataForDetail ' + JSON.stringify(Asyncdata.desc));
+          // );
           setNetworkDescriptionList(Asyncdata.desc);
         }
       });
@@ -212,7 +193,6 @@ export default function AddScheduleList(props) {
       }
     }
     var selectday = PropsDetail.days;
-    console.log('selectday ', selectday);
     //var days1; var days2; var days3; var days4; var days5; var days6; var days7;
     if (selectday.includes(1)) {
       var days1 = 'Sun,';
@@ -254,32 +234,55 @@ export default function AddScheduleList(props) {
   }
   const Item = ({desc}) => (
     <View style={{textAlign: 'right', marginLeft: 7}}>
-      <Text>{desc}</Text>
+      <Text style={{color: theme.textColor}}>{desc}</Text>
     </View>
   );
   return (
     <Fragment>
-      <View style={styles.ScheduleViewList}>
+      <View
+        style={[
+          styles.ScheduleViewList,
+          {backgroundColor: theme.inputBackColor},
+        ]}>
         <GestureRecognizer
           onSwipeLeft={() => Edit_Add_DeleteClick()}
-          config={config}
-        >
+          config={config}>
           <DoubleClick onClick={() => ScheduleDetail(props)}>
             <View style={{flexDirection: 'row', height: 25}}>
               <View style={styles.ScheduleRowDataSmall}>
-                <Text style={styles.lblHeadingSchadule}>Interval Type</Text>
-                <Text style={styles.lblHeadingSchaduleVal}>
+                <Text
+                  style={[styles.lblHeadingSchadule, {color: theme.textColor}]}>
+                  Interval Type
+                </Text>
+                <Text
+                  style={[
+                    styles.lblHeadingSchaduleVal,
+                    {color: theme.textColor},
+                  ]}>
                   {intervalValue}
                 </Text>
               </View>
               <View style={styles.ScheduleRowData1}>
-                <Text style={styles.lblHeadingSchadule}>Networks</Text>
+                <Text
+                  style={[styles.lblHeadingSchadule, {color: theme.textColor}]}>
+                  Networks
+                </Text>
                 <View style={styles.lblHeadingSchaduleVal1}>
-                  <Text style={styles.lblNetworkCount}>{networkCount}</Text>
+                  <Text
+                    style={[
+                      styles.lblNetworkCount,
+                      {backgroundColor: theme.buttonBackColor},
+                    ]}>
+                    {networkCount}
+                  </Text>
                 </View>
               </View>
               <View style={styles.ScheduleRowData2}>
-                <Text style={styles.lblHeadingSchadulePrice}>
+                <Text
+                  style={[
+                    styles.lblHeadingSchadulePrice,
+                    {color: theme.textColor},
+                  ]}>
                   {props.props.budget.toFixed(1)}
                   {' ' + props.orgCurrencyName}
                 </Text>
@@ -287,28 +290,56 @@ export default function AddScheduleList(props) {
             </View>
             <View style={{flexDirection: 'row', height: 25}}>
               <View style={styles.ScheduleRowDataSmall}>
-                <Text style={styles.lblHeadingSchadule}>Start Date</Text>
-                <Text style={styles.lblHeadingSchaduleVal}>
+                <Text
+                  style={[styles.lblHeadingSchadule, {color: theme.textColor}]}>
+                  Start Date
+                </Text>
+                <Text
+                  style={[
+                    styles.lblHeadingSchaduleVal,
+                    {color: theme.textColor},
+                  ]}>
                   {moment(props.scheduleStartDate).format('DD-MM-YYYY')}
                 </Text>
               </View>
               <View style={styles.ScheduleRowData}>
-                <Text style={styles.lblHeadingSchadule}>Finish Date</Text>
-                <Text style={styles.lblHeadingSchaduleVal}>
+                <Text
+                  style={[styles.lblHeadingSchadule, {color: theme.textColor}]}>
+                  Finish Date
+                </Text>
+                <Text
+                  style={[
+                    styles.lblHeadingSchaduleVal,
+                    {color: theme.textColor},
+                  ]}>
                   {moment(props.scheduleEndDate).format('DD-MM-YYYY')}
                 </Text>
               </View>
             </View>
             <View style={{flexDirection: 'row', height: 25}}>
               <View style={styles.ScheduleRowDataSmall}>
-                <Text style={styles.lblHeadingSchadule}>Start Time</Text>
-                <Text style={styles.lblHeadingSchaduleVal}>
+                <Text
+                  style={[styles.lblHeadingSchadule, {color: theme.textColor}]}>
+                  Start Time
+                </Text>
+                <Text
+                  style={[
+                    styles.lblHeadingSchaduleVal,
+                    {color: theme.textColor},
+                  ]}>
                   {moment(props.scheduleStartTime).format('hh:mm a')}
                 </Text>
               </View>
               <View style={styles.ScheduleRowData}>
-                <Text style={styles.lblHeadingSchadule}>Finish Time</Text>
-                <Text style={styles.lblHeadingSchaduleVal}>
+                <Text
+                  style={[styles.lblHeadingSchadule, {color: theme.textColor}]}>
+                  Finish Time
+                </Text>
+                <Text
+                  style={[
+                    styles.lblHeadingSchaduleVal,
+                    {color: theme.textColor},
+                  ]}>
                   {moment(props.scheduleEndTime).format('hh:mm a')}
                 </Text>
               </View>
@@ -320,30 +351,38 @@ export default function AddScheduleList(props) {
                     width: 100 + '%',
                     flexDirection: 'row',
                     justifyContent: 'center',
-                  }}
-                >
+                  }}>
                   <TouchableOpacity
                     value={4}
                     onPress={() => ClickDeleteData(props)}
-                    style={{width: 33 + '%', paddingVertical: 5}}
-                  >
-                    <View style={styles.Deletebtn}>
+                    style={{width: 33 + '%', paddingVertical: 5}}>
+                    <View
+                      style={[
+                        styles.Deletebtn,
+                        {backgroundColor: theme.buttonBackColor},
+                      ]}>
                       <Text style={styles.btnResend}>Delete</Text>
                     </View>
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => clickButtonsvisible()}
-                    style={{width: 33 + '%', paddingVertical: 5}}
-                  >
-                    <View style={styles.Cancelbtn}>
+                    style={{width: 33 + '%', paddingVertical: 5}}>
+                    <View
+                      style={[
+                        styles.Cancelbtn,
+                        {backgroundColor: theme.buttonBackColor},
+                      ]}>
                       <Text style={styles.btnResend}>Cancel</Text>
                     </View>
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => UpdateSchedule(props)}
-                    style={{width: 33 + '%', paddingVertical: 5}}
-                  >
-                    <View style={styles.Completebtn}>
+                    style={{width: 33 + '%', paddingVertical: 5}}>
+                    <View
+                      style={[
+                        styles.Completebtn,
+                        {backgroundColor: theme.buttonBackColor},
+                      ]}>
                       <Text style={styles.btnResend}>Update</Text>
                     </View>
                   </TouchableOpacity>
@@ -359,25 +398,39 @@ export default function AddScheduleList(props) {
           visible={scheduleSummaryDetailVisible}
           onRequestClose={() => {
             ({scheduleSummaryDetailVisible: !scheduleSummaryDetailVisible});
-          }}
-        >
+          }}>
           <View style={styles.centeredView}>
-            <View style={styles.ModalViewSchaduleSummary}>
+            <View
+              style={[
+                styles.ModalViewSchaduleSummary,
+                {backgroundColor: theme.modalBackColor},
+              ]}>
               <View style={styles.DetailHeadingMainView}>
                 <View style={styles.DetailHeadingView}>
-                  <Text style={styles.DetailHeading}>Schedule Detail</Text>
+                  <Text
+                    style={[styles.DetailHeading, {color: theme.textColor}]}>
+                    Schedule Detail
+                  </Text>
                 </View>
                 <View style={styles.DetailHeadingView}>
                   <TouchableOpacity
                     style={styles.closeIconView}
-                    onPress={() => setScheduleSummaryDetailVisible(false)}
-                  >
-                    <Icons name="close" style={styles.closeIcon} />
+                    onPress={() => setScheduleSummaryDetailVisible(false)}>
+                    <Icons
+                      name="close"
+                      style={[styles.closeIcon, {color: theme.tintColor}]}
+                    />
                   </TouchableOpacity>
                 </View>
               </View>
               <View style={styles.ScheduleRowDetail}>
-                <Text style={styles.lblSchaduleSummaryNetwork}>Networks</Text>
+                <Text
+                  style={[
+                    styles.lblSchaduleSummaryNetwork,
+                    {color: theme.textColor},
+                  ]}>
+                  Networks
+                </Text>
                 <View style={styles.lblScheduleSummaryNetworkVal}>
                   <FlatList
                     data={selectedNetwork}
@@ -389,14 +442,28 @@ export default function AddScheduleList(props) {
                 </View>
               </View>
               <View style={styles.ScheduleRowDetail}>
-                <Text style={styles.lblSchaduleSummary}>Interval Type</Text>
-                <Text style={styles.lblSchaduleSummaryVal}>
+                <Text
+                  style={[styles.lblSchaduleSummary, {color: theme.textColor}]}>
+                  Interval Type
+                </Text>
+                <Text
+                  style={[
+                    styles.lblSchaduleSummaryVal,
+                    {color: theme.textColor},
+                  ]}>
                   {intervalTypeIdSummary}
                 </Text>
               </View>
               <View style={styles.ScheduleRowDetail}>
-                <Text style={styles.lblSchaduleSummary}>Interval</Text>
-                <Text style={styles.lblSchaduleSummaryVal}>
+                <Text
+                  style={[styles.lblSchaduleSummary, {color: theme.textColor}]}>
+                  Interval
+                </Text>
+                <Text
+                  style={[
+                    styles.lblSchaduleSummaryVal,
+                    {color: theme.textColor},
+                  ]}>
                   {intervalSummary != '' ||
                   intervalSummary != null ||
                   intervalSummary != '0'
@@ -405,60 +472,117 @@ export default function AddScheduleList(props) {
                 </Text>
               </View>
               <View style={styles.ScheduleRowDetail}>
-                <Text style={styles.lblSchaduleSummary}>Is Fixed</Text>
-                <Text style={styles.lblSchaduleSummaryVal}>
+                <Text
+                  style={[styles.lblSchaduleSummary, {color: theme.textColor}]}>
+                  Is Fixed
+                </Text>
+                <Text
+                  style={[
+                    styles.lblSchaduleSummaryVal,
+                    {color: theme.textColor},
+                  ]}>
                   {isFixedSummary == 0 ? 'No' : 'Yes'}
                 </Text>
               </View>
               <View style={styles.ScheduleRowDetail}>
-                <Text style={styles.lblSchaduleSummary}>days</Text>
-                <Text style={styles.lblSchaduleSummaryVal}>
+                <Text
+                  style={[styles.lblSchaduleSummary, {color: theme.textColor}]}>
+                  days
+                </Text>
+                <Text
+                  style={[
+                    styles.lblSchaduleSummaryVal,
+                    {color: theme.textColor},
+                  ]}>
                   {selectDaysSummary}
                 </Text>
               </View>
               <View style={styles.ScheduleRowDetail}>
-                <Text style={styles.lblSchaduleSummary}>Start Date</Text>
-                <Text style={styles.lblSchaduleSummaryVal}>
+                <Text
+                  style={[styles.lblSchaduleSummary, {color: theme.textColor}]}>
+                  Start Date
+                </Text>
+                <Text
+                  style={[
+                    styles.lblSchaduleSummaryVal,
+                    {color: theme.textColor},
+                  ]}>
                   {moment(startDateSummary).format('DD-MM-YYYY')}
                 </Text>
               </View>
               <View style={styles.ScheduleRowDetail}>
-                <Text style={styles.lblSchaduleSummary}>Finish Date</Text>
-                <Text style={styles.lblSchaduleSummaryVal}>
+                <Text
+                  style={[styles.lblSchaduleSummary, {color: theme.textColor}]}>
+                  Finish Date
+                </Text>
+                <Text
+                  style={[
+                    styles.lblSchaduleSummaryVal,
+                    {color: theme.textColor},
+                  ]}>
                   {moment(endDateSummary).format('DD-MM-YYYY')}
                 </Text>
               </View>
               <View style={styles.ScheduleRowDetail}>
-                <Text style={styles.lblSchaduleSummary}>Random Id</Text>
-                <Text style={styles.lblSchaduleSummaryVal}>
+                <Text
+                  style={[styles.lblSchaduleSummary, {color: theme.textColor}]}>
+                  Random Id
+                </Text>
+                <Text
+                  style={[
+                    styles.lblSchaduleSummaryVal,
+                    {color: theme.textColor},
+                  ]}>
                   {randomSummary}
                 </Text>
               </View>
               <View style={styles.ScheduleRowDetail}>
-                <Text style={styles.lblSchaduleSummary}>Status</Text>
-                <Text style={styles.lblSchaduleSummaryVal}>
+                <Text
+                  style={[styles.lblSchaduleSummary, {color: theme.textColor}]}>
+                  Status
+                </Text>
+                <Text
+                  style={[
+                    styles.lblSchaduleSummaryVal,
+                    {color: theme.textColor},
+                  ]}>
                   {statusSummary}
                 </Text>
               </View>
               <View style={styles.ScheduleRowDetail}>
-                <Text style={styles.lblSchaduleSummary}>Price</Text>
-                <Text style={styles.lblSchaduleSummaryVal}>
+                <Text
+                  style={[styles.lblSchaduleSummary, {color: theme.textColor}]}>
+                  Price
+                </Text>
+                <Text
+                  style={[
+                    styles.lblSchaduleSummaryVal,
+                    {color: theme.textColor},
+                  ]}>
                   {props.props.budget}
                   {' ' + orgCurrencyName}
                 </Text>
               </View>
               <View style={styles.ScheduleRowDetail}>
-                <Text style={styles.lblSchaduleSummary}>Message Count</Text>
-                <Text style={styles.lblSchaduleSummaryVal}>
+                <Text
+                  style={[styles.lblSchaduleSummary, {color: theme.textColor}]}>
+                  Message Count
+                </Text>
+                <Text
+                  style={[
+                    styles.lblSchaduleSummaryVal,
+                    {color: theme.textColor},
+                  ]}>
                   {props.messageCount}
                 </Text>
               </View>
               <View style={styles.CancelViewSchaduleSummary}>
                 <TouchableOpacity
                   selectable={true}
-                  onPress={() => setScheduleSummaryDetailVisible(false)}
-                >
-                  <Text style={styles.cameracancel}>CANCEL</Text>
+                  onPress={() => setScheduleSummaryDetailVisible(false)}>
+                  <Text style={[styles.cameracancel, {color: theme.textColor}]}>
+                    CANCEL
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>

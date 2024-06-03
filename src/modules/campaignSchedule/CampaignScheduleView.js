@@ -38,6 +38,7 @@ import RadioForm from 'react-native-simple-radio-button';
 import Toast from 'react-native-simple-toast';
 import Video from 'react-native-video';
 import servicesettings from '../dataservices/servicesettings';
+import {useTheme} from '../../hooks/useTheme';
 const Cameraicon = require('../../../assets/images/icons/camera4.png');
 const checkedCheckbox = require('../../../assets/images/checkboxchecked.png');
 const uncheckedCheckbox = require('../../../assets/images/checkboxunchecked.png');
@@ -125,6 +126,7 @@ const itemsContainerStyle = {
   //elevation: 2,
 };
 export default function CampaignScheduleScreen(props) {
+  const theme = useTheme();
   const [compaignExecutionSchedules11, setCompaignExecutionSchedules11] =
     useState('');
   var defaultDateTime = new Date();
@@ -352,7 +354,6 @@ export default function CampaignScheduleScreen(props) {
   ]);
 
   function selectType(value) {
-    console.log('value ' + value);
     setSelectStatus(value);
     setCampaignStatus(value);
     if (value == 0) {
@@ -367,14 +368,12 @@ export default function CampaignScheduleScreen(props) {
     if (selectAutoGenerateEnabled_Disabled == true) {
       setSelectAutoGenerateEnabled_Disabled(false);
       setSelectAutoGenerate(0);
-      console.log('val 0 ');
     }
     if (selectAutoGenerateEnabled_Disabled == false) {
       setSelectAutoGenerateEnabled_Disabled(true);
       setSelectAutoGenerate(1);
-      console.log('val 1 ');
     }
-    //console.log('selectAutoGenerate ', selectAutoGenerate);
+    //
   }
   function CancelClick() {
     setVisible(true);
@@ -418,7 +417,6 @@ export default function CampaignScheduleScreen(props) {
         let Asyncdata = JSON.parse(res);
         setUserId(Asyncdata[0].id);
         setOrganizationId(Asyncdata[0].orgid);
-        console.log('Asyncdata LoginInformation  ', Asyncdata);
       } else {
         props.navigation.replace('Login');
       }
@@ -447,7 +445,7 @@ export default function CampaignScheduleScreen(props) {
         Authorization: servicesettings.AuthorizationKey,
       },
     };
-    //  console.log('responseJson bmtlovs headerFetch ', headerFetch);
+    //
     fetch(servicesettings.baseuri + 'bmtlovs', headerFetch)
       //fetch(servicesettings.baseuri + 'bmtlovs',servicesettings.headerFetch)
       .then(response => response.json())
@@ -497,7 +495,7 @@ export default function CampaignScheduleScreen(props) {
     AsyncStorage.getItem('myBundlingsAsync').then(function (res) {
       if (res != null) {
         let Asyncdata = JSON.parse(res);
-        console.log('Asyncdata Asyncdata Asyncdata  ', Asyncdata);
+
         setDataNetwork(Asyncdata);
         //console.log('Asyncdata DataNetwork DataNetwork  ', JSON.stringify(DataNetwork));
         if (global.UpdateCampaign == 1) {
@@ -520,33 +518,24 @@ export default function CampaignScheduleScreen(props) {
       //if(SelectIntervalTypeIdVal =='' || SelectIntervalTypeIdVal ==null){
       // SelectIntervalTypeIdVal == 1;
       // }
-      console.log('startDateAsync 446 ', startDateAsync);
-      console.log('endDateAsync 447 ', endDateAsync);
-      console.log('selectIntervalTypeForDays 427 ', SelectIntervalTypeIdVal);
-      console.log('selectIntervalTypeEdit 428 ', selectIntervalTypeEdit);
-      console.log('async SelectIntervalTypeIdVal ', SelectIntervalTypeIdVal);
+
       // await AsyncStorage.setItem('SelectIntervalVal', value);
       if (startDateAsync.length <= 0) {
         var StartDatePick = SelectCampaignStartDate;
-        console.log('SelectCampaignStartDate ', SelectCampaignStartDate);
       } else {
         var StartDatePick = new Date(startDateAsync);
-        console.log('SelectStartDate change ', startDateAsync);
       }
       if (endDateAsync.length <= 0) {
         var EndDatePick = SelectCampaignEndDate;
-        console.log('SelectCampaignEndDate ', SelectCampaignEndDate);
       } else {
         //var EndDatePick = SelectEndDate;
         var EndDatePick = new Date(endDateAsync);
-        console.log('SelectEndDate ', SelectEndDate);
       }
       // const EditSelctedNetwork = await AsyncStorage.getItem('NetworkSelectSocialMediaNew');
-      console.log('Retrieved startDateAsync new  : ', StartDatePick);
-      console.log('Retrieved endDateAsync : ', EndDatePick);
+
       setStartDateForAlert(StartDatePick);
       setEndDateForAlert(EndDatePick);
-      //console.log('Retrieved value selectedWeekDayListVal:', selectedWeekDayListVal.length);
+      //
       //ScheduleStartEndDate();
       AsyncStorage.getItem('WeekendDayDataList').then(function (res) {
         if (AsyncStorage != null) {
@@ -584,13 +573,12 @@ export default function CampaignScheduleScreen(props) {
           setNoOfDayRepeateInTime(RepeatDay);
           var DayRepeatInSelectDate = RepeatDay;
         }
-        console.log('RepeatDay RepeatDay RepeatDay ', RepeatDay);
+
         console.log(
           'DayRepeatInSelectDate DayRepeatInSelectDate DayRepeatInSelectDate ',
           DayRepeatInSelectDate,
         );
 
-        console.log('scheduleSelectEndDate 465 ', scheduleSelectEndDate);
         if (
           SelectIntervalTypeIdVal == '' ||
           SelectIntervalTypeIdVal == 1 ||
@@ -600,21 +588,20 @@ export default function CampaignScheduleScreen(props) {
         ) {
           const startDate = StartDatePick;
           const endDate = EndDatePick;
-          console.log('StartDatePick 498 ', StartDatePick);
-          console.log('EndDatePick 499 ', EndDatePick);
+
           //var Difference_In_Time = endDate.getTime() - startDate.getTime();
           var Difference_In_Days =
             (endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24);
           //var Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24);
           var TotalNumberSelect = Math.round(Difference_In_Days);
-          console.log('Difference_In_Days ', TotalNumberSelect);
+
           setSelectTotalDays(TotalNumberSelect);
           let weekdays = 0;
           let RepeatDay = 0;
           const currentDate = new Date(startDate);
           while (currentDate <= endDate) {
             const dayOfWeek = currentDate.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-            // console.log("dayOfWeek:", dayOfWeek);
+            //
             if (dayOfWeek >= 1 && dayOfWeek <= 6) {
               weekdays++;
             }
@@ -623,9 +610,9 @@ export default function CampaignScheduleScreen(props) {
               RepeatDay++;
             }
             currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
-            //console.log("Weekdays:", weekdays);
-            //console.log(" Select Day :", selectedWeekDayListVal-1);
-            //console.log(" Day repeat:", RepeatDay);
+            //
+            //
+            //
             setNoOfDayRepeateInTime(RepeatDay);
             var DayRepeatInSelectDate = RepeatDay;
           }
@@ -639,23 +626,17 @@ export default function CampaignScheduleScreen(props) {
                      setScheduleMessageCount('');
                  }
                  else{ */
-        //console.log('networkSelectSocialMedia ',networkSelectSocialMedia);
-        //console.log('weekendDayList 423 ', weekendDayList);
-        console.log('networkSelectSocialMedia ', networkSelectSocialMedia);
-        console.log('selectIntervalTypeForDays ' + selectIntervalTypeForDays);
-        console.log('intervalTypeCustom ' + intervalTypeCustom);
-        //console.log('intervalVal 547 ' + intervalVal);
-        console.log('selectTotalDays ' + selectTotalDays);
+        //
+        //
+
+        //
+
         if (selectedWeekDayListVal == null || selectedWeekDayListVal == '') {
-          console.log('selectedWeekDayListVal equal Null ');
         } else {
-          console.log('multipliedArray total Select day ');
           const multipliedArray = selectedWeekDayListVal.length;
-          console.log('multipliedArray total Select day ' + multipliedArray);
         }
-        console.log('noOfDayRepeateInTime ' + noOfDayRepeateInTime);
+
         if (SelectIntervalTypeIdVal == 6) {
-          console.log('************ SelectIntervalTypeIdVal == 6 **********');
           const startDate = StartDatePick;
           const endDate = EndDatePick;
           var Difference_In_Days =
@@ -664,32 +645,31 @@ export default function CampaignScheduleScreen(props) {
           console.log(
             'TotalNumberSelect TotalNumberSelect  ' + TotalNumberSelect,
           );
-          // console.log('intervalVal intervalVal  ' + intervalVal);
+          //
           console.log(
             'multipliedArray multipliedArray  ' + selectedWeekDayListVal,
           );
           const multipliedArray = selectedWeekDayListVal.length;
-          console.log('multipliedArray multipliedArray  ' + multipliedArray);
+
           var TotalHours = 1440;
           //var result = TotalHours / intervalVal;
           var result = TotalHours / IntervalValSelect;
-          console.log('result result  ' + result);
+
           var GetValue = TotalNumberSelect * result;
-          console.log('GetValue GetValue  ' + GetValue);
+
           var GetTotalValue = GetValue * multipliedArray;
-          console.log('GetTotalValue GetTotalValue  ' + GetTotalValue);
+
           //const result = TotalHours / intervalVal;
           // const resultAdd = result * noOfDayRepeateInTime;
           //var TotalCampaignBudget =  resultAdd * multipliedArray;
           var TotalCampaignBudget = Math.round(GetTotalValue);
-          console.log('TotalCampaignBudget ' + TotalCampaignBudget);
+
           if (
             TotalCampaignBudget == '' ||
             TotalCampaignBudget == 'Infinity' ||
             TotalCampaignBudget == null ||
             isNaN(TotalCampaignBudget)
           ) {
-            console.log('TotalCampaignBudget empty 444 ' + TotalCampaignBudget);
             setScheduleMessageCount(0);
           } else {
             setScheduleMessageCount(TotalCampaignBudget);
@@ -697,18 +677,15 @@ export default function CampaignScheduleScreen(props) {
           //if(TotalCampaignBudget > )
         }
         if (SelectIntervalTypeIdVal == 2) {
-          console.log(' ************ SelectIntervalTypeIdVal  2 *************');
           const startDate = StartDatePick;
           const endDate = EndDatePick;
-          console.log('startDate 628 ', startDate);
-          console.log('endDate 628 ', endDate);
+
           //let currentDate = new Date(startDate);
           // var Difference_In_Time = endDate.getTime() - startDate.getTime();
           var Difference_In_Days =
             (endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24);
           var TotalNumberSelect = Math.round(Difference_In_Days);
-          console.log('Difference_In_Days ', TotalNumberSelect);
-          console.log('selectedWeekDayListVal length ', selectedWeekDayListVal);
+
           if (selectedWeekDayListVal == null || selectedWeekDayListVal == '') {
             console.log(
               'selectedWeekDayListVal empty ',
@@ -717,19 +694,18 @@ export default function CampaignScheduleScreen(props) {
             var multipliedArray = 0;
           } else {
             var multipliedArray = selectedWeekDayListVal.length;
-            console.log('multipliedArray ', multipliedArray);
           }
           if (multipliedArray == 1) {
             console.log(
               'multipliedArray ==1 multipliedArray ==1 ',
               multipliedArray,
             );
-            console.log('noOfDayRepeateInTime ' + noOfDayRepeateInTime);
+
             // var GetTotalValue = TotalNumberSelect * multipliedArray;
             // var TotalCampaignBudget =  Math.round(GetTotalValue);
             // var GetTotalValue = DayRepeatInSelectDate;
             var TotalCampaignBudget = DayRepeatInSelectDate;
-            console.log('TotalCampaignBudget 591 ' + TotalCampaignBudget);
+
             if (
               TotalCampaignBudget == '' ||
               TotalCampaignBudget == 'Infinity' ||
@@ -741,7 +717,7 @@ export default function CampaignScheduleScreen(props) {
               );
               setScheduleMessageCount(0);
             } else {
-              //console.log('TotalCampaignBudget else ' + TotalCampaignBudget);
+              //
               setScheduleMessageCount(TotalCampaignBudget);
             }
           } else {
@@ -749,7 +725,7 @@ export default function CampaignScheduleScreen(props) {
             var GetTotalValue = GetValue * multipliedArray;
             //var TotalCampaignBudget =  Math.round(GetTotalValue);
             var TotalCampaignBudget = Math.round(GetTotalValue);
-            console.log('TotalCampaignBudget 604 ' + TotalCampaignBudget);
+
             if (
               TotalCampaignBudget == '' ||
               TotalCampaignBudget == Infinity ||
@@ -773,7 +749,7 @@ export default function CampaignScheduleScreen(props) {
           console.log(
             'SelectIntervalTypeIdVal ==3 *****************************',
           );
-          console.log('selectedWeekDayListVal ', selectedWeekDayListVal);
+
           if (selectedWeekDayListVal == null || selectedWeekDayListVal == '') {
             setScheduleMessageCount('0');
           } else {
@@ -781,11 +757,10 @@ export default function CampaignScheduleScreen(props) {
               'selectedWeekDayListVal ',
               selectedWeekDayListVal.length,
             );
-            console.log('noOfDayRepeateInTime ', noOfDayRepeateInTime);
-            console.log('DayRepeatInSelectDate ', DayRepeatInSelectDate);
+
             const TotalCampaignBudget =
               selectedWeekDayListVal.length * DayRepeatInSelectDate;
-            console.log('TotalCampaignBudget ' + TotalCampaignBudget);
+
             setScheduleMessageCount(TotalCampaignBudget);
           }
         }
@@ -793,7 +768,7 @@ export default function CampaignScheduleScreen(props) {
           console.log(
             'SelectIntervalTypeIdVal ==4 ***************************** ',
           );
-          console.log('selectedWeekDayListVal ', selectedWeekDayListVal);
+
           if (selectedWeekDayListVal == null || selectedWeekDayListVal == '') {
             setScheduleMessageCount('0');
           } else {
@@ -801,12 +776,10 @@ export default function CampaignScheduleScreen(props) {
               'selectedWeekDayListVal ',
               selectedWeekDayListVal.length,
             );
-            console.log('noOfDayRepeateInTime ', noOfDayRepeateInTime);
-            console.log('DayRepeatInSelectDate ', DayRepeatInSelectDate);
-            console.log('TotalNumberSelect ', TotalNumberSelect);
+
             var GetTotalValue = TotalNumberSelect / 30;
             const TotalCampaignBudget = Math.round(GetTotalValue);
-            console.log('TotalCampaignBudget ' + TotalCampaignBudget);
+
             setScheduleMessageCount(TotalCampaignBudget);
           }
         }
@@ -820,25 +793,22 @@ export default function CampaignScheduleScreen(props) {
             if (selectedWeekDayListVal == 1) {
               setScheduleMessageCount(1);
             } else {
-              console.log('TotalNumberSelect ', TotalNumberSelect);
               var GetTotalValue = TotalNumberSelect / 360;
               const TotalCampaignBudget =
                 selectedWeekDayListVal.length * DayRepeatInSelectDate;
-              console.log('TotalCampaignBudget ' + TotalCampaignBudget);
+
               setScheduleMessageCount(TotalCampaignBudget);
             }
           }
         }
         if (SelectIntervalTypeIdVal == 1) {
-          console.log('else 463');
-          console.log('selectedWeekDayListVal ', selectedWeekDayListVal);
           if (selectedWeekDayListVal == null || selectedWeekDayListVal == '') {
             setScheduleMessageCount('0');
           } else {
             setScheduleMessageCount(1);
           }
         }
-        // console.log('networkSelectSocialMedia networkSelectSocialMedia ', networkSelectSocialMedia);
+        //
         //networkEditWithScheduleDisabled, setNetworkEditWithScheduleDisabled
         if (networkEditWithScheduleDisabled == true) {
           console.log(
@@ -852,7 +822,6 @@ export default function CampaignScheduleScreen(props) {
           var filteredNames = networkSelectSocialMedia
             .filter(item => item.purchasedQouta < TotalCampaignBudget)
             .map(item => item.desc);
-          console.log('filteredNames filteredNames if ' + filteredNames);
         } else {
           console.log(
             'filteredNames networkUpdateSelected ' +
@@ -861,10 +830,8 @@ export default function CampaignScheduleScreen(props) {
           var filteredNames = networkUpdateSelected
             .filter(item => item.purchasedQouta < TotalCampaignBudget)
             .map(item => item.desc);
-          console.log('filteredNames filteredNames else ' + filteredNames);
         }
         if (filteredNames.length > 0) {
-          console.log('filteredNames.length ' + filteredNames.length);
           if (
             TotalCampaignBudget == '' ||
             TotalCampaignBudget == 'Infinity' ||
@@ -912,9 +879,8 @@ export default function CampaignScheduleScreen(props) {
     }
   };
   const SelectIntervalClick = async value => {
-    console.log('interval Type val ' + value);
-    // console.log('interval Type Id ' + IntervalType[value].id);
-    //console.log('interval intervalVal ' + intervalVal);
+    //
+    //
     AsyncStorage.removeItem('WeekendDayDataList');
     setScheduleMessageCount('');
     setWeekendDayList('');
@@ -945,14 +911,13 @@ export default function CampaignScheduleScreen(props) {
     setSelectIntervalTypeId(IntervalType[selectIntervalType].id);
   };
   function SelectCountryClick(value) {
-    console.log('SelectCountryClick  Id ' + value);
     console.log('selectCountry  ' + JSON.stringify(selectCountry));
     console.log('selectCountry  ' + JSON.stringify(selectCountry[value].id));
     setSelectCountryVal(value);
     setSelectCountryId(selectCountry[value].id);
   }
   function SelectStateClick(value) {
-    // console.log('SelectStateClick Id ' + value);
+    //
     //console.log('selectState  ' + JSON.stringify(selectState));
     console.log('selectState  ' + JSON.stringify(selectState[value].id));
     setSelectStateVal(value);
@@ -965,7 +930,7 @@ export default function CampaignScheduleScreen(props) {
         'LoadOrgData LoadOrgData Asyncdata  ',
         JSON.stringify(Asyncdata),
       );
-      var CurrencyIdDetail = Asyncdata.find(item => item.id === 1);
+      var CurrencyIdDetail = Asyncdata[0].currencyId;
       console.log(
         'currencyId currencyId currencyId ',
         JSON.stringify(CurrencyIdDetail),
@@ -990,7 +955,7 @@ export default function CampaignScheduleScreen(props) {
         console.log(
           'AllNetworkList AllNetworkList  ' + JSON.stringify(AllNetworkList),
         );
-        // console.log('OrganizationId OrganizationId ' + OrganizationId);
+        //
         //console.log('CampaignUpdate detail attachments ' + JSON.stringify(Asyncdata.data.attachments));
         // console.log('CampaignUpdate Network ' + JSON.stringify(Asyncdata.data.compaignsdetails));
         var UpdateCampaign = Asyncdata.data;
@@ -1031,7 +996,7 @@ export default function CampaignScheduleScreen(props) {
           console.log('attachmentData ' + JSON.stringify(attachmentData));
           // console.log('attachmentData parse , stringify ', JSON.stringify(JSON.parse(attachmentData)));
           // console.log('attachmentData stringify ', JSON.stringify(attachmentData));
-          // console.log('attachmentData d ',attachmentData);
+          //
           const namesArray = attachmentData.map(
             item => item.image.split('.')[1],
           );
@@ -1042,9 +1007,7 @@ export default function CampaignScheduleScreen(props) {
             attachmentData.find(item => item.image.split('.')[1] === 'pdf') ==
               ''
           ) {
-            console.log('pdf empty ');
           } else {
-            console.log('pdf empty else ');
             var FoundElementPdf = attachmentData.find(
               item => item.image.split('.')[1] === 'pdf',
             );
@@ -1073,8 +1036,7 @@ export default function CampaignScheduleScreen(props) {
               item => item.image.split('.')[1] === 'WEBP',
             );
           }
-          console.log('attachmentData ', attachmentData);
-          console.log('attachmentData full name ', attachmentData[0].image);
+
           console.log(
             'attachmentData name ',
             attachmentData[0].image.split('.')[1],
@@ -1135,11 +1097,11 @@ export default function CampaignScheduleScreen(props) {
               };
             }
           });
-          console.log('AttachmentForEdit ', AttachmentForEdit);
+
           global.EditAttachment = 2;
-          // console.log('attachmentData ',attachmentData[0]);
+          //
           //var imagedetail = servicesettings.Imagebaseuri + attachmentData[0].image.replace(/\\/g, "/").replace(',',"").replace(' //',"");
-          //console.log('imagedetail: ', imagedetail);
+          //
           setImageSelectedDataFlatelist(AttachmentForEdit);
           setImageSelectedData(AttachmentForEdit);
           /* var ImageResponseData = response.assets[0];
@@ -1153,7 +1115,7 @@ export default function CampaignScheduleScreen(props) {
                         var base64 = ImageResponseData.base64;
                         var ImageDetailFlatList = {fileName:fileName,uri:uri, fileType:fileType,height:height,base64:base64,ImageId:ImageId};*/
           //var videouri = servicesettings.Imagebaseuri + FoundElementMP4.replace(/\\/g, "/").replace(',',"").replace(' //',"");
-          //console.log('FoundElementMP4 ' + servicesettings.Imagebaseuri + FoundElementMP4.image);
+          //
           //setNetworkName(namesArray);
           //{"ImageId": "615", "fileName": "615.jpg", "fileType": "image/jpeg", "height": 162, "uri": "file:///data/user/0/com.blazor.bdmt/cache/rn_image_picker_lib_temp_032b729a-1830-4802-a513-94d64e18ad0f.jpg"},
 
@@ -1162,7 +1124,7 @@ export default function CampaignScheduleScreen(props) {
 
           var VideoUriLink =
             servicesettings.Imagebaseuri + FoundElementMP4.image;
-          console.log('VideoUriLink ', VideoUriLink);
+
           setVideouri(VideoUriLink);
           //if(attachmentData || attachmentData != ))
         }
@@ -1182,7 +1144,7 @@ export default function CampaignScheduleScreen(props) {
               JSON.stringify(ScheduleDataUpdate),
           );
           compaignExecutionSchedulesFlatlist.push({ScheduleDataUpdate});
-          //console.log('compaignExecutionSchedulesFlatlist ', compaignExecutionSchedulesFlatlist);
+          //
           // compaignExecutionSchedulesFlatlist(ScheduleDataUpdate);
           var ScheduleDataEdit = ScheduleDataUpdate.map(item => {
             return {
@@ -1223,13 +1185,12 @@ export default function CampaignScheduleScreen(props) {
           JSON.stringify(DataNetwork),
         );
         var networkcount = NetworkDetailList;
-        console.log('networkcount ', networkcount);
+
         let counter = 0;
         for (let i = 0; i < networkcount.length; i++) {
           if (networkcount[i].networkId != '') counter++;
         }
         setNetworkCount(counter);
-        console.log('counter ' + counter);
 
         var Allprops = [
           'id',
@@ -1255,8 +1216,6 @@ export default function CampaignScheduleScreen(props) {
             return newo;
           }, {});
         });
-        console.log('result1 ', AllNetworkList);
-        console.log('result2 ', NetworkDetailList);
 
         console.log('NetworkDetailList ' + JSON.stringify(NetworkDetailList));
         // var NetworkJson = resultAllNetwork.map((item) => {
@@ -1279,7 +1238,7 @@ export default function CampaignScheduleScreen(props) {
             lastUpdatedAt: moment.utc(currentdate).format(),
           };
         });
-        console.log('resultAllNetwork ', resultAllNetwork);
+
         console.log('NetworkJson data ' + JSON.stringify(NetworkJson));
         //setNetworkData(resultAllNetwork);
         //setNetworkSelectedData(resultAllNetwork);
@@ -1326,7 +1285,7 @@ export default function CampaignScheduleScreen(props) {
       'imageSelectedData.length AttatchmentVideo ',
       imageSelectedData,
     );
-    console.log('imageSelectedData.length ', imageSelectedData.length);
+
     setIndex(1);
   }
   function Press(index) {
@@ -1354,7 +1313,6 @@ export default function CampaignScheduleScreen(props) {
       console.log('NextAddSchedule  ' + JSON.stringify(networkData));
     }
     if (index == 2) {
-      console.log('NextAddSchedule');
       NextAddSchedule();
       // AddScheduleClick();
       //setIndex(index)
@@ -1380,16 +1338,15 @@ export default function CampaignScheduleScreen(props) {
   };
   const CallCampaignData = async () => {
     //var simplearr = [];
-    // console.log('networksDetail ', networksDetail.length);
+    //
     //var allweekDays = ('[' +(selectSunday ==true?(1+','):'') + (selectMonday ==true?(2+','):'')+ (selectTuesday ==true?(3+','):'')+ (selectWednesday ==true?(4+','):'') + (selectThursday ==true?(5+','):'') + (selectFriday ==true?(6+','):'')+ (selectSaturday ==true?(7):'')+']')
     var allweekDays = weekendDayList;
     console.log(
       'networkFinalData networkFinalData 584 ',
       networkSelectSocialMedia,
     );
-    console.log('networkFinalData networkFinalData 594 ', networkFinalData);
+
     if (checkUpdateData.randomId == '' || checkUpdateData.randomId == null) {
-      console.log('add new Case ', checkUpdateData);
       var randomIdSchedule = Math.floor(100000 + Math.random() * 900000);
       // await networksDetail.map((nwk) => (
       await networkSelectSocialMedia.map(
@@ -1462,7 +1419,6 @@ export default function CampaignScheduleScreen(props) {
         ),
       );
     } else {
-      console.log('checkRandomId  edit schedule ', checkUpdateData);
       console.log(
         'xxxxxxxx  edit schedule ',
         JSON.stringify(checkUpdateData.props),
@@ -1470,7 +1426,7 @@ export default function CampaignScheduleScreen(props) {
       var randomIdSchedule = checkUpdateData.randomId;
       var editId = checkUpdateData.props.id;
       var compaignDetailIdEdit = checkUpdateData.props.compaignDetailId;
-      console.log('editId ', editId);
+
       //var randomIdSchedule = checkUpdateData.id;
       var updateCheduleist = scheduleListAddArray.filter(
         (e, i) => e.randomId !== checkUpdateData.randomId,
@@ -1479,12 +1435,12 @@ export default function CampaignScheduleScreen(props) {
         (e, i) => e.randomId !== checkUpdateData.randomId,
       );
       // setScheduleListAddArray(scheduleListAddArray.filter((e, i) => e.randomId !== checkUpdateData.randomId));
-      console.log('updateCheduleist update  ', updateCheduleist);
+
       setScheduleListAddArray(updateCheduleist);
       setScheduleListAddArrayZZZ(updateCheduleistZZZ);
       //setNetworkData(networkData.filter((e, i) => e.randomId !== SelectProps.randomId));
       //await networkFinalData.map((nwk) => (
-      console.log('networkSelectSocialMedia ', networkSelectSocialMedia);
+
       await networkSelectSocialMedia.map(
         nwk =>
           (
@@ -1580,14 +1536,14 @@ export default function CampaignScheduleScreen(props) {
               // setCompaignExecutionSchedules(prevv => [...prevv, {'id':0,'rowVer':0,'days':((allweekDays=="" || allweekDays==null) ?"":allweekDays),'networkId':(nwk=="" || nwk==null) ?"":nwk.networkId,'compaignDetailId':0,'isFixedTime':(selectStatus==1?1:0),'startTime':moment.utc(SelectStartDate).format(),'finishTime':moment.utc(SelectEndDate).format(),'interval':Number(intervalVal),'status':selectStatus==null||selectStatus==''?1:selectStatus,intervalTypeId:IntervalType[selectIntervalType].id,randomId:randomIdSchedule}])
 
          )); */
-    // console.log('scheduleListAddArray new 2 ', scheduleListAddArray);
+    //
 
     // console.log('compaignExecutionSchedules click')
     // const compaignExecutionSchedules;
     //var ScheduleData = {'id':0,'rowVer':0,'days':((allweekDays=="" || allweekDays==null) ?"":allweekDays),'networkId':(nwk=="" || nwk==null) ?"":nwk.networkId,'compaignDetailId':0,'isFixedTime':(selectStatus==1?1:0),'startTime':moment.utc(SelectStartDate==''?SelectCampaignStartDate:SelectStartDate).format(),'finishTime':moment.utc(SelectEndDate =='' ?SelectCampaignEndDate:SelectEndDate).format(),'interval':Number(intervalVal),'status':selectStatus==null||selectStatus==''?1:selectStatus,intervalTypeId:IntervalType[selectIntervalType].id,randomId:randomIdSchedule};
-    //  console.log('compaignExecutionSchedules list ', compaignExecutionSchedules);
+    //
     //setScheduleListAddArray(prevv => [...prevv, compaignExecutionSchedules]);
-    //console.log('scheduleListAddArray new ', scheduleListAddArray);
+    //
 
     //const [scheduleListAddArray, setScheduleListAddArray] = useState('');
 
@@ -1619,11 +1575,9 @@ export default function CampaignScheduleScreen(props) {
     //setScheduleData(compaignExecutionSchedulesFlatlist);
   };
   const checkdataclick = () => {
-    console.log('networkSelectSocialMedia 629 ', networkSelectSocialMedia);
     console.log('checkdataclick new ', JSON.stringify(scheduleListAddArray));
     //if(scheduleListAddArray =='' || scheduleListAddArray == null ){
     if (scheduleListAddArrayZZZ == '' || scheduleListAddArrayZZZ == null) {
-      console.log('scheduleListAddArray empty ');
     }
     //else if(scheduleListAddArray !='' || scheduleListAddArray != null ){
     else if (scheduleListAddArrayZZZ != '' || scheduleListAddArrayZZZ != null) {
@@ -1633,11 +1587,10 @@ export default function CampaignScheduleScreen(props) {
         ];
       };
       const uniqueData = removeDuplicates(scheduleListAddArrayZZZ, 'randomId');
-      console.log('uniqueData new fffffff ', uniqueData);
-      //console.log('checkdataclick networkFinalData ', networkFinalData);
-      console.log('scheduleListAddArrayZZZ 633 ', scheduleListAddArrayZZZ);
-      console.log('networkSelectSocialMedia 633 ', networkSelectSocialMedia);
-      // console.log('uniqueData ', uniqueData);
+
+      //
+
+      //
       //networkSelectSocialMedia
       //setScheduleData(uniqueData);
       setScheduleData(uniqueData);
@@ -1675,13 +1628,11 @@ export default function CampaignScheduleScreen(props) {
       setTotalBudget(0);
     } else {
       setTotalBudget(totalPrice);
-      console.log('totalPrice totalPrice ', totalPrice);
     }
     if (totalMessageCount == null || totalMessageCount == '') {
       setTotalMessageCountAdd(0);
     } else {
       setTotalMessageCountAdd(totalMessageCount);
-      console.log('totalMessageCount totalMessageCount ', totalMessageCount);
     }
     // const filteredItemsssss = myBundlingsData.filter(item => item.networkId === 0);
     AsyncStorage.setItem(
@@ -1689,19 +1640,18 @@ export default function CampaignScheduleScreen(props) {
       JSON.stringify(scheduleListAddArrayZZZ),
     );
     //AsyncStorage.setItem('SubmitDataArray', JSON.stringify(scheduleListAddArray));
-    // console.log('checkdataclick networkFinalData ', networkFinalData);
+    //
     //setNetworkFinalData(networkFinalData);
-    //console.log('scheduleListAddArray scheduleListAddArray ', scheduleListAddArray[0].randomId);
+    //
   };
   const CheckDataforSubmitClick = () => {
     setAddScheduleDataForSubmit(scheduleListAddArray);
   };
-  //console.log('StartDateForAlert ',startDateForAlert);
-  //console.log('EndDateForAlert ',endDateForAlert);
+  //
+  //
   const AddCampaignClick = async () => {
-    console.log('networkSelectSocialMedia 623 ', networkSelectSocialMedia);
-    // console.log('StartDateForAlert ',startDateForAlert);
-    // console.log('EndDateForAlert ',endDateForAlert);
+    //
+    //
     // console.log('networkFinalData 123 ', JSON.stringify(networkFinalData));
     setNetworkSelectedAddSchedule(networkFinalData);
     console.log(
@@ -1727,7 +1677,7 @@ export default function CampaignScheduleScreen(props) {
     if (weekendDayList == '' || weekendDayList == '') {
       Toast.showWithGravity('Please select Day', Toast.LONG, Toast.CENTER);
       //Toast.show('Please select Day');
-      // console.log('Please select Day');
+      //
       return;
     }
     await CallCampaignData();
@@ -1735,7 +1685,6 @@ export default function CampaignScheduleScreen(props) {
       compaignExecutionSchedules == null ||
       compaignExecutionSchedules == ''
     ) {
-      console.log('AddCampaignClick again click');
     }
     //var CampaignListDataadd = {'CompaignNetworks': networksDetail,'compaignExecutionSchedules': compaignExecutionSchedules};
     // var CampaignListDataadd = {'CompaignNetworks': networkFinalData,'compaignExecutionSchedules': compaignExecutionSchedules};
@@ -1750,7 +1699,6 @@ export default function CampaignScheduleScreen(props) {
     // AsyncStorage.setItem('CampaignListDataa', {'CompaignNetworks': networksDetail,'compaignExecutionSchedules': compaignExecutionSchedules});
 
     if (CampaignListDataadd == '' || CampaignListDataadd == null) {
-      console.log('empty');
     } else {
       setAddScheduleDataForSubmit(
         CampaignListDataadd.compaignExecutionSchedules,
@@ -1759,7 +1707,7 @@ export default function CampaignScheduleScreen(props) {
       //Network Count
       var networkcount = CampaignListDataadd.CompaignNetworks;
       //setNetworkSelectSocialMedia(networkcount);
-      console.log('networkcount ', networkcount);
+
       let counter = 0;
       for (let i = 0; i < networkcount.length; i++) {
         if (networkcount[i].networkId != '') counter++;
@@ -1777,13 +1725,12 @@ export default function CampaignScheduleScreen(props) {
       for (let i = 0; i < schCountval.length; i++) {
         if (schCountval[i].randomId != '') schcounter++;
       }
-      console.log('schcounter ' + schcounter); // 6
+      // 6
       setScheduleCount(schcounter);
       if (
         compaignExecutionSchedules == '' ||
         compaignExecutionSchedules == null
       ) {
-        console.log('empty');
       } else {
         var IntervalTypeCampaignnew =
           compaignExecutionSchedules[0].intervalTypeId;
@@ -1803,7 +1750,7 @@ export default function CampaignScheduleScreen(props) {
           setIntervalValue('Other');
         }
         //setScheduleData(campaignListData.CompaignNetworks);
-        console.log('intervalValue ', intervalValue);
+
         //ScheduleSummaryListClick();
         setspinner(true);
         ClearDataAfterAddSchedule();
@@ -1825,7 +1772,7 @@ export default function CampaignScheduleScreen(props) {
         'addScheduleDataForSubmit click ',
         JSON.stringify(addScheduleDataForSubmit),
       );
-      console.log('campaignIdForEdit ', campaignIdForEdit);
+
       //var subimtData = JSON.stringify({'id':0,"lastUpdatedBy":userId,"status": 1,'orgId':Number(organizationId),'hashTags':Hashtag,'template':template,'subject':Subject,'CompaignNetworks': networksDetail,'compaignExecutionSchedules': compaignExecutionSchedules});
       //var subimtDataBody = {'id':0,"createdBy":Number(userId),"lastUpdatedBy":Number(userId),"status": 1,'orgId':Number(organizationId),'hashTags':Hashtag,'description':template,'name':Subject,'title':Subject,'CompaignNetworks': networksDetail,'compaignExecutionSchedules': compaignExecutionSchedules};
       var subimtDataBody = {
@@ -1874,7 +1821,7 @@ export default function CampaignScheduleScreen(props) {
           Authorization: servicesettings.AuthorizationKey,
         },
       };
-      console.log('headerFetch from createcompletecompaign', headerFetch.body);
+
       fetch(servicesettings.baseuri + 'createcompletecompaign', headerFetch)
         .then(response => response.json())
         .then(responseJson => {
@@ -1921,14 +1868,12 @@ export default function CampaignScheduleScreen(props) {
               }
             } else {
               setspinner(false);
-              console.log('createcompletecompaign responseJson', responseJson);
 
               let ID = responseJson.data;
               const data = new FormData();
               try {
                 for (var i = 0; i <= 4; i++) {
                   if (imageSelectedData != '') {
-                    console.log('imageSelectedData', imageSelectedData);
                     data.append('files', {
                       name: imageSelectedData[i].fileName,
                       uri: imageSelectedData[i].uri,
@@ -2029,7 +1974,7 @@ export default function CampaignScheduleScreen(props) {
       //Comment Data
       /*.then((responseJson) => {
                   setspinner(false);
-                  console.log("data response createcompletecompaign =>",responseJson);
+                  
                   if(responseJson.status==false && responseJson.errorCode=='404')
                   {
                       responseJson.message!=''?Toast.show(' '+ responseJson.message +' '):Toast.show('Data not found');
@@ -2113,11 +2058,9 @@ export default function CampaignScheduleScreen(props) {
     setAddScheduleVisible(true);
     //Toast.showWithGravity('Add schedule successfully!',Toast.LONG,Toast.CENTER);
     //alert('Add schedule successfully');
-    console.log('Add schedule successfully');
   };
   function onPicture(vehicleImages) {
     setPicture({vehicleImages});
-    console.log('vehicleImages ' + vehicleImages);
   }
   const requestCameraPermission = async () => {
     check(
@@ -2141,7 +2084,6 @@ export default function CampaignScheduleScreen(props) {
                 ? PERMISSIONS.IOS.CAMERA
                 : PERMISSIONS.ANDROID.CAMERA,
             ).then(result => {
-              console.log(result);
               if (result == 'granted') {
                 launchCamera(
                   {
@@ -2161,10 +2103,8 @@ export default function CampaignScheduleScreen(props) {
             });
             break;
           case RESULTS.LIMITED:
-            console.log('The permission is limited: some actions are possible');
             break;
           case RESULTS.GRANTED:
-            console.log('The permission is granted');
             launchCamera(
               {
                 mediaType: 'photo',
@@ -2181,7 +2121,6 @@ export default function CampaignScheduleScreen(props) {
             );
             break;
           case RESULTS.BLOCKED:
-            console.log('The permission is denied and not requestable anymore');
             setpermissionVisible(true);
             break;
         }
@@ -2208,14 +2147,13 @@ export default function CampaignScheduleScreen(props) {
       launchCamera({mediaType: 'photo', includeBase64: true}, response => {
         setModalVisiblecamera(false);
         if (response.assets == undefined || response.assets == '') {
-          console.log('response empty  ');
         } else {
           //opencamera();
           // console.log('response else  ')
           //console.log('response response  ' + JSON.stringify(response));
           setimg(response.assets);
           var ImageName = Math.floor(100 + Math.random() * 900).toString();
-          console.log('ImageName img ' + ImageName);
+
           var ImageResponseData = response.assets[0];
           var fileTypeMake = ImageResponseData.fileName;
           var uri = ImageResponseData.uri;
@@ -2286,12 +2224,11 @@ export default function CampaignScheduleScreen(props) {
         response => {
           setModalVisiblecamera(false);
           if (response.assets == undefined || response.assets == '') {
-            console.log('response empty  ');
           } else {
             //setModalVisiblecamera(false);
             console.log('response Select img ' + JSON.stringify(response));
             var ImageName = Math.floor(100 + Math.random() * 900).toString();
-            //console.log('ImageName img ' + ImageName);
+            //
             var ImageResponseData = response.assets[0];
             var fileTypeMake = ImageResponseData.fileName;
             var uri = ImageResponseData.uri;
@@ -2302,7 +2239,7 @@ export default function CampaignScheduleScreen(props) {
             var ImageId = ImageName;
             var height = ImageResponseData.height;
             var base64 = ImageResponseData.base64;
-            console.log('imageSelectedData Captured Image: 1706');
+
             setImgUriBase64(base64);
             var ImageDetailFlatList = {
               fileName: fileName,
@@ -2335,7 +2272,7 @@ export default function CampaignScheduleScreen(props) {
               height: height,
               ImageId: ImageId,
             };
-            console.log('imageSelectedData Captured Image: 1713');
+
             setImageSelectedData(prevv => [...prevv, imageDetail]);
             if (imageSelectedData.length <= 1) {
               setModalVisiblecamera(true);
@@ -2376,12 +2313,10 @@ export default function CampaignScheduleScreen(props) {
     global.EditAttachment = 1;
     try {
       const response = await DocumentPicker.pick({
-        type: [DocumentPicker.types.allFiles],
+        type: [DocumentPicker.types.pdf],
       });
       if (response == undefined || response == '') {
-        console.log('response empty  ');
       } else {
-        console.log('result ', response);
         var ImageName = Math.floor(100 + Math.random() * 900).toString();
         global.PdfPreviousId = ImageName;
         var PdfResponseData = response[0];
@@ -2412,10 +2347,8 @@ export default function CampaignScheduleScreen(props) {
     } catch (err) {
       if (DocumentPicker.isCancel(err)) {
         // User cancelled the document picker
-        console.log('User cancelled the document picker.');
       } else {
         // Error occurred while picking the document
-        console.log('Error occurred while picking the document:', err);
       }
     }
   };
@@ -2425,11 +2358,10 @@ export default function CampaignScheduleScreen(props) {
       //launchImageLibrary({durationLimit:580, mediaType: 'video'},(response) =>
       {
         setModalVisiblecamera(false);
-        //console.log('Video Response ',response.assets[0]);
+        //
         //setimg(response);
-        //console.log('.fileSize',response.assets);
+        //
         if (response.assets == undefined || response.assets == '') {
-          console.log('response empty  ');
         } else {
           //setgallery(true)
           var ImageName = Math.floor(100 + Math.random() * 900).toString();
@@ -2460,19 +2392,17 @@ export default function CampaignScheduleScreen(props) {
         }
       },
     );
-    //console.log('GetVideo Fromcamera response ', response);
+    //
   }
   function GetVideoFromGallery() {
-    console.log('GetVideoFromGallery click ');
     setModalVisiblecamera(false);
     //launchCamera({durationLimit:580, mediaType: 'video'},(response) =>
     launchImageLibrary({durationLimit: 580, mediaType: 'video'}, response => {
       setModalVisiblecamera(false);
-      //console.log('Video Response ',response.assets[0]);
+      //
       //setimg(response);
-      //console.log('.fileSize',response.assets);
+      //
       if (response.assets == undefined || response.assets == '') {
-        console.log('response empty  ');
       } else {
         //setgallery(true)
         var ImageName = Math.floor(100 + Math.random() * 900).toString();
@@ -2502,7 +2432,7 @@ export default function CampaignScheduleScreen(props) {
         // console.log('Get Video Data: ', JSON.stringify(imageSelectedData));
       }
     });
-    //console.log('GetVideo Fromcamera response ', response);
+    //
   }
   function DeleteAttachmentFile() {
     setAttatchmentAutoGenerate('');
@@ -2512,7 +2442,6 @@ export default function CampaignScheduleScreen(props) {
     global.Network_Detail = 1;
   }
   function ScheduleSummaryListClick() {
-    console.log('ScheduleSummaryListClick click ', scheduleListAddArray.length);
     if (scheduleListAddArray.length != 0) {
       setScheduleSummeryVisible(true);
       checkdataclick();
@@ -2535,7 +2464,7 @@ export default function CampaignScheduleScreen(props) {
   const handleConfirm = async date => {
     try {
       setSelectStartDate(date);
-      console.log('setSelectStartDate ', date);
+
       var startDate = date.toString();
       //AsyncStorage.setItem('selectScheduleEndDate', JSON.stringify(date));
       await AsyncStorage.setItem('startDate', startDate);
@@ -2557,7 +2486,7 @@ export default function CampaignScheduleScreen(props) {
   const handleEndConfirm = async date => {
     try {
       setSelectEndDate(date);
-      console.log('setSelectEndDate ', date);
+
       var endDate = date.toString();
       //AsyncStorage.setItem('selectScheduleEndDate', JSON.stringify(date));
       await AsyncStorage.setItem('endDate', endDate);
@@ -2595,9 +2524,7 @@ export default function CampaignScheduleScreen(props) {
     //ClickWeekendDays();
     //MakeBudget();
   };
-  const VehicleRefresh = () => {
-    console.log('vehicle refresh ');
-  };
+  const VehicleRefresh = () => {};
   const reportfunctionhide = () => {
     //AddOfferRefresh();
     setreportmodalVisible(false);
@@ -2631,7 +2558,7 @@ export default function CampaignScheduleScreen(props) {
     setSelectCampaignEndDate(date);
     var endDate = date.toString();
     await AsyncStorage.setItem('endDate', endDate);
-    console.log('setSelectCampaignEndDate ', date);
+
     hideCampaignEndConfirm();
   };
   const hideCampaignEndConfirm = () => {
@@ -2639,7 +2566,7 @@ export default function CampaignScheduleScreen(props) {
   };
   //campaign Date Select end
   function NextAddSchedule() {
-    // console.log('NextAddSchedule check data  ' + networkData);
+    //
     global.NextSchedule = 1;
     if (networkData == null || networkData == '') {
       console.log('NextAddSchedule empty ' + JSON.stringify(networkData));
@@ -2664,7 +2591,6 @@ export default function CampaignScheduleScreen(props) {
     }
   }
   function ActionNetworkDataClick(SelectProps) {
-    console.log('ActionNetworkDataClick ', SelectProps);
     // var SelectProps = {'networkId':props.id,'id':0,'name':props.name,'description':props.description,'categoryId':props.categoryId,'status':props.status,'createdBy':props.createdBy};
     setNetworkData(prev => [...prev, SelectProps]);
     if (global.NextSchedule == 1) {
@@ -2674,7 +2600,6 @@ export default function CampaignScheduleScreen(props) {
     //AddScheduleClick();
   }
   function ActionNetworkDataRemoveClick(SelectProps) {
-    console.log('ActionNetworkDataRemoveClick ', SelectProps);
     setNetworkData(
       networkData.filter((e, i) => e.networkId !== SelectProps.networkId),
     );
@@ -2684,13 +2609,11 @@ export default function CampaignScheduleScreen(props) {
     // AddScheduleClick();
   }
   function ActionNetworkSelectedDataClick(SelectProps) {
-    console.log('SelectProps  ', SelectProps.purchasedQouta);
-    console.log('ActionNetworkSelectedDataClick ', networkSelectSocialMedia);
     setNetworkSelectSocialMedia(prev => [...prev, SelectProps]);
     //setNetworkFinalData(prev => [...prev, SelectProps]);
-    console.log('networkSelectSocialMedia ', networkSelectSocialMedia);
+
     setSelectedNetworkShowBudget(networkSelectSocialMedia);
-    console.log('SelectedNetworkShowBudget ', selectedNetworkShowBudget);
+
     //CheckNetworkSelected();
   }
   function ActionNetworkSelectedDataRemoveClick(SelectProps) {
@@ -2765,7 +2688,6 @@ export default function CampaignScheduleScreen(props) {
       }
       currentDate.setDate(currentDate.getDate() + 1);
     }
-    console.log('count ', count);
   };
 
   // function ClickWeekendDays(value) {
@@ -2795,13 +2717,13 @@ export default function CampaignScheduleScreen(props) {
       SelectIntervalTypeIdVal == 5
     ) {
       //if(selectIntervalTypeForDays =='' || selectIntervalTypeForDays ==1 || selectIntervalTypeForDays == 3 || selectIntervalTypeForDays == 4 || selectIntervalTypeForDays == 5 ){
-      // console.log('weekendDayList weekendDayList weekendDayList weekendDayList weekendDayList  ', weekendDayList);
+      //
       if (value == 1) {
         if (selectSunday == true) {
           setSelectSunday(false);
           //setWeekendDayList(weekendDayList.filter((e, i) => e !== value));
           var updatedArray = [...weekendDayList.filter((e, i) => e !== value)];
-          console.log('updatedArray remove: ', updatedArray);
+
           setWeekendDayList(updatedArray);
         }
         if (selectSunday == false) {
@@ -2815,7 +2737,7 @@ export default function CampaignScheduleScreen(props) {
           setSelectSaturday(false);
           //setWeekendDayList(prev => [...prev, value]);
           var updatedArray = [value];
-          console.log('updatedArray: ', updatedArray);
+
           setWeekendDayList(updatedArray);
         }
       } else if (value == 2) {
@@ -2823,7 +2745,7 @@ export default function CampaignScheduleScreen(props) {
           setSelectMonday(false);
           //setWeekendDayList(weekendDayList.filter((e, i) => e !== value));
           var updatedArray = [...weekendDayList.filter((e, i) => e !== value)];
-          console.log('updatedArray remove: ', updatedArray);
+
           setWeekendDayList(updatedArray);
         }
         if (selectMonday == false) {
@@ -2837,7 +2759,7 @@ export default function CampaignScheduleScreen(props) {
           setSelectSaturday(false);
           //setWeekendDayList(prev => [...prev, value]);
           var updatedArray = [value];
-          console.log('updatedArray: ', updatedArray);
+
           setWeekendDayList(updatedArray);
         }
       } else if (value == 3) {
@@ -2845,7 +2767,7 @@ export default function CampaignScheduleScreen(props) {
           setSelectTuesday(false);
           //setWeekendDayList(weekendDayList.filter((e, i) => e !== value));
           var updatedArray = [...weekendDayList.filter((e, i) => e !== value)];
-          console.log('updatedArray remove: ', updatedArray);
+
           setWeekendDayList(updatedArray);
         }
         if (selectTuesday == false) {
@@ -2859,7 +2781,7 @@ export default function CampaignScheduleScreen(props) {
           setSelectSaturday(false);
           //setWeekendDayList(prev => [...prev, value]);
           var updatedArray = [value];
-          console.log('updatedArray: ', updatedArray);
+
           setWeekendDayList(updatedArray);
         }
       } else if (value == 4) {
@@ -2867,7 +2789,7 @@ export default function CampaignScheduleScreen(props) {
           setSelectWednesday(false);
           //setWeekendDayList(weekendDayList.filter((e, i) => e !== value));
           var updatedArray = [...weekendDayList.filter((e, i) => e !== value)];
-          console.log('updatedArray remove: ', updatedArray);
+
           setWeekendDayList(updatedArray);
         }
         if (selectWednesday == false) {
@@ -2881,7 +2803,7 @@ export default function CampaignScheduleScreen(props) {
           setSelectSaturday(false);
           //setWeekendDayList(prev => [...prev, value]);
           var updatedArray = [value];
-          console.log('updatedArray: ', updatedArray);
+
           setWeekendDayList(updatedArray);
         }
       } else if (value == 5) {
@@ -2889,7 +2811,7 @@ export default function CampaignScheduleScreen(props) {
           setSelectThursday(false);
           //setWeekendDayList(weekendDayList.filter((e, i) => e !== value));
           var updatedArray = [...weekendDayList.filter((e, i) => e !== value)];
-          console.log('updatedArray remove: ', updatedArray);
+
           setWeekendDayList(updatedArray);
         }
         if (selectThursday == false) {
@@ -2903,7 +2825,7 @@ export default function CampaignScheduleScreen(props) {
           setSelectSaturday(false);
           //setWeekendDayList(prev => [...prev, value]);
           var updatedArray = [value];
-          console.log('updatedArray: ', updatedArray);
+
           setWeekendDayList(updatedArray);
         }
       } else if (value == 6) {
@@ -2911,7 +2833,7 @@ export default function CampaignScheduleScreen(props) {
           setSelectFriday(false);
           //setWeekendDayList(weekendDayList.filter((e, i) => e !== value));
           var updatedArray = [...weekendDayList.filter((e, i) => e !== value)];
-          console.log('updatedArray remove: ', updatedArray);
+
           setWeekendDayList(updatedArray);
         }
         if (selectFriday == false) {
@@ -2925,7 +2847,7 @@ export default function CampaignScheduleScreen(props) {
           setSelectSaturday(false);
           //setWeekendDayList(prev => [...prev, value]);
           var updatedArray = [value];
-          console.log('updatedArray: ', updatedArray);
+
           setWeekendDayList(updatedArray);
         }
       } else if (value == 7) {
@@ -2933,7 +2855,7 @@ export default function CampaignScheduleScreen(props) {
           setSelectSaturday(false);
           // setWeekendDayList(weekendDayList.filter((e, i) => e !== value));
           var updatedArray = [...weekendDayList.filter((e, i) => e !== value)];
-          console.log('updatedArray remove: ', updatedArray);
+
           setWeekendDayList(updatedArray);
         }
         if (selectSaturday == false) {
@@ -2947,11 +2869,11 @@ export default function CampaignScheduleScreen(props) {
           setSelectSaturday(true);
           //setWeekendDayList(prev => [...prev, value]);
           var updatedArray = [value];
-          console.log('updatedArray: ', updatedArray);
+
           setWeekendDayList(updatedArray);
         }
       }
-      console.log('updatedArray: ', updatedArray);
+
       AsyncStorage.setItem('WeekendDayDataList', JSON.stringify(updatedArray));
       MakeBudget();
     } else {
@@ -2960,14 +2882,14 @@ export default function CampaignScheduleScreen(props) {
           setSelectSunday(false);
           // setWeekendDayList(weekendDayList.filter((e, i) => e !== value));
           var updatedArray = [...weekendDayList.filter((e, i) => e !== value)];
-          console.log('updatedArray remove: ', updatedArray);
+
           setWeekendDayList(updatedArray);
         }
         if (selectSunday == false) {
           setSelectSunday(true);
           //setWeekendDayList(prev => [...prev, value]);
           var updatedArray = [...weekendDayList, value];
-          console.log('updatedArray: ', updatedArray);
+
           setWeekendDayList(updatedArray);
         }
       } else if (value == 2) {
@@ -2975,14 +2897,14 @@ export default function CampaignScheduleScreen(props) {
           setSelectMonday(false);
           //setWeekendDayList(weekendDayList.filter((e, i) => e !== value));
           var updatedArray = [...weekendDayList.filter((e, i) => e !== value)];
-          console.log('updatedArray remove: ', updatedArray);
+
           setWeekendDayList(updatedArray);
         }
         if (selectMonday == false) {
           setSelectMonday(true);
           // setWeekendDayList(prev => [...prev, value]);
           var updatedArray = [...weekendDayList, value];
-          console.log('updatedArray: ', updatedArray);
+
           setWeekendDayList(updatedArray);
         }
       } else if (value == 3) {
@@ -2990,14 +2912,14 @@ export default function CampaignScheduleScreen(props) {
           setSelectTuesday(false);
           //setWeekendDayList(weekendDayList.filter((e, i) => e !== value));
           var updatedArray = [...weekendDayList.filter((e, i) => e !== value)];
-          console.log('updatedArray remove: ', updatedArray);
+
           setWeekendDayList(updatedArray);
         }
         if (selectTuesday == false) {
           setSelectTuesday(true);
           //setWeekendDayList(prev => [...prev, value]);
           var updatedArray = [...weekendDayList, value];
-          console.log('updatedArray: ', updatedArray);
+
           setWeekendDayList(updatedArray);
         }
       } else if (value == 4) {
@@ -3005,14 +2927,14 @@ export default function CampaignScheduleScreen(props) {
           setSelectWednesday(false);
           //setWeekendDayList(weekendDayList.filter((e, i) => e !== value));
           var updatedArray = [...weekendDayList.filter((e, i) => e !== value)];
-          console.log('updatedArray remove: ', updatedArray);
+
           setWeekendDayList(updatedArray);
         }
         if (selectWednesday == false) {
           setSelectWednesday(true);
           //setWeekendDayList(prev => [...prev, value]);
           var updatedArray = [...weekendDayList, value];
-          console.log('updatedArray: ', updatedArray);
+
           setWeekendDayList(updatedArray);
         }
       } else if (value == 5) {
@@ -3020,14 +2942,14 @@ export default function CampaignScheduleScreen(props) {
           setSelectThursday(false);
           // setWeekendDayList(weekendDayList.filter((e, i) => e !== value));
           var updatedArray = [...weekendDayList.filter((e, i) => e !== value)];
-          console.log('updatedArray remove: ', updatedArray);
+
           setWeekendDayList(updatedArray);
         }
         if (selectThursday == false) {
           setSelectThursday(true);
           //setWeekendDayList(prev => [...prev, value]);
           var updatedArray = [...weekendDayList, value];
-          console.log('updatedArray: ', updatedArray);
+
           setWeekendDayList(updatedArray);
         }
       } else if (value == 6) {
@@ -3035,14 +2957,14 @@ export default function CampaignScheduleScreen(props) {
           setSelectFriday(false);
           //setWeekendDayList(weekendDayList.filter((e, i) => e !== value));
           var updatedArray = [...weekendDayList.filter((e, i) => e !== value)];
-          console.log('updatedArray remove: ', updatedArray);
+
           setWeekendDayList(updatedArray);
         }
         if (selectFriday == false) {
           setSelectFriday(true);
           //setWeekendDayList(prev => [...prev, value]);
           var updatedArray = [...weekendDayList, value];
-          console.log('updatedArray: ', updatedArray);
+
           setWeekendDayList(updatedArray);
         }
       } else if (value == 7) {
@@ -3050,18 +2972,18 @@ export default function CampaignScheduleScreen(props) {
           setSelectSaturday(false);
           //setWeekendDayList(weekendDayList.filter((e, i) => e !== value));
           var updatedArray = [...weekendDayList.filter((e, i) => e !== value)];
-          console.log('updatedArray remove: ', updatedArray);
+
           setWeekendDayList(updatedArray);
         }
         if (selectSaturday == false) {
           setSelectSaturday(true);
           //setWeekendDayList(prev => [...prev, value]);
           var updatedArray = [...weekendDayList, value];
-          console.log('updatedArray: ', updatedArray);
+
           setWeekendDayList(updatedArray);
         }
       }
-      console.log('updatedArray final: ', updatedArray);
+
       setSelectedWeekDayList(updatedArray);
       AsyncStorage.setItem('WeekendDayDataList', JSON.stringify(updatedArray));
       MakeBudget();
@@ -3086,7 +3008,7 @@ export default function CampaignScheduleScreen(props) {
     const currentDate = new Date(startDate);
     while (currentDate <= endDate) {
       const dayOfWeek = currentDate.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-      console.log('dayOfWeek:', dayOfWeek);
+
       if (dayOfWeek >= 1 && dayOfWeek <= 6) {
         weekdays++;
       }
@@ -3094,14 +3016,12 @@ export default function CampaignScheduleScreen(props) {
         RepeatDay++;
       }
       currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
-      console.log('Weekdays:', weekdays);
-      console.log(value - 1 + ' Day repeat:', RepeatDay);
+
       setNoOfDayRepeateInTime(RepeatDay);
     }
     return {weekdays, RepeatDay};
   }
   function DeleteScheduleList(propsDelete) {
-    console.log('propsDelete ', propsDelete);
     var newdatacheck = scheduleListAddArray.filter(
       (e, i) => e.randomId !== propsDelete.randomId,
     );
@@ -3116,8 +3036,7 @@ export default function CampaignScheduleScreen(props) {
   // function UpdateScheduleList(propsUpdate) {
   const UpdateScheduleList = async propsUpdate => {
     setNetworkEditWithScheduleDisabled(false);
-    console.log('UpdateSchedule propsUpdate ', propsUpdate);
-    console.log('Network propsUpdate ', propsUpdate.props);
+
     setSelectStartTime('');
     setSelectEndTime('');
     setSelectStartDate('');
@@ -3128,12 +3047,12 @@ export default function CampaignScheduleScreen(props) {
       propsUpdate.props.CompaignNetworks == null ||
       propsUpdate.props.CompaignNetworks == 'undefined'
     ) {
-      // console.log('props all list CompaignNetworks if ');
+      //
       var FilterSelectedNetwork = DataNetwork.filter(
         (e, i) => e.networkId === propsUpdate.props.networkId,
       );
-      //console.log('all network DataNetwork edit ', DataNetwork);
-      // console.log('filter updateCheduleist ', updateCheduleist);
+      //
+      //
       var FilterSelectedNetworkSingleJson = FilterSelectedNetwork.map(item => {
         return {
           id: item.id,
@@ -3150,28 +3069,26 @@ export default function CampaignScheduleScreen(props) {
           lastUpdatedBy: Number(userId),
         };
       });
-      console.log('updateCheduleist ', FilterSelectedNetworkSingleJson);
+
       //var NetworkEditWithSchedule = [{"networkId": propsUpdate.props.networkId}]
       var NetworkEditWithSchedule = FilterSelectedNetworkSingleJson;
-      console.log('NetworkEditWithSchedule edit ', NetworkEditWithSchedule);
     } else {
       console.log(
         'props all list CompaignNetworks else ',
         propsUpdate.props.CompaignNetworks,
       );
       var NetworkEditWithSchedule = propsUpdate.props.CompaignNetworks;
-      console.log('NetworkEditWithSchedule ', NetworkEditWithSchedule.days);
     }
     setNetworkSelectSocialMedia(NetworkEditWithSchedule);
     setNetworkUpdateSelected(NetworkEditWithSchedule);
     //await AsyncStorage.setItem('NetworkSelectSocialMediaNew', NetworkEditWithSchedule);
-    //console.log('networkSelectSocialMedia ', propsUpdate.networkSelectSocialMedia);
+    //
     setCheckUpdateData(propsUpdate);
     //global.UpdatRandomId = propsUpdate.randomId;
     varPropsVal = propsUpdate.props;
     //const selectedItem = propsUpdate.props.find(item => item.networkId === networkId);
-    //console.log('selectedItem ', selectedItem);
-    console.log('"randomId ', varPropsVal.randomId);
+    //
+
     setSelectStartDate(varPropsVal.startTime);
     setSelectEndDate(varPropsVal.finishTime);
     var endDate = varPropsVal.finishTime.toString();
@@ -3212,7 +3129,6 @@ export default function CampaignScheduleScreen(props) {
     AddScheduleClick();
   };
   function ScheduleDetail(props) {
-    console.log('props ', props);
     setNetworksSummary(props.networkId);
     setIntervalSummary(props.interval);
     setStartDateSummary(props.startTime);
@@ -3268,7 +3184,6 @@ export default function CampaignScheduleScreen(props) {
     setScheduleSummaryDetailVisible(true);
   }
   function DeletePdfAttachment() {
-    console.log('imageSelectedData new ', imageSelectedData);
     if (global.EditAttachment == 1) {
       var PdfId = global.PdfPreviousId;
       setImageSelectedData(
@@ -3291,7 +3206,6 @@ export default function CampaignScheduleScreen(props) {
     }
   }
   function DeleteVideoAttachment() {
-    console.log('DeleteVideoAttachment new ', imageSelectedData);
     if (global.EditAttachment == 1) {
       var SelectVideoId = global.VideoPreviousId;
       setImageSelectedData(
@@ -3312,7 +3226,6 @@ export default function CampaignScheduleScreen(props) {
     }
   }
   function DeletePicture(ImageId) {
-    console.log('ImageId new ', ImageId);
     if (imageSelectedData.length == 0) {
       console.log(
         'imageSelectedDataFlatelist new ',
@@ -3331,15 +3244,13 @@ export default function CampaignScheduleScreen(props) {
       'imageSelectedDataFlatelist new ',
       imageSelectedDataFlatelist.length,
     );
-    console.log('imageSelectedData new ', imageSelectedData.length);
   }
   function AttachmentPreviewClick() {
     setModalVisiblecamera(true);
-    console.log('imageSelectedDataFlatelist new ', imageSelectedDataFlatelist);
+
     //setImageSelectedData(prevv => [...prevv, imageDetail]);
   }
   function AttachmentsEnabledClick() {
-    console.log('imageSelectedDataFlatelist new ', imageSelectedDataFlatelist);
     if (AttachmentsEnabled == true) {
       setAttachmentsEnabled(false);
     } else {
@@ -3347,7 +3258,6 @@ export default function CampaignScheduleScreen(props) {
     }
   }
   function CampaignAudienceEnabledClick() {
-    console.log('imageSelectedDataFlatelist new ', imageSelectedDataFlatelist);
     if (SelectAreaEnabled == true) {
       setSelectAreaEnabled(false);
     } else {
@@ -3355,7 +3265,6 @@ export default function CampaignScheduleScreen(props) {
     }
   }
   function AttachmentComplate() {
-    console.log('imageSelectedData new ', imageSelectedData.length);
     alert(
       'Only three Attachments are allowed! If you want to change any one please remove attached',
     );
@@ -3390,7 +3299,10 @@ export default function CampaignScheduleScreen(props) {
         style={styles.CrossIconStyleFlatlistView}
         value={ImageId}
         onPress={() => DeletePicture(ImageId)}>
-        <Image source={Crossicon} style={styles.CrossIconStyle} />
+        <Image
+          source={Crossicon}
+          style={[styles.CrossIconStyle, {tintColor: theme.tintColor}]}
+        />
       </TouchableOpacity>
       <View style={{textAlign: 'center'}} selectable={true}>
         {global.EditAttachment == 1 ? (
@@ -3436,17 +3348,20 @@ export default function CampaignScheduleScreen(props) {
   );
   const renderItemsss = ({item}) => (
     <TouchableOpacity
-      style={styles.NetworkQuotaViewTouch}
+      style={[
+        styles.NetworkQuotaViewTouch,
+        {backgroundColor: theme.inputBackColor},
+      ]}
       onPress={() => MakeBudget()}>
       <View style={styles.NetworkQuotaView}>
         <View style={{width: 50 + '%', marginRight: 8}}>
-          <Text style={{fontSize: 15}}>
+          <Text style={{fontSize: 15, color: theme.textColor}}>
             {item.desc} : {item.purchasedQouta - item.usedQuota} /{' '}
             {scheduleMessageCount} ,
           </Text>
         </View>
         <View style={{width: 50 + '%'}}>
-          <Text style={{fontSize: 15}}>
+          <Text style={{fontSize: 15, color: theme.textColor}}>
             Budget: {(scheduleMessageCount * item.unitPriceInclTax).toFixed(2)}{' '}
             {orgCurrencyName}
           </Text>
@@ -3458,615 +3373,741 @@ export default function CampaignScheduleScreen(props) {
     return (
       <KeyboardAwareScrollView
         resetScrollToCoords={{x: 0, y: 0}}
-        contentContainerStyle={styles.container}
+        contentContainerStyle={[
+          styles.container,
+          {backgroundColor: theme.backgroundColor},
+        ]}
         scrollEnabled={false}>
-        <View style={styles.container}>
-          <ScrollView>
+        <TouchableOpacity>
+          <AppBreadcrumb
+            crumbs={[
+              {
+                text: 'Campaign',
+              },
+              {text: 'Networks'},
+              {text: 'Schedule'},
+            ]}
+            onSelect={index => {
+              handlePress(index);
+            }}
+            selectedIndex={Index}
+          />
+        </TouchableOpacity>
+        <ScrollView>
+          <Alert
+            massagetype={'warning'}
+            hide={hidepermission}
+            confirm={confirmpermission}
+            Visible={permissionVisible}
+            alerttype={'confirmation'}
+            Title={'Confirmation'}
+            Massage={'"Spentem" would like to access camera ?'}></Alert>
+          <View>
             <Alert
               massagetype={'warning'}
-              hide={hidepermission}
-              confirm={confirmpermission}
-              Visible={permissionVisible}
+              hide={hide}
+              confirm={confirm}
+              Visible={Visible}
               alerttype={'confirmation'}
               Title={'Confirmation'}
-              Massage={'"Spentem" would like to access camera ?'}></Alert>
-            <TouchableOpacity>
-              <AppBreadcrumb
-                crumbs={[
+              Massage={'Do you want to discard ?'}></Alert>
+            <View style={styles.uploadmodelcontainer}>
+              <TextInput
+                placeholderTextColor={theme.placeholderColor}
+                style={[
+                  styles.sectionStyle,
+                  Subject == '' ? styles.mandatoryControl : null,
+                  ,
                   {
-                    text: 'Campaign',
+                    backgroundColor: theme.inputBackColor,
+                    color: theme.textColor,
                   },
-                  {text: 'Networks'},
-                  {text: 'Schedule'},
                 ]}
-                onSelect={index => {
-                  handlePress(index);
-                }}
-                selectedIndex={Index}
+                value={Subject}
+                onChangeText={value => setSubject(value)}
+                placeholder="Subject"
+                clearTextOnFocus={true}
+                keyboardAppearance={'dark'}
+                KeyboardType={'default'}
+                maxLength={80}
+                minLength={3}
               />
-              {/* <Breadcrumb
-                entities={['   Campaign', 'Networks', 'Schedule ']}
-                crumbsContainerStyle={crumbsContainerStyle}
-                crumbStyle={crumbStyle}
-                activeCrumbStyle={activeCrumbStyle}
-                crumbTextStyle={crumbTextStyle}
-                activeCrumbTextStyle={activeCrumbTextStyle}
-                isTouchable={true}
-                flowDepth={Index}
-                height={41}
-                borderRadius={5}
-                onCrumbPress={index => {
-                  handlePress(index);
-                }}
-              /> */}
-            </TouchableOpacity>
-            <View style={styles.container}>
-              <Alert
-                massagetype={'warning'}
-                hide={hide}
-                confirm={confirm}
-                Visible={Visible}
-                alerttype={'confirmation'}
-                Title={'Confirmation'}
-                Massage={'Do you want to discard ?'}></Alert>
-              <View style={styles.uploadmodelcontainer}>
-                <TextInput
-                  placeholderTextColor={colors.TextBoxPlaceholderColor}
-                  style={[
-                    styles.sectionStyle,
-                    Subject == '' ? styles.mandatoryControl : null,
-                  ]}
-                  value={Subject}
-                  onChangeText={value => setSubject(value)}
-                  placeholder="Subject"
-                  clearTextOnFocus={true}
-                  keyboardAppearance={'dark'}
-                  KeyboardType={'default'}
-                  maxLength={80}
-                  minLength={3}
-                />
-                <TextInput
-                  placeholderTextColor={colors.TextBoxPlaceholderColor}
-                  style={[
-                    styles.sectionStyle,
-                    Hashtag == '' ? styles.mandatoryControl : null,
-                  ]}
-                  value={Hashtag}
-                  onChangeText={value => setHashtag(value)}
-                  placeholder="Hashtag"
-                  clearTextOnFocus={true}
-                  keyboardAppearance={'dark'}
-                  KeyboardType={'default'}
-                  maxLength={100}
-                  minLength={3}
-                />
-                <TextInput
-                  multiline={true}
-                  textAlignVertical="top"
-                  placeholderTextColor={colors.TextBoxPlaceholderColor}
-                  style={[
-                    styles.sectionStyleTitle,
-                    template == '' ? styles.mandatoryControl : null,
-                  ]}
-                  value={template}
-                  onChangeText={value => settemplate(value)}
-                  placeholder="Template..."
-                  clearTextOnFocus={true}
-                  keyboardAppearance={'dark'}
-                  KeyboardType={'default'}
-                  maxLength={200}
-                />
-                {SelectAreaEnabled == false ? (
+              <TextInput
+                placeholderTextColor={theme.placeholderColor}
+                style={[
+                  styles.sectionStyle,
+                  Hashtag == '' ? styles.mandatoryControl : null,
+                  ,
+                  {
+                    backgroundColor: theme.inputBackColor,
+                    color: theme.textColor,
+                  },
+                ]}
+                value={Hashtag}
+                onChangeText={value => setHashtag(value)}
+                placeholder="Hashtag"
+                clearTextOnFocus={true}
+                keyboardAppearance={'dark'}
+                KeyboardType={'default'}
+                maxLength={100}
+                minLength={3}
+              />
+              <TextInput
+                multiline={true}
+                textAlignVertical="top"
+                placeholderTextColor={theme.placeholderColor}
+                style={[
+                  styles.sectionStyleTitle,
+                  template == '' ? styles.mandatoryControl : null,
+                  ,
+                  {
+                    backgroundColor: theme.inputBackColor,
+                    color: theme.textColor,
+                  },
+                ]}
+                value={template}
+                onChangeText={value => settemplate(value)}
+                placeholder="Template..."
+                clearTextOnFocus={true}
+                keyboardAppearance={'dark'}
+                KeyboardType={'default'}
+                maxLength={200}
+              />
+              {SelectAreaEnabled == false ? (
+                <TouchableOpacity
+                  style={{
+                    width: 100 + '%',
+                    marginLeft: 4,
+                    marginTop: 12,
+                    flexDirection: 'row',
+                    textAlign: 'center',
+                  }}
+                  onPress={() => CampaignAudienceEnabledClick()}>
+                  <View style={{flexDirection: 'row', width: 90 + '%'}}>
+                    <Text
+                      style={[
+                        styles.AttachmentHeading,
+                        {color: theme.textColor},
+                      ]}>
+                      Campaign Audience
+                    </Text>
+                  </View>
+                  <View style={{width: 10 + '%'}}>
+                    <Image
+                      source={UpArrowIcon}
+                      style={[
+                        styles.AttachmentHeadingIcon,
+                        {tintColor: theme.tintColor},
+                      ]}
+                    />
+                  </View>
+                </TouchableOpacity>
+              ) : (
+                <View
+                  style={{
+                    width: Dimensions.get('window').width - 50,
+                    marginHorizontal: 25,
+                  }}>
                   <TouchableOpacity
                     style={{
-                      width: 100 + '%',
-                      marginLeft: 4,
-                      marginTop: 12,
-                      flexDirection: 'row',
                       textAlign: 'center',
+                      flexDirection: 'row',
+                      marginTop: 10,
                     }}
                     onPress={() => CampaignAudienceEnabledClick()}>
                     <View style={{flexDirection: 'row', width: 90 + '%'}}>
-                      <Text style={styles.AttachmentHeading}>
+                      <Text
+                        style={[
+                          styles.AttachmentHeading,
+                          {color: theme.textColor},
+                        ]}>
                         Campaign Audience
                       </Text>
                     </View>
                     <View style={{width: 10 + '%'}}>
                       <Image
-                        source={UpArrowIcon}
-                        style={styles.AttachmentHeadingIcon}
+                        source={DownArrowIcon}
+                        style={[
+                          styles.AttachmentHeadingIcon,
+                          {tintColor: theme.tintColor},
+                        ]}
                       />
                     </View>
                   </TouchableOpacity>
-                ) : (
-                  <View
-                    style={{
-                      width: Dimensions.get('window').width - 50,
-                      marginHorizontal: 25,
-                    }}>
-                    <TouchableOpacity
-                      style={{
-                        textAlign: 'center',
-                        flexDirection: 'row',
-                        marginTop: 10,
-                      }}
-                      onPress={() => CampaignAudienceEnabledClick()}>
-                      <View style={{flexDirection: 'row', width: 90 + '%'}}>
-                        <Text style={styles.AttachmentHeading}>
-                          Campaign Audience
-                        </Text>
-                      </View>
-                      <View style={{width: 10 + '%'}}>
-                        <Image
-                          source={DownArrowIcon}
-                          style={styles.AttachmentHeadingIcon}
-                        />
-                      </View>
-                    </TouchableOpacity>
-                    <View style={styles.CampaignAudienceView}>
-                      <View style={{textAlign: 'center'}}>
-                        <Dropdown
-                          placeholderTextColor="gray"
-                          onSelect={value => SelectCountryClick(value)}
-                          selectedIndex={selectCountryVal}
-                          style={[
-                            styles.CampaignAudiencePickerstyle,
-                            styles.mandatoryControl,
-                          ]}
-                          items={selectCountry}
-                          placeholder="Select Country..."
-                          clearTextOnFocus={true}
-                          keyboardAppearance={'dark'}
-                          maxLength={5}
-                        />
-                      </View>
-                      <View style={{textAlign: 'center'}}>
-                        <Dropdown
-                          placeholderTextColor="gray"
-                          onSelect={value => SelectStateClick(value)}
-                          selectedIndex={selectStateVal}
-                          style={[
-                            styles.CampaignAudiencePickerstyle,
-                            styles.mandatoryControl,
-                          ]}
-                          items={selectState}
-                          placeholder="Select State..."
-                          clearTextOnFocus={true}
-                          keyboardAppearance={'dark'}
-                          maxLength={5}
-                        />
-                      </View>
+                  <View style={styles.CampaignAudienceView}>
+                    <View style={{textAlign: 'center'}}>
+                      <Dropdown
+                        placeholderTextColor="gray"
+                        onSelect={value => SelectCountryClick(value)}
+                        selectedIndex={selectCountryVal}
+                        style={[
+                          styles.CampaignAudiencePickerstyle,
+                          styles.mandatoryControl,
+                          {backgroundColor: theme.inputBackColor},
+                        ]}
+                        items={selectCountry}
+                        placeholder="Select Country..."
+                        clearTextOnFocus={true}
+                        keyboardAppearance={'dark'}
+                        maxLength={5}
+                      />
+                    </View>
+                    <View style={{textAlign: 'center'}}>
+                      <Dropdown
+                        placeholderTextColor="gray"
+                        onSelect={value => SelectStateClick(value)}
+                        selectedIndex={selectStateVal}
+                        style={[
+                          styles.CampaignAudiencePickerstyle,
+                          styles.mandatoryControl,
+                          {backgroundColor: theme.inputBackColor},
+                        ]}
+                        items={selectState}
+                        placeholder="Select State..."
+                        clearTextOnFocus={true}
+                        keyboardAppearance={'dark'}
+                        maxLength={5}
+                      />
                     </View>
                   </View>
-                )}
-                {AttachmentsEnabled == false ? (
+                </View>
+              )}
+              {AttachmentsEnabled == false ? (
+                <TouchableOpacity
+                  style={{
+                    width: 100 + '%',
+                    marginLeft: 4,
+                    marginTop: 12,
+                    flexDirection: 'row',
+                    textAlign: 'center',
+                  }}
+                  onPress={() => AttachmentsEnabledClick()}>
+                  <View style={{flexDirection: 'row', width: 90 + '%'}}>
+                    <Text
+                      style={[
+                        styles.AttachmentHeading,
+                        {color: theme.textColor},
+                      ]}>
+                      Attachments
+                    </Text>
+                    <Image
+                      source={AttachmentIcon}
+                      style={[
+                        styles.AttachmentHeadingIcon,
+                        {tintColor: theme.tintColor},
+                      ]}
+                    />
+                  </View>
+                  <View style={{width: 10 + '%'}}>
+                    <Image
+                      source={UpArrowIcon}
+                      style={[
+                        styles.AttachmentHeadingIcon,
+                        {tintColor: theme.tintColor},
+                      ]}
+                    />
+                  </View>
+                </TouchableOpacity>
+              ) : (
+                <View>
                   <TouchableOpacity
                     style={{
-                      width: 100 + '%',
-                      marginLeft: 4,
-                      marginTop: 7,
-                      flexDirection: 'row',
                       textAlign: 'center',
+                      flexDirection: 'row',
+                      marginTop: 5,
                     }}
                     onPress={() => AttachmentsEnabledClick()}>
                     <View style={{flexDirection: 'row', width: 90 + '%'}}>
-                      <Text style={styles.AttachmentHeading}>Attachments</Text>
+                      <Text
+                        style={[
+                          styles.AttachmentHeading,
+                          {color: theme.textColor},
+                        ]}>
+                        Attachments
+                      </Text>
                       <Image
                         source={AttachmentIcon}
-                        style={styles.AttachmentHeadingIcon}
+                        style={[
+                          styles.AttachmentHeadingIcon,
+                          {tintColor: theme.tintColor},
+                        ]}
                       />
                     </View>
                     <View style={{width: 10 + '%'}}>
                       <Image
-                        source={UpArrowIcon}
-                        style={styles.AttachmentHeadingIcon}
+                        source={DownArrowIcon}
+                        style={[
+                          styles.AttachmentHeadingIcon,
+                          {tintColor: theme.tintColor},
+                        ]}
                       />
                     </View>
                   </TouchableOpacity>
-                ) : (
-                  <View>
-                    <TouchableOpacity
-                      style={{
-                        textAlign: 'center',
-                        flexDirection: 'row',
-                        marginTop: 5,
-                      }}
-                      onPress={() => AttachmentsEnabledClick()}>
-                      <View style={{flexDirection: 'row', width: 90 + '%'}}>
-                        <Text style={styles.AttachmentHeading}>
-                          Attachments
-                        </Text>
-                        <Image
-                          source={AttachmentIcon}
-                          style={styles.AttachmentHeadingIcon}
-                        />
-                      </View>
-                      <View style={{width: 10 + '%'}}>
-                        <Image
-                          source={DownArrowIcon}
-                          style={styles.AttachmentHeadingIcon}
-                        />
-                      </View>
-                    </TouchableOpacity>
-                    <View style={styles.ProfileImgView}>
-                      <View style={{width: 33 + '%', textAlign: 'center'}}>
-                        <Text style={styles.AttatchmentTitle}>Photo</Text>
-                        {ImgUriBase64 == null || ImgUriBase64 == '' ? (
-                          <TouchableOpacity
-                            selectable={true}
-                            style={styles.ProfileStyleView}
-                            onPress={() => {
-                              CapturePhoto();
-                            }}>
-                            <Image
-                              source={
-                                img == '' || img == undefined
-                                  ? profileIcon
-                                  : {uri: 'data:image/png;base64,' + img.base64}
-                              }
-                              style={styles.ProfileStyle}
-                            />
-                          </TouchableOpacity>
-                        ) : (
-                          <View style={{textAlign: 'center'}}>
-                            <TouchableOpacity
-                              style={styles.CrossIconStyleView}
-                              onPress={() => CapturePhoto()}>
-                              <Image
-                                source={PlusIcon}
-                                style={styles.CrossIconStyle}
-                              />
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                              style={styles.ProfileStylePreviewView}
-                              onPress={() => CapturePhoto()}>
-                              <Image
-                                source={{
-                                  uri: 'data:image/png;base64,' + ImgUriBase64,
-                                }}
-                                style={styles.ProfileStylePreview}
-                              />
-                            </TouchableOpacity>
-                          </View>
-                        )}
-                      </View>
-                      <View style={{width: 33 + '%', textAlign: 'center'}}>
-                        <Text style={styles.AttatchmentTitle}>Video</Text>
-                        {Videouri == null || Videouri == '' ? (
-                          <TouchableOpacity
-                            selectable={true}
-                            style={styles.ProfileStyleView}
-                            onPress={() => AttatchmentVideo()}>
-                            <Image
-                              source={
-                                img1 == '' || img1 == undefined
-                                  ? profileIcon
-                                  : {
-                                      uri:
-                                        'data:image/png;base64,' +
-                                        img1[0].base64,
-                                    }
-                              }
-                              style={styles.ProfileStyle}
-                            />
-                          </TouchableOpacity>
-                        ) : (
-                          <View style={{textAlign: 'center', marginLeft: 20}}>
-                            <TouchableOpacity
-                              style={styles.CrossIconStyleView}
-                              onPress={() => AttatchmentVideo()}>
-                              <Image
-                                source={PlusIcon}
-                                style={styles.CrossIconStyle}
-                              />
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                              style={styles.VideoControlView}
-                              onPress={() => AttatchmentVideo()}>
-                              <Video
-                                playableDuration={0.5}
-                                resizeMode="cover"
-                                paused={false}
-                                source={{uri: Videouri}}
-                                style={[
-                                  {width: 100, height: 100, borderRadius: 50},
-                                ]}
-                                //   style={{width: 75, height: 75}}
-                              />
-                            </TouchableOpacity>
-                          </View>
-                        )}
-                      </View>
-                      <View style={{width: 33 + '%', textAlign: 'center'}}>
-                        <Text style={styles.AttatchmentTitle}>PDF</Text>
-                        {PdfUri == null || PdfUri == '' ? (
-                          <TouchableOpacity
-                            selectable={true}
-                            style={styles.ProfileStyleView}
-                            onPress={() => AttatchmentPdf()}>
-                            <Image
-                              source={PdfIcon}
-                              style={styles.ProfileStyle}
-                            />
-                          </TouchableOpacity>
-                        ) : (
-                          <View style={{textAlign: 'center', marginLeft: 20}}>
-                            <TouchableOpacity
-                              style={styles.CrossIconStyleView}
-                              onPress={() => DeletePdfAttachment()}>
-                              <Image
-                                source={Crossicon}
-                                style={styles.CrossIconStyle}
-                              />
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                              style={styles.ProfileStylePreviewView}>
-                              <Image
-                                source={pdfViewIcon}
-                                style={styles.ProfileStylePreview}
-                              />
-                            </TouchableOpacity>
-                          </View>
-                        )}
-                      </View>
-                    </View>
-                  </View>
-                )}
-                <View style={styles.MainViewStartEndTime}>
-                  <View style={styles.TimeView_Start_End}>
-                    <View
-                      style={[
-                        styles.sectionStyleTime_End,
-                        SelectCampaignStartDate == ''
-                          ? styles.mandatoryControl
-                          : null,
-                      ]}>
-                      <TouchableOpacity
-                        style={styles.btnStartTime}
-                        onPress={() => showCampaignStartDatePicker()}>
-                        <Text style={styles.StartTimeText}>
-                          {SelectCampaignStartDate != ''
-                            ? moment(SelectCampaignStartDate).format(
-                                'DD-MM-YYYY',
-                              )
-                            : 'Campaign Start'}
-                        </Text>
-                      </TouchableOpacity>
-                      <View>
-                        <DateTimePickerModal
-                          isVisible={IsCampaignStartDateVisible}
-                          minimumDate={new Date(defaultDateTime)}
-                          mode="date"
-                          onConfirm={handleCampaignStartConfirm}
-                          onCancel={hideCampaignStartConfirm}
-                        />
-                      </View>
-                    </View>
-                  </View>
-                  <View style={styles.TimeView_Start_End}>
-                    <View
-                      style={[
-                        styles.sectionStyleTime_End,
-                        SelectCampaignEndDate == ''
-                          ? styles.mandatoryControl
-                          : null,
-                      ]}>
-                      <TouchableOpacity
-                        style={styles.btnStartTime}
-                        onPress={() => showCampaignEndDatePicker()}>
-                        <Text style={styles.StartTimeText}>
-                          {SelectCampaignEndDate != ''
-                            ? moment(SelectCampaignEndDate).format('DD-MM-YYYY')
-                            : 'Campaign End'}
-                        </Text>
-                      </TouchableOpacity>
-                      <View>
-                        <DateTimePickerModal
-                          isVisible={IsCampaignEndDateVisible}
-                          minimumDate={SelectCampaignStartDate}
-                          mode="date"
-                          onConfirm={handleCampaignEndConfirm}
-                          onCancel={hideCampaignEndConfirm}
-                        />
-                      </View>
-                    </View>
-                  </View>
-                </View>
-                <View style={styles.radiostyleView}>
-                  <View style={styles.radiostyle}>
-                    <View
-                      style={{marginTop: 13, height: 45, flexDirection: 'row'}}>
-                      <RadioForm
-                        radio_props={Statustype}
-                        initial={selectStatusValue}
-                        formHorizontal={true}
-                        labelHorizontal={true}
-                        buttonColor={colors.TextBoxColor}
-                        labelStyle={{
-                          marginVertical: 10,
-                          marginHorizontal: 1,
-                          paddingRight: 12,
-                          color: colors.TextBoxColor,
-                          bottom: 5,
-                        }}
-                        animation={true}
-                        onPress={value => {
-                          selectType(value);
-                        }}
-                      />
-                    </View>
-                  </View>
-                </View>
-                <View style={styles.termsView}>
-                  <TouchableOpacity
-                    onPress={() => selectAutoGenerateClick()}
-                    style={{
-                      flexDirection: 'row',
-                      width: 100 + '%',
-                      paddingLeft: 5,
-                      paddingTop: 5,
-                      zIndex: 902,
-                    }}>
-                    <Text
-                      style={
-                        Platform.OS === 'ios'
-                          ? styles.lblDayNameIos
-                          : styles.lblDayName
-                      }>
-                      {' '}
-                      Auto Generate Lead
-                    </Text>
-                    {selectAutoGenerateEnabled_Disabled == true ? (
-                      <Image
-                        resizeMode="contain"
-                        source={checkedCheckbox}
-                        style={styles.checkboxChecked_Unchecked}
-                      />
-                    ) : (
-                      <Image
-                        resizeMode="contain"
-                        source={uncheckedCheckbox}
-                        style={styles.checkboxChecked_Unchecked}
-                      />
-                    )}
-                  </TouchableOpacity>
-                </View>
-                <View style={styles.ButtonViewNewCampaign}>
-                  <Button
-                    style={[styles.btnCancel, {flexBasis: '46%'}]}
-                    bgColor={colors.Blazorbutton}
-                    caption="Cancel"
-                    onPress={() => CancelClick()}
-                  />
-                  <Button
-                    style={[styles.btnSubmit, {flexBasis: '46%'}]}
-                    bgColor={colors.Blazorbutton}
-                    caption="Next"
-                    onPress={() => checkTextInputRecord()}
-                  />
-                </View>
-              </View>
-            </View>
-            <Modal
-              animationType="fade"
-              transparent={true}
-              supportedOrientations={['portrait']}
-              visible={modalVisiblecamera}>
-              <View style={styles.centeredView}>
-                <View style={styles.modalView}>
-                  <View style={styles.textview}>
-                    {global.AttatchmentType == 1 ? (
-                      <Text style={styles.cameraheading}>Pick Avatar</Text>
-                    ) : (
-                      <Text style={styles.cameraheading}>Pick Video</Text>
-                    )}
-                  </View>
-                  {global.AttatchmentType == 1 ? (
-                    <View>
-                      {imageSelectedDataFlatelist == null ||
-                      imageSelectedDataFlatelist == '' ? null : (
-                        <View>
-                          <TouchableOpacity
-                            style={styles.ClearAllPhoto}></TouchableOpacity>
-                          <FlatList
-                            data={imageSelectedDataFlatelist}
-                            renderItem={({item}) => (
-                              <ImageItem
-                                base64={item.base64}
-                                ImageId={item.ImageId}
-                                uri={item.uri}
-                              />
-                            )}
-                            keyExtractor={item => item.ImageId}
-                            numColumns={1}
-                            horizontal={true}
+                  <View style={styles.ProfileImgView}>
+                    <View style={{width: 33 + '%', textAlign: 'center'}}>
+                      <Text
+                        style={[
+                          styles.AttatchmentTitle,
+                          {color: theme.textColor},
+                        ]}>
+                        Photo
+                      </Text>
+                      {ImgUriBase64 == null || ImgUriBase64 == '' ? (
+                        <TouchableOpacity
+                          selectable={true}
+                          style={styles.ProfileStyleView}
+                          onPress={() => {
+                            CapturePhoto();
+                          }}>
+                          <Image
+                            source={
+                              img == '' || img == undefined
+                                ? profileIcon
+                                : {uri: 'data:image/png;base64,' + img.base64}
+                            }
+                            style={styles.ProfileStyle}
                           />
+                        </TouchableOpacity>
+                      ) : (
+                        <View style={{textAlign: 'center'}}>
+                          <TouchableOpacity
+                            style={styles.CrossIconStyleView}
+                            onPress={() => CapturePhoto()}>
+                            <Image
+                              source={PlusIcon}
+                              style={[
+                                styles.CrossIconStyle,
+                                {tintColor: theme.tintColor},
+                              ]}
+                            />
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            style={styles.ProfileStylePreviewView}
+                            onPress={() => CapturePhoto()}>
+                            <Image
+                              source={{
+                                uri: 'data:image/png;base64,' + ImgUriBase64,
+                              }}
+                              style={styles.ProfileStylePreview}
+                            />
+                          </TouchableOpacity>
                         </View>
                       )}
-                      <View style={styles.textview}>
-                        <TouchableOpacity
-                          selectable={true}
-                          onPress={() => OpencameraClick()}>
-                          <Text style={styles.cameraopention}>
-                            Take Photo...
-                          </Text>
-                        </TouchableOpacity>
-                      </View>
-                      <View style={styles.textview}>
-                        <TouchableOpacity
-                          selectable={true}
-                          onPress={() => OpenGalleryClick()}>
-                          <Text style={styles.cameraopention}>
-                            Choose from Library...
-                          </Text>
-                        </TouchableOpacity>
-                      </View>
                     </View>
+                    <View style={{width: 33 + '%', textAlign: 'center'}}>
+                      <Text
+                        style={[
+                          styles.AttatchmentTitle,
+                          {color: theme.textColor},
+                        ]}>
+                        Video
+                      </Text>
+                      {Videouri == null || Videouri == '' ? (
+                        <TouchableOpacity
+                          selectable={true}
+                          style={styles.ProfileStyleView}
+                          onPress={() => AttatchmentVideo()}>
+                          <Image
+                            source={
+                              img1 == '' || img1 == undefined
+                                ? profileIcon
+                                : {
+                                    uri:
+                                      'data:image/png;base64,' + img1[0].base64,
+                                  }
+                            }
+                            style={styles.ProfileStyle}
+                          />
+                        </TouchableOpacity>
+                      ) : (
+                        <View style={{textAlign: 'center', marginLeft: 20}}>
+                          <TouchableOpacity
+                            style={styles.CrossIconStyleView}
+                            onPress={() => AttatchmentVideo()}>
+                            <Image
+                              source={PlusIcon}
+                              style={[
+                                styles.CrossIconStyle,
+                                {tintColor: theme.tintColor},
+                              ]}
+                            />
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            style={styles.VideoControlView}
+                            onPress={() => AttatchmentVideo()}>
+                            <Video
+                              playableDuration={0.5}
+                              resizeMode="cover"
+                              paused={false}
+                              source={{uri: Videouri}}
+                              style={[
+                                {width: 100, height: 100, borderRadius: 50},
+                              ]}
+                              //   style={{width: 75, height: 75}}
+                            />
+                          </TouchableOpacity>
+                        </View>
+                      )}
+                    </View>
+                    <View style={{width: 33 + '%', textAlign: 'center'}}>
+                      <Text
+                        style={[
+                          styles.AttatchmentTitle,
+                          {color: theme.textColor},
+                        ]}>
+                        PDF
+                      </Text>
+                      {PdfUri == null || PdfUri == '' ? (
+                        <TouchableOpacity
+                          selectable={true}
+                          style={styles.ProfileStyleView}
+                          onPress={() => AttatchmentPdf()}>
+                          <Image source={PdfIcon} style={styles.ProfileStyle} />
+                        </TouchableOpacity>
+                      ) : (
+                        <View style={{textAlign: 'center', marginLeft: 20}}>
+                          <TouchableOpacity
+                            style={styles.CrossIconStyleView}
+                            onPress={() => DeletePdfAttachment()}>
+                            <Image
+                              source={Crossicon}
+                              style={[
+                                styles.CrossIconStyle,
+                                {tintColor: theme.tintColor},
+                              ]}
+                            />
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            style={styles.ProfileStylePreviewView}>
+                            <Image
+                              source={pdfViewIcon}
+                              style={styles.ProfileStylePreview}
+                            />
+                          </TouchableOpacity>
+                        </View>
+                      )}
+                    </View>
+                  </View>
+                </View>
+              )}
+              <View style={styles.MainViewStartEndTime}>
+                <View style={styles.TimeView_Start_End}>
+                  <View
+                    style={[
+                      styles.sectionStyleTime_End,
+                      SelectCampaignStartDate == ''
+                        ? styles.mandatoryControl
+                        : null,
+                      ,
+                      {backgroundColor: theme.inputBackColor},
+                    ]}>
+                    <TouchableOpacity
+                      style={styles.btnStartTime}
+                      onPress={() => showCampaignStartDatePicker()}>
+                      <Text
+                        style={[
+                          [styles.StartTimeText, {color: theme.textColor}],
+                          {color: theme.textColor},
+                        ]}>
+                        {SelectCampaignStartDate != ''
+                          ? moment(SelectCampaignStartDate).format('DD-MM-YYYY')
+                          : 'Campaign Start'}
+                      </Text>
+                    </TouchableOpacity>
+                    <View>
+                      <DateTimePickerModal
+                        isVisible={IsCampaignStartDateVisible}
+                        minimumDate={new Date(defaultDateTime)}
+                        mode="date"
+                        onConfirm={handleCampaignStartConfirm}
+                        onCancel={hideCampaignStartConfirm}
+                      />
+                    </View>
+                  </View>
+                </View>
+                <View style={styles.TimeView_Start_End}>
+                  <View
+                    style={[
+                      styles.sectionStyleTime_End,
+                      SelectCampaignEndDate == ''
+                        ? styles.mandatoryControl
+                        : null,
+                      ,
+                      {backgroundColor: theme.inputBackColor},
+                    ]}>
+                    <TouchableOpacity
+                      style={styles.btnStartTime}
+                      onPress={() => showCampaignEndDatePicker()}>
+                      <Text
+                        style={[
+                          [styles.StartTimeText, {color: theme.textColor}],
+                          {color: theme.textColor},
+                        ]}>
+                        {SelectCampaignEndDate != ''
+                          ? moment(SelectCampaignEndDate).format('DD-MM-YYYY')
+                          : 'Campaign End'}
+                      </Text>
+                    </TouchableOpacity>
+                    <View>
+                      <DateTimePickerModal
+                        isVisible={IsCampaignEndDateVisible}
+                        minimumDate={SelectCampaignStartDate}
+                        mode="date"
+                        onConfirm={handleCampaignEndConfirm}
+                        onCancel={hideCampaignEndConfirm}
+                      />
+                    </View>
+                  </View>
+                </View>
+              </View>
+              <View
+                style={[
+                  styles.radiostyleView,
+                  {backgroundColor: theme.inputBackColor},
+                ]}>
+                <View style={styles.radiostyle}>
+                  <View
+                    style={{marginTop: 13, height: 45, flexDirection: 'row'}}>
+                    <RadioForm
+                      radio_props={Statustype}
+                      initial={selectStatusValue}
+                      formHorizontal={true}
+                      labelHorizontal={true}
+                      buttonColor={theme.buttonBackColor}
+                      selectedButtonColor={theme.selectedCheckBox}
+                      labelStyle={{
+                        marginVertical: 10,
+                        marginHorizontal: 1,
+                        paddingRight: 12,
+                        color: theme.textColor,
+                        bottom: 5,
+                      }}
+                      animation={true}
+                      onPress={value => {
+                        selectType(value);
+                      }}
+                    />
+                  </View>
+                </View>
+              </View>
+              <View style={styles.termsView}>
+                <TouchableOpacity
+                  onPress={() => selectAutoGenerateClick()}
+                  style={{
+                    flexDirection: 'row',
+                    width: 100 + '%',
+                    paddingLeft: 5,
+                    paddingTop: 5,
+                    zIndex: 902,
+                  }}>
+                  <Text
+                    style={[
+                      [
+                        Platform.OS === 'ios'
+                          ? styles.lblDayNameIos
+                          : styles.lblDayName,
+                        {color: theme.textColor},
+                      ],
+                      {color: theme.textColor},
+                    ]}>
+                    {' '}
+                    Auto Generate Lead
+                  </Text>
+                  {selectAutoGenerateEnabled_Disabled == true ? (
+                    <Image
+                      resizeMode="contain"
+                      source={checkedCheckbox}
+                      style={[
+                        [
+                          styles.checkboxChecked_Unchecked,
+                          {tintColor: theme.selectedCheckBox},
+                        ],
+                        {tintColor: theme.selectedCheckBox},
+                      ]}
+                    />
                   ) : (
+                    <Image
+                      resizeMode="contain"
+                      source={uncheckedCheckbox}
+                      style={[
+                        [
+                          styles.checkboxChecked_Unchecked,
+                          {tintColor: theme.selectedCheckBox},
+                        ],
+                        {tintColor: theme.buttonBackColor},
+                      ]}
+                    />
+                  )}
+                </TouchableOpacity>
+              </View>
+              <View style={styles.ButtonViewNewCampaign}>
+                <Button
+                  style={[styles.btnCancel, {flexBasis: '46%'}]}
+                  bgColor={theme.buttonBackColor}
+                  caption="Cancel"
+                  onPress={() => CancelClick()}
+                />
+                <Button
+                  style={[styles.btnSubmit, {flexBasis: '46%'}]}
+                  bgColor={theme.buttonBackColor}
+                  caption="Next"
+                  onPress={() => checkTextInputRecord()}
+                />
+              </View>
+            </View>
+          </View>
+          <Modal
+            animationType="fade"
+            transparent={true}
+            supportedOrientations={['portrait']}
+            visible={modalVisiblecamera}>
+            <View style={[styles.centeredView]}>
+              <View
+                style={[
+                  styles.modalView,
+                  {backgroundColor: theme.modalBackColor},
+                ]}>
+                <View style={styles.textview}>
+                  {global.AttatchmentType == 1 ? (
+                    <Text
+                      style={[styles.cameraheading, {color: theme.textColor}]}>
+                      Pick Avatar
+                    </Text>
+                  ) : (
+                    <Text
+                      style={[styles.cameraheading, {color: theme.textColor}]}>
+                      Pick Video
+                    </Text>
+                  )}
+                </View>
+                {global.AttatchmentType == 1 ? (
+                  <View>
+                    {imageSelectedDataFlatelist == null ||
+                    imageSelectedDataFlatelist == '' ? null : (
+                      <View>
+                        <TouchableOpacity
+                          style={styles.ClearAllPhoto}></TouchableOpacity>
+                        <FlatList
+                          data={imageSelectedDataFlatelist}
+                          renderItem={({item}) => (
+                            <ImageItem
+                              base64={item.base64}
+                              ImageId={item.ImageId}
+                              uri={item.uri}
+                            />
+                          )}
+                          keyExtractor={item => item.ImageId}
+                          numColumns={1}
+                          horizontal={true}
+                        />
+                      </View>
+                    )}
                     <View style={styles.textview}>
                       <TouchableOpacity
                         selectable={true}
-                        onPress={() => {
-                          imageSelectedData.length >= '2'
-                            ? AttachmentComplate()
-                            : GetVideoFromCamera();
-                        }}>
-                        <Text style={styles.cameraopention}>
-                          Choose Video ...
+                        onPress={() => OpencameraClick()}>
+                        <Text
+                          style={[
+                            styles.cameraopention,
+                            {color: theme.textColor},
+                          ]}>
+                          Take Photo...
                         </Text>
                       </TouchableOpacity>
+                    </View>
+                    <View style={styles.textview}>
                       <TouchableOpacity
                         selectable={true}
-                        onPress={() => {
-                          imageSelectedData.length >= '2'
-                            ? AttachmentComplate()
-                            : GetVideoFromGallery();
-                        }}>
-                        <Text style={styles.cameraopention}>
-                          Choose Video from Gallery...
+                        onPress={() => OpenGalleryClick()}>
+                        <Text
+                          style={[
+                            styles.cameraopention,
+                            {color: theme.textColor},
+                          ]}>
+                          Choose from Library...
                         </Text>
                       </TouchableOpacity>
-                      {Videouri == null || Videouri == '' ? null : (
-                        <View>
-                          <TouchableOpacity
-                            style={styles.CrossIconStyleVideoView}
-                            onPress={() => DeleteVideoAttachment()}>
-                            <Image
-                              source={Crossicon}
-                              style={styles.CrossIconStyle}
-                            />
-                          </TouchableOpacity>
-                          <TouchableOpacity style={styles.VideoControlPreview}>
-                            <Video
-                              playableDuration={0}
-                              paused={false}
-                              resizeMode="cover"
-                              source={{uri: Videouri}}
-                              style={{marginTop: 12, width: 170, height: 150}}
-                            />
-                          </TouchableOpacity>
-                        </View>
-                      )}
                     </View>
-                  )}
-                  <View style={styles.cancelview}>
+                  </View>
+                ) : (
+                  <View style={styles.textview}>
                     <TouchableOpacity
                       selectable={true}
-                      onPress={() => CloseAttachment()}>
-                      <Text style={styles.cameracancel}>OK</Text>
+                      onPress={() => {
+                        imageSelectedData.length >= '2'
+                          ? AttachmentComplate()
+                          : GetVideoFromCamera();
+                      }}>
+                      <Text
+                        style={[
+                          styles.cameraopention,
+                          {color: theme.textColor},
+                        ]}>
+                        Choose Video ...
+                      </Text>
                     </TouchableOpacity>
+                    <TouchableOpacity
+                      selectable={true}
+                      onPress={() => {
+                        imageSelectedData.length >= '2'
+                          ? AttachmentComplate()
+                          : GetVideoFromGallery();
+                      }}>
+                      <Text
+                        style={[
+                          styles.cameraopention,
+                          {color: theme.textColor},
+                        ]}>
+                        Choose Video from Gallery...
+                      </Text>
+                    </TouchableOpacity>
+                    {Videouri == null || Videouri == '' ? null : (
+                      <View>
+                        <TouchableOpacity
+                          style={styles.CrossIconStyleVideoView}
+                          onPress={() => DeleteVideoAttachment()}>
+                          <Image
+                            source={Crossicon}
+                            style={[
+                              styles.CrossIconStyle,
+                              {tintColor: theme.tintColor},
+                            ]}
+                          />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.VideoControlPreview}>
+                          <Video
+                            playableDuration={0}
+                            paused={false}
+                            resizeMode="cover"
+                            source={{uri: Videouri}}
+                            style={{marginTop: 12, width: 170, height: 150}}
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    )}
                   </View>
+                )}
+                <View style={styles.cancelview}>
+                  <TouchableOpacity
+                    selectable={true}
+                    onPress={() => CloseAttachment()}>
+                    <Text
+                      style={[styles.cameracancel, {color: theme.textColor}]}>
+                      OK
+                    </Text>
+                  </TouchableOpacity>
                 </View>
               </View>
-            </Modal>
-          </ScrollView>
-        </View>
+            </View>
+          </Modal>
+        </ScrollView>
       </KeyboardAwareScrollView>
     );
   }
   if (Index == 1) {
     return (
-      <View style={styles.container}>
+      <View
+        style={[styles.container, {backgroundColor: theme.backgroundColor}]}>
         <ScrollView>
           <TouchableOpacity>
             <AppBreadcrumb
@@ -4088,28 +4129,6 @@ export default function CampaignScheduleScreen(props) {
               }}
               selectedIndex={Index}
             />
-            {/* <Breadcrumb
-              entities={[
-                '   Campaign',
-                'Networks' +
-                  (totalNetworkSelect == null || totalNetworkSelect == ''
-                    ? ''
-                    : '(' + totalNetworkSelect + ')'),
-                'Schedule ',
-              ]}
-              crumbsContainerStyle={crumbsContainerStyle}
-              crumbStyle={crumbStyle}
-              activeCrumbStyle={activeCrumbStyle}
-              crumbTextStyle={crumbTextStyle}
-              activeCrumbTextStyle={activeCrumbTextStyle}
-              isTouchable={true}
-              flowDepth={Index}
-              height={41}
-              borderRadius={5}
-              onCrumbPress={index => {
-                handlePress(index);
-              }}
-            /> */}
           </TouchableOpacity>
           <View style={styles.container}>
             <FlatList
@@ -4137,7 +4156,8 @@ export default function CampaignScheduleScreen(props) {
                   status={item.status}
                   createdBy={item.createdBy}
                   createdAt={item.createdAt}
-                  lastUpdatedAt={item.lastUpdatedAt}></NetworksView>
+                  lastUpdatedAt={item.lastUpdatedAt}
+                  theme={theme}></NetworksView>
               )}
               numColumns={1}
               horizontal={false}
@@ -4145,13 +4165,13 @@ export default function CampaignScheduleScreen(props) {
             <View style={styles.ButtonView}>
               <Button
                 style={[styles.btnCancel, {flexBasis: '47%'}]}
-                bgColor={colors.Blazorbutton}
+                bgColor={theme.buttonBackColor}
                 caption="Back"
                 onPress={() => setIndex(0)}
               />
               <Button
                 style={[styles.btnSubmit, {flexBasis: '47%'}]}
-                bgColor={colors.Blazorbutton}
+                bgColor={theme.buttonBackColor}
                 caption="Next"
                 onPress={() => NextAddSchedule()}
               />
@@ -4163,7 +4183,8 @@ export default function CampaignScheduleScreen(props) {
   } else if (Index == 2) {
     /************************************************************* Address **********************************************************/
     return (
-      <View style={styles.container}>
+      <View
+        style={[styles.container, {backgroundColor: theme.backgroundColor}]}>
         <Alert
           massagetype={'warning'}
           hide={hide}
@@ -4214,28 +4235,6 @@ export default function CampaignScheduleScreen(props) {
             }}
             selectedIndex={Index}
           />
-          {/* <Breadcrumb
-            entities={[
-              '   Campaign',
-              'Networks' +
-                (totalNetworkSelect != null || totalNetworkSelect != ''
-                  ? '(' + totalNetworkSelect + ')'
-                  : ''),
-              'Schedule ',
-            ]}
-            isTouchable={true}
-            crumbsContainerStyle={crumbsContainerStyle}
-            crumbStyle={crumbStyle}
-            activeCrumbStyle={activeCrumbStyle}
-            crumbTextStyle={crumbTextStyle}
-            activeCrumbTextStyle={activeCrumbTextStyle}
-            flowDepth={Index}
-            height={41}
-            borderRadius={5}
-            onCrumbPress={index => {
-              handlePress(index);
-            }}
-          /> */}
         </TouchableOpacity>
         <View style={styles.containerView}>
           <View>
@@ -4247,24 +4246,34 @@ export default function CampaignScheduleScreen(props) {
               alerttype={'confirmation'}
               Title={'Confirmation'}
               Massage={'Do you want to close ?'}></Alert>
-            <View style={styles.ButtonViewstyle}>
+            <View
+              style={[
+                styles.ButtonViewstyle,
+                {backgroundColor: theme.cardBackColor},
+              ]}>
               <TouchableOpacity
-                style={
+                style={[
                   global.Network_Detail == 0
                     ? styles.btnNetWork
-                    : styles.btnNetWorkClick
-                }
+                    : styles.btnNetWorkClick,
+                  {borderColor: theme.buttonBackColor},
+                ]}
                 onPress={() => AddScheduleClick()}>
-                <Text style={styles.NetWork_DetailText}>Add Schedule</Text>
+                <Text
+                  style={[styles.NetWork_DetailText, {color: theme.textColor}]}>
+                  Add Schedule
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={
+                style={[
                   global.Network_Detail == 1
                     ? styles.btnCampaignDetail
-                    : styles.btnCampaignDetailClick
-                }
+                    : styles.btnCampaignDetailClick,
+                  {borderColor: theme.buttonBackColor},
+                ]}
                 onPress={() => ScheduleSummaryListClick()}>
-                <Text style={styles.NetWork_DetailText}>
+                <Text
+                  style={[styles.NetWork_DetailText, {color: theme.textColor}]}>
                   Schedules{' '}
                   {totalIndex == null || totalIndex == ''
                     ? ''
@@ -4320,7 +4329,10 @@ export default function CampaignScheduleScreen(props) {
                       placeholderTextColor="gray"
                       onSelect={value => SelectIntervalClick(value)}
                       selectedIndex={selectIntervalType}
-                      style={styles.Pickerstyle}
+                      style={[
+                        styles.Pickerstyle,
+                        {backgroundColor: theme.inputBackColor},
+                      ]}
                       items={selectIntervalTypeVal}
                       placeholder="Interval Type..."
                       clearTextOnFocus={true}
@@ -4330,9 +4342,15 @@ export default function CampaignScheduleScreen(props) {
                   </View>
                   <View style={{marginLeft: 14, width: 35 + '%'}}>
                     <TextInput
-                      placeholderTextColor={colors.TextBoxPlaceholderColor}
+                      placeholderTextColor={theme.placeholderColor}
                       editable={intervalValDisabled}
-                      style={styles.sectionIntervalStyle}
+                      style={[
+                        styles.sectionIntervalStyle,
+                        {
+                          backgroundColor: theme.inputBackColor,
+                          color: theme.textColor,
+                        },
+                      ]}
                       value={intervalVal}
                       onChangeText={value => ChangeIntervalVal(value)}
                       placeholder="Minute (1-60)"
@@ -4343,13 +4361,21 @@ export default function CampaignScheduleScreen(props) {
                     />
                   </View>
                 </View>
-                <View style={styles.DaysMainView}>
+                <View
+                  style={[
+                    styles.DaysMainView,
+                    {backgroundColor: theme.inputBackColor},
+                  ]}>
                   <Text
-                    style={
+                    style={[
                       Platform.OS === 'ios'
                         ? styles.TitleDayNameIOS
-                        : styles.TitleDayName
-                    }>
+                        : styles.TitleDayName,
+                      {
+                        color: theme.textColor,
+                        backgroundColor: theme.inputBackColor,
+                      },
+                    ]}>
                     {' '}
                     Days{' '}
                   </Text>
@@ -4366,21 +4392,28 @@ export default function CampaignScheduleScreen(props) {
                         <Image
                           resizeMode="contain"
                           source={checkedCheckbox}
-                          style={styles.checkboxChecked_Unchecked}
+                          style={[
+                            styles.checkboxChecked_Unchecked,
+                            {tintColor: theme.selectedCheckBox},
+                          ]}
                         />
                       ) : (
                         <Image
                           resizeMode="contain"
                           source={uncheckedCheckbox}
-                          style={styles.checkboxChecked_Unchecked}
+                          style={[
+                            styles.checkboxChecked_Unchecked,
+                            {tintColor: theme.selectedCheckBox},
+                          ]}
                         />
                       )}
                       <Text
-                        style={
+                        style={[
                           Platform.OS === 'ios'
                             ? styles.lblDayNameIos
-                            : styles.lblDayName
-                        }>
+                            : styles.lblDayName,
+                          {color: theme.textColor},
+                        ]}>
                         {' '}
                         Sun
                       </Text>
@@ -4397,21 +4430,28 @@ export default function CampaignScheduleScreen(props) {
                         <Image
                           resizeMode="contain"
                           source={checkedCheckbox}
-                          style={styles.checkboxChecked_Unchecked}
+                          style={[
+                            styles.checkboxChecked_Unchecked,
+                            {tintColor: theme.selectedCheckBox},
+                          ]}
                         />
                       ) : (
                         <Image
                           resizeMode="contain"
                           source={uncheckedCheckbox}
-                          style={styles.checkboxChecked_Unchecked}
+                          style={[
+                            styles.checkboxChecked_Unchecked,
+                            {tintColor: theme.selectedCheckBox},
+                          ]}
                         />
                       )}
                       <Text
-                        style={
+                        style={[
                           Platform.OS === 'ios'
                             ? styles.lblDayNameIos
-                            : styles.lblDayName
-                        }>
+                            : styles.lblDayName,
+                          {color: theme.textColor},
+                        ]}>
                         {' '}
                         Mon
                       </Text>
@@ -4428,21 +4468,28 @@ export default function CampaignScheduleScreen(props) {
                         <Image
                           resizeMode="contain"
                           source={checkedCheckbox}
-                          style={styles.checkboxChecked_Unchecked}
+                          style={[
+                            styles.checkboxChecked_Unchecked,
+                            {tintColor: theme.selectedCheckBox},
+                          ]}
                         />
                       ) : (
                         <Image
                           resizeMode="contain"
                           source={uncheckedCheckbox}
-                          style={styles.checkboxChecked_Unchecked}
+                          style={[
+                            styles.checkboxChecked_Unchecked,
+                            {tintColor: theme.selectedCheckBox},
+                          ]}
                         />
                       )}
                       <Text
-                        style={
+                        style={[
                           Platform.OS === 'ios'
                             ? styles.lblDayNameIos
-                            : styles.lblDayName
-                        }>
+                            : styles.lblDayName,
+                          {color: theme.textColor},
+                        ]}>
                         {' '}
                         Tue
                       </Text>
@@ -4459,21 +4506,28 @@ export default function CampaignScheduleScreen(props) {
                         <Image
                           resizeMode="contain"
                           source={checkedCheckbox}
-                          style={styles.checkboxChecked_Unchecked}
+                          style={[
+                            styles.checkboxChecked_Unchecked,
+                            {tintColor: theme.selectedCheckBox},
+                          ]}
                         />
                       ) : (
                         <Image
                           resizeMode="contain"
                           source={uncheckedCheckbox}
-                          style={styles.checkboxChecked_Unchecked}
+                          style={[
+                            styles.checkboxChecked_Unchecked,
+                            {tintColor: theme.selectedCheckBox},
+                          ]}
                         />
                       )}
                       <Text
-                        style={
+                        style={[
                           Platform.OS === 'ios'
                             ? styles.lblDayNameIos
-                            : styles.lblDayName
-                        }>
+                            : styles.lblDayName,
+                          {color: theme.textColor},
+                        ]}>
                         {' '}
                         Wed
                       </Text>
@@ -4494,21 +4548,28 @@ export default function CampaignScheduleScreen(props) {
                         <Image
                           resizeMode="contain"
                           source={checkedCheckbox}
-                          style={styles.checkboxChecked_Unchecked}
+                          style={[
+                            styles.checkboxChecked_Unchecked,
+                            {tintColor: theme.selectedCheckBox},
+                          ]}
                         />
                       ) : (
                         <Image
                           resizeMode="contain"
                           source={uncheckedCheckbox}
-                          style={styles.checkboxChecked_Unchecked}
+                          style={[
+                            styles.checkboxChecked_Unchecked,
+                            {tintColor: theme.selectedCheckBox},
+                          ]}
                         />
                       )}
                       <Text
-                        style={
+                        style={[
                           Platform.OS === 'ios'
                             ? styles.lblDayNameIos
-                            : styles.lblDayName
-                        }>
+                            : styles.lblDayName,
+                          {color: theme.textColor},
+                        ]}>
                         {' '}
                         Thu
                       </Text>
@@ -4527,21 +4588,28 @@ export default function CampaignScheduleScreen(props) {
                         <Image
                           resizeMode="contain"
                           source={checkedCheckbox}
-                          style={styles.checkboxChecked_Unchecked}
+                          style={[
+                            styles.checkboxChecked_Unchecked,
+                            {tintColor: theme.selectedCheckBox},
+                          ]}
                         />
                       ) : (
                         <Image
                           resizeMode="contain"
                           source={uncheckedCheckbox}
-                          style={styles.checkboxChecked_Unchecked}
+                          style={[
+                            styles.checkboxChecked_Unchecked,
+                            {tintColor: theme.selectedCheckBox},
+                          ]}
                         />
                       )}
                       <Text
-                        style={
+                        style={[
                           Platform.OS === 'ios'
                             ? styles.lblDayNameIos
-                            : styles.lblDayName
-                        }>
+                            : styles.lblDayName,
+                          {color: theme.textColor},
+                        ]}>
                         {' '}
                         Fri
                       </Text>
@@ -4560,21 +4628,28 @@ export default function CampaignScheduleScreen(props) {
                         <Image
                           resizeMode="contain"
                           source={checkedCheckbox}
-                          style={styles.checkboxChecked_Unchecked}
+                          style={[
+                            styles.checkboxChecked_Unchecked,
+                            {tintColor: theme.selectedCheckBox},
+                          ]}
                         />
                       ) : (
                         <Image
                           resizeMode="contain"
                           source={uncheckedCheckbox}
-                          style={styles.checkboxChecked_Unchecked}
+                          style={[
+                            styles.checkboxChecked_Unchecked,
+                            {tintColor: theme.selectedCheckBox},
+                          ]}
                         />
                       )}
                       <Text
-                        style={
+                        style={[
                           Platform.OS === 'ios'
                             ? styles.lblDayNameIos
-                            : styles.lblDayName
-                        }>
+                            : styles.lblDayName,
+                          {color: theme.textColor},
+                        ]}>
                         {' '}
                         Sat
                       </Text>
@@ -4583,11 +4658,19 @@ export default function CampaignScheduleScreen(props) {
                 </View>
                 <View style={styles.MainViewStartEndTime}>
                   <View style={styles.ScheduleTimeView_Start}>
-                    <View style={styles.sectionStyleTime_End}>
+                    <View
+                      style={[
+                        styles.sectionStyleTime_End,
+                        {backgroundColor: theme.inputBackColor},
+                      ]}>
                       <TouchableOpacity
                         style={styles.btnStartTime}
                         onPress={() => showDatePicker()}>
-                        <Text style={styles.StartTimeText}>
+                        <Text
+                          style={[
+                            styles.StartTimeText,
+                            {color: theme.textColor},
+                          ]}>
                           {SelectStartDate == ''
                             ? moment(SelectCampaignStartDate).format(
                                 'DD-MM-YYYY HH:mm',
@@ -4610,11 +4693,19 @@ export default function CampaignScheduleScreen(props) {
                     </View>
                   </View>
                   <View style={styles.ScheduleTimeView_End}>
-                    <View style={styles.sectionStyleTime_End}>
+                    <View
+                      style={[
+                        styles.sectionStyleTime_End,
+                        {backgroundColor: theme.inputBackColor},
+                      ]}>
                       <TouchableOpacity
                         style={styles.btnStartTime}
                         onPress={() => showEndDatePicker()}>
-                        <Text style={styles.StartTimeText}>
+                        <Text
+                          style={[
+                            styles.StartTimeText,
+                            {color: theme.textColor},
+                          ]}>
                           {SelectEndDate == ''
                             ? moment(SelectCampaignEndDate).format(
                                 'DD-MM-YYYY HH:mm',
@@ -4684,19 +4775,37 @@ export default function CampaignScheduleScreen(props) {
                       // extraData={item => item.randomId}
                     />
                   </SafeAreaView>
-                  <View style={styles.ScheduleView}>
+                  <View
+                    style={[
+                      styles.ScheduleView,
+                      {backgroundColor: theme.inputBackColor},
+                    ]}>
                     <View style={styles.BudgetScheduleRowData}>
                       <View style={{flexDirection: 'row'}}>
-                        <Text style={styles.lblBudget}>
+                        <Text
+                          style={[styles.lblBudget, {color: theme.textColor}]}>
                           Campaign Message :{' '}
                         </Text>
-                        <Text style={styles.lblBudgetVal}>
+                        <Text
+                          style={[
+                            styles.lblBudgetVal,
+                            {color: theme.textColor},
+                          ]}>
                           {totalMessageCountAdd.toFixed(2)}
                         </Text>
                       </View>
                       <View style={{flexDirection: 'row'}}>
-                        <Text style={styles.lblBudget}>Campaign Budget : </Text>
-                        <Text style={styles.lblBudgetVal}>
+                        <Text
+                          style={[styles.lblBudget, {color: theme.textColor}]}>
+                          Campaign Budget :{' '}
+                        </Text>
+                        <Text
+                          style={[
+                            styles.lblBudgetVal,
+                            {
+                              color: theme.textColor,
+                            },
+                          ]}>
                           {totalBudget.toFixed(2)}
                           {' ' + orgCurrencyName}
                         </Text>
@@ -4716,21 +4825,21 @@ export default function CampaignScheduleScreen(props) {
               <View style={styles.ButtonScheduleView}>
                 <Button
                   style={[styles.btnCancel, {flexBasis: '47%'}]}
-                  bgColor={colors.Blazorbutton}
+                  bgColor={theme.buttonBackColor}
                   caption="Back"
                   onPress={() => setIndex(1)}
                 />
                 {addScheduleButton == true ? (
                   <Button
                     style={[styles.btnSubmit, {flexBasis: '47%'}]}
-                    bgColor={colors.Blazorbutton}
+                    bgColor={theme.buttonBackColor}
                     caption="+ Schedule"
                     onPress={() => AddCampaignClick()}
                   />
                 ) : (
                   <Button
                     style={[styles.btnSubmit, {flexBasis: '47%'}]}
-                    bgColor={colors.Blazorbutton}
+                    bgColor={theme.buttonBackColor}
                     caption="+ Quota"
                     onPress={() => MakeBudget()}
                   />
@@ -4741,7 +4850,7 @@ export default function CampaignScheduleScreen(props) {
               <View style={styles.ButtonSubmitView}>
                 <Button
                   style={[styles.btnSubmit, {flexBasis: '98%'}]}
-                  bgColor={colors.Blazorbutton}
+                  bgColor={theme.buttonBackColor}
                   caption="Submit"
                   onPress={() => ClickSubmitData()}
                 />
@@ -4756,7 +4865,6 @@ export default function CampaignScheduleScreen(props) {
 /************************************************************ styles ***************************************************/
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colors.BlazorBg,
     //backgroundColor: 'gray',
     flex: 1,
     alignItems: 'center',
@@ -4779,6 +4887,7 @@ const styles = StyleSheet.create({
   },
   uploadmodelcontainer: {
     width: Dimensions.get('window').width - 50,
+    marginHorizontal: 1,
     justifyContent: 'space-around',
     alignItems: 'center',
   },
@@ -4976,7 +5085,7 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width - 30,
     marginHorizontal: 15,
     marginTop: 20,
-    paddingTop: 10,
+    // paddingTop: 10,
     backgroundColor: colors.TextBoxContainer,
     // backgroundColor:colors.red,
     //borderWidth:0.6,

@@ -2,18 +2,21 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useRoute} from '@react-navigation/native';
 import Base64 from 'Base64';
 import React, {useEffect, useState} from 'react';
-import {Dimensions, StyleSheet, Text, View} from 'react-native';
+import {Dimensions, Easing, StyleSheet, Text, View} from 'react-native';
 import {BarChart} from 'react-native-chart-kit';
-// import ProgressCircle from 'react-native-progress-circle';
+import {AnimatedCircularProgress} from 'react-native-circular-progress';
+
 import Toast from 'react-native-simple-toast';
 import Icona from 'react-native-vector-icons/EvilIcons';
 import {colors} from '../../styles';
 import servicesettings from '../dataservices/servicesettings';
+import {useTheme} from '../../hooks/useTheme';
 const wait = timeout => {
   return new Promise(resolve => setTimeout(resolve, timeout));
 };
 var canceltime = 40;
 export default function CampaignStatisticsScreen(props) {
+  const theme = useTheme();
   const route = useRoute();
   global.currentscreen = route.name;
   const [Visible, setVisible] = useState(false);
@@ -40,7 +43,6 @@ export default function CampaignStatisticsScreen(props) {
   function Loaddata() {
     AsyncStorage.getItem('LoginInformation').then(function (res) {
       let Asyncdata = JSON.parse(res);
-      console.log('res  =>', Asyncdata[0].id);
       //const date = new Date();
       var headerFetch = {
         method: 'POST',
@@ -58,14 +60,11 @@ export default function CampaignStatisticsScreen(props) {
           Authorization: servicesettings.AuthorizationKey,
         },
       };
-      console.log('headerFetch from CompaignNetworks ', headerFetch.body);
       fetch(servicesettings.baseuri + 'CompaignNetworks', headerFetch)
         .then(response => response.json())
         .then(responseJson => {
-          console.log('data response CompaignNetworks  =>', responseJson);
           //var myCampaignDetail = responseJson.data;
-          //console.log("data response bmtcompaigns network  =>", myCampaignDetail.compaignNetworks);
-          // console.log('myCampaignDetail ' + JSON.stringify(JSON.parse(myCampaignDetail.compaignNetworks)));
+          // ));
           if (responseJson.data != null) {
             setdatalist(responseJson.data);
             // setspinner(false);
@@ -99,7 +98,6 @@ export default function CampaignStatisticsScreen(props) {
     fetch(servicesettings.baseuri + 'CompaignDetails', headerFetch)
       .then(response => response.json())
       .then(responseJson => {
-        console.log('responseJson CompaignDetails', responseJson);
         if (responseJson.data != null) {
           //{"dataOfDay": "Monday", "totalAllies": 0, "totalLikes": 0, "totalVideos": 1}
         }
@@ -115,57 +113,77 @@ export default function CampaignStatisticsScreen(props) {
     //console.disableYellowBox = true;
   }
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {backgroundColor: theme.backgroundColor}]}>
       <View style={styles.graphview}>
         <View style={styles.CircleDetailview}>
-          <View style={styles.DetailView}>
+          <View
+            style={[styles.DetailView, {backgroundColor: theme.cardBackColor}]}>
             <View style={styles.DetailViewTitle}>
-              <Text style={styles.ViewTitle}>{' Current Volume'}</Text>
-              <Icona name={'arrow-up'} style={styles.ViewTitleIcon} />
+              <Text style={[styles.ViewTitle, {color: theme.textColor}]}>
+                {' Current Volume'}
+              </Text>
+              <Icona
+                name={'arrow-up'}
+                style={[styles.ViewTitleIcon, {color: theme.tintColor}]}
+              />
             </View>
-            <Text style={styles.availableLable}>
+            <Text style={[styles.availableLable, {color: theme.textColor}]}>
               {parseFloat(7668798)
                 .toFixed(1)
                 .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}
             </Text>
           </View>
-          <View style={styles.DetailView}>
+          <View
+            style={[styles.DetailView, {backgroundColor: theme.cardBackColor}]}>
             <View style={styles.DetailViewTitle}>
-              <Text style={styles.ViewTitle}>{' Sales of current month'}</Text>
-              <Icona name={'arrow-up'} style={styles.ViewTitleIcon} />
+              <Text style={[styles.ViewTitle, {color: theme.textColor}]}>
+                {' Sales of current month'}
+              </Text>
+              <Icona
+                name={'arrow-up'}
+                style={[styles.ViewTitleIcon, {color: theme.tintColor}]}
+              />
             </View>
-            <Text style={styles.availableLable}>
+            <Text style={[styles.availableLable, {color: theme.textColor}]}>
               {parseFloat(87676)
                 .toFixed(1)
                 .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}
             </Text>
           </View>
         </View>
-        <View style={styles.circleview}>
-          {/* <ProgressCircle
-            percent={percent}
-            radius={60}
-            borderWidth={12}
-            color={colors.BlazorbuttonOpacity}
-            shadowColor="#999"
-            bgColor={colors.PagePanelTab}
-          >
-            <Text style={{fontSize: 20, color: colors.TextColorOther}}>
-              {percent + '%'}
-            </Text>
-          </ProgressCircle> */}
+        <View
+          style={[styles.circleview, {backgroundColor: theme.cardBackColor}]}>
+          <AnimatedCircularProgress
+            size={120}
+            width={15}
+            rotation={360}
+            delay={500}
+            prefill={0}
+            // lineCap="square"
+            fillLineCap="round"
+            easing={Easing.out(Easing.ease)}
+            fill={percent}
+            tintColor={theme.buttonBackColor}
+            backgroundColor={theme.backgroundColor}>
+            {fill => (
+              <Text style={{fontSize: 30, color: theme.textColor}}>
+                {fill.toFixed(0) + '%'}
+              </Text>
+            )}
+          </AnimatedCircularProgress>
         </View>
       </View>
       <View style={styles.itemMainView}>
-        <View style={styles.ChartView}>
+        <View
+          style={[styles.ChartView, {backgroundColor: theme.cardBackColor}]}>
           <BarChart
             data={data}
             width={Dimensions.get('window').width - 28}
-            height={Dimensions.get('window').height - 270}
+            height={Dimensions.get('window').height - 320}
             chartConfig={{
-              color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-              backgroundGradientFrom: colors.PagePanelTab,
-              backgroundGradientTo: colors.PagePanelTab,
+              color: (opacity = 1) => theme.textColor,
+              backgroundGradientFrom: theme.cardBackColor,
+              backgroundGradientTo: theme.cardBackColor,
               backgroundGradientToOpacity: 1,
               backgroundGradientFromOpacity: 1,
               decimalPlaces: 0,
@@ -204,7 +222,7 @@ const styles = StyleSheet.create({
     //flexDirection: 'row',
     borderColor: colors.borderColor,
     //width: Dimensions.get('window').width,
-    backgroundColor: colors.white,
+    // backgroundColor: colors.white,
     padding: 10,
     //backgroundColor: colors.BlazorBg,
     borderWidth: 0,

@@ -25,10 +25,7 @@ import {colors} from '../../styles';
 import servicesettings from '../dataservices/servicesettings';
 import {useTheme} from '../../hooks/useTheme';
 const profileIcon = require('../../../assets/images/defaultUser.png');
-const arrowback = require('../../../assets/images/icons/BackArrow.png');
 //import messaging from '@react-native-firebase/messaging';
-const CurrentDate = new Date();
-var filterID = null;
 export default function VehicalSallerScreen(props) {
   //console.log('props new ' + JSON.stringify(props));
   const theme = useTheme();
@@ -120,7 +117,6 @@ export default function VehicalSallerScreen(props) {
                 ? PERMISSIONS.IOS.CAMERA
                 : PERMISSIONS.ANDROID.CAMERA,
             ).then(result => {
-              console.log(result);
               if (result == 'granted') {
                 launchCamera(
                   {
@@ -139,10 +135,8 @@ export default function VehicalSallerScreen(props) {
             });
             break;
           case RESULTS.LIMITED:
-            console.log('The permission is limited: some actions are possible');
             break;
           case RESULTS.GRANTED:
-            console.log('The permission is granted');
             launchCamera(
               {
                 mediaType: 'photo',
@@ -158,7 +152,6 @@ export default function VehicalSallerScreen(props) {
             );
             break;
           case RESULTS.BLOCKED:
-            console.log('The permission is denied and not requestable anymore');
             setpermissionVisible(true);
             break;
         }
@@ -192,7 +185,7 @@ export default function VehicalSallerScreen(props) {
         //setorgdata(orgdata => [...Asyncdata, {"id": 0,"name": "Select Organization"}]);
         setorgdata(Asyncdata);
         //setOrganizationId(Asyncdata[0].orgid);
-        //console.log('Asyncdata OrgInformation  ',Asyncdata);
+        //
       }
     });
   }
@@ -253,7 +246,7 @@ export default function VehicalSallerScreen(props) {
     //.getToken()
     //.then((fcmToken) => {
     //let uniqueId = DeviceInfo.getUniqueId();
-    // console.log('img',img[0].type);
+    //
     const data = new FormData();
     if (img != '') {
       data.append('profiles', {
@@ -261,7 +254,6 @@ export default function VehicalSallerScreen(props) {
         uri: img[0].uri,
         type: img[0].type,
       });
-      console.log('data ', data);
     } else {
       data.append('profiles', null);
     }
@@ -281,7 +273,7 @@ export default function VehicalSallerScreen(props) {
     data.append('regsource', '1');
     data.append('SecurityToken', '');
     data.append('status', 1);
-    console.log('formData addupdatestore', data);
+
     var ImageheaderFetch = {
       enctype: 'multipart/form-data',
       processData: false,
@@ -297,7 +289,6 @@ export default function VehicalSallerScreen(props) {
     fetch(servicesettings.baseuri + 'addupdateorguser', ImageheaderFetch)
       .then(response => response.json())
       .then(responseJson => {
-        console.log('responseJson addupdateorguser', responseJson);
         if (responseJson.status == true) {
           Toast.show('Save successfully');
           props.navigation.navigate('Home');

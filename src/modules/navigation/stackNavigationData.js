@@ -13,7 +13,7 @@ import CampaignScheduleScreen from '../../modules/campaignSchedule/CampaignSched
 import DashboardVersion from '../../modules/dashboard/DashboardViewContainer';
 import ForgotPasswordScreen from '../../modules/forgotPassword/ForgotPasswordViewContainer';
 import LoginScreen from '../../modules/login/LoginViewContainer';
-import mycampaignScreen from '../../modules/mycampaign/mycampaignViewContainer';
+import MyCampaignScreen from '../../modules/mycampaign/mycampaignViewContainer';
 import Preference_Settings from '../../modules/preferencesAndSettings/PreferencesAndSettingsViewContainer';
 import {colors, fonts} from '../../styles';
 import AboutScreen from '../about/AboutViewContainer';
@@ -214,7 +214,7 @@ const StackNavigationData = [
   },
   {
     name: 'My Campaigns',
-    component: mycampaignScreen,
+    component: MyCampaignScreen,
     headerLeft: headerLeftComponent,
     headerBackground: {source: headerBackground},
     headerTitleStyle: {

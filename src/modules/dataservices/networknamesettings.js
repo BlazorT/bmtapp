@@ -1,7 +1,7 @@
 let networknamesettings = NewnetworkId => {
   // function VehicleType(VehicleTypeId) {
   //VehicleType{
-  // console.log('VehicleType ');
+  //
   if (NewnetworkId == 1) return 'sms';
   else if (NewnetworkId == 2) return 'whatsapp';
   else if (NewnetworkId == 3) return 'envelope-o';

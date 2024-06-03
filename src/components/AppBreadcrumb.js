@@ -1,5 +1,6 @@
 import React from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {useTheme} from '../hooks/useTheme';
 
 var HEIGHT = 50;
 var BACKGROUND_COLOR = '#212121';
@@ -17,12 +18,12 @@ const AppBreadcrumb = ({
   activeBreadCrumb,
   containerBorderColor,
 }) => {
-  BACKGROUND_COLOR = breadcrumbContainer
-    ? breadcrumbContainer
-    : BACKGROUND_COLOR;
-  TEXT_COLOR = breadcrumbText ? breadcrumbText : TEXT_COLOR;
-  COLOR = activeBreadCrumb ? activeBreadCrumb : COLOR;
-  BORDER_COLOR = containerBorderColor ? containerBorderColor : BORDER_COLOR;
+  const theme = useTheme();
+  BACKGROUND_COLOR = theme.breadCrumbContainer;
+  TEXT_COLOR = theme.acytiveBreadcrumbText;
+  COLOR = theme.activeBreadCrumb;
+  BORDER_COLOR = theme.containerBorderColor;
+  DISABLE_TEXT_COLOR = theme.breadcrumbText;
   const styles = StyleSheet.create({
     breadcrumbContainer: {
       flexDirection: 'row',
@@ -31,6 +32,7 @@ const AppBreadcrumb = ({
       justifyContent: 'space-between',
       borderWidth: 1,
       borderColor: BORDER_COLOR,
+      width: '100%',
     },
     breadcrumbText: {
       color: DISABLE_TEXT_COLOR, // Dark gray text
@@ -51,7 +53,7 @@ const AppBreadcrumb = ({
 
     selectedCrumbText: {
       color: TEXT_COLOR,
-      fontWeight: 800,
+      fontWeight: 'bold',
     },
     arrowContainer: {
       position: 'absolute',

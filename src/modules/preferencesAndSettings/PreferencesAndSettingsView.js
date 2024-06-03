@@ -4,17 +4,22 @@ import {Dimensions, Image, StyleSheet, Switch, Text, View} from 'react-native';
 import Alert from '../../components/Alert';
 import {colors} from '../../styles';
 import servicesettings from '../dataservices/servicesettings';
+import {useTheme} from '../../hooks/useTheme';
+import userProfile from '../../../assets/images/User.png';
 export default function PreferencesAndSettingsScreen(props) {
-  const [FirstName, setFirstName] = useState('Muhammad');
-  const [LastName, setLastName] = useState('Hamza');
-  const [Email, setEmail] = useState('hamza.shakeel@blazortech.com');
-  const [img, setimg] = useState('');
-  const [RoleId, setRoleid] = useState(0);
+  const theme = useTheme();
   const [switchValue, setSwitchValue] = useState(true);
-  const [Visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(false);
   const toggleSwitch = value => {
     setSwitchValue(value);
   };
+  const [userInfo, setUserInfo] = useState({
+    firstName: 'Muhammad',
+    lastName: 'Hamza',
+    email: 'hamza.shakeel@blazortech.com',
+    roleId: 0,
+    img: '',
+  });
   const hide = () => {
     setVisible(false);
   };
@@ -22,68 +27,93 @@ export default function PreferencesAndSettingsScreen(props) {
     setVisible(false);
     props.navigation.navigate('Home');
   };
+
   useEffect(() => {
-    AsyncStorage.getItem('LoginInformation').then(function(res) {
-      let Asyncdata = JSON.parse(res);
-      console.log('Asyncdata ', Asyncdata);
-      console.log('Asyncdata.firstname ', Asyncdata[0].firstname);
-      console.log(
-        'Asyncdata.avatar ',
-        servicesettings.Imagebaseuri + Asyncdata[0].avatar,
-      );
-      if (Asyncdata != null) {
-        setFirstName(Asyncdata[0].firstname);
-        setLastName(Asyncdata[0].lastname);
-        setEmail(Asyncdata[0].email);
-        setRoleid(Asyncdata[0].roleId);
-        // setimg(Asyncdata[0].avatar);
-        setimg(
-          servicesettings.Imagebaseuri +
-            Asyncdata[0].avatar
-              .replace(/\\/g, '/')
-              .replace(',', '')
-              .replace(' //', ''),
-        );
-      } else {
-        setimg('data:image/png;base64,' + servicesettings.Default_User_Image);
+    const fetchLoginInformation = async () => {
+      try {
+        const res = await AsyncStorage.getItem('LoginInformation');
+        if (res) {
+          const [asyncData] = JSON.parse(res) || [];
+          const {firstname, lastname, email, roleId, avatar} = asyncData;
+          setUserInfo({
+            firstName: firstname,
+            lastName: lastname,
+            email,
+            roleId,
+            img:
+              avatar === ''
+                ? ''
+                : `${servicesettings.Imagebaseuri}${avatar?.replace(/\\/g, '/').replace(',', '').replace(' //', '')}`,
+          });
+        } else {
+          setUserInfo(prev => ({
+            ...prev,
+            img: `data:image/png;base64,${servicesettings.Default_User_Image}`,
+          }));
+        }
+      } catch (error) {
+        console.error('Failed to fetch login information', error);
       }
-    });
+    };
+
+    fetchLoginInformation();
   }, []);
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {backgroundColor: theme.backgroundColor}]}>
       <Alert
         massagetype={'warning'}
         hide={hide}
         confirm={confirm}
-        Visible={Visible}
+        Visible={visible}
         alerttype={'confirmation'}
         Title={'Confirmation'}
-        Massage={'Do you want to close ?'}
-      ></Alert>
+        Massage={'Do you want to close ?'}></Alert>
       <View style={styles.ProfileImgView}>
-        <Image source={{uri: img}} style={styles.ProfileStyle} />
+        <Image
+          source={userInfo.img == '' ? userProfile : {uri: userInfo.img}}
+          style={styles.ProfileStyle}
+        />
       </View>
       <View style={styles.lblView}>
-        <Text style={styles.lblName}>{FirstName + '  ' + LastName}</Text>
+        <Text style={[styles.lblName, {color: theme.textColor}]}>
+          {userInfo.firstName + userInfo.lastName}
+        </Text>
       </View>
       <View style={styles.lblView1}>
-        <Text style={styles.lblEmail}>{Email}</Text>
+        <Text style={[styles.lblEmail, {color: theme.textColor}]}>
+          {userInfo.email}
+        </Text>
       </View>
-      <View style={styles.TogleView}>
-        <Text style={styles.Notification}> App Notification </Text>
+      <View
+        style={[
+          styles.TogleView,
+          {borderColor: theme.textColor, backgroundColor: theme.cardBackColor},
+        ]}>
+        <Text style={[styles.Notification, {color: theme.textColor}]}>
+          {' '}
+          App Notification{' '}
+        </Text>
         <Switch
           style={styles.SwitchStl}
-          trackColor={{false: '#767577', true: '#81b0ff'}}
-          thumbColor="white"
+          trackColor={{
+            false: theme.inputBackColor,
+            true: theme.selectedCheckBox,
+          }}
+          thumbColor={theme.white}
           ios_backgroundColor="gray"
           onValueChange={toggleSwitch}
           value={switchValue}
         />
-        <Text style={styles.Notification}>{switchValue ? 'ON' : 'OFF'}</Text>
+        <Text style={[styles.Notification, {color: theme.textColor}]}>
+          {switchValue ? 'ON' : 'OFF'}
+        </Text>
       </View>
-      {RoleId == 3 ? (
+      {userInfo.roleId == 3 ? (
         <View style={styles.lblapipathView}>
-          <Text style={styles.lblApiPath}>{servicesettings.baseuri}</Text>
+          <Text style={[styles.lblApiPath, {color: theme.textColor}]}>
+            {servicesettings.baseuri}
+          </Text>
         </View>
       ) : (
         <View></View>

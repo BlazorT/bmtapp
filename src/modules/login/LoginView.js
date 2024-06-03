@@ -85,13 +85,13 @@ export default function LoginScreen(props) {
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   useEffect(() => {
     global.SocialMedia = 0;
-    //console.log('GoogleSignin.configure');
+    //
     GoogleSignin.configure({
       webClientId:
         '344400656576-n1btnvu3unr8ioidunk8i6d6ne6qb903.apps.googleusercontent.com',
       offlineAccess: true,
     });
-    console.log('global.SignUp_Login', global.SignUp_Login);
+
     if (global.SignUp_Login == 1) {
       setmodalVisiblecamera(false);
     } else {
@@ -101,7 +101,7 @@ export default function LoginScreen(props) {
   const Signup = async () => {
     global.SocialMedia = 1;
     try {
-      alert('GoogleSignin ' + JSON.stringify(GoogleSignin));
+      // alert('GoogleSignin ' + JSON.stringify(GoogleSignin));
       console.log('GoogleSignin Info --> ', JSON.stringify(GoogleSignin));
       await GoogleSignin.hasPlayServices({
         // Check if device has Google Play Services installed
@@ -109,7 +109,7 @@ export default function LoginScreen(props) {
         showPlayServicesUpdateDialog: true,
       });
       const userInfo = await GoogleSignin.signIn();
-      alert('userInfo ' + JSON.stringify(userInfo));
+      // alert('userInfo ' + JSON.stringify(userInfo));
       console.log('User Info --> ', JSON.stringify(userInfo));
       //console.log('User Info --> givenName ', JSON.stringify(userInfo.user.givenName));
       var givenName = userInfo.user.givenName;
@@ -158,10 +158,10 @@ export default function LoginScreen(props) {
       //props.navigation.navigate('Sign Up');
       setmodalVisiblecamera(false);
       if (global.Signup_LoginWithGoogle == 1) {
-        //console.log('ContinueWithSocialMedia click 1 ');
+        //
         ContinueWithSocialMedia();
       } else if (global.Signup_LoginWithGoogle == 2) {
-        //console.log('LoginContinueWithSocialMedia click 2 ');
+        //
         ContinueWithSocialMedia();
         //LoginContinueWithSocialMedia();
       }
@@ -178,7 +178,7 @@ export default function LoginScreen(props) {
       }
     }
   };
-  console.log('global.SocialMedia ', global.SocialMedia);
+
   const Constants = {
     //Dev Parse keys
     TWITTER_API_KEY: 'VTicm877GQgV2ODMzmPXdAwnJ',
@@ -191,7 +191,7 @@ export default function LoginScreen(props) {
   };
   twitterLogin = () => {
     global.SocialMedia = 3;
-    console.log('twitterLogin click');
+
     const fcmSocialToken = servicesettings.fcmToken;
     RNTwitterSignIn.init(
       Constants.TWITTER_API_KEY,
@@ -204,9 +204,7 @@ export default function LoginScreen(props) {
           // You can use this data here and move next
         }
       })
-      .catch(error => {
-        console.log(error);
-      });
+      .catch(error => {});
   };
   const SigninWithFaceboonClick = () => {
     setfacebookmodalVisible(true);
@@ -227,8 +225,6 @@ export default function LoginScreen(props) {
     //console.log('RNTwitterSignIn ' + JSON.stringify(RNTwitterSignIn.init()));
     RNTwitterSignIn.logIn()
       .then(loginData => {
-        console.log('loginData 2 ');
-        console.log('loginData 3' + loginData);
         const {authToken, authTokenSecret} = loginData;
         if (authToken && authTokenSecret) {
           this.setState({
@@ -237,8 +233,7 @@ export default function LoginScreen(props) {
         }
       })
       .catch(error => {
-        //console.log('loginData 4');
-        console.log(error);
+        //
       });
   };
   async function UserCreate() {
@@ -274,9 +269,9 @@ export default function LoginScreen(props) {
     //Toast.show('@ only use');
     //   var usernamecheck = textInputEmail.trim();
     //}
-    // console.log('emailcheck ' + emailcheck);
+    //
     var UserName = 'Blazor^^018';
-    var Password = 'Blazor~~^^##';
+    // var Password = 'Blazor~~^^##';
     setspinner(true);
     var headerFetch = {
       method: 'POST',
@@ -294,17 +289,17 @@ export default function LoginScreen(props) {
       },
     };
     //useraccount //users
-    // console.log("body ",body);
+    //
     console.log('headerFetch from login', JSON.stringify(headerFetch.body));
     //if()
-    //console.log("headerFetch from login");
+    //
     //fetch(servicesettings.baseuri + 'auhtenticateorguser',headerFetch).then(response =>  response.json())
     //.then((responseJson) => {
     fetch(servicesettings.baseuri + 'authenticateorguser', headerFetch)
       .then(response => response.json())
       .then(responseJson => {
         setspinner(false);
-        console.log('data response authenticateorguser =>', responseJson);
+
         if (responseJson.status == false && responseJson.errorCode == '404') {
           {
             responseJson.message != ''
@@ -350,9 +345,7 @@ export default function LoginScreen(props) {
           global.USERID = responseJson.data[0].id;
           global.StoreName = responseJson.data[0].TradeName;
           //console.log("global.Storeid check " + global.Storeid)
-          console.log('global.name check ' + global.StoreName);
-          console.log('global.ROLEID ' + global.ROLEID);
-          console.log('global.USERID ' + global.USERID);
+
           Toast.show('Login success');
           setmodalVisible(true);
           setTimeout(() => {
@@ -373,9 +366,9 @@ export default function LoginScreen(props) {
   };
   const LoginContinueWithSocialMedia = () => {
     LoginManager.setLoginBehavior('web_only');
-    console.log('LoginContinueWithSocialMedia 339 ');
+
     // ClearAsyncStorage();
-    console.log('continue login 340 ');
+
     // Sign with google start
     // if(global.Signup_LoginWithGoogle == 3){AsyncStorage.getItem('SignupWithFacebook')}
     //else if(global.Signup_LoginWithGoogle == 2){AsyncStorage.getItem('SignupWithFacebook')}
@@ -390,20 +383,20 @@ export default function LoginScreen(props) {
       if (Asyncdata != null) {
         setspinner(true);
         //var imgurl = Asyncdata.user.photo;
-        // console.log('Async SignupWithGoogle authtoken ', Asyncdata.authtoken);
-        // console.log('Async SignupWithGoogle email ', Asyncdata.email);
-        // console.log('Async SignupWithGoogle picture ', Asyncdata.picture);
-        // console.log('Async SignupWithGoogle firstName ', Asyncdata.firstName);
-        // console.log('Async SignupWithGoogle lastName ', Asyncdata.lastName);
-        // console.log('Async SignupWithGoogle userName ', Asyncdata.userName);
-        //console.log('Async SignupWithGoogle userID ', Asyncdata.userID);
+        //
+        //
+        //
+        //
+        //
+        //
+        //
         var UserName = Asyncdata.userName;
         var Password = Asyncdata.userID;
         var email = Asyncdata.email;
         //var authToken = (Asyncdata.user.idToken);
         //var FirstName = (Asyncdata.user.name).split(' ')[0];
         // var LastName = (Asyncdata.user.name).split(' ')[1];
-        console.log('Async UserName', UserName);
+
         var headerFetch = {
           method: 'POST',
           body: JSON.stringify({
@@ -422,7 +415,7 @@ export default function LoginScreen(props) {
           .then(response => response.json())
           .then(responseJson => {
             setspinner(false);
-            console.log('data response useraccount =>', responseJson);
+
             if (
               responseJson.status == false &&
               responseJson.errorCode == '404'
@@ -472,9 +465,7 @@ export default function LoginScreen(props) {
               global.USERID = responseJson.data[0].id;
               global.StoreName = responseJson.data[0].TradeName;
               //console.log("global.Storeid check " + global.Storeid)
-              console.log('global.name check ' + global.StoreName);
-              console.log('global.ROLEID ' + global.ROLEID);
-              console.log('global.USERID ' + global.USERID);
+
               Toast.show('Login success');
               setmodalVisible(true);
               setTimeout(() => {
@@ -497,7 +488,6 @@ export default function LoginScreen(props) {
       }
     });
     const ClearAsyncStorageXX = async function () {
-      console.log('Clear Storeage');
       await AsyncStorage.clear();
       // setspinner(false);
     };
@@ -510,7 +500,7 @@ export default function LoginScreen(props) {
     AsyncStorage.getItem('SignupWithGoogle_Facebook').then(function (res) {
       //AsyncStorage.getItem('SignupWithGoogle').then(function (res) {
       let Asyncdata = JSON.parse(res);
-      console.log('SignupWithGoogle_Facebook 438 ', Asyncdata);
+
       if (Asyncdata != null) {
         setspinner(true);
         var fcmToken = servicesettings.fcmToken;
@@ -519,7 +509,7 @@ export default function LoginScreen(props) {
         var Password = Asyncdata.userID;
         var email = Asyncdata.email;
         var authToken = Asyncdata.authtoken;
-        // console.log('check error ');
+        //
         var FirstName = Asyncdata.firstName;
         var LastName = Asyncdata.lastName;
         let uniqueId = '';
@@ -606,7 +596,6 @@ export default function LoginScreen(props) {
         )
           .then(response => response.json())
           .then(responseJson => {
-            console.log('responseJson useraccountwithlogin', responseJson);
             if (
               responseJson.status == false &&
               responseJson.errorCode == '404'
@@ -678,7 +667,7 @@ export default function LoginScreen(props) {
                   username: responseJsonAdd.userName,
                 },
               ];
-              console.log('UserInfo ', UserInfo);
+
               AsyncStorage.setItem(
                 'LoginInformation',
                 JSON.stringify(UserInfo),
@@ -687,7 +676,7 @@ export default function LoginScreen(props) {
               Toast.show('Save successfully');
               setTimeout(() => {
                 setspinner(false);
-                console.log('home ');
+
                 props.navigation.replace('Dashboard');
                 //props.navigation.navigate('Home');
               }, 2000);
@@ -717,12 +706,10 @@ export default function LoginScreen(props) {
     await AsyncStorage.clear();
   };
   function PressSignUp() {
-    console.log(' PressSignUp click click');
     setmodalVisiblecamera(false);
     ContinueWithSocialMedia();
   }
   function PressContinue() {
-    console.log(' PressContinue');
     LoginManager.setLoginBehavior('web_only');
     setmodalVisiblecamera(false);
     ContinueWithSocialMedia();
@@ -745,10 +732,9 @@ export default function LoginScreen(props) {
   }
   function CreateUser() {
     global.SocialMedia = 0;
-    console.log('CreateUser click');
+
     setmodalVisiblecamera(false);
     props.navigation.navigate('Signup');
-    console.log('CreateUser click ee');
   }
   function closeSocialMediaModal() {
     setmodalVisiblecamera(false);

@@ -29,8 +29,10 @@ const pauseicon = require('../../../assets/images/pauseicon.png');
 
 import {useNavigation, useRoute} from '@react-navigation/native';
 import servicesettings from '../dataservices/servicesettings';
+import {useTheme} from '../../hooks/useTheme';
 var canceltime = 40;
-export default function myvehicleScreen(props) {
+export default function MyCampaignScreen(props) {
+  const theme = useTheme();
   const navigation = useNavigation();
   const route = useRoute();
   global.currentscreen = route.name;
@@ -78,7 +80,7 @@ export default function myvehicleScreen(props) {
   }, []);
   function Loaddata() {
     setspinner(true);
-    AsyncStorage.getItem('LoginInformation').then(function(res) {
+    AsyncStorage.getItem('LoginInformation').then(function (res) {
       if (res != null) {
         let Asyncdata = JSON.parse(res);
         setUserId(Asyncdata[0].id);
@@ -100,19 +102,20 @@ export default function myvehicleScreen(props) {
             Authorization: servicesettings.AuthorizationKey,
           },
         };
-        console.log('headerFetch from bmtcompaigns ', headerFetch.body);
+
         fetch(servicesettings.baseuri + 'bmtcompaigns', headerFetch)
           .then(response => response.json())
           .then(responseJson => {
+            console.log('data response bmtcompaigns  =>', headerFetch.body);
             console.log(
               'data response bmtcompaigns  =>',
-              JSON.stringify(responseJson),
+              JSON.stringify(responseJson.data),
             );
             //console.log("data response bmtcompaigns data  =>", JSON.stringify(responseJson.data));
             //console.log("data response compaignsdetails  =>", JSON.stringify(responseJson.data.compaignsdetails));
             //console.log("data response compaignschedules  =>", JSON.stringify(responseJson.data.compaignschedules));
             //var myCampaignDetail = responseJson.data;
-            //console.log("data response bmtcompaigns network  =>", myCampaignDetail.compaignNetworks);
+            //
             // console.log('myCampaignDetail ' + JSON.stringify(JSON.parse(myCampaignDetail.compaignNetworks)));
             if (responseJson.data != null) {
               setdata(responseJson.data);
@@ -141,7 +144,6 @@ export default function myvehicleScreen(props) {
   }
   function searchDataClick() {
     if (Search == null || Search == '') {
-      console.log('search  =>', Search);
       Toast.showWithGravity('Please enter Keyword', Toast.LONG, Toast.CENTER);
       return;
     }
@@ -193,8 +195,6 @@ export default function myvehicleScreen(props) {
       });
   }
   function ClickCompaignStatus(SelectStatusVal) {
-    console.log('selectedCampaingStatus status', selectedCampaingStatus);
-    console.log('selectStatusId status', selectStatusId);
     var currentDate = new Date();
     var headerFetch = {
       method: 'POST',
@@ -224,7 +224,7 @@ export default function myvehicleScreen(props) {
         Authorization: servicesettings.AuthorizationKey,
       },
     };
-    console.log('Status headerFetch from compaignstatus ', headerFetch.body);
+
     fetch(servicesettings.baseuri + 'compaignstatus', headerFetch)
       .then(response => response.json())
       .then(responseJson => {
@@ -257,27 +257,24 @@ export default function myvehicleScreen(props) {
       });
   }
   function SettingClickForChangeFlatList() {
-    AsyncStorage.getItem('CampaignChangeStatus').then(function(res) {
+    AsyncStorage.getItem('CampaignChangeStatus').then(function (res) {
       let Asyncdata = JSON.parse(res);
-      console.log('CampaignChangeStatus ', Asyncdata);
-      // console.log('CampaignChangeStatus id ',Asyncdata.id);
-      //console.log('CampaignChangeStatus status ',Asyncdata.status);
-      //console.log('CampaignChangeStatus contact ',Asyncdata.data.contact);
-      // console.log('CampaignChangeStatus id ',Asyncdata.data.status);
+
+      //
+      //
+      //
+      //
       setSelectedCampaingStatus(Asyncdata.data.status);
       setSelectedCampaingId(Asyncdata.id);
       if (changeViewVisible == true) {
         setChangeViewVisible(false);
-        console.log('true click ');
       }
       if (changeViewVisible == false) {
         setChangeViewVisible(true);
-        console.log('false click ');
       }
     });
   }
   function StatusChangeOnClick(props) {
-    console.log('StatusChangeOnClick ', props);
     console.log('DeleteData click ' + JSON.stringify(props));
     console.log('DeleteData click ' + JSON.stringify(props.id));
     console.log('DeleteData click ' + JSON.stringify(props.data.status));
@@ -293,15 +290,14 @@ export default function myvehicleScreen(props) {
     ClickStatus(value);
   }
   function ClickCampaignStatusChange(value) {
-    console.log('ClickCampaignStatusChange ', value);
     // if(value==1){
     //  global.StatusName = 'Active';
-    //   console.log('global.StatusName ' + global.StatusName);
+    //
     // }
     // else{
     //      global.StatusName = 'Delete';
     // }
-    AsyncStorage.getItem('CampaignChangeStatus').then(function(res) {
+    AsyncStorage.getItem('CampaignChangeStatus').then(function (res) {
       let Asyncdata = JSON.parse(res);
       var SelectStatusVal = Asyncdata.id;
       ClickCompaignStatus(SelectStatusVal);
@@ -310,7 +306,6 @@ export default function myvehicleScreen(props) {
     });
   }
   function ClickCampaignStatusName(value) {
-    console.log('ClickCampaignStatusChange ', value);
     setSelectStatusId(value);
     if (value == '1') {
       global.StatusName = 'Active';
@@ -319,11 +314,10 @@ export default function myvehicleScreen(props) {
     }
   }
   function AttachmentPreviewDetail(AttachmentPreview) {
-    console.log('AttachmentPreviewDetail click ' + AttachmentPreview);
-    //console.log('AttachmentPreviewDetail  ' + AttachmentPreview[1]);
+    //
     // console.log('AttachmentPreviewDetail click ' + AttachmentPreview[0].image.replace(/\\/g, "/").replace(',',"").replace(' //',""));
     setAttachmentData(JSON.parse(AttachmentPreview));
-    //console.log('attachmentData ' + attachmentData);
+    //
     if (attachmentViewVisible == true) {
       setAttachmentViewVisible(false);
     }
@@ -332,9 +326,8 @@ export default function myvehicleScreen(props) {
     }
   }
   function AttachmentFullViewClick(image) {
-    console.log('image click ' + image);
     //console.log('image click full link ' + servicesettings.Imagebaseuri + image.replace(/\\/g, "/").replace(',',"").replace(' //',""));
-    //console.log('img_Video click ' + img_Video);
+    //
     setImg_Video(image);
     setImg_VideoType(image);
     if (attachmentFullView == true) {
@@ -356,24 +349,18 @@ export default function myvehicleScreen(props) {
     setShouldShow(!shouldShow);
   }
   function PreviewImageFullView(image) {
-    console.log('PreviewImageFullView click ', image);
     setImg_Video(image);
   }
-  function PreviewVideoFullView(image) {
-    console.log('PreviewVideoFullView click ', image);
-  }
+  function PreviewVideoFullView(image) {}
   function PDFDownloadClick(image) {
     setspinner(true);
-    console.log('PDFDownloadClick click ', image);
+
     const {dirs} = RNFetchBlob.fs;
     const downloadDir =
       Platform.OS === 'ios' ? dirs.DocumentDir : dirs.DownloadDir;
     const pdfUrl =
       servicesettings.Imagebaseuri +
-      image
-        .replace(/\\/g, '/')
-        .replace(',', '')
-        .replace(' //', '');
+      image.replace(/\\/g, '/').replace(',', '').replace(' //', '');
     RNFetchBlob.config({
       fileCache: true,
       addAndroidDownloads: {
@@ -412,10 +399,7 @@ export default function myvehicleScreen(props) {
               source={{
                 uri:
                   servicesettings.Imagebaseuri +
-                  image
-                    .replace(/\\/g, '/')
-                    .replace(',', '')
-                    .replace(' //', ''),
+                  image.replace(/\\/g, '/').replace(',', '').replace(' //', ''),
               }}
               style={{height: 185, width: 100 + '%'}}
             />
@@ -428,10 +412,7 @@ export default function myvehicleScreen(props) {
               source={{
                 uri:
                   servicesettings.Imagebaseuri +
-                  image
-                    .replace(/\\/g, '/')
-                    .replace(',', '')
-                    .replace(' //', ''),
+                  image.replace(/\\/g, '/').replace(',', '').replace(' //', ''),
               }}
               style={styles.AttachmentImage}
             />
@@ -440,8 +421,7 @@ export default function myvehicleScreen(props) {
         {image.split('.')[1] == 'pdf' ? (
           <TouchableOpacity
             style={{marginBottom: 12}}
-            onPress={() => PDFDownloadClick(image)}
-          >
+            onPress={() => PDFDownloadClick(image)}>
             <Image
               resizeMode="contain"
               source={pdfview}
@@ -453,7 +433,7 @@ export default function myvehicleScreen(props) {
     </View>
   );
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {backgroundColor: theme.backgroundColor}]}>
       <Spinner
         visible={spinner}
         textContent={'Loading...'}
@@ -468,15 +448,20 @@ export default function myvehicleScreen(props) {
         Title={'Confirmation'}
         Massage={
           'Are you sure you want to ' + global.StatusName + ' campaign ?'
-        }
-      ></Alert>
+        }></Alert>
       {shouldShow == false ? (
-        <View style={styles.AddNewCampaign}>
+        <View
+          style={[
+            styles.AddNewCampaign,
+            {backgroundColor: theme.cardBackColor},
+          ]}>
           <View style={styles.AddNewCampaignView}>
             <TouchableOpacity
-              style={styles.btnDetail_Delete}
-              onPress={() => AddNewCampaignClick()}
-            >
+              style={[
+                styles.btnDetail_Delete,
+                {backgroundColor: theme.buttonBackColor},
+              ]}
+              onPress={() => AddNewCampaignClick()}>
               <Text style={styles.Delete_Play_PauseTxt}>New Campaign</Text>
             </TouchableOpacity>
           </View>
@@ -487,11 +472,15 @@ export default function myvehicleScreen(props) {
           </View>
         </View>
       ) : (
-        <View style={styles.searchStyle}>
+        <View
+          style={[styles.searchStyle, {backgroundColor: theme.cardBackColor}]}>
           <View style={styles.SectionView}>
             <TextInput
-              placeholderTextColor="black"
-              style={styles.searchFieldText}
+              placeholderTextColor={theme.placeholderColor}
+              style={[
+                styles.searchFieldText,
+                {backgroundColor: theme.inputBackColor, color: theme.textColor},
+              ]}
               value={Search}
               onChangeText={value => setSearch(value)}
               placeholder={' Search'}
@@ -501,8 +490,11 @@ export default function myvehicleScreen(props) {
               maxLength={50}
             />
             <TextInput
-              placeholderTextColor="black"
-              style={styles.searchFieldText}
+              placeholderTextColor={theme.placeholderColor}
+              style={[
+                styles.searchFieldText,
+                {backgroundColor: theme.inputBackColor, color: theme.textColor},
+              ]}
               value={searchBudget}
               onChangeText={value => setSearchBudget(value)}
               placeholder={' Budget ≥'}
@@ -547,49 +539,76 @@ export default function myvehicleScreen(props) {
             title={item.title}
             autoGenerateLeads={item.autoGenerateLeads}
             //   discount={item.discount}
-            totalBudget={item.totalBudget}
-          ></Mycampaign>
+            totalBudget={item.totalBudget}></Mycampaign>
         )}
         numColumns={1}
         horizontal={false}
       />
       {changeViewVisible == true ? (
         <View style={styles.ChangeActionMainView}>
-          <View style={styles.sidebarViewRight}>
+          <View
+            style={[
+              styles.sidebarViewRight,
+              {backgroundColor: theme.backgroundColor},
+            ]}>
             <TouchableOpacity
               style={styles.closeIconView}
-              onPress={() => SettingClickForChangeFlatList()}
-            >
-              <Icons name="close" style={styles.closeIcon} />
+              onPress={() => SettingClickForChangeFlatList()}>
+              <Icons
+                name="close"
+                style={[styles.closeIcon, {color: theme.tintColor}]}
+              />
             </TouchableOpacity>
             {selectedCampaingStatus != 1 ? (
               <TouchableOpacity
-                style={styles.ChangeActionView}
+                style={[
+                  styles.ChangeActionView,
+                  {backgroundColor: theme.cardBackColor},
+                ]}
                 value={1}
-                onPress={() => ClickStatus(1)}
-              >
+                onPress={() => ClickStatus(1)}>
                 <View style={styles.SidebarIconView}>
-                  <Image source={deleteicon} style={styles.ribbonIcon} />
+                  <Image
+                    source={deleteicon}
+                    style={[
+                      styles.ribbonIcon,
+                      {tintColor: theme.buttonBackColor},
+                    ]}
+                  />
                 </View>
                 <View style={styles.SidebarDetailView}>
-                  <Text style={styles.IconText}>Active</Text>
-                  <Text style={styles.IconTextDetail}>
+                  <Text style={[styles.IconText, {color: theme.textColor}]}>
+                    Active
+                  </Text>
+                  <Text
+                    style={[styles.IconTextDetail, {color: theme.textColor}]}>
                     Network all schedules will be activated
                   </Text>
                 </View>
               </TouchableOpacity>
             ) : (
               <TouchableOpacity
-                style={styles.ChangeActionView}
+                style={[
+                  styles.ChangeActionView,
+                  {backgroundColor: theme.cardBackColor},
+                ]}
                 value={5}
-                onPress={() => ClickStatus(5)}
-              >
+                onPress={() => ClickStatus(5)}>
                 <View style={styles.SidebarIconView}>
-                  <Image source={deleteicon} style={styles.ribbonIcon} />
+                  <Image
+                    source={deleteicon}
+                    style={[
+                      styles.ribbonIcon,
+                      {tintColor: theme.buttonBackColor},
+                    ]}
+                  />
                 </View>
                 <View style={styles.SidebarDetailView}>
-                  <Text style={styles.IconText}>Delete</Text>
-                  <Text style={styles.IconTextDetail}>
+                  <Text style={[styles.IconText, {color: theme.textColor}]}>
+                    Delete
+                  </Text>
+                  <Text
+                    style={[styles.IconTextDetail, {color: theme.textColor}]}>
                     Your network all activity will be terminated
                   </Text>
                 </View>
@@ -603,11 +622,14 @@ export default function myvehicleScreen(props) {
       {attachmentViewVisible == true ? (
         <View style={styles.ChangeActionMainView}>
           <ScrollView>
-            <View style={styles.sidebarViewRight}>
+            <View
+              style={[
+                styles.sidebarViewRight,
+                {backgroundColor: theme.backgroundColor},
+              ]}>
               <TouchableOpacity
                 style={styles.closeIconView}
-                onPress={() => setAttachmentViewVisible(false)}
-              >
+                onPress={() => setAttachmentViewVisible(false)}>
                 <Icons name="close" style={styles.closeIcon} />
               </TouchableOpacity>
               <View style={styles.ChangeActionPictureView}>
@@ -629,8 +651,7 @@ export default function myvehicleScreen(props) {
         <View style={styles.ChangeActionMainFullView}>
           <TouchableOpacity
             style={styles.closeIconFullView}
-            onPress={() => AttachmentFullViewClick()}
-          >
+            onPress={() => AttachmentFullViewClick()}>
             <Image
               resizeMode="stretch"
               source={crossIcon}

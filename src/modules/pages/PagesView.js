@@ -44,7 +44,6 @@ export default function PagesScreen(props) {
       let Asyncdata = JSON.parse(res);
       if (Asyncdata == null) {
         setLoginDisabled(true);
-        console.log('Asyncdata Data empty ', Asyncdata);
         setloginlbl('Login');
       } else {
         setLoginDisabled(false);

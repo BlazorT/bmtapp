@@ -18,31 +18,22 @@ const pauseicon = require('../../assets/images/pauseicon.png');
 import AsyncStorage from '@react-native-async-storage/async-storage';
 //import { RNVoiceRecorder } from 'react-native-voice-recorder'
 import moment from 'moment';
+import {useTheme} from '../hooks/useTheme';
 //const iconwave = require('../../assets/images/pages/wave.png');
 export default function MycampaignScheduleList(props) {
+  const theme = useTheme();
   const [networkIcon, setNetworkIcon] = useState('');
   const [orgCurrencyName, setOrgCurrencyName] = useState('');
   const [orgCurrencyId, setOrgCurrencyId] = useState('');
   useEffect(() => {
-    AsyncStorage.getItem('OrgInformation').then(function(res) {
+    AsyncStorage.getItem('OrgInformation').then(function (res) {
       let Asyncdata = JSON.parse(res);
-      console.log(
-        'LoadOrgData LoadOrgData Asyncdata  ',
-        JSON.stringify(Asyncdata),
-      );
+
       var CurrencyIdDetail = Asyncdata.find(item => item.id === 1);
-      console.log(
-        'currencyId currencyId currencyId ',
-        JSON.stringify(CurrencyIdDetail),
-      );
-      console.log(
-        'currencyId currencyId currencyId ',
-        JSON.stringify(CurrencyIdDetail.currencyId),
-      );
+
       setOrgCurrencyId(CurrencyIdDetail.currencyId);
       setOrgCurrencyName(CurrencyIdDetail.currencyName);
     });
-    console.log('network my data ' + JSON.stringify(props));
     //console.log('network my data ' + JSON.stringify(props.compaignQouta));
     //console.log('network my data ' + JSON.stringify(props.networkName));
     if (props.networkId == 1) {
@@ -83,7 +74,7 @@ export default function MycampaignScheduleList(props) {
     value.then(data => {
       let Asyncdata = JSON.parse(data);
     });
-    //  console.log('Asyncdata click ');
+    //
   }
   function sidebarshowhidefunction() {
     // console.log('sidebarshowhidefunction click ' + JSON.stringify(props));
@@ -99,15 +90,15 @@ export default function MycampaignScheduleList(props) {
   }
   return (
     <Fragment>
-      <View style={styles.ModalMainView}>
+      <View
+        style={[styles.ModalMainView, {backgroundColor: theme.cardBackColor}]}>
         <TouchableOpacity style={{flexDirection: 'row', alignItems: 'center'}}>
           <View
             style={{
               width: 18 + '%',
               alignItems: 'center',
               justifyContent: 'center',
-            }}
-          >
+            }}>
             <Image
               resizeMode="contain"
               source={networkIcon}
@@ -116,30 +107,35 @@ export default function MycampaignScheduleList(props) {
           </View>
           <View style={{width: 80 + '%', marginLeft: 3, paddingTop: 1}}>
             <View style={{flex: 1, flexDirection: 'row'}}>
-              <Text style={styles.IntervalTitleStyle}>
+              <Text
+                style={[styles.IntervalTitleStyle, {color: theme.textColor}]}>
                 {'Interval Type: ' + props.intervaltypename}
               </Text>
-              <Text style={styles.DaysStyle}>{'  Days: ' + props.days}</Text>
+              <Text style={[styles.DaysStyle, {color: theme.textColor}]}>
+                {'  Days: ' + props.days}
+              </Text>
             </View>
             <View style={{flex: 1, flexDirection: 'row'}}>
-              <Text style={styles.BudgetStyle}>
+              <Text style={[styles.BudgetStyle, {color: theme.textColor}]}>
                 {'Message Count: ' + props.messageCount}
               </Text>
-              <Text style={styles.TitleStyle}>
+              <Text style={[styles.TitleStyle, {color: theme.textColor}]}>
                 {'Budget: ' + props.budget + ' ' + orgCurrencyName}
               </Text>
             </View>
             <View style={styles.ItemDetailViewsecond}>
               <View style={styles.Itemdetail}>
-                <Text style={styles.StartTime}>
+                <Text style={[styles.StartTime, {color: theme.textColor}]}>
                   {moment(props.startTime).format('MM-DD-YY hh:mm a')}
                 </Text>
               </View>
               <View style={styles.ItemdetailMiddle}>
-                <Text style={styles.StartTime}>{'~'}</Text>
+                <Text style={[styles.StartTime, {color: theme.textColor}]}>
+                  {'~'}
+                </Text>
               </View>
               <View style={styles.ItemFinishdetail}>
-                <Text style={styles.FinishTime}>
+                <Text style={[styles.FinishTime, {color: theme.textColor}]}>
                   {moment(props.finishTime).format('MM-DD-YY hh:mm a')}
                 </Text>
               </View>

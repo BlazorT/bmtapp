@@ -41,8 +41,10 @@ import servicesettings from '.././modules/dataservices/servicesettings';
 //import { RNVoiceRecorder } from 'react-native-voice-recorder'
 import moment from 'moment';
 import Toast from 'react-native-simple-toast';
+import {useTheme} from '../hooks/useTheme';
 //const iconwave = require('../../assets/images/pages/wave.png');
 export default function Myvehicle(props) {
+  const theme = useTheme();
   useEffect(() => {
     clickForDetailother();
     console.log('props all My Campaign ' + JSON.stringify(props));
@@ -55,15 +57,15 @@ export default function Myvehicle(props) {
     // var myCampaignDetail = props;
     //console.log('myCampaignDetail ' + (JSON.parse(myCampaignDetail.compaignNetworks)[]));
     //console.log('myCampaignDetail ' + JSON.stringify(JSON.parse(myCampaignDetail.compaignNetworks)));
-    // console.log('props  ' + props.compaignNetworks.id);
-    // console.log('props all data data data.compaignNetworks.networkId  ' + props.compaignNetworks);
+    //
+    //
     //var campaignNetworkDetail = props.compaignNetworks
-    //console.log('campaignNetworkDetail ' + campaignNetworkDetail);
-    //console.log('campaignNetworkDetail id ' + campaignNetworkDetail.id);
+    //
+    //
     setNetworkId(networknamesettings(props.networkId));
 
     //console.log('setNetworkId new ' + networknamesettings(props.networkId));
-    // console.log('logoAvatar new ' + servicesettings.Imagebaseuri + props.logoAvatar);
+    //
   }, []);
   //export default class Myvehicle extends PureComponent {
   //const Condition = [{src: 0},{src: 1}];
@@ -110,11 +112,10 @@ export default function Myvehicle(props) {
   const [networkIDList4, setNetworkIDList4] = useState([]);
   //const [compaignNetworksAllData, setcompaignNetworksAllData] = useState('');
   function Edit_CancelClick() {
-    console.log('Edit_CancelClick click ');
     setButtonsvisible(true);
   }
   function clickButtonsvisible() {
-    //console.log('ButtonShow click ');
+    //
     setButtonsvisible(false);
   }
   function ButtonShowxx() {
@@ -122,14 +123,13 @@ export default function Myvehicle(props) {
     value.then(data => {
       let Asyncdata = JSON.parse(data);
     });
-    console.log('Asyncdata click ');
   }
   const clickForDetailother = async () => {
     //console.log('clickForDetailother clickForDetailother ' + JSON.stringify(props.data));
     //console.log('clickForDetailother clickForDetailother networkData ' + JSON.stringify(networkData));
     var AttachmentCount = props.data.attachments.length;
     setAttachmentDataList(AttachmentCount);
-    // console.log('attachmentDataList ' + props.data.attachments);
+    //
     var networkcount = JSON.parse(props.data.compaignsdetails);
     const itemCount = networkcount.length;
     setNetworkCount(itemCount);
@@ -165,7 +165,7 @@ export default function Myvehicle(props) {
       setNetworkIDList4(
         JSON.parse(myCampaignDetail.compaignNetworks)[4].networkId,
       );
-      // console.log('networkIDList ' + networkIDList);
+      //
       //console.log('myCampaignDetail ' + JSON.stringify(JSON.parse(myCampaignDetail.compaignNetworks)));
       // MyData(JSON.parse(myCampaignDetail.compaignNetworks));
     }
@@ -207,10 +207,9 @@ export default function Myvehicle(props) {
     setApprovalTime(myCampaignDetail.approvalTime);
     setStartTime(myCampaignDetail.startTime);
     setFinishTime(myCampaignDetail.finishTime);
-    console.log('networkData ', networkData);
+
     const namesArray = networkData.map(item => item.networkName.split(','));
     setNetworkName(namesArray);
-    console.log('namesArray ' + namesArray);
   };
   function CancelShow() {
     setButtonsvisible(false);
@@ -265,7 +264,7 @@ export default function Myvehicle(props) {
     //if(ContactNumber == )
     var ContactNum = ContactNumber.replace(/^0+/, '');
     //var ContactNum = '92' + this.props.contact.replace(/^0+/, '');
-    console.log('ContactNum ' + ContactNum);
+
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
     myHeaders.append(
@@ -305,13 +304,12 @@ export default function Myvehicle(props) {
       .catch(error => console.log('error', error));
   }
   function SuccessMessage() {
-    console.log('SuccessMessage');
     setModalVisible(true);
     setTimeout(() => {
       setModalVisible(false);
     }, 4000);
     var Number = this.props.contact;
-    console.log(Number);
+
     Toast.show('Your message to ' + Number + ' has been send successfully!');
   }
   function checkloginfordelete() {
@@ -336,11 +334,9 @@ export default function Myvehicle(props) {
     console.log('sidebarshowhidefunction click ' + JSON.stringify(props));
     if (sidebarshowhide == true) {
       setsidebarshowhide(false);
-      console.log('true click ');
     }
     if (sidebarshowhide == false) {
       setsidebarshowhide(true);
-      console.log('false click ');
     }
   }
   function openShare() {
@@ -358,10 +354,16 @@ export default function Myvehicle(props) {
       <GestureRecognizer
         onSwipeLeft={() => Edit_CancelClick()}
         onSwipeRight={() => Edit_CancelClick()}
-        config={config}
-      >
+        config={config}>
         <DoubleClick onClick={() => CompleteShow(props)}>
-          <View style={styles.item}>
+          <View
+            style={[
+              styles.item,
+              {
+                backgroundColor: theme.cardBackColor,
+                // borderColor: theme.cardBackColor,
+              },
+            ]}>
             {Buttonsvisible == true ? (
               <View style={styles.SwipeButtonView}>
                 <View
@@ -369,14 +371,16 @@ export default function Myvehicle(props) {
                     width: 100 + '%',
                     flexDirection: 'row',
                     justifyContent: 'center',
-                  }}
-                >
+                  }}>
                   <TouchableOpacity
                     value={4}
                     onPress={() => ClickDeleteData(props)}
-                    style={{width: 33 + '%', paddingVertical: 5}}
-                  >
-                    <View style={styles.Deletebtn}>
+                    style={{width: 33 + '%', paddingVertical: 5}}>
+                    <View
+                      style={[
+                        styles.Deletebtn,
+                        {backgroundColor: theme.buttonBackColor},
+                      ]}>
                       {props.data.status != 1 ? (
                         <Text style={styles.btnResend}>Active</Text>
                       ) : (
@@ -386,17 +390,23 @@ export default function Myvehicle(props) {
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => clickButtonsvisible()}
-                    style={{width: 33 + '%', paddingVertical: 5}}
-                  >
-                    <View style={styles.Cancelbtn}>
+                    style={{width: 33 + '%', paddingVertical: 5}}>
+                    <View
+                      style={[
+                        styles.Cancelbtn,
+                        {backgroundColor: theme.buttonBackColor},
+                      ]}>
                       <Text style={styles.btnResend}>Cancel</Text>
                     </View>
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => UpdateCampaign(props)}
-                    style={{width: 33 + '%', paddingVertical: 5}}
-                  >
-                    <View style={styles.Completebtn}>
+                    style={{width: 33 + '%', paddingVertical: 5}}>
+                    <View
+                      style={[
+                        styles.Completebtn,
+                        {backgroundColor: theme.buttonBackColor},
+                      ]}>
                       <Text style={styles.btnResend}>Update</Text>
                     </View>
                   </TouchableOpacity>
@@ -409,8 +419,7 @@ export default function Myvehicle(props) {
                   ? styles.CampaignStatusInactive
                   : styles.CampaignStatusActive
               }
-              onPress={() => clickForDetail(props)}
-            >
+              onPress={() => clickForDetail(props)}>
               <View style={{width: 15 + '%'}}>
                 {props.logoAvatar == '' || props.logoAvatar == null ? (
                   <Image source={BDMT} style={styles.ProfileStyle} />
@@ -430,15 +439,14 @@ export default function Myvehicle(props) {
               </View>
               <View style={{width: 84 + '%', marginLeft: 5, paddingTop: 6}}>
                 <View style={{flex: 1, flexDirection: 'row'}}>
-                  <Text style={styles.TitleStyle}>
+                  <Text style={[styles.TitleStyle, {color: theme.textColor}]}>
                     {props.title == '' ? props.orgName : props.title}
                   </Text>
                   <View style={styles.ActionButtonView}>
                     {attachmentDataList != 0 || attachmentDataList != '' ? (
                       <TouchableOpacity
                         style={styles.settingIconView}
-                        onPress={() => AttachmentPreview(props)}
-                      >
+                        onPress={() => AttachmentPreview(props)}>
                         <Image
                           source={AttachmentIcon}
                           style={styles.attachmentIcon}
@@ -446,33 +454,43 @@ export default function Myvehicle(props) {
                       </TouchableOpacity>
                     ) : (
                       <TouchableOpacity
-                        style={styles.settingIconView}
-                      ></TouchableOpacity>
+                        style={styles.settingIconView}></TouchableOpacity>
                     )}
                     <View style={{width: 35 + '%', paddingLeft: 5}}>
-                      <Text style={styles.NetworkCountView}>
+                      <Text
+                        style={[
+                          styles.NetworkCountView,
+                          {
+                            color: theme.textColor,
+                            backgroundColor: theme.buttonBackColor,
+                          },
+                        ]}>
                         {networkCount}
                       </Text>
                     </View>
                     <TouchableOpacity
                       style={styles.settingIconView}
-                      onPress={() => SettingClickForChange(props)}
-                    >
-                      <Icons style={styles.SettingIcon} name="setting" />
+                      onPress={() => SettingClickForChange(props)}>
+                      <Icons
+                        style={[styles.SettingIcon, {color: theme.tintColor}]}
+                        name="setting"
+                      />
                     </TouchableOpacity>
                   </View>
                 </View>
                 <View style={styles.ItemDetailViewsecond}>
                   <View style={styles.Itemdetail}>
-                    <Text style={styles.StartTime}>
+                    <Text style={[styles.StartTime, {color: theme.textColor}]}>
                       {moment(props.startTime).format('MM-DD-YY hh:mm a')}
                     </Text>
                   </View>
                   <View style={styles.ItemdetailMiddle}>
-                    <Text style={styles.StartTime}>{'~'}</Text>
+                    <Text style={[styles.StartTime, {color: theme.textColor}]}>
+                      {'~'}
+                    </Text>
                   </View>
                   <View style={styles.Itemdetail}>
-                    <Text style={styles.FinishTime}>
+                    <Text style={[styles.FinishTime, {color: theme.textColor}]}>
                       {moment(props.finishTime).format('MM-DD-YY hh:mm a')}
                     </Text>
                     <View></View>
@@ -490,10 +508,13 @@ export default function Myvehicle(props) {
         visible={modalVisiblecamera}
         onRequestClose={() => {
           ({modalVisiblecamera: !modalVisiblecamera});
-        }}
-      >
+        }}>
         <View style={styles.centeredView}>
-          <View style={styles.modalView}>
+          <View
+            style={[
+              styles.modalView,
+              {backgroundColor: theme.backgroundColor},
+            ]}>
             <View style={styles.Img_OrgView}>
               <View style={{width: 24 + '%'}}>
                 {props.logoAvatar == '' || props.logoAvatar == null ? (
@@ -512,61 +533,94 @@ export default function Myvehicle(props) {
                   />
                 )}
               </View>
-              <Text style={styles.OrgNameStyle}>{name}</Text>
+              <Text style={[styles.OrgNameStyle, {color: theme.textColor}]}>
+                {name}
+              </Text>
             </View>
-            <View style={styles.ButtonViewstyle}>
+            <View
+              style={[
+                styles.ButtonViewstyle,
+                {backgroundColor: theme.cardBackColor},
+              ]}>
               {ScheduleVisible != true ? (
                 <View style={{flexDirection: 'row'}}>
                   <TouchableOpacity
-                    style={
-                      CampaignVisible == true
+                    style={[
+                      CampaignVisible == false
                         ? styles.btnCampaignDetailClick
-                        : styles.btnCampaignDetail
-                    }
-                    onPress={() => NotNetworkDetailClick()}
-                  >
-                    <Text style={styles.NetWork_DetailText}>
+                        : styles.btnCampaignDetail,
+                      {
+                        borderColor: theme.buttonBackColor,
+                      },
+                    ]}
+                    onPress={() => NotNetworkDetailClick()}>
+                    <Text
+                      style={[
+                        styles.NetWork_DetailText,
+                        {color: theme.textColor},
+                      ]}>
                       Campaign Detail
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
-                    style={
-                      NetworkVisible == true
+                    style={[
+                      NetworkVisible == false
                         ? styles.btnNetWorkClick
-                        : styles.btnNetWork
-                    }
-                    onPress={() => NetworkDetailClick()}
-                  >
-                    <Text style={styles.NetWork_DetailText}>Networks</Text>
+                        : styles.btnNetWork,
+                      {
+                        borderColor: theme.buttonBackColor,
+                      },
+                    ]}
+                    onPress={() => NetworkDetailClick()}>
+                    <Text
+                      style={[
+                        styles.NetWork_DetailText,
+                        {color: theme.textColor},
+                      ]}>
+                      Networks
+                    </Text>
                   </TouchableOpacity>
                 </View>
               ) : (
                 <View style={{flexDirection: 'row'}}>
                   <TouchableOpacity
                     style={styles.btnCampaignDetailClick}
-                    onPress={() => NotNetworkDetailClick()}
-                  >
-                    <Text style={styles.NetWork_DetailText}>
+                    onPress={() => NotNetworkDetailClick()}>
+                    <Text
+                      style={[
+                        styles.NetWork_DetailText,
+                        {color: theme.textColor},
+                      ]}>
                       Campaign Detail
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.btnNetWorkClick}
-                    onPress={() => NetworkDetailClick()}
-                  >
-                    <Text style={styles.NetWork_DetailText}>Networks</Text>
+                    onPress={() => NetworkDetailClick()}>
+                    <Text
+                      style={[
+                        styles.NetWork_DetailText,
+                        {color: theme.textColor},
+                      ]}>
+                      Networks
+                    </Text>
                   </TouchableOpacity>
                 </View>
               )}
               <TouchableOpacity
-                style={
-                  ScheduleVisible == true
+                style={[
+                  ScheduleVisible == false
                     ? styles.btnScheduleDetail
-                    : styles.btnScheduleDetailClick
-                }
-                onPress={() => ScheduleDetail()}
-              >
-                <Text style={styles.NetWork_DetailText}>Schedules</Text>
+                    : styles.btnScheduleDetailClick,
+                  {
+                    borderColor: theme.buttonBackColor,
+                  },
+                ]}
+                onPress={() => ScheduleDetail()}>
+                <Text
+                  style={[styles.NetWork_DetailText, {color: theme.textColor}]}>
+                  Schedules
+                </Text>
               </TouchableOpacity>
             </View>
             {CampaignVisible == true ? (
@@ -577,26 +631,23 @@ export default function Myvehicle(props) {
                     marginHorizontal: 10,
                     marginTop: 6,
                     flexDirection: 'row',
-                  }}
-                >
+                  }}>
                   <Text
                     style={{
                       fontSize: 15,
                       fontWeight: 'bold',
-                      color: 'black',
+                      color: theme.textColor,
                       width: 17 + '%',
-                    }}
-                  >
+                    }}>
                     Network
                   </Text>
                   <Text
                     style={{
                       fontSize: 15,
                       fontWeight: 'bold',
-                      color: 'black',
+                      color: theme.textColor,
                       width: 23 + '%',
-                    }}
-                  >
+                    }}>
                     {' '}
                     Total
                   </Text>
@@ -604,20 +655,18 @@ export default function Myvehicle(props) {
                     style={{
                       fontSize: 15,
                       fontWeight: 'bold',
-                      color: 'black',
+                      color: theme.textColor,
                       width: 22 + '%',
-                    }}
-                  >
+                    }}>
                     Delivered
                   </Text>
                   <Text
                     style={{
                       fontSize: 15,
                       fontWeight: 'bold',
-                      color: 'black',
+                      color: theme.textColor,
                       width: 23 + '%',
-                    }}
-                  >
+                    }}>
                     Remaining
                   </Text>
                 </View>
@@ -635,79 +684,138 @@ export default function Myvehicle(props) {
                       compaignQouta={item.compaignQouta}
                       networkId={item.networkId}
                       networkName={item.networkName}
-                      lastUpdatedAt={item.lastUpdatedAt}
-                    ></NetworkMycampaign>
+                      lastUpdatedAt={item.lastUpdatedAt}></NetworkMycampaign>
                   )}
                   numColumns={1}
                   horizontal={false}
                 />
                 {sidebarshowhide == true ? (
                   <View style={styles.sidebarViewRightupsideview}>
-                    <View style={styles.sidebarViewRight}>
+                    <View
+                      style={[
+                        styles.sidebarViewRight,
+                        {backgroundColor: theme.backgroundColor},
+                      ]}>
                       <TouchableOpacity
                         style={styles.closeIconView}
-                        onPress={() => ActionButtonClick()}
-                      >
-                        <Icon name="close" style={styles.closeIcon} />
+                        onPress={() => ActionButtonClick()}>
+                        <Icon
+                          name="close"
+                          style={[styles.closeIcon, {color: theme.tintColor}]}
+                        />
                       </TouchableOpacity>
                       <TouchableOpacity
-                        style={styles.ChangeActionView}
-                        onPress={() => openShare()}
-                      >
+                        style={[
+                          styles.ChangeActionView,
+                          {backgroundColor: theme.cardBackColor},
+                        ]}
+                        onPress={() => openShare()}>
                         <View style={styles.SidebarIconView}>
                           <Image
                             source={deleteicon}
-                            style={styles.ribbonIcon}
+                            style={[
+                              styles.ribbonIcon,
+                              // {tintColor: theme.buttonBackColor},
+                            ]}
                           />
                         </View>
                         <View style={styles.SidebarDetailView}>
-                          <Text style={styles.IconText}>Active</Text>
-                          <Text style={styles.IconTextDetail}>
+                          <Text
+                            style={[styles.IconText, {color: theme.textColor}]}>
+                            Active
+                          </Text>
+                          <Text
+                            style={[
+                              styles.IconTextDetail,
+                              {color: theme.textColor},
+                            ]}>
                             Network all schedules will be activated
                           </Text>
                         </View>
                       </TouchableOpacity>
                       <TouchableOpacity
-                        style={styles.ChangeActionView}
-                        onPress={() => openShare()}
-                      >
+                        style={[
+                          styles.ChangeActionView,
+                          {backgroundColor: theme.cardBackColor},
+                        ]}
+                        onPress={() => openShare()}>
                         <View style={styles.SidebarIconView}>
                           <Image
                             source={deleteicon}
-                            style={styles.ribbonIcon}
+                            style={[
+                              styles.ribbonIcon,
+                              // {tintColor: theme.buttonBackColor},
+                            ]}
                           />
                         </View>
                         <View style={styles.SidebarDetailView}>
-                          <Text style={styles.IconText}>Delete</Text>
-                          <Text style={styles.IconTextDetail}>
+                          <Text
+                            style={[styles.IconText, {color: theme.textColor}]}>
+                            Delete
+                          </Text>
+                          <Text
+                            style={[
+                              styles.IconTextDetail,
+                              {color: theme.textColor},
+                            ]}>
                             Your network all activity will be terminated
                           </Text>
                         </View>
                       </TouchableOpacity>
                       <TouchableOpacity
-                        style={styles.ChangeActionView}
-                        onPress={() => openShare()}
-                      >
+                        style={[
+                          styles.ChangeActionView,
+                          {backgroundColor: theme.cardBackColor},
+                        ]}
+                        onPress={() => openShare()}>
                         <View style={styles.SidebarIconView}>
-                          <Image source={playicon} style={styles.ribbonIcon} />
+                          <Image
+                            source={playicon}
+                            style={[
+                              styles.ribbonIcon,
+                              // {tintColor: theme.buttonBackColor},
+                            ]}
+                          />
                         </View>
                         <View style={styles.SidebarDetailView}>
-                          <Text style={styles.IconText}>play</Text>
-                          <Text style={styles.IconTextDetail}>
+                          <Text
+                            style={[styles.IconText, {color: theme.textColor}]}>
+                            play
+                          </Text>
+                          <Text
+                            style={[
+                              styles.IconTextDetail,
+                              {color: theme.textColor},
+                            ]}>
                             Network all schedules will be resumed
                           </Text>
                         </View>
                       </TouchableOpacity>
                       <TouchableOpacity
-                        style={styles.ChangeActionView}
-                        onPress={() => openShare()}
-                      >
+                        style={[
+                          styles.ChangeActionView,
+                          {backgroundColor: theme.cardBackColor},
+                        ]}
+                        onPress={() => openShare()}>
                         <View style={styles.SidebarIconView}>
-                          <Image source={pauseicon} style={styles.ribbonIcon} />
+                          <Image
+                            source={pauseicon}
+                            style={[
+                              styles.ribbonIcon,
+                              // {tintColor: theme.white},
+                            ]}
+                          />
                         </View>
                         <View style={styles.SidebarDetailView}>
-                          <Text style={styles.IconText}>Pause</Text>
-                          <Text style={styles.IconTextDetail}>
+                          <Text
+                            style={[styles.IconText, {color: theme.textColor}]}>
+                            Pause
+                          </Text>
+                          <Text
+                            style={[
+                              styles.IconTextDetail,
+                              {color: theme.textColor},
+                            ]}>
                             Network all activities will be paused
                           </Text>
                         </View>
@@ -726,29 +834,38 @@ export default function Myvehicle(props) {
                     flexDirection: 'row',
                     marginHorizontal: 10,
                     paddingTop: 10,
-                  }}
-                >
-                  <Text style={styles.titleHeading}>Description</Text>
-                  <Text style={styles.titleDetail}>{name}</Text>
+                  }}>
+                  <Text style={[styles.titleHeading, {color: theme.textColor}]}>
+                    Description
+                  </Text>
+                  <Text style={[styles.titleDetail, {color: theme.textColor}]}>
+                    {name}
+                  </Text>
                 </View>
                 <View style={styles.CampaignDetailStyle}>
-                  <Text style={styles.titleHeading}>Start Time</Text>
-                  <Text style={styles.titleDetail}>
+                  <Text style={[styles.titleHeading, {color: theme.textColor}]}>
+                    Start Time
+                  </Text>
+                  <Text style={[styles.titleDetail, {color: theme.textColor}]}>
                     {startTime == '' || startTime == null
                       ? '--'
                       : moment(startTime).format('MM-DD-YY hh:mm a')}
                   </Text>
                 </View>
                 <View style={styles.CampaignDetailStyle}>
-                  <Text style={styles.titleHeading}>Finish Time</Text>
-                  <Text style={styles.titleDetail}>
+                  <Text style={[styles.titleHeading, {color: theme.textColor}]}>
+                    Finish Time
+                  </Text>
+                  <Text style={[styles.titleDetail, {color: theme.textColor}]}>
                     {finishTime == '' || finishTime == null
                       ? '--'
                       : moment(finishTime).format('MM-DD-YY hh:mm a')}
                   </Text>
                 </View>
                 <View style={styles.CampaignDetailStyle}>
-                  <Text style={styles.titleHeading}>Networks</Text>
+                  <Text style={[styles.titleHeading, {color: theme.textColor}]}>
+                    Networks
+                  </Text>
                   <View style={styles.titleDetailView}>
                     <FlatList
                       data={networkData}
@@ -765,30 +882,42 @@ export default function Myvehicle(props) {
                   </View>
                 </View>
                 <View style={styles.CampaignDetailStyle}>
-                  <Text style={styles.titleHeading}>Contact</Text>
-                  <Text style={styles.titleDetail}>
+                  <Text style={[styles.titleHeading, {color: theme.textColor}]}>
+                    Contact
+                  </Text>
+                  <Text style={[styles.titleDetail, {color: theme.textColor}]}>
                     {contact == '' || contact == null ? '--' : contact}
                   </Text>
                 </View>
                 <View style={styles.CampaignDetailStyle}>
-                  <Text style={styles.titleHeading}>Auto Generate</Text>
+                  <Text style={[styles.titleHeading, {color: theme.textColor}]}>
+                    Auto Generate
+                  </Text>
                   <View style={styles.AutoGenerateMainStyle}>
                     {hashTags == '' || hashTags == null ? (
                       <Image
                         source={AutoGenerateYes}
-                        style={styles.AutoGenerateStyle}
+                        style={[
+                          styles.AutoGenerateStyle,
+                          {tintColor: theme.selectedCheckBox},
+                        ]}
                       />
                     ) : (
                       <Image
                         source={AutoGenerateYes}
-                        style={styles.AutoGenerateStyle}
+                        style={[
+                          styles.AutoGenerateStyle,
+                          {tintColor: theme.selectedCheckBox},
+                        ]}
                       />
                     )}
                   </View>
                 </View>
                 <View style={styles.CampaignDetailStyle}>
-                  <Text style={styles.titleHeading}>Hash Tags</Text>
-                  <Text style={styles.titleDetail}>
+                  <Text style={[styles.titleHeading, {color: theme.textColor}]}>
+                    Hash Tags
+                  </Text>
+                  <Text style={[styles.titleDetail, {color: theme.textColor}]}>
                     {hashTags == '' || hashTags == null ? '--' : hashTags}
                   </Text>
                 </View>
@@ -801,38 +930,49 @@ export default function Myvehicle(props) {
                     marginBottom: 2,
                     marginTop: 15,
                     backgroundColor: colors.PagePanelTab,
-                  }}
-                ></View>
+                  }}></View>
                 <View style={styles.CampaignDetailStyle}>
-                  <Text style={styles.titleHeading}>Discount</Text>
-                  <Text style={styles.titleDetail}>
+                  <Text style={[styles.titleHeading, {color: theme.textColor}]}>
+                    Discount
+                  </Text>
+                  <Text style={[styles.titleDetail, {color: theme.textColor}]}>
                     {discount == '' || discount == null ? '--' : discount}
                   </Text>
                 </View>
                 <View style={styles.CampaignDetailStyle}>
-                  <Text style={styles.titleHeading}>Total Budget</Text>
-                  <Text style={styles.titleDetail}>
+                  <Text style={[styles.titleHeading, {color: theme.textColor}]}>
+                    Total Budget
+                  </Text>
+                  <Text style={[styles.titleDetail, {color: theme.textColor}]}>
                     {totalBudget == '' || totalBudget == null
                       ? '--'
                       : totalBudget}
                   </Text>
                 </View>
                 <View style={styles.CampaignDetailStyle}>
-                  <Text style={styles.titleHeading}>Remarks</Text>
-                  <Text style={styles.titleDetail}>
+                  <Text style={[styles.titleHeading, {color: theme.textColor}]}>
+                    Remarks
+                  </Text>
+                  <Text style={[styles.titleDetail, {color: theme.textColor}]}>
                     {description == '' || description == null
                       ? '--'
                       : description}
                   </Text>
                 </View>
                 <View style={styles.btnViewDetail}>
-                  <TouchableOpacity style={styles.btnDetail_Delete}>
+                  <TouchableOpacity
+                    style={[
+                      styles.btnDetail_Delete,
+                      {backgroundColor: theme.buttonBackColor},
+                    ]}>
                     <Text style={styles.Delete_Play_PauseTxt}>Pause</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
-                    style={styles.btnDetail_Delete}
-                    onPress={() => CloseModalDetail()}
-                  >
+                    style={[
+                      styles.btnDetail_Delete,
+                      {backgroundColor: theme.buttonBackColor},
+                    ]}
+                    onPress={() => CloseModalDetail()}>
                     <Text style={styles.Delete_Play_PauseTxt}>Cancel</Text>
                   </TouchableOpacity>
                 </View>
@@ -846,8 +986,7 @@ export default function Myvehicle(props) {
                     marginHorizontal: 10,
                     marginTop: 6,
                     flexDirection: 'row',
-                  }}
-                ></View>
+                  }}></View>
                 <FlatList
                   data={campaignScheduleData}
                   keyExtractor={(item, id) => id.toString()}
@@ -865,79 +1004,135 @@ export default function Myvehicle(props) {
                       intervalTypeId={item.IntervalTypeId}
                       startTime={item.StartTime}
                       finishTime={item.FinishTime}
-                      days={item.days}
-                    ></MycampaignScheduleList>
+                      days={item.days}></MycampaignScheduleList>
                   )}
                   numColumns={1}
                   horizontal={false}
                 />
                 {sidebarshowhide == true ? (
                   <View style={styles.sidebarViewRightupsideview}>
-                    <View style={styles.sidebarViewRight}>
+                    <View
+                      style={[
+                        styles.sidebarViewRight,
+                        {backgroundColor: theme.modalBackColor},
+                      ]}>
                       <TouchableOpacity
                         style={styles.closeIconView}
-                        onPress={() => ActionButtonClick()}
-                      >
+                        onPress={() => ActionButtonClick()}>
                         <Icon name="close" style={styles.closeIcon} />
                       </TouchableOpacity>
                       <TouchableOpacity
-                        style={styles.ChangeActionView}
-                        onPress={() => openShare()}
-                      >
+                        style={[
+                          styles.ChangeActionView,
+                          {backgroundColor: theme.cardBackColor},
+                        ]}
+                        onPress={() => openShare()}>
                         <View style={styles.SidebarIconView}>
                           <Image
                             source={deleteicon}
-                            style={styles.ribbonIcon}
+                            style={[
+                              styles.ribbonIcon,
+                              {tintColor: theme.buttonBackColor},
+                            ]}
                           />
                         </View>
                         <View style={styles.SidebarDetailView}>
-                          <Text style={styles.IconText}>Active</Text>
-                          <Text style={styles.IconTextDetail}>
+                          <Text
+                            style={[styles.IconText, {color: theme.textColor}]}>
+                            Active
+                          </Text>
+                          <Text
+                            style={[
+                              styles.IconTextDetail,
+                              {color: theme.textColor},
+                            ]}>
                             Network all schedules will be activated
                           </Text>
                         </View>
                       </TouchableOpacity>
                       <TouchableOpacity
-                        style={styles.ChangeActionView}
-                        onPress={() => openShare()}
-                      >
+                        style={[
+                          styles.ChangeActionView,
+                          {backgroundColor: theme.cardBackColor},
+                        ]}
+                        onPress={() => openShare()}>
                         <View style={styles.SidebarIconView}>
                           <Image
                             source={deleteicon}
-                            style={styles.ribbonIcon}
+                            style={[
+                              styles.ribbonIcon,
+                              {tintColor: theme.buttonBackColor},
+                            ]}
                           />
                         </View>
                         <View style={styles.SidebarDetailView}>
-                          <Text style={styles.IconText}>Delete</Text>
-                          <Text style={styles.IconTextDetail}>
+                          <Text
+                            style={[styles.IconText, {color: theme.textColor}]}>
+                            Delete
+                          </Text>
+                          <Text
+                            style={[
+                              styles.IconTextDetail,
+                              {color: theme.textColor},
+                            ]}>
                             Your network all activity will be terminated
                           </Text>
                         </View>
                       </TouchableOpacity>
                       <TouchableOpacity
-                        style={styles.ChangeActionView}
-                        onPress={() => openShare()}
-                      >
+                        style={[
+                          styles.ChangeActionView,
+                          {backgroundColor: theme.cardBackColor},
+                        ]}
+                        onPress={() => openShare()}>
                         <View style={styles.SidebarIconView}>
-                          <Image source={playicon} style={styles.ribbonIcon} />
+                          <Image
+                            source={playicon}
+                            style={[
+                              styles.ribbonIcon,
+                              {tintColor: theme.buttonBackColor},
+                            ]}
+                          />
                         </View>
                         <View style={styles.SidebarDetailView}>
-                          <Text style={styles.IconText}>play</Text>
-                          <Text style={styles.IconTextDetail}>
+                          <Text
+                            style={[styles.IconText, {color: theme.textColor}]}>
+                            play
+                          </Text>
+                          <Text
+                            style={[
+                              styles.IconTextDetail,
+                              {color: theme.textColor},
+                            ]}>
                             Network all schedules will be resumed
                           </Text>
                         </View>
                       </TouchableOpacity>
                       <TouchableOpacity
-                        style={styles.ChangeActionView}
-                        onPress={() => openShare()}
-                      >
+                        style={[
+                          styles.ChangeActionView,
+                          {backgroundColor: theme.cardBackColor},
+                        ]}
+                        onPress={() => openShare()}>
                         <View style={styles.SidebarIconView}>
-                          <Image source={pauseicon} style={styles.ribbonIcon} />
+                          <Image
+                            source={pauseicon}
+                            style={[
+                              styles.ribbonIcon,
+                              {tintColor: theme.buttonBackColor},
+                            ]}
+                          />
                         </View>
                         <View style={styles.SidebarDetailView}>
-                          <Text style={styles.IconText}>Pause</Text>
-                          <Text style={styles.IconTextDetail}>
+                          <Text
+                            style={[styles.IconText, {color: theme.textColor}]}>
+                            Pause
+                          </Text>
+                          <Text
+                            style={[
+                              styles.IconTextDetail,
+                              {color: theme.textColor},
+                            ]}>
                             Network all activities will be paused
                           </Text>
                         </View>
@@ -960,7 +1155,7 @@ const styles = StyleSheet.create({
     marginRight: 2 + '%',
     paddingTop: 8,
     fontSize: 15,
-    color: 'black',
+    // color: ,
     width: 60 + '%',
     //backgroundColor:'green'
   },
@@ -1006,7 +1201,7 @@ const styles = StyleSheet.create({
   settingIconView: {
     //marginRight: 12,
     paddingTop: 2,
-    color: 'black',
+    // color: theme.textColor,
     width: 29 + '%',
     //backgroundColor:'green'
   },
@@ -1016,7 +1211,7 @@ const styles = StyleSheet.create({
   },
   SettingIcon: {
     fontSize: 29,
-    color: 'black',
+    // color: theme.textColor,
   },
   SocialIcon: {
     height: 24,
@@ -1226,7 +1421,7 @@ const styles = StyleSheet.create({
     marginRight: 2 + '%',
     width: 96 + '%',
     backgroundColor: colors.PagePanelTab,
-    borderColor: colors.borderColor,
+    // borderColor: colors.borderColor,
     borderWidth: 1,
     borderRadius: 5,
   },
@@ -1455,7 +1650,7 @@ const styles = StyleSheet.create({
     //marginTop:3
   },
   IconText: {
-    color: 'black',
+    // color: theme.textColor,
     fontSize: 19,
     fontWeight: 'bold',
     width: 70 + '%',

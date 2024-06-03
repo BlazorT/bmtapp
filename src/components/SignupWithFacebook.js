@@ -29,7 +29,6 @@ export default class SignupWithFacebook extends PureComponent {
   logoutWithFacebook = () => {
     LoginManager.logOut();
     this.setState({userInfo: {}});
-    //console.log('userInfo: ' + JSON.stringify(userInfo));
   };
   getInfoFromToken = token => {
     const PROFILE_REQUEST_PARAMS = {
@@ -41,23 +40,16 @@ export default class SignupWithFacebook extends PureComponent {
       '/me',
       {token, parameters: PROFILE_REQUEST_PARAMS},
       (error, user) => {
-        console.log('login info has error: ' + JSON.stringify(user));
         if (error) {
-          console.log('login info has error: ' + JSON.stringify(error));
         } else {
           AsyncStorage.removeItem('SignupWithFacebookEmail');
-          //console.log('parameters: ' + JSON.stringify(parameters));
           this.setState({userInfo: user});
-          //console.log('result:', user);
-          // console.log('result: ', (this.state.userInfo));
-          //console.log('result: ', (token));
-          // console.log('result: ', (user));
-          //console.log('result: ', (this.state.userInfo.email));
+          // );
+          // );
           var email_Token = {
             email: this.state.userInfo.email,
             authtoken: token,
           };
-          console.log('email_Token: ', email_Token);
           AsyncStorage.setItem(
             'SignupWithFacebookEmail',
             JSON.stringify(email_Token),
@@ -68,35 +60,28 @@ export default class SignupWithFacebook extends PureComponent {
         }
       },
     );
-    //console.log('profileRequest: ' + JSON.stringify(profileRequest));
-    //console.log('profileRequest email: ' + JSON.stringify(this.state.userInfo.email));
     //AsyncStorage.setItem('SignupWithFacebookEmail', JSON.stringify(this.state.userInfo.email));
     new GraphRequestManager().addRequest(profileRequest).start();
   };
   loginWithFacebook = () => {
     LoginManager.setLoginBehavior('web_only');
-    // console.log('loginWithFacebook click');
+    //
     //global.Signup_LoginWithGoogle == 2;
     global.SocialMedia = 2;
     // Attempt a login using the Facebook login dialog asking for default permissions.
     LoginManager.logInWithPermissions(['public_profile']).then(
       login => {
         if (login.isCancelled) {
-          console.log('Login cancelled');
         } else {
           AccessToken.getCurrentAccessToken().then(data => {
-            console.log('loginWithFacebook click 71');
             const accessToken = data.accessToken.toString();
             this.getInfoFromToken(accessToken);
             this.SignupFacebookPicture();
           });
         }
       },
-      error => {
-        console.log('Login fail with error: ' + error);
-      },
+      error => {},
     );
-    //console.log('loginWithFacebook click 81');
   };
   SignupFacebookPicture = async () => {
     LoginManager.setLoginBehavior('web_only');
@@ -107,18 +92,13 @@ export default class SignupWithFacebook extends PureComponent {
           AsyncStorage.getItem('SignupWithFacebookEmail').then(function (res) {
             let Asyncdata = JSON.parse(res);
             //var fcmToken = servicesettings.fcmToken;
-            //console.log('SignupWithFacebookEmail ',Asyncdata);
             if (Asyncdata != null) {
               AsyncStorage.removeItem('SignupWithGoogle_Facebook');
               //var imgurl = Asyncdata.user.photo;
-              // console.log('Async Asyncdata', Asyncdata);
-              // console.log('Async Asyncdata. authtoken ', Asyncdata.authtoken);
-              // console.log('Async Asyncdata. email ', Asyncdata.email);
-              //console.log("The current profile " + JSON.stringify(currentProfile));
-              //console.log("The current firstName " + JSON.stringify(currentProfile.firstName));
-              //console.log("The current lastName " + JSON.stringify(currentProfile.lastName));
-              //console.log("The current imageURL " + JSON.stringify(currentProfile.imageURL));
-              // console.log("The current userID " + JSON.stringify(currentProfile.userID));
+              //
+              //
+              //
+              // );
               var userName =
                 currentProfile.firstName + '.' + currentProfile.lastName;
               var facebookOS = 4;
@@ -132,7 +112,6 @@ export default class SignupWithFacebook extends PureComponent {
                 email: Asyncdata.email,
                 authtoken: Asyncdata.authtoken,
               };
-              console.log('facebookdata ' + JSON.stringify(facebookdata));
               //var SignupFacebook = (this.state.userInfo + global.USEREMAIL);
               AsyncStorage.setItem(
                 'SignupWithGoogle_Facebook',

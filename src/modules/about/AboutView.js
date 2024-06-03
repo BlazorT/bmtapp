@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import VersionCheck from 'react-native-version-check';
 import {getAppstoreAppMetadata} from 'react-native-appstore-version-checker';
 import Toast from 'react-native-simple-toast';
 import {colors, fonts} from '../../styles';
@@ -15,42 +16,12 @@ export default function AboutScreen(props) {
   const [AppVersion, setAppVersion] = useState('');
   const theme = useTheme();
   useEffect(() => {
-    if (Platform.OS != 'ios') {
-      getAppstoreAppMetadata('com.spentem.streaming') //put any apps packageId here
-        .then(metadata => {
-          console.log(
-            'clashofclans android app version on playstore',
-            metadata.version,
-          );
-          setAppVersion(metadata.version);
-        })
-        .catch(err => {
-          console.log('error occurred', err);
-          Toast.showWithGravity(
-            'Internet connection failed, try another time !!!',
-            Toast.LONG,
-            Toast.CENTER,
-          );
-        });
-    }
-    if (Platform.OS === 'ios') {
-      getAppstoreAppMetadata('1601476445') //put any apps id here
-        .then(appVersion => {
-          console.log(
-            'clashofclans android app version on appstore',
-            appVersion.version,
-          );
-          setAppVersion(appVersion.version);
-        })
-        .catch(err => {
-          console.log('error occurred', err);
-          Toast.showWithGravity(
-            'Internet connection failed, try another time !!!',
-            Toast.LONG,
-            Toast.CENTER,
-          );
-        });
-    }
+    // VersionCheck.getLatestVersion().then(latestVersion => {
+    //    // 0.1.2
+    //   setAppVersion(latestVersion);
+    // });
+    const version = VersionCheck.getCurrentVersion();
+    setAppVersion(version);
   }, []);
   //***************************************************** View ********************************************************************//
   return (
@@ -178,11 +149,12 @@ const styles = StyleSheet.create({
   },
   Paragraph: {
     color: colors.TextColorOther,
-    flex: 1,
-    flexWrap: 'wrap',
+    // flex: 1,
+    // flexWrap: 'wrap',
     textAlign: 'justify',
     fontSize: 17,
     paddingBottom: 6,
     paddingTop: 6,
+    fontFamily: 'Lato-Semibold',
   },
 });

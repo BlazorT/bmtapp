@@ -78,7 +78,7 @@ export default function OrganizationScreen(props) {
   }, []);
   function Loaddata() {
     setspinner(true);
-    AsyncStorage.getItem('LoginInformation').then(function(res) {
+    AsyncStorage.getItem('LoginInformation').then(function (res) {
       if (res != null) {
         let Asyncdata = JSON.parse(res);
         setUserId(Asyncdata[0].id);
@@ -100,7 +100,7 @@ export default function OrganizationScreen(props) {
             Authorization: servicesettings.AuthorizationKey,
           },
         };
-        console.log('headerFetch from bmtcompaigns ', headerFetch.body);
+
         //fetch(servicesettings.baseuri + 'addUpdateorganization',headerFetch).then(response =>  response.json())
         fetch(servicesettings.baseuri + 'bmtcompaigns', headerFetch)
           .then(response => response.json())
@@ -133,7 +133,6 @@ export default function OrganizationScreen(props) {
   }
   function searchDataClick() {
     if (orgSearch == null || orgSearch == '') {
-      console.log('orgSearch  =>', orgSearch);
       Toast.showWithGravity('Please enter Keyword', Toast.LONG, Toast.CENTER);
       return;
     }
@@ -185,8 +184,6 @@ export default function OrganizationScreen(props) {
       });
   }
   function ClickCompaignStatus(SelectStatusVal) {
-    console.log('selectedCampaingStatus status', selectedCampaingStatus);
-    console.log('selectStatusId status', selectStatusId);
     var currentDate = new Date();
     var headerFetch = {
       method: 'POST',
@@ -216,7 +213,7 @@ export default function OrganizationScreen(props) {
         Authorization: servicesettings.AuthorizationKey,
       },
     };
-    console.log('Status headerFetch from compaignstatus ', headerFetch.body);
+
     fetch(servicesettings.baseuri + 'compaignstatus', headerFetch)
       .then(response => response.json())
       .then(responseJson => {
@@ -249,27 +246,24 @@ export default function OrganizationScreen(props) {
       });
   }
   function SettingClickForChangeFlatList() {
-    AsyncStorage.getItem('CampaignChangeStatus').then(function(res) {
+    AsyncStorage.getItem('CampaignChangeStatus').then(function (res) {
       let Asyncdata = JSON.parse(res);
-      console.log('CampaignChangeStatus ', Asyncdata);
-      // console.log('CampaignChangeStatus id ',Asyncdata.id);
-      //console.log('CampaignChangeStatus status ',Asyncdata.status);
-      //console.log('CampaignChangeStatus contact ',Asyncdata.data.contact);
-      // console.log('CampaignChangeStatus id ',Asyncdata.data.status);
+
+      //
+      //
+      //
+      //
       setSelectedCampaingStatus(Asyncdata.data.status);
       setSelectedCampaingId(Asyncdata.id);
       if (changeViewVisible == true) {
         setChangeViewVisible(false);
-        console.log('true click ');
       }
       if (changeViewVisible == false) {
         setChangeViewVisible(true);
-        console.log('false click ');
       }
     });
   }
   function StatusChangeOnClick(props) {
-    console.log('StatusChangeOnClick ', props);
     console.log('DeleteData click ' + JSON.stringify(props));
     console.log('DeleteData click ' + JSON.stringify(props.id));
     console.log('DeleteData click ' + JSON.stringify(props.data.status));
@@ -285,15 +279,14 @@ export default function OrganizationScreen(props) {
     ClickStatus(value);
   }
   function ClickCampaignStatusChange(value) {
-    console.log('ClickCampaignStatusChange ', value);
     // if(value==1){
     //  global.StatusName = 'Active';
-    //   console.log('global.StatusName ' + global.StatusName);
+    //
     // }
     // else{
     //      global.StatusName = 'Delete';
     // }
-    AsyncStorage.getItem('CampaignChangeStatus').then(function(res) {
+    AsyncStorage.getItem('CampaignChangeStatus').then(function (res) {
       let Asyncdata = JSON.parse(res);
       var SelectStatusVal = Asyncdata.id;
       ClickCompaignStatus(SelectStatusVal);
@@ -302,7 +295,6 @@ export default function OrganizationScreen(props) {
     });
   }
   function ClickCampaignStatusName(value) {
-    console.log('ClickCampaignStatusChange ', value);
     setSelectStatusId(value);
     if (value == '1') {
       global.StatusName = 'Active';
@@ -311,11 +303,10 @@ export default function OrganizationScreen(props) {
     }
   }
   function AttachmentPreviewDetail(AttachmentPreview) {
-    console.log('AttachmentPreviewDetail click ' + AttachmentPreview);
-    //console.log('AttachmentPreviewDetail  ' + AttachmentPreview[1]);
+    //
     // console.log('AttachmentPreviewDetail click ' + AttachmentPreview[0].image.replace(/\\/g, "/").replace(',',"").replace(' //',""));
     setAttachmentData(JSON.parse(AttachmentPreview));
-    //console.log('attachmentData ' + attachmentData);
+    //
     if (attachmentViewVisible == true) {
       setAttachmentViewVisible(false);
     }
@@ -324,9 +315,8 @@ export default function OrganizationScreen(props) {
     }
   }
   function AttachmentFullViewClick(image) {
-    console.log('image click ' + image);
     //console.log('image click full link ' + servicesettings.Imagebaseuri + image.replace(/\\/g, "/").replace(',',"").replace(' //',""));
-    //console.log('img_Video click ' + img_Video);
+    //
     setImg_Video(image);
     setImg_VideoType(image);
     if (attachmentFullView == true) {
@@ -350,24 +340,18 @@ export default function OrganizationScreen(props) {
     setShouldShow(!shouldShow);
   }
   function PreviewImageFullView(image) {
-    console.log('PreviewImageFullView click ', image);
     setImg_Video(image);
   }
-  function PreviewVideoFullView(image) {
-    console.log('PreviewVideoFullView click ', image);
-  }
+  function PreviewVideoFullView(image) {}
   function PDFDownloadClick(image) {
     setspinner(true);
-    console.log('PDFDownloadClick click ', image);
+
     const {dirs} = RNFetchBlob.fs;
     const downloadDir =
       Platform.OS === 'ios' ? dirs.DocumentDir : dirs.DownloadDir;
     const pdfUrl =
       servicesettings.Imagebaseuri +
-      image
-        .replace(/\\/g, '/')
-        .replace(',', '')
-        .replace(' //', '');
+      image.replace(/\\/g, '/').replace(',', '').replace(' //', '');
     RNFetchBlob.config({
       fileCache: true,
       addAndroidDownloads: {
@@ -406,10 +390,7 @@ export default function OrganizationScreen(props) {
               source={{
                 uri:
                   servicesettings.Imagebaseuri +
-                  image
-                    .replace(/\\/g, '/')
-                    .replace(',', '')
-                    .replace(' //', ''),
+                  image.replace(/\\/g, '/').replace(',', '').replace(' //', ''),
               }}
               style={{height: 185, width: 100 + '%'}}
             />
@@ -422,10 +403,7 @@ export default function OrganizationScreen(props) {
               source={{
                 uri:
                   servicesettings.Imagebaseuri +
-                  image
-                    .replace(/\\/g, '/')
-                    .replace(',', '')
-                    .replace(' //', ''),
+                  image.replace(/\\/g, '/').replace(',', '').replace(' //', ''),
               }}
               style={styles.AttachmentImage}
             />
@@ -434,8 +412,7 @@ export default function OrganizationScreen(props) {
         {image.split('.')[1] == 'pdf' ? (
           <TouchableOpacity
             style={{marginBottom: 12}}
-            onPress={() => PDFDownloadClick(image)}
-          >
+            onPress={() => PDFDownloadClick(image)}>
             <Image
               resizeMode="contain"
               source={pdfview}
@@ -462,15 +439,13 @@ export default function OrganizationScreen(props) {
         Title={'Confirmation'}
         Massage={
           'Are you sure you want to ' + global.StatusName + ' campaign ?'
-        }
-      ></Alert>
+        }></Alert>
       {shouldShow == false ? (
         <View style={styles.AddNewCampaign}>
           <View style={styles.AddNewCampaignView}>
             <TouchableOpacity
               style={styles.btnDetail_Delete}
-              onPress={() => AddNewCampaignClick()}
-            >
+              onPress={() => AddNewCampaignClick()}>
               <Text style={styles.Delete_Play_PauseTxt}>New Organization</Text>
             </TouchableOpacity>
           </View>
@@ -541,8 +516,7 @@ export default function OrganizationScreen(props) {
             title={item.title}
             autoGenerateLeads={item.autoGenerateLeads}
             //   discount={item.discount}
-            totalBudget={item.totalBudget}
-          ></OrganizationDetail>
+            totalBudget={item.totalBudget}></OrganizationDetail>
         )}
         numColumns={1}
         horizontal={false}
@@ -552,16 +526,14 @@ export default function OrganizationScreen(props) {
           <View style={styles.sidebarViewRight}>
             <TouchableOpacity
               style={styles.closeIconView}
-              onPress={() => SettingClickForChangeFlatList()}
-            >
+              onPress={() => SettingClickForChangeFlatList()}>
               <Icons name="close" style={styles.closeIcon} />
             </TouchableOpacity>
             {selectedCampaingStatus != 1 ? (
               <TouchableOpacity
                 style={styles.ChangeActionView}
                 value={1}
-                onPress={() => ClickStatus(1)}
-              >
+                onPress={() => ClickStatus(1)}>
                 <View style={styles.SidebarIconView}>
                   <Image source={deleteicon} style={styles.ribbonIcon} />
                 </View>
@@ -576,8 +548,7 @@ export default function OrganizationScreen(props) {
               <TouchableOpacity
                 style={styles.ChangeActionView}
                 value={5}
-                onPress={() => ClickStatus(5)}
-              >
+                onPress={() => ClickStatus(5)}>
                 <View style={styles.SidebarIconView}>
                   <Image source={deleteicon} style={styles.ribbonIcon} />
                 </View>
@@ -600,8 +571,7 @@ export default function OrganizationScreen(props) {
             <View style={styles.sidebarViewRight}>
               <TouchableOpacity
                 style={styles.closeIconView}
-                onPress={() => setAttachmentViewVisible(false)}
-              >
+                onPress={() => setAttachmentViewVisible(false)}>
                 <Icons name="close" style={styles.closeIcon} />
               </TouchableOpacity>
               <View style={styles.ChangeActionPictureView}>
@@ -623,8 +593,7 @@ export default function OrganizationScreen(props) {
         <View style={styles.ChangeActionMainFullView}>
           <TouchableOpacity
             style={styles.closeIconFullView}
-            onPress={() => AttachmentFullViewClick()}
-          >
+            onPress={() => AttachmentFullViewClick()}>
             <Image
               resizeMode="stretch"
               source={crossIcon}

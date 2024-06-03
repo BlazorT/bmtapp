@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import {colors, fonts} from '../styles';
+import {useTheme} from '../hooks/useTheme';
 const checkedCheckbox = require('../../assets/images/checkboxchecked.png');
 const uncheckedCheckbox = require('../../assets/images/checkboxunchecked.png');
 const EmailIcon = require('../../assets/images/Email.png');
@@ -22,34 +23,29 @@ const TwitterIcon = require('../../assets/images/Twitter.png');
 const SMSIcon = require('../../assets/images/SMS.png');
 const FacebookIcon = require('../../assets/images/Facebook.png');
 export default function NetworksView(props) {
-  console.log('Network View  props ', JSON.stringify(props));
-  const [selectSocialMediaNetwork, setSelectSocialMediaNetwork] = useState(
-    false,
-  );
+  const theme = useTheme();
+
+  const [selectSocialMediaNetwork, setSelectSocialMediaNetwork] =
+    useState(false);
   const [selectNetworkId, setSelectNetworkId] = useState('');
   const [socialmediaIcon, setSocialmediaIcon] = useState();
   useEffect(() => {
-    //console.log('props all ' + JSON.stringify(props));
+    //);
     if (props.networkData.length <= 1) {
-      console.log('filteredArray empty 28');
     } else {
       const filteredArray = props.networkData.filter(
         item => item.networkId == props.networkId,
       );
-      //console.log('filteredArray ' + JSON.stringify(filteredArray.length));
+      //);
       if (filteredArray.length <= 0) {
-        console.log('filteredArray empty ', filteredArray.length);
         setSelectSocialMediaNetwork(false);
       } else {
-        console.log(
-          'filteredArray ' + JSON.stringify(filteredArray[0].networkId),
-        );
         setSelectNetworkId(filteredArray[0].networkId);
         setSelectSocialMediaNetwork(true);
       }
     }
-    //console.log('props all id ' + JSON.stringify(props.id));
-    // console.log('selectSocialMediaNetwork ' + selectSocialMediaNetwork);
+    //);
+    //
     if (props.networkId == 1) {
       setSocialmediaIcon(SMSIcon);
     } else if (props.networkId == 2) {
@@ -71,24 +67,13 @@ export default function NetworksView(props) {
     }
   }, []);
   function NetworkSelect(props) {
-    console.log('selectNetworkId selectNetworkId selectNetworkId props', props);
-    console.log(
-      'selectNetworkId selectNetworkId selectNetworkId selectNetworkId',
-      selectNetworkId,
-    );
-    console.log(
-      'selectNetworkId selectNetworkId selectNetworkId props.id',
-      props.id,
-    );
-    // console.log('selectSocialMediaNetwork ', selectSocialMediaNetwork)
-    //console.log('props.id ', props)
-    AsyncStorage.getItem('LoginInformation').then(function(res) {
+    //
+    //
+    AsyncStorage.getItem('LoginInformation').then(function (res) {
       let Asyncdata = JSON.parse(res);
       global.NextSchedule = 0;
       if (selectNetworkId.length >= 0) {
-        console.log('NetworkSelect if case ');
         if (selectSocialMediaNetwork == true) {
-          console.log('ActionNetworkDataRemoveClick ');
           setSelectSocialMediaNetwork(false);
           var currentdate = new Date();
           var SelectProps = {
@@ -110,7 +95,6 @@ export default function NetworksView(props) {
           props.ActionNetworkDataRemoveClick(SelectProps);
         }
         if (selectSocialMediaNetwork == false) {
-          console.log('ActionNetworkDataClick ');
           var SelectProps = {
             networkId: props.networkId,
             orgId: Number(props.orgId),
@@ -134,9 +118,7 @@ export default function NetworksView(props) {
         selectNetworkId.length >= 1 ||
         selectNetworkId == props.networkId
       ) {
-        console.log('NetworkSelect else case ');
         if (selectSocialMediaNetwork == true) {
-          console.log('ActionNetworkDataRemoveClick ');
           setSelectSocialMediaNetwork(false);
           var currentdate = new Date();
           var SelectProps = {
@@ -158,7 +140,6 @@ export default function NetworksView(props) {
           props.ActionNetworkDataRemoveClick(SelectProps);
         }
         if (selectSocialMediaNetwork == false) {
-          console.log('ActionNetworkDataClick ');
           var SelectProps = {
             networkId: props.networkId,
             orgId: Number(Asyncdata[0].orgid),
@@ -186,8 +167,10 @@ export default function NetworksView(props) {
       <View style={{width: Dimensions.get('window').width}}>
         <TouchableOpacity
           onPress={() => NetworkSelect(props)}
-          style={styles.btnGetStarted}
-        >
+          style={[
+            styles.btnGetStarted,
+            {backgroundColor: theme.cardBackColor},
+          ]}>
           <View style={{width: 20 + '%'}}>
             <Image
               resizeMode="contain"
@@ -197,10 +180,15 @@ export default function NetworksView(props) {
           </View>
           <View style={{width: 65 + '%'}}>
             <View style={{flexDirection: 'row'}}>
-              <Text style={styles.itemText}>{props.networkName}</Text>
-              <Text style={styles.itemText}> ({props.purchasedQouta})</Text>
+              <Text style={[styles.itemText, {color: theme.textColor}]}>
+                {props.networkName}
+              </Text>
+              <Text style={[styles.itemText, {color: theme.textColor}]}>
+                {' '}
+                ({props.purchasedQouta})
+              </Text>
             </View>
-            <Text style={styles.itemTextDetail}>
+            <Text style={[styles.itemTextDetail, {color: theme.textColor}]}>
               {props.networkDesc == '' || props.networkDesc == null
                 ? props.networkName
                 : props.networkDesc}
@@ -213,19 +201,24 @@ export default function NetworksView(props) {
                 paddingTop: 17,
                 paddingLeft: 5,
                 zIndex: 902,
-              }}
-            >
+              }}>
               {selectSocialMediaNetwork == true ? (
                 <Image
                   resizeMode="contain"
                   source={checkedCheckbox}
-                  style={styles.checkboxChecked_Unchecked}
+                  style={[
+                    styles.checkboxChecked_Unchecked,
+                    {tintColor: theme.buttonBackColor},
+                  ]}
                 />
               ) : (
                 <Image
                   resizeMode="contain"
                   source={uncheckedCheckbox}
-                  style={styles.checkboxChecked_Unchecked}
+                  style={[
+                    styles.checkboxChecked_Unchecked,
+                    {tintColor: theme.buttonBackColor},
+                  ]}
                 />
               )}
             </View>
@@ -236,19 +229,24 @@ export default function NetworksView(props) {
                 paddingTop: 17,
                 paddingLeft: 5,
                 zIndex: 902,
-              }}
-            >
+              }}>
               {selectSocialMediaNetwork == false ? (
                 <Image
                   resizeMode="contain"
                   source={uncheckedCheckbox}
-                  style={styles.checkboxChecked_Unchecked}
+                  style={[
+                    styles.checkboxChecked_Unchecked,
+                    {tintColor: theme.buttonBackColor},
+                  ]}
                 />
               ) : (
                 <Image
                   resizeMode="contain"
                   source={checkedCheckbox}
-                  style={styles.checkboxChecked_Unchecked}
+                  style={[
+                    styles.checkboxChecked_Unchecked,
+                    {tintColor: theme.buttonBackColor},
+                  ]}
                 />
               )}
             </View>

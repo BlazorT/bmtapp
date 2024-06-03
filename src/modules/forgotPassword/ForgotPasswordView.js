@@ -101,7 +101,7 @@ export default function ForgotPasswordScreen(props) {
   };
   /*********************************************************** useEffect *************************************************/
   useEffect(() => {
-    AsyncStorage.getItem('LoginInformation').then(function(res) {
+    AsyncStorage.getItem('LoginInformation').then(function (res) {
       let Asyncdata = JSON.parse(res);
       if (Asyncdata != null) {
         setEmail(Asyncdata.Email);
@@ -134,7 +134,7 @@ export default function ForgotPasswordScreen(props) {
     //setTimer(60);
     //setdisable(true);
 
-    AsyncStorage.getItem('LoginInformation').then(function(res) {
+    AsyncStorage.getItem('LoginInformation').then(function (res) {
       setspinner(true);
       let Asyncdata = JSON.parse(res);
       var blazorHeader = new Headers();
@@ -151,11 +151,9 @@ export default function ForgotPasswordScreen(props) {
         headers: blazorHeader,
       };
       // headers: blazorHeader
-      console.log('headerFetch', headerFetch.body);
       fetch(servicesettings.baseuri + 'forgot', headerFetch)
         .then(response => response.json())
         .then(responseJson => {
-          console.log('responseJson', responseJson);
           if (responseJson.data == null) {
             setspinner(false);
             Toast.showWithGravity(
@@ -251,7 +249,7 @@ return () => clearInterval(interval)*/
       );
       return;
     }
-    AsyncStorage.getItem('LoginInformation').then(function(res) {
+    AsyncStorage.getItem('LoginInformation').then(function (res) {
       let Asyncdata = JSON.parse(res);
       var blazorHeader = new Headers();
       blazorHeader.append('Authorization', servicesettings.AuthorizationKey);
@@ -266,11 +264,9 @@ return () => clearInterval(interval)*/
         }),
         headers: blazorHeader,
       };
-      console.log('headerFetch', headerFetch.body);
       fetch(servicesettings.baseuri + 'forgot', headerFetch)
         .then(response => response.json())
         .then(responseJson => {
-          console.log('responseJson', responseJson);
           Toast.showWithGravity(
             'Pawssword has beeen changed successfully',
             Toast.LONG,
@@ -323,8 +319,7 @@ return () => clearInterval(interval)*/
         Visible={Visible}
         alerttype={'confirmation'}
         Title={'Confirmation'}
-        Massage={'Do you want to close ?'}
-      ></Alert>
+        Massage={'Do you want to close ?'}></Alert>
       <Alert
         massagetype={'warning'}
         hide={changehide}
@@ -332,8 +327,7 @@ return () => clearInterval(interval)*/
         Visible={Visiblechange}
         alerttype={'confirmation'}
         Title={'Confirmation'}
-        Massage={'Do you want to reset password ?'}
-      ></Alert>
+        Massage={'Do you want to reset password ?'}></Alert>
       <ScrollView>
         <View style={styles.textContainer}>
           <View style={styles.sectionStyleText}>
@@ -347,8 +341,7 @@ return () => clearInterval(interval)*/
               disableemail == true
                 ? customestyleEmail
                 : customestyleEmaildisable
-            }
-          >
+            }>
             <TextInput
               placeholderTextColor="#a2a2a2"
               style={disableemail == true ? styles.Text : styles.Textdisable}
@@ -379,8 +372,7 @@ return () => clearInterval(interval)*/
               <View
                 style={
                   disablecode == true ? customestyleOTP : customestyleOTPdisable
-                }
-              >
+                }>
                 <TextInput
                   placeholderTextColor="#a2a2a2"
                   clearTextOnFocus={true}

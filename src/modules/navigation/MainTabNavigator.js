@@ -72,7 +72,7 @@ export default function BottomTabs() {
         screenOptions={{
           tabBarStyle: {
             height: Platform.OS === 'ios' ? 90 : 50,
-            backgroundColor: colors.TopNavbar,
+            backgroundColor: theme.navBarBack,
           },
           headerShown: false,
         }}>
@@ -90,6 +90,9 @@ export default function BottomTabs() {
                     style={[
                       styles.tabBarIcon,
                       focused && styles.tabBarIconFocused,
+                      {
+                        tintColor: !focused ? 'gray' : theme.tintColor,
+                      },
                     ]}
                   />
                 </View>
@@ -99,7 +102,7 @@ export default function BottomTabs() {
                   style={{
                     fontSize: 12,
                     bottom: 2,
-                    color: focused ? colors.NavbarTextColor : 'gray',
+                    color: focused ? theme.textColor : 'gray',
                   }}>
                   {item.name}
                 </Text>
