@@ -49,6 +49,11 @@ export default function Myvehicle(props) {
     clickForDetailother();
     console.log('props all My Campaign ' + JSON.stringify(props));
     console.log('props all My Campaign ' + JSON.stringify(props.data.orgName));
+    console.log(
+      'props all My Campaign ' +
+        servicesettings.Imagebaseuri +
+        props.logoAvatar.replace(/\\/g, '/').replace(',', '').replace('//', ''),
+    );
 
     //console.log("data response compaignsdetails  =>", JSON.stringify(responseJson.data.compaignsdetails));
     // console.log("data response compaignschedules  =>", JSON.stringify(props.data.compaignsdetails));

@@ -131,7 +131,7 @@ export default function HomeScreen(props) {
     props.navigation.navigate('Login');
   };
   function AddCampaignClick() {
-    props.navigation.navigate('Campaign Schedule');
+    props.navigation.navigate('Campaign (+)');
     global.UpdateCampaign = 0;
   }
   return (
@@ -204,7 +204,7 @@ export default function HomeScreen(props) {
               </View>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => props.navigation.navigate('My Campaigns')}
+              onPress={() => props.navigation.navigate('Campaigns')}
               style={[
                 styles.Buy_SellButton,
                 {backgroundColor: theme.buttonBackColor},

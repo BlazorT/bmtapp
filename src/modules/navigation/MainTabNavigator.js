@@ -7,6 +7,7 @@ import {colors} from '../../styles';
 import TabNavigator from './TabNavigator';
 import tabNavigationData from './tabNavigationData';
 import {useTheme} from '../../hooks/useTheme';
+import AntdIcon from 'react-native-vector-icons/AntDesign';
 const Tab = createBottomTabNavigator();
 export default function BottomTabs() {
   const isFocused = useIsFocused();
@@ -36,17 +37,25 @@ export default function BottomTabs() {
             options={{
               tabBarIcon: ({focused}) => (
                 <View style={styles.tabBarItemContainer}>
-                  <Image
-                    resizeMode="contain"
-                    source={item.icon}
-                    style={[
-                      styles.tabBarIcon,
-                      focused && styles.tabBarIconFocused,
-                      {
-                        tintColor: !focused ? 'gray' : theme.tintColor,
-                      },
-                    ]}
-                  />
+                  {item.name === 'About' ? (
+                    <AntdIcon
+                      name="infocirlceo"
+                      size={28}
+                      color={theme.tintColor}
+                    />
+                  ) : (
+                    <Image
+                      resizeMode="contain"
+                      source={item.icon}
+                      style={[
+                        styles.tabBarIcon,
+                        focused && styles.tabBarIconFocused,
+                        {
+                          tintColor: !focused ? 'gray' : theme.tintColor,
+                        },
+                      ]}
+                    />
+                  )}
                 </View>
               ),
               tabBarLabel: ({focused}) => (
@@ -84,17 +93,25 @@ export default function BottomTabs() {
             options={{
               tabBarIcon: ({focused}) => (
                 <View style={styles.tabBarItemContainer}>
-                  <Image
-                    resizeMode="contain"
-                    source={item.icon}
-                    style={[
-                      styles.tabBarIcon,
-                      focused && styles.tabBarIconFocused,
-                      {
-                        tintColor: !focused ? 'gray' : theme.tintColor,
-                      },
-                    ]}
-                  />
+                  {item.name === 'About' ? (
+                    <AntdIcon
+                      name="infocirlceo"
+                      size={28}
+                      color={theme.tintColor}
+                    />
+                  ) : (
+                    <Image
+                      resizeMode="contain"
+                      source={item.icon}
+                      style={[
+                        styles.tabBarIcon,
+                        focused && styles.tabBarIconFocused,
+                        {
+                          tintColor: !focused ? 'gray' : theme.tintColor,
+                        },
+                      ]}
+                    />
+                  )}
                 </View>
               ),
               tabBarLabel: ({focused}) => (

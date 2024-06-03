@@ -178,7 +178,7 @@ export default function CampaignStatisticsScreen(props) {
           style={[styles.ChartView, {backgroundColor: theme.cardBackColor}]}>
           <BarChart
             data={data}
-            width={Dimensions.get('window').width - 28}
+            width={Dimensions.get('window').width - 20}
             height={Dimensions.get('window').height - 320}
             chartConfig={{
               color: (opacity = 1) => theme.textColor,

@@ -384,7 +384,7 @@ export default function CampaignScheduleScreen(props) {
   };
   const confirm = () => {
     setVisible(false);
-    props.navigation.navigate('BMT');
+    props.navigation.goBack();
   };
   useEffect(() => {
     //***********************************************************************************************************************************//

@@ -8,6 +8,7 @@ import {
   DrawerItem,
   createDrawerNavigator,
 } from '@react-navigation/drawer';
+import AntdIcon from 'react-native-vector-icons/AntDesign';
 import Toast from 'react-native-simple-toast';
 import compaign from '../../../assets/images/drawer/compaign.png';
 import iconPages from '../../../assets/images/drawer/grids.png';
@@ -19,6 +20,7 @@ import Alert from '../../components/Alert';
 import servicesettings from '../dataservices/servicesettings';
 import NavigatorView from './RootNavigation';
 import {useTheme} from '../../hooks/useTheme';
+import userProfile from '../../../assets/images/User.png';
 
 const drawerData = [
   {
@@ -69,16 +71,19 @@ function CustomDrawerContent(props) {
     AsyncStorage.getItem('LoginInformation').then(function (res) {
       let Asyncdata = JSON.parse(res);
       if (Asyncdata != null) {
+        console.log({Asyncdata});
         // global.img =  'data:image/png;base64,'+ Asyncdata.profileImage;
         // global.Email = Asyncdata[0].email;
         //  global.Name = Asyncdata.firstName +' '+ Asyncdata.lastName;
         //setimg('https://cdn-icons-png.flaticon.com/512/149/149071.png');
         setimg(
-          servicesettings.Imagebaseuri +
-            Asyncdata[0].avatar
-              .replace(/\\/g, '/')
-              .replace(',', '')
-              .replace(' //', ''),
+          Asyncdata[0].avatar === ''
+            ? ''
+            : servicesettings.Imagebaseuri +
+                Asyncdata[0].avatar
+                  .replace(/\\/g, '/')
+                  .replace(',', '')
+                  .replace(' //', ''),
         );
         var EmailAddress = Asyncdata[0].email;
         var UserName = Asyncdata[0].username;
@@ -115,7 +120,10 @@ function CustomDrawerContent(props) {
   return (
     <DrawerContentScrollView {...props} style={{padding: 0}}>
       <View style={styles.avatarContainer}>
-        <Image source={{uri: img}} style={styles.avatar} />
+        <Image
+          source={img == '' ? userProfile : {uri: img}}
+          style={styles.avatar}
+        />
         <View style={{paddingLeft: 6}}>
           <View style={{paddingLeft: 6, flexDirection: 'row'}}>
             <Text style={[styles.userName, {color: theme.textColor}]}>
@@ -149,11 +157,20 @@ function CustomDrawerContent(props) {
                 styles.menuLabelFlex,
                 {borderBottomColor: theme.textColor},
               ]}>
-              <Image
-                style={styles.imgStyle}
-                source={item.icon}
-                tintColor={theme.tintColor}
-              />
+              {item.name == 'About' ? (
+                <AntdIcon
+                  name="infocirlceo"
+                  size={25}
+                  style={styles.imgStyle}
+                  color={theme.tintColor}
+                />
+              ) : (
+                <Image
+                  style={styles.imgStyle}
+                  source={item.icon}
+                  tintColor={theme.tintColor}
+                />
+              )}
               <Text style={[styles.menuTitle, {color: theme.textColor}]}>
                 {item.name}
               </Text>
@@ -258,8 +275,8 @@ const styles = StyleSheet.create({
     // margin: 8,
   },
   avatar: {
-    width: 45,
-    height: 45,
+    width: 40,
+    height: 40,
     borderRadius: 25,
   },
   avatarContainer: {
