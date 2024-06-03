@@ -609,6 +609,7 @@ export default function OrganizationAddEditScreen(props) {
     }
   }
   function SelectCountryClick(value) {
+    // setCityNameAdd('');
     setSelectCityName('');
     setSelectCityId('');
     setSelectCountryVal(value);
@@ -871,6 +872,69 @@ export default function OrganizationAddEditScreen(props) {
                 />
               </View>
             </TouchableOpacity>
+            {SelectAreaEnabled && (
+              <View style={[styles.modalMainView]}>
+                <View
+                  style={[
+                    styles.modalSearchView,
+                    {backgroundColor: theme.backgroundColor},
+                  ]}>
+                  <View style={styles.centeredfilterView}>
+                    <View style={styles.sectionStylenew} marginTop={8}>
+                      <Dropdown
+                        placeholderTextColor="gray"
+                        onSelect={value => SelectCountryClick(value)}
+                        selectedIndex={selectCountryVal}
+                        style={[
+                          styles.TextDropdown,
+                          {
+                            backgroundColor: theme.inputBackColor,
+                            color: theme.textColor,
+                          },
+                        ]}
+                        items={stateList}
+                        placeholder="Select Country..."
+                        clearTextOnFocus={true}
+                        keyboardAppearance={'dark'}
+                        maxLength={5}
+                      />
+                    </View>
+                    <View
+                      style={[
+                        styles.textSearchabled,
+                        {backgroundColor: theme.inputBackColor},
+                      ]}>
+                      <SearchableDropdown
+                        onTextChange={text => textChangeClick(text)}
+                        onItemSelect={item => SearchableClick(item)}
+                        //onItemSelect={item => setSelectedItems(item)}
+                        selectedIndex={CityIndex}
+                        //onItemSelect={item => setSelectedItems(item)}
+                        containerStyle={containerStyle}
+                        textInputStyle={textInputStyle}
+                        itemStyle={itemStyle}
+                        itemTextStyle={itemTextStyle}
+                        itemsContainerStyle={itemsContainerStyle}
+                        items={CityDataList}
+                        placeholder={
+                          cityNameAdd == ''
+                            ? '  Select City...'
+                            : ' ' + cityNameAdd
+                        }
+                        //placeholder={selectedItems == ''?"  Select Show Room...":'  ' + selectedItems.id}
+                        placeholderTextColor={
+                          selectCityId !== ''
+                            ? theme.textColor
+                            : theme.placeholderColor
+                        }
+                        resPtValue={false}
+                        underlineColorAndroid="transparent"
+                      />
+                    </View>
+                  </View>
+                </View>
+              </View>
+            )}
           </View>
         )}
         {SelectSocialAreaEnabled == false ? (
@@ -1054,7 +1118,7 @@ export default function OrganizationAddEditScreen(props) {
           />
         </View>
       </ScrollView>
-      {SelectAreaEnabled ? (
+      {/* {SelectAreaEnabled && (
         <View style={[styles.modalMainView]}>
           <View
             style={[
@@ -1116,7 +1180,7 @@ export default function OrganizationAddEditScreen(props) {
             </View>
           </View>
         </View>
-      ) : null}
+      )} */}
     </View>
   );
 }
@@ -1332,11 +1396,11 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   modalMainView: {
-    position: 'absolute',
+    // position: 'absolute',
     justifyContent: 'space-around',
-    width: Dimensions.get('window').width - 10,
+    // width: Dimensions.get('window').width - 10,
     marginHorizontal: 5,
-    top: 45 + '%',
+    // top: 45 + '%',
     backgroundColor: 'white',
     alignItems: 'center',
     borderRadius: 6,
