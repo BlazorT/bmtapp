@@ -1,15 +1,14 @@
-import React, {useEffect, useState} from 'react';
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {colors} from '../../styles';
-//import ProfileScreen from '../profile/ProfileViewContainer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   DrawerContentScrollView,
   DrawerItem,
   createDrawerNavigator,
 } from '@react-navigation/drawer';
-import AntdIcon from 'react-native-vector-icons/AntDesign';
+import React, {useState} from 'react';
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import Toast from 'react-native-simple-toast';
+import AntdIcon from 'react-native-vector-icons/AntDesign';
+import userProfile from '../../../assets/images/User.png';
 import compaign from '../../../assets/images/drawer/compaign.png';
 import iconPages from '../../../assets/images/drawer/grids.png';
 import iconHome from '../../../assets/images/drawer/home.png';
@@ -17,39 +16,16 @@ import mycampaignIcon from '../../../assets/images/drawer/mycampaign.png';
 import iconAbout from '../../../assets/images/drawer/pencil.png';
 import Logout from '../../../assets/images/pages/Logout.png';
 import Alert from '../../components/Alert';
+import {useTheme} from '../../hooks/useTheme';
+import {useUser} from '../../hooks/useUser';
+import {colors} from '../../styles';
 import servicesettings from '../dataservices/servicesettings';
 import NavigatorView from './RootNavigation';
-import {useTheme} from '../../hooks/useTheme';
-import userProfile from '../../../assets/images/User.png';
 
-const drawerData = [
-  {
-    name: 'Home',
-    icon: iconHome,
-  },
-  {
-    name: 'Campaign Schedule',
-    icon: compaign,
-  },
-  {
-    name: 'My Campaigns',
-    icon: mycampaignIcon,
-  },
-  {
-    name: 'Panel',
-    icon: iconPages,
-  },
-  {
-    name: 'About',
-    icon: iconAbout,
-  },
-];
 const Drawer = createDrawerNavigator();
 function CustomDrawerContent(props) {
   const theme = useTheme();
-  const [Email, setEmail] = useState('Jhondoe345@gmail.com');
-  const [Name, setName] = useState('Jhon Doe');
-  const [img, setimg] = useState('');
+  const {user, isAuthenticated, logoutUser} = useUser();
   const [Visible, setVisible] = useState(false);
   const CancelClick = () => {
     setVisible(true);
@@ -57,89 +33,85 @@ function CustomDrawerContent(props) {
   const hide = () => {
     setVisible(false);
   };
+  const drawerData = [
+    {
+      name: 'Home',
+      icon: iconHome,
+      condition: true,
+    },
+    {
+      name: 'Campaign Schedule',
+      icon: compaign,
+      condition: true,
+    },
+    {
+      name: 'My Campaigns',
+      icon: mycampaignIcon,
+      condition: true,
+    },
+    {
+      name: 'Panel',
+      icon: iconPages,
+      condition: true,
+    },
+    {
+      name: 'About',
+      icon: iconAbout,
+      condition: true,
+    },
+    {
+      name: 'Log Out',
+      icon: Logout,
+      condition: isAuthenticated,
+    },
+  ];
   const confirm = () => {
     setVisible(false);
-    AsyncStorage.removeItem('LoginInformation');
+    logoutUser();
     Toast.showWithGravity('Logout successfully', Toast.LONG, Toast.CENTER);
+    AsyncStorage.removeItem('LoginInformation');
     props.navigation.navigate('Login');
     global.img = 'data:image/png;base64,' + servicesettings.Default_User_Image;
     global.Email = '';
     global.Name = '';
   };
-  useEffect(() => {
-    //global.UpdateCampaign = 0,
-    AsyncStorage.getItem('LoginInformation').then(function (res) {
-      let Asyncdata = JSON.parse(res);
-      if (Asyncdata != null) {
-        console.log({Asyncdata});
-        // global.img =  'data:image/png;base64,'+ Asyncdata.profileImage;
-        // global.Email = Asyncdata[0].email;
-        //  global.Name = Asyncdata.firstName +' '+ Asyncdata.lastName;
-        //setimg('https://cdn-icons-png.flaticon.com/512/149/149071.png');
-        setimg(
-          Asyncdata[0].avatar === ''
-            ? ''
-            : servicesettings.Imagebaseuri +
-                Asyncdata[0].avatar
-                  .replace(/\\/g, '/')
-                  .replace(',', '')
-                  .replace(' //', ''),
-        );
-        var EmailAddress = Asyncdata[0].email;
-        var UserName = Asyncdata[0].username;
-        setEmail(EmailAddress != '' ? EmailAddress : UserName);
-        //setName(Asyncdata[0].username);
-        setName(Asyncdata[0].firstname + ' ' + Asyncdata[0].lastname);
-      } else {
-        // setimg('https://cdn-icons-png.flaticon.com/512/149/149071.png');
-        setimg('data:image/png;base64,' + servicesettings.Default_User_Image);
-      }
-    });
-  });
+
   function ProfileEdit() {
-    AsyncStorage.getItem('LoginInformation').then(function (res) {
-      let Asyncdata = JSON.parse(res);
-      if (Asyncdata == null) {
-        Toast.showWithGravity('Please Login First', Toast.LONG, Toast.CENTER);
-        props.navigation.navigate('Login');
-      } else {
-        props.navigation.navigate('Profile');
-      }
-    });
+    props.navigation.navigate('Profile');
   }
-  function OpenSell() {
-    AsyncStorage.getItem('LoginInformation').then(function (res) {
-      let Asyncdata = JSON.parse(res);
-      if (Asyncdata == null) {
-        Toast.showWithGravity('Please Login First', Toast.LONG, Toast.CENTER);
-        props.navigation.navigate('Login');
-      }
-    });
-  }
+
   //<View style={styles.divider} />
+  const userProfileImage = !isAuthenticated
+    ? ''
+    : servicesettings.Imagebaseuri +
+      user.avatar.replace(/\\/g, '/').replace(',', '').replace(' //', '');
   return (
     <DrawerContentScrollView {...props} style={{padding: 0}}>
-      <View style={styles.avatarContainer}>
-        <Image
-          source={img == '' ? userProfile : {uri: img}}
-          style={styles.avatar}
-        />
-        <View style={{paddingLeft: 6}}>
-          <View style={{paddingLeft: 6, flexDirection: 'row'}}>
-            <Text style={[styles.userName, {color: theme.textColor}]}>
-              {Name}
-            </Text>
-            <TouchableOpacity onPress={() => ProfileEdit()}>
-              <Image
-                style={styles.EditIcon}
-                source={iconAbout}
-                tintColor={theme.tintColor}
-              />
-            </TouchableOpacity>
+      {isAuthenticated && (
+        <View style={styles.avatarContainer}>
+          <Image
+            source={user?.avatar == '' ? userProfile : {uri: userProfileImage}}
+            style={styles.avatar}
+          />
+          <View style={{paddingLeft: 6}}>
+            <View style={{flexDirection: 'row'}}>
+              <Text style={[styles.userName, {color: theme.textColor}]}>
+                {user.firstname + ' ' + user.lastname}
+              </Text>
+              <TouchableOpacity
+                onPress={() => ProfileEdit()}
+                style={{position: 'absolute', right: -10}}>
+                <Image
+                  style={styles.EditIcon}
+                  source={iconAbout}
+                  tintColor={theme.tintColor}
+                />
+              </TouchableOpacity>
+            </View>
+            <Text style={{color: theme.textColor}}>{user.email}</Text>
           </View>
-          <Text style={{color: theme.textColor}}>{Email}</Text>
         </View>
-      </View>
+      )}
       <Alert
         massagetype={'warning'}
         hide={hide}
@@ -148,75 +120,48 @@ function CustomDrawerContent(props) {
         alerttype={'confirmation'}
         Title={'Confirmation'}
         Massage={'Are you sure want to logout?'}></Alert>
-      {drawerData.map((item, idx) => (
-        <DrawerItem
-          key={`drawer_item-${idx + 1}`}
-          label={() => (
-            <View
-              style={[
-                styles.menuLabelFlex,
-                {borderBottomColor: theme.textColor},
-              ]}>
-              {item.name == 'About' ? (
-                <AntdIcon
-                  name="infocirlceo"
-                  size={25}
-                  style={styles.imgStyle}
-                  color={theme.tintColor}
-                />
-              ) : (
-                <Image
-                  style={styles.imgStyle}
-                  source={item.icon}
-                  tintColor={theme.tintColor}
-                />
+      {drawerData.map(
+        (item, idx) =>
+          item.condition && (
+            <DrawerItem
+              key={`drawer_item-${idx + 1}`}
+              label={() => (
+                <View
+                  style={[
+                    styles.menuLabelFlex,
+                    {borderBottomColor: theme.textColor},
+                  ]}>
+                  {item.name == 'About' ? (
+                    <AntdIcon
+                      name="infocirlceo"
+                      size={25}
+                      style={styles.imgStyle}
+                      color={theme.tintColor}
+                    />
+                  ) : (
+                    <Image
+                      style={styles.imgStyle}
+                      source={item.icon}
+                      tintColor={theme.tintColor}
+                    />
+                  )}
+                  <Text style={[styles.menuTitle, {color: theme.textColor}]}>
+                    {item.name}
+                  </Text>
+                </View>
               )}
-              <Text style={[styles.menuTitle, {color: theme.textColor}]}>
-                {item.name}
-              </Text>
-            </View>
-          )}
-          onPress={() => props.navigation.navigate(item.name)}
-        />
-      ))}
-      <DrawerItem
-        label={() => (
-          <View
-            style={[
-              styles.menuLabelFlex,
-              {borderBottomColor: theme.textColor},
-            ]}>
-            <Image
-              style={styles.imgStyle}
-              source={Logout}
-              tintColor={theme.tintColor}
+              onPress={() =>
+                item.name == 'Log Out'
+                  ? CancelClick()
+                  : props.navigation.navigate(item.name)
+              }
             />
-            <Text style={[styles.menuTitle, {color: theme.textColor}]}>
-              Log Out
-            </Text>
-          </View>
-        )}
-        onPress={() => CancelClick()}
-      />
+          ),
+      )}
     </DrawerContentScrollView>
   );
 }
-/*
-        <View style={styles.divider}/>
-        <View style={styles.divider} />
-        <DrawerItem
-        label={() => (
-        <View style={styles.menuLabelFlex}>
-        <Image
-        style={styles.imgStyle}
-        source={iconSettings}
-        tintColor={colors.IconColor}
-        />
-        <Text style={styles.menuTitle}>Settings</Text>
-        </View>
-        )}
-        />
- */
+
 export default function App() {
   const theme = useTheme();
   return (
@@ -280,6 +225,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
   },
   avatarContainer: {
+    width: '100%',
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'flex-start',

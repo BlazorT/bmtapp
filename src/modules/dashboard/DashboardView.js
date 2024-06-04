@@ -1,66 +1,62 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, {useEffect, useState} from 'react';
 import {Dimensions, Easing, StyleSheet, Text, View} from 'react-native';
 import {LineChart} from 'react-native-chart-kit';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
 
+import Spinner from 'react-native-loading-spinner-overlay';
 import Toast from 'react-native-simple-toast';
 import Icon from 'react-native-vector-icons/EvilIcons';
-import {colors} from '../../styles';
 import {useTheme} from '../../hooks/useTheme';
+import {useUser} from '../../hooks/useUser';
+import {colors} from '../../styles';
 import servicesettings from '../dataservices/servicesettings';
 export default function DashboardScreen(props) {
   const theme = useTheme();
-  const [DashboardSummaryDisabled, SetDashboardSummaryDisabled] =
-    React.useState(false);
+  const {user} = useUser();
+  const [dashboardSaleSummary, setDashboardSaleSummary] = useState(false);
+  const [spinner, setspinner] = useState(false);
 
-  const [percent, setpercent] = useState(0);
-  const [currentMonthData, setCurrentMonthData] = useState('');
-  const [graphNewCampaigns, setGraphNewCampaigns] = useState('');
-  const [currentVolume, setCurrentVolume] = useState('');
-  const [graphValueTotal, setGraphValueTotal] = useState('');
-  const [labelNameGraph, setLabelNameGraph] = useState('');
-  const [percentageIncrease, setPercentageIncrease] = useState('');
-  const [graphLabelMonth, setGraphLabelMonth] = useState([]);
-  const [graphLabelMonth1, setGraphLabelMonth1] = useState([]);
-  const [graphLabelMonth2, setGraphLabelMonth2] = useState([]);
-  const [graphLabelMonthx, setGraphLabelMonthx] = useState([]);
-  const [fundsAmountGraph, setFundsAmountGraph] = useState([]);
-  const [newCampaignsGraph, setNewCampaignsGraph] = useState([]);
-  const [Organization, setOrganization] = useState(10);
-  const [Campaign, setCampaign] = useState(10005);
-  const [Data, setData] = useState([]);
-  const [Vmon, setVmon] = useState(20);
-  const [Vtue, setVtue] = useState(13);
-  const [Vwed, setVwed] = useState(22);
-  const [Vthu, setVthu] = useState(30);
-  const [Vfri, setVfri] = useState(12);
-  const [Vsat, setVsat] = useState(34);
-  const [Vsun, setVsun] = useState(80);
-  const [Amon, setAmon] = useState(0);
-  const [Atue, setAtue] = useState(0);
-  const [Awed, setAwed] = useState(0);
-  const [Athu, setAthu] = useState(0);
-  const [Afri, setAfri] = useState(0);
-  const [Asat, setAsat] = useState(0);
-  const [Asun, setAsun] = useState(0);
-  /**************************************************** useEffect **************************************************************/
-  useEffect(() => {
-    DashboardCall();
+  const [data, setData] = useState({
+    datasets: [{data: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120]}],
+    labels: [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ],
+    totalCampaigns: 0,
+    totalBudget: 0,
+    percentageIncrease: 0,
+    currentMonthVol: 0,
+    currMonthSales: 0,
+    inProgress: 0,
+    closeCompains: 0,
   });
 
+  /**************************************************** useEffect **************************************************************/
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
   //DashboardCall(() => {
-  function SaleSummary() {
-    SetDashboardSummaryDisabled(true);
+  function saleSummaryToggle() {
+    setDashboardSaleSummary(!dashboardSaleSummary);
   }
-  function DashboardCall() {
-    AsyncStorage.getItem('LoginInformation').then(function (res) {
-      let Asyncdata = JSON.parse(res);
-      const date = new Date();
-      var headerFetch = {
+  const fetchDashboardData = async () => {
+    setspinner(true);
+    try {
+      const headerFetch = {
         method: 'POST',
         body: JSON.stringify({
-          orgId: Asyncdata[0].orgid,
+          orgId: user.orgid,
           status: 1,
           id: 0,
           DataOfMonth: '',
@@ -72,156 +68,60 @@ export default function DashboardScreen(props) {
         },
       };
 
-      fetch(servicesettings.baseuri + 'dashboard', headerFetch)
-        .then(response => response.json())
-        .then(responseJson => {
-          if (responseJson.data != null) {
-            var DashboardData = responseJson.data;
+      const response = await fetch(
+        `${servicesettings.baseuri}dashboard`,
+        headerFetch,
+      );
+      const responseJson = await response.json();
+      console.log(responseJson.data);
+      if (responseJson.data) {
+        // Map total campaigns to months
+        const DashboardData = responseJson.data;
+        const labels = DashboardData.map(item => item.dataOfMonth);
+        const totalCampaigns = DashboardData.map(item => item.totalCompaigns);
+        const newCompaigns = DashboardData.map(item => item.newCompaigns);
+        const totalNumberCampaigns = totalCampaigns.reduce(
+          (acc, curr) => acc + curr,
+          0,
+        );
+        const inProgress = newCompaigns.reduce((acc, curr) => acc + curr, 0);
+        const totalBudget = DashboardData.map(item => item.fundsAmount).reduce(
+          (acc, curr) => acc + curr,
+          0,
+        );
 
-            setGraphLabelMonth(DashboardData[0].dataOfMonth);
-            setGraphLabelMonth1(DashboardData[1].dataOfMonth);
-            setGraphLabelMonth2(DashboardData[2].dataOfMonth);
-            //setGraphLabelMonthx(DashboardData.dataOfMonth);
-            setFundsAmountGraph(DashboardData[1].fundsAmount);
-            setNewCampaignsGraph(DashboardData[1].newCompaigns);
-            var CurrentMonth = DashboardData[DashboardData.length - 1];
-            var CurrentMonthDetail = responseJson.data[0].newCompaigns;
-            var NewCampaignsList = responseJson.data.newCompaigns;
-            var NewCampaignsListXX = responseJson.data;
-            var GraphCampaignsList = responseJson.data;
-            // var filteredItem = GraphCampaignsList.map(item => item.newCompaigns);
-            //
-            setGraphValueTotal(responseJson.data.newCompaigns);
-            var filteredGraphCampaignsLItem = GraphCampaignsList.map(
-              item => item.dataOfMonth,
-            );
-            //setLabelNameGraph(filteredGraphCampaignsLItem);
+        const percentageIncrease = Math.round(
+          (DashboardData[0].percentageIncrease / 100) * 100,
+        );
+        const currentMonthVol = DashboardData[0].newCompaigns;
+        const currentMonthSales = DashboardData[0].fundsAmount;
 
-            var CurrentMonthPercentage =
-              responseJson.data[0].percentageIncrease;
-            setGraphNewCampaigns(NewCampaignsList);
-            var CurrentMonthPercentage =
-              responseJson.data[0].percentageIncrease;
-
-            // setCurrentMonthData(CurrentMonthDetail);
-            setCurrentMonthData(CurrentMonth.fundsAmount);
-            setCurrentVolume(CurrentMonthDetail);
-            //setCurrentVolume(CurrentMonth.totalCompaigns);
-            setPercentageIncrease(CurrentMonth.percentageIncrease);
-            const result = Math.round((CurrentMonthPercentage / 100) * 100);
-            setpercent(result);
-
-            //  sonData.seats[jsonData.seats.length-1].countryid
-            //{"dataOfDay": "Monday", "totalAllies": 0, "totalLikes": 0, "totalVideos": 1}
-            const MondayVideos = responseJson.data.filter(
-              x => x.dataOfDay === 'Monday',
-            );
-            const TuesdayVideos = responseJson.data.filter(
-              x => x.dataOfDay === 'Tuesday',
-            );
-            const WednesdayVideos = responseJson.data.filter(
-              x => x.dataOfDay === 'Wednesday',
-            );
-            const ThursdayVideos = responseJson.data.filter(
-              x => x.dataOfDay === 'Thursday',
-            );
-            const FridayVideos = responseJson.data.filter(
-              x => x.dataOfDay === 'Friday',
-            );
-            const SaturdayVideos = responseJson.data.filter(
-              x => x.dataOfDay === 'Saturday',
-            );
-            const SundayVideos = responseJson.data.filter(
-              x => x.dataOfDay === 'Sunday',
-            );
-            if (MondayVideos.length != 0) {
-              setVmon(MondayVideos[0].totalVideos);
-            }
-            if (TuesdayVideos.length != 0) {
-              setVtue(TuesdayVideos[0].totalVideos);
-            }
-            if (WednesdayVideos.length != 0) {
-              setVwed(WednesdayVideos[0].totalVideos);
-            }
-            if (ThursdayVideos.length != 0) {
-              setVthu(ThursdayVideos[0].totalVideos);
-            }
-            if (FridayVideos.length != 0) {
-              setVfri(FridayVideos[0].totalVideos);
-            }
-            if (SaturdayVideos.length != 0) {
-              setVsat(SaturdayVideos[0].totalVideos);
-            }
-            if (SundayVideos.length != 0) {
-              setVsun(SundayVideos[0].totalVideos);
-            }
-            if (MondayVideos.length != 0) {
-              setAmon(MondayVideos[0].totalAllies);
-            }
-            if (TuesdayVideos.length != 0) {
-              setAtue(TuesdayVideos[0].totalAllies);
-            }
-            if (WednesdayVideos.length != 0) {
-              setAwed(WednesdayVideos[0].totalAllies);
-            }
-            if (ThursdayVideos.length != 0) {
-              setAthu(ThursdayVideos[0].totalAllies);
-            }
-            if (FridayVideos.length != 0) {
-              setAfri(FridayVideos[0].totalAllies);
-            }
-            if (SaturdayVideos.length != 0) {
-              setAsat(SaturdayVideos[0].totalAllies);
-            }
-            if (SundayVideos.length != 0) {
-              setAsun(SundayVideos[0].totalAllies);
-            }
-            setOrganization(
-              responseJson.data.reduce(
-                (accumulator, current) => accumulator + current.totalAllies,
-                0,
-              ),
-            );
-            setCampaign(
-              responseJson.data.reduce(
-                (accumulator, current) => accumulator + current.totalVideos,
-                0,
-              ),
-            );
-
-            //
-          }
-        })
-        .catch(error => {
-          Toast.showWithGravity(
-            'Internet connection failed, try another time !!!',
-            Toast.LONG,
-            Toast.CENTER,
-          );
-          console.error('service error', error);
+        console.log({percentageIncrease});
+        // Update state with the mapped data
+        setData({
+          datasets: [{data: totalCampaigns}],
+          labels: labels,
+          totalCampaigns: totalNumberCampaigns,
+          totalBudget: totalBudget,
+          percentageIncrease: parseInt(percentageIncrease),
+          currentMonthVol: currentMonthVol,
+          currMonthSales: currentMonthSales,
+          inProgress: inProgress,
+          closeCompains: totalNumberCampaigns - inProgress,
         });
-      console.disableYellowBox = true;
-    });
-  }
-  //  console.error('labelNameGraph ', labelNameGraph);
-  // console.error('graphValueTotal ', graphValueTotal);
-  // var filteredItem = graphValueTotal.map(item => item.newCompaigns);
-  // console.error('filteredItem ', filteredItem);
-  const data = {
-    datasets: [
-      //{data: [graphLabelMonthx] }
-      //{data:[graphValueTotal]}
-      //{data: [fundsAmountGraph]},
-      {data: [0, 23, 39, 34]},
-    ],
-    labels: [labelNameGraph],
-    //labels: [graphLabelMonth,graphLabelMonth1,graphLabelMonth2,]
-    //labels: [ "WA","Massage","Twitter","FB","Email","SMS",]
+        setspinner(false);
+      }
+    } catch (error) {
+      console.error(error);
+      setspinner(false);
+      Toast.show('error occured, try another time !!!', Toast.LONG);
+    }
   };
 
   /***************************************************** View *************************************************************/
   return (
     <View style={[styles.container, {backgroundColor: theme.backgroundColor}]}>
+      <Spinner visible={spinner} textContent={'Loading...'} />
       <View style={styles.DivMain}>
         <View style={styles.ChartMainView}>
           <View style={styles.graphview}>
@@ -236,13 +136,13 @@ export default function DashboardScreen(props) {
                     {' Current Volume'}
                   </Text>
                   <Icon
-                    onPress={() => SaleSummary()}
+                    onPress={() => saleSummaryToggle()}
                     name={'arrow-up'}
                     style={[styles.ViewTitleIcon, {color: theme.tintColor}]}
                   />
                 </View>
                 <Text style={[styles.availableLable, {color: theme.textColor}]}>
-                  {parseFloat(currentVolume)
+                  {parseFloat(data.currentMonthVol)
                     .toFixed(1)
                     .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}
                 </Text>
@@ -262,7 +162,7 @@ export default function DashboardScreen(props) {
                   />
                 </View>
                 <Text style={[styles.availableLable, {color: theme.textColor}]}>
-                  {parseFloat(currentMonthData)
+                  {parseFloat(data.currMonthSales)
                     .toFixed(1)
                     .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}
                 </Text>
@@ -279,10 +179,9 @@ export default function DashboardScreen(props) {
                 rotation={360}
                 delay={500}
                 prefill={0}
-                // lineCap="square"
                 fillLineCap="round"
                 easing={Easing.out(Easing.ease)}
-                fill={percent}
+                fill={data.percentageIncrease}
                 tintColor={theme.buttonBackColor}
                 backgroundColor={theme.backgroundColor}>
                 {fill => (
@@ -293,7 +192,7 @@ export default function DashboardScreen(props) {
               </AnimatedCircularProgress>
             </View>
           </View>
-          {DashboardSummaryDisabled == false ? (
+          {dashboardSaleSummary == false ? (
             <View
               style={[
                 styles.ChartView,
@@ -334,7 +233,7 @@ export default function DashboardScreen(props) {
                   Total Campaign:
                 </Text>
                 <Text style={[styles.Value, {color: theme.textColor}]}>
-                  {Campaign}
+                  {data.totalCampaigns}
                 </Text>
               </View>
               <View style={styles.TitleValue}>
@@ -342,7 +241,7 @@ export default function DashboardScreen(props) {
                   Inprogress:
                 </Text>
                 <Text style={[styles.Value, {color: theme.textColor}]}>
-                  {Campaign}
+                  {data.inProgress}
                 </Text>
               </View>
               <View style={styles.TitleValue}>
@@ -350,7 +249,7 @@ export default function DashboardScreen(props) {
                   Close Campaign:
                 </Text>
                 <Text style={[styles.Value, {color: theme.textColor}]}>
-                  {Campaign}
+                  {data.closeCompains}
                 </Text>
               </View>
               <View style={styles.TitleValue}>
@@ -358,7 +257,7 @@ export default function DashboardScreen(props) {
                   Budget Total:
                 </Text>
                 <Text style={[styles.Value, {color: theme.textColor}]}>
-                  {Organization}
+                  {data.totalBudget}
                 </Text>
               </View>
             </View>

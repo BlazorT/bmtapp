@@ -41,7 +41,7 @@ export default function BottomTabs() {
                     <AntdIcon
                       name="infocirlceo"
                       size={28}
-                      color={theme.tintColor}
+                      color={!focused ? 'gray' : theme.tintColor}
                     />
                   ) : (
                     <Image
@@ -97,7 +97,7 @@ export default function BottomTabs() {
                     <AntdIcon
                       name="infocirlceo"
                       size={28}
-                      color={theme.tintColor}
+                      color={!focused ? 'gray' : theme.tintColor}
                     />
                   ) : (
                     <Image

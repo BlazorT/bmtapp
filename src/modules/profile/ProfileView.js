@@ -104,14 +104,8 @@ export default function VehicalSallerScreen(props) {
       .then(result => {
         switch (result) {
           case RESULTS.UNAVAILABLE:
-            console.log(
-              'This feature is not available (on this device / in this context)',
-            );
             break;
           case RESULTS.DENIED:
-            console.log(
-              'The permission has not been requested / is denied but requestable',
-            );
             request(
               Platform.OS === 'ios'
                 ? PERMISSIONS.IOS.CAMERA

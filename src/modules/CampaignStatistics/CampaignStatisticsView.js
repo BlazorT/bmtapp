@@ -1,58 +1,51 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useRoute} from '@react-navigation/native';
-import Base64 from 'Base64';
 import React, {useEffect, useState} from 'react';
-import {Dimensions, Easing, StyleSheet, Text, View} from 'react-native';
+import {
+  Dimensions,
+  Easing,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import {BarChart} from 'react-native-chart-kit';
 import {AnimatedCircularProgress} from 'react-native-circular-progress';
 
-import Toast from 'react-native-simple-toast';
+import Spinner from 'react-native-loading-spinner-overlay';
 import Icona from 'react-native-vector-icons/EvilIcons';
+import {useTheme} from '../../hooks/useTheme';
+import {useUser} from '../../hooks/useUser';
 import {colors} from '../../styles';
 import servicesettings from '../dataservices/servicesettings';
-import {useTheme} from '../../hooks/useTheme';
-const wait = timeout => {
-  return new Promise(resolve => setTimeout(resolve, timeout));
-};
-var canceltime = 40;
-export default function CampaignStatisticsScreen(props) {
+
+export default function CampaignStatisticsScreen() {
   const theme = useTheme();
-  const route = useRoute();
-  global.currentscreen = route.name;
-  const [Visible, setVisible] = useState(false);
-  const [percent, setpercent] = useState(0);
-  const [datalist, setdatalist] = useState('');
-  const [refreshing, setRefreshing] = React.useState(false);
-  const onRefresh = React.useCallback(() => {
-    setRefreshing(true);
-    wait(1000).then(() => setRefreshing(false));
-  }, []);
+  const user = useUser();
+
+  const [percent, setPercent] = useState(0);
+  const [spinner, setSpinner] = useState(false);
+  const [dataList, setDataList] = useState({
+    datasets: [{data: []}],
+    labels: [],
+    currentVol: 0,
+    currMonthSales: 0,
+  });
+
   useEffect(() => {
-    const result = Math.round((30 / 100) * 100);
-    setpercent(result);
-    //Loaddata();
-    //CompaignDetailsCall();
+    loadStatsData();
   }, []);
-  function Opendetail() {
-    props.navigation.navigate('Campaign Detail');
-  }
-  const data = {
-    datasets: [{data: [100, 70, 50, 30, 20, 0, 50]}],
-    labels: ['WA', 'Massage', 'Twitter', 'FB', 'Email', 'SMS', 'SMS'],
-  };
-  function Loaddata() {
-    AsyncStorage.getItem('LoginInformation').then(function (res) {
-      let Asyncdata = JSON.parse(res);
-      //const date = new Date();
-      var headerFetch = {
+
+  const loadStatsData = async () => {
+    setSpinner(true);
+    try {
+      let headerFetch = {
         method: 'POST',
         body: JSON.stringify({
-          orgId: Asyncdata[0].orgid,
+          orgId: user.orgid,
           status: 1,
           name: '',
           networkId: 0,
-          id: 0,
-          lastUpdatedBy: Asyncdata[0].id,
+          id: user.ordid,
+          lastUpdatedBy: user.id,
         }),
         headers: {
           Accept: 'application/json',
@@ -60,60 +53,117 @@ export default function CampaignStatisticsScreen(props) {
           Authorization: servicesettings.AuthorizationKey,
         },
       };
-      fetch(servicesettings.baseuri + 'CompaignNetworks', headerFetch)
-        .then(response => response.json())
-        .then(responseJson => {
-          //var myCampaignDetail = responseJson.data;
-          // ));
-          if (responseJson.data != null) {
-            setdatalist(responseJson.data);
-            // setspinner(false);
-          } else {
-            //setspinner(false);
-          }
-        })
-        .catch(error => {
-          console.error('service error', error);
-          Toast.showWithGravity(
-            'Internet connection failed, try another time !!!',
-            Toast.LONG,
-            Toast.CENTER,
-          );
-          //setspinner(false);
+      const response = await fetch(
+        `${servicesettings.baseuri}mybundlings`,
+        headerFetch,
+      );
+      const responseJson = await response.json();
+      // console.log(responseJson);
+      if (responseJson.status === true) {
+        const stats = responseJson.data;
+        const labels = stats.map(item => item.networkName);
+        const data = stats.map(item => item.purchasedQouta);
+        const totalVol = stats
+          .map(item => item.purchasedQouta)
+          .reduce((acc, curr) => acc + curr, 0);
+        const currMontSale = calculateCurrentMonthSales(stats);
+        const percentage = calculateOverallSalesPercentageChange(stats);
+        setPercent(percentage);
+        setDataList({
+          datasets: [{data: data}],
+          labels: labels,
+          currentVol: totalVol,
+          currMonthSales: currMontSale,
         });
+        setSpinner(false);
+      }
+    } catch (error) {
+      setSpinner(false);
+      console.error(error);
+    }
+  };
+  function calculateCurrentMonthSales(data) {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    const currentMonthItems = data.filter(item => {
+      const finishTime = new Date(item.finishTime);
+      return (
+        finishTime.getMonth() === currentMonth &&
+        finishTime.getFullYear() === currentYear
+      );
     });
-  }
-  function CompaignDetailsCall() {
-    var blazorHeader = new Headers();
-    blazorHeader.append(
-      'Authorization',
-      'bearer ' + Base64.btoa(servicesettings.AuthorizationKey),
+
+    // Sum up the usedQuota for the filtered items
+    const currentMonthSales = currentMonthItems.reduce(
+      (total, item) => total + item.purchasedQouta,
+      0,
     );
-    blazorHeader.append('Content-Type', 'application/json');
-    var headerFetch = {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers: blazorHeader,
-    };
-    fetch(servicesettings.baseuri + 'CompaignDetails', headerFetch)
-      .then(response => response.json())
-      .then(responseJson => {
-        if (responseJson.data != null) {
-          //{"dataOfDay": "Monday", "totalAllies": 0, "totalLikes": 0, "totalVideos": 1}
-        }
-      })
-      .catch(error => {
-        Toast.showWithGravity(
-          'Internet connection failed, try another time !!!',
-          Toast.LONG,
-          Toast.CENTER,
-        );
-        console.error('service error', error);
-      });
-    //console.disableYellowBox = true;
+
+    return currentMonthSales;
   }
+
+  function calculateTotalSalesForYear(data, year) {
+    const yearItems = data.filter(item => {
+      const finishTime = new Date(item.finishTime);
+      return finishTime.getFullYear() === year;
+    });
+
+    const totalSales = yearItems.reduce(
+      (total, item) => total + item.usedQuota,
+      0,
+    );
+
+    return totalSales;
+  }
+
+  function calculateOverallSalesPercentageChange(data) {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const lastYear = currentYear - 1;
+
+    const currentYearSales = calculateTotalSalesForYear(data, currentYear);
+    const lastYearSales = calculateTotalSalesForYear(data, lastYear);
+
+    if (lastYearSales === 0) {
+      return currentYearSales === 0 ? 0 : 100;
+    }
+
+    const percentageChange =
+      ((currentYearSales - lastYearSales) / lastYearSales) * 100;
+    return percentageChange;
+  }
+  // function CompaignDetailsCall() {
+  //   var headerFetch = {
+  //     method: 'POST',
+  //     body: JSON.stringify({ordid: 1, status: 0, id: 0, lastUpdatedBy: 0}),
+  //     headers: {
+  //       Accept: 'application/json',
+  //       'Content-Type': 'application/json; charset=utf-8',
+  //       Authorization: servicesettings.AuthorizationKey,
+  //     },
+  //   };
+  //   fetch(servicesettings.baseuri + 'bmtcompaigns', headerFetch)
+  //     .then(response => response.json())
+  //     .then(responseJson => {
+  //       console.log(responseJson);
+  //       if (responseJson.data != null) {
+  //         //{"dataOfDay": "Monday", "totalAllies": 0, "totalLikes": 0, "totalVideos": 1}
+  //       }
+  //     })
+  //     .catch(error => {
+  //       Toast.showWithGravity(
+  //         'Internet connection failed, try another time !!!',
+  //         Toast.LONG,
+  //         Toast.CENTER,
+  //       );
+  //       console.error('service error', error);
+  //     });
+  //   //console.disableYellowBox = true;
+  // }
   return (
     <View style={[styles.container, {backgroundColor: theme.backgroundColor}]}>
+      <Spinner visible={spinner} textContent={'Loading...'} />
       <View style={styles.graphview}>
         <View style={styles.CircleDetailview}>
           <View
@@ -128,7 +178,7 @@ export default function CampaignStatisticsScreen(props) {
               />
             </View>
             <Text style={[styles.availableLable, {color: theme.textColor}]}>
-              {parseFloat(7668798)
+              {parseFloat(dataList.currentVol)
                 .toFixed(1)
                 .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}
             </Text>
@@ -145,7 +195,7 @@ export default function CampaignStatisticsScreen(props) {
               />
             </View>
             <Text style={[styles.availableLable, {color: theme.textColor}]}>
-              {parseFloat(87676)
+              {parseFloat(dataList.currMonthSales)
                 .toFixed(1)
                 .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}
             </Text>
@@ -173,27 +223,30 @@ export default function CampaignStatisticsScreen(props) {
           </AnimatedCircularProgress>
         </View>
       </View>
-      <View style={styles.itemMainView}>
-        <View
-          style={[styles.ChartView, {backgroundColor: theme.cardBackColor}]}>
-          <BarChart
-            data={data}
-            width={Dimensions.get('window').width - 20}
-            height={Dimensions.get('window').height - 320}
-            chartConfig={{
-              color: (opacity = 1) => theme.textColor,
-              backgroundGradientFrom: theme.cardBackColor,
-              backgroundGradientTo: theme.cardBackColor,
-              backgroundGradientToOpacity: 1,
-              backgroundGradientFromOpacity: 1,
-              decimalPlaces: 0,
-            }}
-            yAxisLabel=""
-            showValuesOnTopOfBars={true}
-            bezier
-          />
-        </View>
-      </View>
+      <ScrollView horizontal>
+        <BarChart
+          data={dataList}
+          width={2000}
+          height={Dimensions.get('window').height - 320}
+          chartConfig={{
+            color: (opacity = 1) => theme.textColor,
+            backgroundGradientFrom: theme.cardBackColor,
+            backgroundGradientTo: theme.cardBackColor,
+            backgroundGradientToOpacity: 1,
+            backgroundGradientFromOpacity: 1,
+            decimalPlaces: 0,
+          }}
+          fromNumber={50000}
+          fromZero={false}
+          // verticalLabelRotation={30}
+          showValuesOnTopOfBars={true}
+          bezier
+          style={{
+            marginHorizontal: 10,
+            paddingRight: 20, // to remove white spaces at the start of the chart
+          }}
+        />
+      </ScrollView>
     </View>
   );
 }
@@ -202,7 +255,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.BlazorBg,
     width: Dimensions.get('window').width,
-    //backgroundColor: colors.BlazorBg,
   },
   OrderNumber: {
     marginLeft: 0,
@@ -215,29 +267,18 @@ const styles = StyleSheet.create({
     color: colors.TextColorOther,
   },
   itemMainView: {
-    //marginTop: 15,
-    //margin:10,
-    // width: 95 + '%',
-    // height:50 + '%',
-    //flexDirection: 'row',
     borderColor: colors.borderColor,
-    //width: Dimensions.get('window').width,
-    // backgroundColor: colors.white,
     padding: 10,
-    //backgroundColor: colors.BlazorBg,
     borderWidth: 0,
     borderRadius: 5,
-    //justifyContent: 'space-around',
   },
   ChartView: {
     borderColor: colors.borderColor,
     padding: 4,
-    //backgroundColor: colors.BlazorBg,
     borderWidth: 0,
     borderRadius: 5,
     backgroundColor: colors.PagePanelTab,
     elevation: 5,
-    //paddingLeft:-40,
     paddingLeft: -40,
     shadowColor: 'black',
     shadowOffset: {width: 4, height: 6},
@@ -245,10 +286,6 @@ const styles = StyleSheet.create({
   },
   graphview: {
     flexDirection: 'row',
-    //width: 96 + '%',
-    //height:45 + '%',
-    // borderBottomWidth:0.3,
-    //borderBottomColor: 'gray',
     paddingBottom: 10,
   },
   DetailViewTitle: {
@@ -256,8 +293,6 @@ const styles = StyleSheet.create({
   },
   CircleDetailview: {
     width: 63 + '%',
-    //backgroundColor:'blue',
-    //justifyContent: 'center',
   },
   circleview: {
     width: 35 + '%',
@@ -272,7 +307,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
   },
   DetailView: {
-    // alignItems: 'center',
     padding: 4,
     justifyContent: 'center',
     marginTop: 10,
@@ -283,7 +317,6 @@ const styles = StyleSheet.create({
     shadowColor: 'black',
     shadowOffset: {width: 4, height: 6},
     shadowOpacity: 0.8,
-    //justifyContent: 'center',
   },
   Volumelable: {
     fontSize: 16,

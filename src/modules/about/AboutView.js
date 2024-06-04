@@ -8,18 +8,12 @@ import {
   View,
 } from 'react-native';
 import VersionCheck from 'react-native-version-check';
-import {getAppstoreAppMetadata} from 'react-native-appstore-version-checker';
-import Toast from 'react-native-simple-toast';
-import {colors, fonts} from '../../styles';
 import {useTheme} from '../../hooks/useTheme';
+import {colors, fonts} from '../../styles';
 export default function AboutScreen(props) {
   const [AppVersion, setAppVersion] = useState('');
   const theme = useTheme();
   useEffect(() => {
-    // VersionCheck.getLatestVersion().then(latestVersion => {
-    //    // 0.1.2
-    //   setAppVersion(latestVersion);
-    // });
     const version = VersionCheck.getCurrentVersion();
     setAppVersion(version);
   }, []);
@@ -83,20 +77,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     flex: 1,
     backgroundColor: 'white',
-    //backgroundColor: colors.BlazorBg,
     width: Dimensions.get('window').width,
   },
   componentsSection: {
     justifyContent: 'center',
     alignItems: 'center',
     justifyContent: 'space-around',
-    // backgroundColor:'red',
     width: Dimensions.get('window').width,
   },
   iconimage: {
     width: Dimensions.get('window').width,
-    //height:170,
-    //height: Dimensions.get('window').height-0,
     alignItems: 'center',
     marginTop: 5 + '%',
   },
@@ -104,12 +94,9 @@ const styles = StyleSheet.create({
     height: 180,
     width: 380,
     resizeMode: 'contain',
-    //backgroundColor:'gray',
-    //tintColor:'red'
   },
   headertitle: {
     fontFamily: 'Roboto',
-    // fontFamily: fonts.primaryRegular,
     textAlign: 'center',
     color: colors.TextColorOther,
     fontSize: 22,
@@ -149,8 +136,6 @@ const styles = StyleSheet.create({
   },
   Paragraph: {
     color: colors.TextColorOther,
-    // flex: 1,
-    // flexWrap: 'wrap',
     textAlign: 'justify',
     fontSize: 17,
     paddingBottom: 6,

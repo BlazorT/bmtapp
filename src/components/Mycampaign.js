@@ -15,22 +15,10 @@ const deleteicon = require('../../assets/images/deleteicon.png');
 const playicon = require('../../assets/images/playicon.png');
 const pauseicon = require('../../assets/images/pauseicon.png');
 const AttachmentIcon = require('../../assets/images/attachment.png');
-const EMAIL = require('../../assets/images/Email.png');
-const INSTAGRAM = require('../../assets/images/instagram.png');
-const LINKEDIN = require('../../assets/images/linkedin.png');
-const SNAPCHAT = require('../../assets/images/snapchat.png');
-const TIKTOK = require('../../assets/images/tiktok.png');
-const WHATSAPP = require('../../assets/images/Whatsapp.png');
-const TWITTER = require('../../assets/images/Twitter.png');
-const SMS = require('../../assets/images/SMS.png');
-const FACEBOOK = require('../../assets/images/Facebook.png');
-const Crossicon = require('../../assets/images/crossicon.png');
+
 const AutoGenerateYes = require('../../assets/images/autogenerateyes.png');
-const AutoGenerateNo = require('../../assets/images/autogenerateno.png');
-//import NumericInput from 'react-native-numeric-input'
 import GestureRecognizer from 'react-native-swipe-gestures';
 import DoubleClick from 'rn-double-click';
-//import CustomeAlert from './Alert';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icons from 'react-native-vector-icons/AntDesign';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -38,43 +26,16 @@ import MycampaignScheduleList from '.././components/MycampaignScheduleList';
 import NetworkMycampaign from '.././components/NetworkMycampaign';
 import networknamesettings from '.././modules/dataservices/networknamesettings';
 import servicesettings from '.././modules/dataservices/servicesettings';
-//import { RNVoiceRecorder } from 'react-native-voice-recorder'
 import moment from 'moment';
 import Toast from 'react-native-simple-toast';
 import {useTheme} from '../hooks/useTheme';
-//const iconwave = require('../../assets/images/pages/wave.png');
 export default function Myvehicle(props) {
   const theme = useTheme();
   useEffect(() => {
     clickForDetailother();
-    console.log('props all My Campaign ' + JSON.stringify(props));
-    console.log('props all My Campaign ' + JSON.stringify(props.data.orgName));
-    console.log(
-      'props all My Campaign ' +
-        servicesettings.Imagebaseuri +
-        props.logoAvatar.replace(/\\/g, '/').replace(',', '').replace('//', ''),
-    );
 
-    //console.log("data response compaignsdetails  =>", JSON.stringify(responseJson.data.compaignsdetails));
-    // console.log("data response compaignschedules  =>", JSON.stringify(props.data.compaignsdetails));
-    // console.log('props all data props ' + JSON.stringify(props));networkId
-    // console.log('props all data compaignNetworks ' + JSON.stringify(props.compaignNetworks));
-    // var myCampaignDetail = props;
-    //console.log('myCampaignDetail ' + (JSON.parse(myCampaignDetail.compaignNetworks)[]));
-    //console.log('myCampaignDetail ' + JSON.stringify(JSON.parse(myCampaignDetail.compaignNetworks)));
-    //
-    //
-    //var campaignNetworkDetail = props.compaignNetworks
-    //
-    //
     setNetworkId(networknamesettings(props.networkId));
-
-    //console.log('setNetworkId new ' + networknamesettings(props.networkId));
-    //
   }, []);
-  //export default class Myvehicle extends PureComponent {
-  //const Condition = [{src: 0},{src: 1}];
-  //console.log('props ' + JSON.stringify(props));
 
   const [Buttonsvisible, setButtonsvisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -145,16 +106,7 @@ export default function Myvehicle(props) {
       myCampaignDetail.compaignNetworks.length >= 4
     ) {
       //console.log('myCampaignDetail not empty ' + JSON.stringify(myCampaignDetail));
-      console.log(
-        'myCampaignDetail not empty  ' +
-          JSON.stringify(
-            JSON.parse(myCampaignDetail.compaignNetworks)[0].networkId,
-          ) +
-          ' , ' +
-          JSON.stringify(
-            JSON.parse(myCampaignDetail.compaignNetworks)[1].networkId,
-          ),
-      );
+
       setNetworkIDList(
         JSON.parse(myCampaignDetail.compaignNetworks)[0].networkId,
       );
@@ -185,11 +137,7 @@ export default function Myvehicle(props) {
   };
   const clickForDetail = async props => {
     //console.log('clickForDetail click ' + JSON.stringify(props));
-    console.log('clickForDetail click network new ' + JSON.stringify(props));
-    console.log(
-      'clickForDetail compaignschedules ' +
-        JSON.stringify(props.data.compaignschedules),
-    );
+
     // console.log('clickForDetail network network network network network  ' + JSON.stringify());
     //myCampaignDetail = [{img: this.props}];
     global.Network_Detail = 1;

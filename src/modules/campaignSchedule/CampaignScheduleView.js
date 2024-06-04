@@ -13,20 +13,18 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import AppBreadcrumb from '../../components/AppBreadcrumb';
 import DocumentPicker from 'react-native-document-picker';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {Button, Dropdown, TextInput} from '../../components';
 import AddScheduleList from '../../components/AddScheduleList';
 import Alert from '../../components/Alert';
 import AlertBMT from '../../components/AlertBMT';
+import AppBreadcrumb from '../../components/AppBreadcrumb';
 import Model from '../../components/Model';
 import NetworksSelectedView from '../../components/NetworksSelectedView';
 import NetworksView from '../../components/NetworksView';
 import {colors, fonts} from '../../styles';
-//import Icons from 'react-native-vector-icons/Ionicons'
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-//import DocumentPicker, { DirectoryPickerResponse, DocumentPickerResponse, isCancel, isInProgress, types, } from 'react-native-document-picker'
-//import CheckboxGroup from 'react-native-checkbox-group'
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import moment from 'moment';
@@ -37,104 +35,24 @@ import {PERMISSIONS, RESULTS, check, request} from 'react-native-permissions';
 import RadioForm from 'react-native-simple-radio-button';
 import Toast from 'react-native-simple-toast';
 import Video from 'react-native-video';
-import servicesettings from '../dataservices/servicesettings';
+import AttachmentIcon from '../../../assets/images/attachment2.png';
+import checkedCheckbox from '../../../assets/images/checkboxchecked.png';
+import uncheckedCheckbox from '../../../assets/images/checkboxunchecked.png';
+import Crossicon from '../../../assets/images/crossicon.png';
+import DownArrowIcon from '../../../assets/images/downarrow.png';
+import PdfIcon from '../../../assets/images/pdficon.png';
+import pdfViewIcon from '../../../assets/images/pdfview.png';
+import profileIcon from '../../../assets/images/picture.png';
+import PlusIcon from '../../../assets/images/plusicon.png';
+import UpArrowIcon from '../../../assets/images/uparrow.png';
 import {useTheme} from '../../hooks/useTheme';
-const Cameraicon = require('../../../assets/images/icons/camera4.png');
-const checkedCheckbox = require('../../../assets/images/checkboxchecked.png');
-const uncheckedCheckbox = require('../../../assets/images/checkboxunchecked.png');
-const profileIcon = require('../../../assets/images/picture.png');
-const pdfViewIcon = require('../../../assets/images/pdfview.png');
-const Crossicon = require('../../../assets/images/crossicon.png');
-const PlusIcon = require('../../../assets/images/plusicon.png');
-const AttachmentIcon = require('../../../assets/images/attachment2.png');
-const DownArrowIcon = require('../../../assets/images/downarrow.png');
-const UpArrowIcon = require('../../../assets/images/uparrow.png');
-const AttachmentHeadingIcon = require('../../../assets/images/attachment.png');
-const Cameraicons = require('../../../assets/images/camera.png');
-const PdfIcon = require('../../../assets/images/pdficon.png');
-const galleryicon = require('../../../assets/images/491025.png');
-const EmailIcon = require('../../../assets/images/Email.png');
-const WhatsappIcon = require('../../../assets/images/Whatsapp.png');
-const TwitterIcon = require('../../../assets/images/Twitter.png');
-const SMSIcon = require('../../../assets/images/SMS.png');
-const FacebookIcon = require('../../../assets/images/Facebook.png');
-//import { MultiSelect } from 'react-native-element-dropdown';
-const crumbsContainerStyle = {
-  backgroundColor: colors.TextBoxContainer,
-  flexDirection: 'row',
-  borderWidth: 1,
-  borderColor: '#d6d6d6',
-  justifyContent: 'space-between',
-  width: Dimensions.get('window').width,
-};
-const crumbStyle = {
-  flexDirection: 'row',
-  justifyContent: 'center',
-  backgroundColor: 'transparent',
-};
-const activeCrumbStyle = {
-  backgroundColor: colors.Blazorbutton,
-  borderColor: '#010c1f',
-};
-const crumbTextStyle = {
-  color: 'green',
-  fontSize: 14,
-  fontWeight: 'bold',
-};
-const activeCrumbTextStyle = {
-  color: 'white',
-  fontSize: 15,
-  fontWeight: 'bold',
-};
-const containerStyle = {
-  padding: 0,
-};
-const textInputStyle = {
-  fontSize: 14,
-  color: colors.white,
-  backgroundColor: colors.red,
-  width: Dimensions.get('window').width - 48,
-  borderRadius: 4,
-  height: 52,
-  paddingLeft: 14,
-  //borderWidth:1,
-  // marginTop: 18,
-  marginTop: 5,
-  //marginBottom:9,
-  borderColor: colors.InputControlBorderColor,
-};
-const itemStyle = {
-  padding: 10,
-  marginTop: 2,
-  backgroundColor: colors.red,
-};
-const itemTextStyle = {
-  color: colors.red,
-};
-const itemsContainerStyle = {
-  width: Dimensions.get('window').width - 48,
-  backgroundColor: colors.red,
-  //marginTop:40,
-  //position: 'absolute', zIndex: 2,
-  // maxHeight: 122,
-  //minHeight: 122,
-  //height: 122,
-  zIndex: 2,
-  paddingLeft: 14,
-  maxHeight: 135,
-  height: 135,
-  //elevation: 2,
-};
+import servicesettings from '../dataservices/servicesettings';
+
 export default function CampaignScheduleScreen(props) {
   const theme = useTheme();
-  const [compaignExecutionSchedules11, setCompaignExecutionSchedules11] =
-    useState('');
+
   var defaultDateTime = new Date();
-  const [selectedItems, setSelectedItems] = useState([]);
-  //const [timeupdateid, settimeupdateid] = useState(0);
-  //const [timeupdateidEnd, settimeupdateidEnd] = useState(0);
-  //const [recurringtime, setrecurringtime] = useState([]);
-  //const [recurringtimeend, setrecurringtimeend] = useState([]);
+
   const [selectIndexStatus, setselectIndexStatus] = useState(-1);
   const [selectIntervalType, setSelectIntervalType] = useState(0);
   const [selectIntervalTypeId, setSelectIntervalTypeId] = useState(0);
@@ -235,35 +153,21 @@ export default function CampaignScheduleScreen(props) {
   const [modalSpinner_Load, setModalSpinner_Load] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [spinner, setspinner] = useState(false);
-  // const [errorVisible, seterrorVisible] = useState(false);
   const [camera, setcamera] = useState(false);
-  //const [selectWhatsapp, setSelectWhatsapp] = useState(false);
-  //const [selectFacebook, setSelectFacebook] = useState(false);
-  //const [selectTwitter, setSelectTwitter] = useState(false);
-  //const [selectSMS, setSelectSMS] = useState(false);
-  //const [selectEmail, setSelectEmail] = useState(false);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [IsCampaignStartDateVisible, setIsCampaignStartDateVisible] =
     useState(false);
   const [IsCampaignEndDateVisible, setIsCampaignEndDateVisible] =
     useState(false);
-  const [gallery, setgallery] = useState(false);
   const [showclender, setshowclender] = useState(false);
   const [showinterval, setshowinterval] = useState(true);
-  //const [successVisible, setsuccessVisible] = useState(false);
   const [DataNetwork, setDataNetwork] = useState('');
   const [intervalTypeCustom, setIntervalTypeCustom] = useState('');
   const [selectIntervalTypeForDays, setSelectIntervalTypeForDays] =
     useState('');
-  const [selectIntervalTypeEdit, setSelectIntervalTypeEdit] = useState('');
   const [noOfDayRepeateInTime, setNoOfDayRepeateInTime] = useState('');
-  const [addScheduleBudget, setAddScheduleBudget] = useState('');
   const [scheduleMessageCount, setScheduleMessageCount] = useState('');
   const [intervalValue, setIntervalValue] = useState('');
-  const [addCampaignData, setAddCampaignData] = useState('');
-  const [campaignListData, setCampaignListData] = useState('');
-  //const [allDataSubmit, setAllDataSubmit] = useState('');
-  // const [addCampaignData, setAddCampaignData] = useState([]);
   const [networkData, setNetworkData] = useState('');
   const [networkSelectedData, setNetworkSelectedData] = useState('');
   const [networkFinalData, setNetworkFinalData] = useState('');
@@ -275,14 +179,12 @@ export default function CampaignScheduleScreen(props) {
   const [arr, setArr] = useState([]);
   const [weekendDayList, setWeekendDayList] = useState([]);
   const [selectedWeekDayList, setSelectedWeekDayList] = useState([]);
-  //const [weekendDayList, setWeekendDayList] = useState([]);
   const [selectStatusValue, setSelectStatusValue] = useState(0);
   const [selectAutoGenerateValue, setSelectAutoGenerateValue] = useState(1);
   const [
     selectAutoGenerateEnabled_Disabled,
     setSelectAutoGenerateEnabled_Disabled,
   ] = useState(false);
-  const [selectStatusUpdate, setSelectStatusUpdate] = useState('');
   const [selectIntervalTypeVal, setSelectIntervalTypeVal] = useState('');
   const [selectCountryVal, setSelectCountryVal] = useState('');
   const [selectCountryId, setSelectCountryId] = useState('');
@@ -290,28 +192,17 @@ export default function CampaignScheduleScreen(props) {
   const [selectStateVal, setSelectStateVal] = useState('');
   const [selectCountry, setSelectCountry] = useState('');
   const [selectState, setSelectState] = useState('');
-  const [myBundlingsData, setMyBundlingsData] = useState('');
-  const [checkNetworkBudget, setCheckNetworkBudget] = useState('');
   const [selectedNetworkShowBudget, setSelectedNetworkShowBudget] =
     useState('');
-  //const [selectStatusArray, setSelectStatusArray] = useState('');
   const [orgCurrencyName, setOrgCurrencyName] = useState('');
   const [orgCurrencyId, setOrgCurrencyId] = useState('');
   const [startDateForAlert, setStartDateForAlert] = useState('');
   const [endDateForAlert, setEndDateForAlert] = useState('');
-  const [selectCity, setSelectCity] = useState('');
-  const [selectArea, setSelectArea] = useState('');
   const [campaignIdForEdit, setCampaignIdForEdit] = useState('');
   const [img, setimg] = useState('');
-  const [imageDataSubmit, setImageDataSubmit] = useState('');
   const [totalBudget, setTotalBudget] = useState('');
   const [img1, setimg1] = useState('');
-  const [img2, setimg2] = useState('');
-  const [img3, setimg3] = useState('');
-  //const OK = () => {seterrorVisible(false);};
   const [permissionVisible, setpermissionVisible] = useState(false);
-  const [lastPress, setLastPress] = useState(0);
-  const [start_EndTimeDisabled, setStart_EndTimeDisabled] = useState(false);
   const hidepermission = () => {
     setpermissionVisible(false);
   };
@@ -319,9 +210,7 @@ export default function CampaignScheduleScreen(props) {
     setpermissionVisible(false);
     Linking.openSettings();
   };
-  //const [microphonepermissionVisible, setmicrophonepermissionVisible] = useState(false);
-  //const hidemicrophonepermission = () => {setmicrophonepermissionVisible(false);};
-  //const confirmmicrophonepermission = () => {setmicrophonepermissionVisible(false); Linking.openSettings();};
+
   const [addScheduleVisible, setAddScheduleVisible] = useState(false);
   const [deleteScheduleVisible, setDeleteScheduleVisible] = useState(false);
   const hideAddSchedule = () => {
@@ -335,11 +224,7 @@ export default function CampaignScheduleScreen(props) {
     {value: 2, label: 'Paused'},
     {value: 3, label: 'Cancelled'},
   ];
-  const AutogenerateLead = [
-    {value: 1, label: 'Yes'},
-    {value: 0, label: 'No'},
-  ];
-  //const NetworkData = [{ id: 1, name: 'SMS' },{ id: 2, name: 'Whatsapp' }, { id: 3, name: 'Email' }, { id: 4, name: 'Twitter' }, { id: 5, name: 'Facebook' }];
+
   const IntervalType = [
     {id: 1, name: 'One Time'},
     {id: 2, name: 'Daily'},
@@ -348,10 +233,6 @@ export default function CampaignScheduleScreen(props) {
     {id: 5, name: 'Yearly'},
     {id: 6, name: 'Custom'},
   ];
-  const [checkboxes, setCheckboxes] = useState([
-    {id: 1, title: 'one', checked: false},
-    {id: 2, title: 'two', checked: false},
-  ]);
 
   function selectType(value) {
     setSelectStatus(value);
@@ -401,15 +282,9 @@ export default function CampaignScheduleScreen(props) {
     LoginInfoLoad();
     LoadBundLing();
     LoadOrgData();
-    //getdata();
-    // LoadOrgData();
-    // MakeBudget();
-    //Loaddata();
   }, [arr]);
   /**************************************** validation ************************************************/
-  function checkTextInput() {
-    setIndex(2);
-  }
+
   function LoginInfoLoad() {
     AsyncStorage.getItem('LoginInformation').then(function (res) {
       let Asyncdata = JSON.parse(res);
@@ -616,20 +491,7 @@ export default function CampaignScheduleScreen(props) {
             setNoOfDayRepeateInTime(RepeatDay);
             var DayRepeatInSelectDate = RepeatDay;
           }
-          //return { weekdays, RepeatDay };
         }
-        /* if(networkUpdateSelected.length <=0 || networkSelectSocialMedia.length <=0 ){
-                     Toast.showWithGravity('Please select network, try another time !!!',Toast.LONG,Toast.CENTER);
-                     console.log('networkSelectSocialMedia check  ', JSON.stringify(networkSelectSocialMedia));
-                     console.log('networkUpdateSelected check ' + JSON.stringify(networkUpdateSelected));
-                     console.log('networkUpdateSelected check ' + JSON.stringify(networkUpdateSelected.length));
-                     setScheduleMessageCount('');
-                 }
-                 else{ */
-        //
-        //
-
-        //
 
         if (selectedWeekDayListVal == null || selectedWeekDayListVal == '') {
         } else {
@@ -869,18 +731,12 @@ export default function CampaignScheduleScreen(props) {
           );
           console.log('filteredData ' + JSON.stringify(filteredData));
         }
-        //if(weekendDayList.length <=0 ){
-        // Toast.showWithGravity('Please select day !!!',Toast.LONG,Toast.CENTER);
-        // }
-        //}
       });
     } catch (error) {
       console.error('Error retrieving data:', error);
     }
   };
   const SelectIntervalClick = async value => {
-    //
-    //
     AsyncStorage.removeItem('WeekendDayDataList');
     setScheduleMessageCount('');
     setWeekendDayList('');
@@ -941,7 +797,6 @@ export default function CampaignScheduleScreen(props) {
       );
       setOrgCurrencyId(CurrencyIdDetail.currencyId);
       setOrgCurrencyName(CurrencyIdDetail.currencyName);
-      //getdata();
     });
   }
   const UpdateCampaignDetail = async AllNetworkList => {
@@ -955,9 +810,7 @@ export default function CampaignScheduleScreen(props) {
         console.log(
           'AllNetworkList AllNetworkList  ' + JSON.stringify(AllNetworkList),
         );
-        //
-        //console.log('CampaignUpdate detail attachments ' + JSON.stringify(Asyncdata.data.attachments));
-        // console.log('CampaignUpdate Network ' + JSON.stringify(Asyncdata.data.compaignsdetails));
+
         var UpdateCampaign = Asyncdata.data;
         setSelectCampaignStartDate(UpdateCampaign.startTime);
         setSelectCampaignEndDate(UpdateCampaign.finishTime);
@@ -978,9 +831,7 @@ export default function CampaignScheduleScreen(props) {
         setSelectAutoGenerate(AutoGenerate);
         var MyStatus = 2;
         setSelectStatusValue(MyStatus);
-        // selectStatus(MyStatus);
         var Campaignschedule = JSON.stringify(Asyncdata.data.compaignschedules);
-        //compaignExecutionSchedulesFlatlist.push({Campaignschedule});
         if (Asyncdata.data.attachments.length <= 0) {
           console.log(
             'Asyncdata.data.attachments.length if ' +
@@ -994,8 +845,6 @@ export default function CampaignScheduleScreen(props) {
           );
           var attachmentData = JSON.parse(Asyncdata.data.attachments);
           console.log('attachmentData ' + JSON.stringify(attachmentData));
-          // console.log('attachmentData parse , stringify ', JSON.stringify(JSON.parse(attachmentData)));
-          // console.log('attachmentData stringify ', JSON.stringify(attachmentData));
           //
           const namesArray = attachmentData.map(
             item => item.image.split('.')[1],
@@ -1099,34 +948,14 @@ export default function CampaignScheduleScreen(props) {
           });
 
           global.EditAttachment = 2;
-          //
-          //var imagedetail = servicesettings.Imagebaseuri + attachmentData[0].image.replace(/\\/g, "/").replace(',',"").replace(' //',"");
-          //
+
           setImageSelectedDataFlatelist(AttachmentForEdit);
           setImageSelectedData(AttachmentForEdit);
-          /* var ImageResponseData = response.assets[0];
-                        var fileTypeMake = ImageResponseData.fileName;
-                        var uri = ImageResponseData.uri;
-                        var fileType = ImageResponseData.type;
-                        var fileNameType = '.' + fileTypeMake.split(".")[1];
-                        var fileName = ImageName + fileNameType;
-                        var ImageId = ImageName;
-                        var height = ImageResponseData.height;
-                        var base64 = ImageResponseData.base64;
-                        var ImageDetailFlatList = {fileName:fileName,uri:uri, fileType:fileType,height:height,base64:base64,ImageId:ImageId};*/
-          //var videouri = servicesettings.Imagebaseuri + FoundElementMP4.replace(/\\/g, "/").replace(',',"").replace(' //',"");
-          //
-          //setNetworkName(namesArray);
-          //{"ImageId": "615", "fileName": "615.jpg", "fileType": "image/jpeg", "height": 162, "uri": "file:///data/user/0/com.blazor.bdmt/cache/rn_image_picker_lib_temp_032b729a-1830-4802-a513-94d64e18ad0f.jpg"},
-
-          //Videouri
-          //setVideouri(servicesettings.Imagebaseuri + FoundElementMP4.replace(/\\/g, "/").replace(',',"").replace(' //',""));
 
           var VideoUriLink =
             servicesettings.Imagebaseuri + FoundElementMP4.image;
 
           setVideouri(VideoUriLink);
-          //if(attachmentData || attachmentData != ))
         }
         console.log(
           'ScheduleDataUpdate ScheduleDataUpdate ',
@@ -1144,8 +973,7 @@ export default function CampaignScheduleScreen(props) {
               JSON.stringify(ScheduleDataUpdate),
           );
           compaignExecutionSchedulesFlatlist.push({ScheduleDataUpdate});
-          //
-          // compaignExecutionSchedulesFlatlist(ScheduleDataUpdate);
+
           var ScheduleDataEdit = ScheduleDataUpdate.map(item => {
             return {
               id: item.id,
@@ -1165,20 +993,14 @@ export default function CampaignScheduleScreen(props) {
               finishTime: item.FinishTime,
               scheduleStartTime: item.StartTime,
               scheduleEndTime: item.FinishTime,
-              //CompaignNetworks:networkSelectSocialMedia[item.NetworkId],
             };
           });
-          //{\"id\":70188,\"Interval\":7,\"intervaltypename\":\"Monthly\",\"IntervalTypeId\":4,\"userName\":\"zahid nawaz\",\"scheduleFrom\":\"zahid nawaz\",\"StartTime\":\"2023-08-09T04:44:19\",\"FinishTime\":\"2023-08-30T04:44:19\",\"days\":\"1,3,4,6,7\"}
-          //console.log('NewJson NewJson ' + JSON.stringify(ScheduleDataEdit));
-          //setScheduleListAddArray(ScheduleDataUpdate);
-          //setScheduleListAddArrayZZZ(ScheduleDataEdit)
-          //var Schedule_Network = ScheduleDataEdit + 'CompaignNetworks':networkSelectSocialMedia;
+
           console.log('NewJson NewJson ' + JSON.stringify(ScheduleDataEdit));
           setScheduleListAddArray(ScheduleDataEdit);
           setScheduleListAddArrayZZZ(ScheduleDataEdit);
         }
-        //setVideouri('http://192.168.18.4:8093//compaignImages/70087_2.mp4');
-        //setImgUriBase64(base64);
+
         var NetworkDetailList = JSON.parse(Asyncdata.data.compaignsdetails);
         console.log(
           'DataNetwork DataNetwork DataNetwork ',
@@ -1223,7 +1045,6 @@ export default function CampaignScheduleScreen(props) {
           return {
             id: item.id,
             networkId: item.networkId,
-            //orgId: Number(item.organizationId),
             desc: item.networkDesc,
             name: item.networkName,
             purchasedQouta: item.purchasedQouta,
@@ -1240,31 +1061,14 @@ export default function CampaignScheduleScreen(props) {
         });
 
         console.log('NetworkJson data ' + JSON.stringify(NetworkJson));
-        //setNetworkData(resultAllNetwork);
-        //setNetworkSelectedData(resultAllNetwork);
-        //setNetworkSelectedData(networkSelectedData);
-        //setNetworkFinalData(resultAllNetwork);
 
         setNetworkData(NetworkJson);
         setNetworkFinalData(NetworkJson);
       }
     });
   };
-  function NetworkDetailLoad() {
-    AsyncStorage.getItem('NetworksDetailData').then(function (res) {
-      let Asyncdata = JSON.parse(res);
-      if (Asyncdata != null) {
-        console.log(
-          'Asyncdata NetworksDetailData ' + JSON.stringify(Asyncdata),
-        );
-      }
-    });
-  }
+
   function checkTextInputRecord() {
-    //if (selectedItems.length == 0) {
-    //   Toast.show('Please select item');
-    // return;
-    // }
     if (Subject.trim() == '') {
       Toast.show('Please enter subject');
       return;
@@ -1288,27 +1092,9 @@ export default function CampaignScheduleScreen(props) {
 
     setIndex(1);
   }
-  function Press(index) {
-    setIndex(0);
-  }
-  function handlePresstakepicture() {
-    setIndex(0);
-  }
+
   function handlePress(index) {
     if (index == 1) {
-      //if (selectedItems.length == 0) {
-      // Toast.show('Please select item');
-      // return;
-      // }
-      // if (Subject.trim()=="") {
-      //   Toast.show('Please enter subject');
-      // return;
-      //}
-      // if (template.trim()=="") {
-      //    Toast.show('Please enter template');
-      //return;
-      //  }
-      // setIndex(index)
       checkTextInputRecord();
       console.log('NextAddSchedule  ' + JSON.stringify(networkData));
     }
@@ -1321,9 +1107,7 @@ export default function CampaignScheduleScreen(props) {
       setIndex(index);
     }
   }
-  /******************************************************************  views  *****************************************************/
-  //const CallCampaignData = () => {
-  //async asyncFunc=()=> {
+
   const compaignExecutionSchedules = [];
   const compaignExecutionSchedulesFlatlist = [];
   const confirmAddSchedule = () => {
@@ -1337,9 +1121,6 @@ export default function CampaignScheduleScreen(props) {
     checkdataclick();
   };
   const CallCampaignData = async () => {
-    //var simplearr = [];
-    //
-    //var allweekDays = ('[' +(selectSunday ==true?(1+','):'') + (selectMonday ==true?(2+','):'')+ (selectTuesday ==true?(3+','):'')+ (selectWednesday ==true?(4+','):'') + (selectThursday ==true?(5+','):'') + (selectFriday ==true?(6+','):'')+ (selectSaturday ==true?(7):'')+']')
     var allweekDays = weekendDayList;
     console.log(
       'networkFinalData networkFinalData 584 ',
@@ -1348,11 +1129,9 @@ export default function CampaignScheduleScreen(props) {
 
     if (checkUpdateData.randomId == '' || checkUpdateData.randomId == null) {
       var randomIdSchedule = Math.floor(100000 + Math.random() * 900000);
-      // await networksDetail.map((nwk) => (
       await networkSelectSocialMedia.map(
         nwk => (
           console.log('nwk ', nwk),
-          // setScheduleListAddArray(prevv => [...prevv, {'id':0,'rowVer':0,'orgId':Number(organizationId),'days':((allweekDays=="" || allweekDays==null) ?"":allweekDays),'networkId':(nwk=="" || nwk==null) ?"":nwk.networkId,'compaignDetailId':0,'isFixedTime':(IntervalType[selectIntervalType].id==1?1:0),'startTime':moment.utc(SelectStartDate==''?SelectCampaignStartDate:SelectStartDate).format(),'finishTime':moment.utc(SelectEndDate==''?SelectCampaignEndDate:SelectEndDate).format(),'interval':Number(intervalVal),'status':selectStatus==null||selectStatus==''?1:selectStatus,intervalTypeId:IntervalType[selectIntervalType].id,randomId:randomIdSchedule}]),
           setScheduleListAddArray(prevv => [
             ...prevv,
             {
@@ -1426,127 +1205,92 @@ export default function CampaignScheduleScreen(props) {
       var randomIdSchedule = checkUpdateData.randomId;
       var editId = checkUpdateData.props.id;
       var compaignDetailIdEdit = checkUpdateData.props.compaignDetailId;
-
-      //var randomIdSchedule = checkUpdateData.id;
       var updateCheduleist = scheduleListAddArray.filter(
         (e, i) => e.randomId !== checkUpdateData.randomId,
       );
       var updateCheduleistZZZ = scheduleListAddArrayZZZ.filter(
         (e, i) => e.randomId !== checkUpdateData.randomId,
       );
-      // setScheduleListAddArray(scheduleListAddArray.filter((e, i) => e.randomId !== checkUpdateData.randomId));
-
       setScheduleListAddArray(updateCheduleist);
       setScheduleListAddArrayZZZ(updateCheduleistZZZ);
-      //setNetworkData(networkData.filter((e, i) => e.randomId !== SelectProps.randomId));
-      //await networkFinalData.map((nwk) => (
-
       await networkSelectSocialMedia.map(
-        nwk =>
-          (
-            //console.log('randomIdSchedule in array ', randomIdSchedule),
-            //console.log('scheduleListAddArray before update ', scheduleListAddArray),
-            // setScheduleListAddArray(networkData.filter((e, i) => e.networkId !== SelectProps.networkId));
-            //setScheduleListAddArray(prevv => [...prevv, scheduleListAddArray.filter((e, i) => e.randomId !== {'id':0,'rowVer':0,'days':((allweekDays=="" || allweekDays==null) ?"":allweekDays),'networkId':(nwk=="" || nwk==null) ?"":nwk.networkId,'compaignDetailId':0,'isFixedTime':(selectStatus==1?1:0),'startTime':moment.utc(SelectStartDate==''?SelectCampaignStartDate:SelectStartDate).format(),'finishTime':moment.utc(SelectEndDate==''?SelectCampaignEndDate:SelectEndDate).format(),'interval':Number(intervalVal),'status':selectStatus==null||selectStatus==''?1:selectStatus,intervalTypeId:IntervalType[selectIntervalType].id,randomId:randomIdSchedule}.randomId)])
-            setScheduleListAddArray(prevv => [
-              ...prevv,
-              {
-                id: editId == '' || editId == null ? 0 : editId,
-                rowVer: 0,
-                budget: nwk.unitPriceInclTax * scheduleMessageCount,
-                messageCount: scheduleMessageCount,
-                orgId: Number(organizationId),
-                days:
-                  allweekDays == '' || allweekDays == null ? '' : allweekDays,
-                networkId: nwk == '' || nwk == null ? '' : nwk.networkId,
-                compaignDetailId:
-                  compaignDetailIdEdit == '' || compaignDetailIdEdit == null
-                    ? 0
-                    : compaignDetailIdEdit,
-                isFixedTime: IntervalType[selectIntervalType].id == 1 ? 1 : 0,
-                startTime: moment
-                  .utc(
-                    SelectStartDate == ''
-                      ? SelectCampaignStartDate
-                      : SelectStartDate,
-                  )
-                  .format('yyyy-MM-DDTHH:mm:ss'),
-                finishTime: moment
-                  .utc(
-                    SelectEndDate == '' ? SelectCampaignEndDate : SelectEndDate,
-                  )
-                  .format('yyyy-MM-DDTHH:mm:ss'),
-                interval: Number(intervalVal),
-                status: 1,
-                intervalTypeId: IntervalType[selectIntervalType].id,
-                randomId: randomIdSchedule,
-                CompaignNetworks: networkSelectSocialMedia,
-              },
-            ]),
-            setScheduleListAddArrayZZZ(prevv => [
-              ...prevv,
-              {
-                id: editId == '' || editId == null ? 0 : editId,
-                rowVer: 0,
-                budget: nwk.unitPriceInclTax * scheduleMessageCount,
-                messageCount: scheduleMessageCount,
-                orgId: Number(organizationId),
-                days:
-                  allweekDays == '' || allweekDays == null ? '' : allweekDays,
-                networkId: nwk == '' || nwk == null ? '' : nwk.networkId,
-                compaignDetailId:
-                  compaignDetailIdEdit == '' || compaignDetailIdEdit == null
-                    ? 0
-                    : compaignDetailIdEdit,
-                isFixedTime: IntervalType[selectIntervalType].id == 1 ? 1 : 0,
-                startTime: moment
-                  .utc(
-                    SelectStartDate == ''
-                      ? SelectCampaignStartDate
-                      : SelectStartDate,
-                  )
-                  .format('yyyy-MM-DDTHH:mm:ss'),
-                finishTime: moment
-                  .utc(
-                    SelectEndDate == '' ? SelectCampaignEndDate : SelectEndDate,
-                  )
-                  .format('yyyy-MM-DDTHH:mm:ss'),
-                interval: Number(intervalVal),
-                status: 1,
-                intervalTypeId: IntervalType[selectIntervalType].id,
-                randomId: randomIdSchedule,
-                CompaignNetworks: networkSelectSocialMedia,
-              },
-            ]),
-            console.log(
-              'scheduleListAddArrayZZZ after update ',
-              scheduleListAddArrayZZZ,
-            ),
-            ClearDataAfterAddSchedule()
+        nwk => (
+          setScheduleListAddArray(prevv => [
+            ...prevv,
+            {
+              id: editId == '' || editId == null ? 0 : editId,
+              rowVer: 0,
+              budget: nwk.unitPriceInclTax * scheduleMessageCount,
+              messageCount: scheduleMessageCount,
+              orgId: Number(organizationId),
+              days: allweekDays == '' || allweekDays == null ? '' : allweekDays,
+              networkId: nwk == '' || nwk == null ? '' : nwk.networkId,
+              compaignDetailId:
+                compaignDetailIdEdit == '' || compaignDetailIdEdit == null
+                  ? 0
+                  : compaignDetailIdEdit,
+              isFixedTime: IntervalType[selectIntervalType].id == 1 ? 1 : 0,
+              startTime: moment
+                .utc(
+                  SelectStartDate == ''
+                    ? SelectCampaignStartDate
+                    : SelectStartDate,
+                )
+                .format('yyyy-MM-DDTHH:mm:ss'),
+              finishTime: moment
+                .utc(
+                  SelectEndDate == '' ? SelectCampaignEndDate : SelectEndDate,
+                )
+                .format('yyyy-MM-DDTHH:mm:ss'),
+              interval: Number(intervalVal),
+              status: 1,
+              intervalTypeId: IntervalType[selectIntervalType].id,
+              randomId: randomIdSchedule,
+              CompaignNetworks: networkSelectSocialMedia,
+            },
+          ]),
+          setScheduleListAddArrayZZZ(prevv => [
+            ...prevv,
+            {
+              id: editId == '' || editId == null ? 0 : editId,
+              rowVer: 0,
+              budget: nwk.unitPriceInclTax * scheduleMessageCount,
+              messageCount: scheduleMessageCount,
+              orgId: Number(organizationId),
+              days: allweekDays == '' || allweekDays == null ? '' : allweekDays,
+              networkId: nwk == '' || nwk == null ? '' : nwk.networkId,
+              compaignDetailId:
+                compaignDetailIdEdit == '' || compaignDetailIdEdit == null
+                  ? 0
+                  : compaignDetailIdEdit,
+              isFixedTime: IntervalType[selectIntervalType].id == 1 ? 1 : 0,
+              startTime: moment
+                .utc(
+                  SelectStartDate == ''
+                    ? SelectCampaignStartDate
+                    : SelectStartDate,
+                )
+                .format('yyyy-MM-DDTHH:mm:ss'),
+              finishTime: moment
+                .utc(
+                  SelectEndDate == '' ? SelectCampaignEndDate : SelectEndDate,
+                )
+                .format('yyyy-MM-DDTHH:mm:ss'),
+              interval: Number(intervalVal),
+              status: 1,
+              intervalTypeId: IntervalType[selectIntervalType].id,
+              randomId: randomIdSchedule,
+              CompaignNetworks: networkSelectSocialMedia,
+            },
+          ]),
+          console.log(
+            'scheduleListAddArrayZZZ after update ',
+            scheduleListAddArrayZZZ,
           ),
+          ClearDataAfterAddSchedule()
+        ),
       );
     }
-    //console.log('data show ', ({'id':0,'rowVer':0,'days':((allweekDays=="" || allweekDays==null) ?"":allweekDays),'compaignDetailId':0,'isFixedTime':(selectStatus==1?1:0),'startTime':moment.utc(SelectStartDate==''?SelectCampaignStartDate:SelectStartDate).format(),'finishTime':moment.utc(SelectEndDate==''?SelectCampaignEndDate:SelectEndDate).format(),'interval':Number(intervalVal),'status':selectStatus==null||selectStatus==''?1:selectStatus,intervalTypeId:IntervalType[selectIntervalType].id,randomId:randomIdSchedule}))
-    /* await networksDetail.map((nwk) => (
-               //setCompaignExecutionSchedules.push({'id':0,'rowVer':0,'days':((allweekDays=="" || allweekDays==null) ?"":allweekDays),'networkId':(nwk=="" || nwk==null) ?"":nwk.networkId,'compaignDetailId':0,'isFixedTime':(selectStatus==1?1:0),'startTime':moment.utc(SelectStartDate).format(),'finishTime':moment.utc(SelectEndDate).format(),'interval':Number(intervalVal),'status':selectStatus==null||selectStatus==''?1:selectStatus,intervalTypeId:IntervalType[selectIntervalType].id,randomId:randomIdSchedule})
-               console.log('randomIdSchedule in array ', randomIdSchedule),
-               setScheduleListAddArray(prevv => [...prevv, {'id':0,'rowVer':0,'days':((allweekDays=="" || allweekDays==null) ?"":allweekDays),'networkId':(nwk=="" || nwk==null) ?"":nwk.networkId,'compaignDetailId':0,'isFixedTime':(selectStatus==1?1:0),'startTime':moment.utc(SelectStartDate==''?SelectCampaignStartDate:SelectStartDate).format(),'finishTime':moment.utc(SelectEndDate==''?SelectCampaignEndDate:SelectEndDate).format(),'interval':Number(intervalVal),'status':selectStatus==null||selectStatus==''?1:selectStatus,intervalTypeId:IntervalType[selectIntervalType].id,randomId:randomIdSchedule}])
-              //,ScheduleSummaryListClick()
-              // compaignExecutionSchedules.push({'id':0,'rowVer':0,'days':((allweekDays=="" || allweekDays==null) ?"":allweekDays),'networkId':(nwk=="" || nwk==null) ?"":nwk.networkId,'compaignDetailId':0,'isFixedTime':(selectStatus==1?1:0),'startTime':moment.utc(SelectStartDate==''?SelectCampaignStartDate:SelectStartDate).format(),'finishTime':moment.utc(SelectEndDate==''?SelectCampaignEndDate:SelectEndDate).format(),'interval':Number(intervalVal),'status':selectStatus==null||selectStatus==''?1:selectStatus,intervalTypeId:IntervalType[selectIntervalType].id,randomId:randomIdSchedule})
-              // setCompaignExecutionSchedules(prevv => [...prevv, {'id':0,'rowVer':0,'days':((allweekDays=="" || allweekDays==null) ?"":allweekDays),'networkId':(nwk=="" || nwk==null) ?"":nwk.networkId,'compaignDetailId':0,'isFixedTime':(selectStatus==1?1:0),'startTime':moment.utc(SelectStartDate).format(),'finishTime':moment.utc(SelectEndDate).format(),'interval':Number(intervalVal),'status':selectStatus==null||selectStatus==''?1:selectStatus,intervalTypeId:IntervalType[selectIntervalType].id,randomId:randomIdSchedule}])
-
-         )); */
-    //
-
-    // console.log('compaignExecutionSchedules click')
-    // const compaignExecutionSchedules;
-    //var ScheduleData = {'id':0,'rowVer':0,'days':((allweekDays=="" || allweekDays==null) ?"":allweekDays),'networkId':(nwk=="" || nwk==null) ?"":nwk.networkId,'compaignDetailId':0,'isFixedTime':(selectStatus==1?1:0),'startTime':moment.utc(SelectStartDate==''?SelectCampaignStartDate:SelectStartDate).format(),'finishTime':moment.utc(SelectEndDate =='' ?SelectCampaignEndDate:SelectEndDate).format(),'interval':Number(intervalVal),'status':selectStatus==null||selectStatus==''?1:selectStatus,intervalTypeId:IntervalType[selectIntervalType].id,randomId:randomIdSchedule};
-    //
-    //setScheduleListAddArray(prevv => [...prevv, compaignExecutionSchedules]);
-    //
-
-    //const [scheduleListAddArray, setScheduleListAddArray] = useState('');
-
     compaignExecutionSchedulesFlatlist.push({
       id: 0,
       rowVer: 0,
@@ -1572,7 +1316,6 @@ export default function CampaignScheduleScreen(props) {
       'compaignExecutionSchedulesFlatlist ',
       compaignExecutionSchedulesFlatlist,
     );
-    //setScheduleData(compaignExecutionSchedulesFlatlist);
   };
   const checkdataclick = () => {
     console.log('checkdataclick new ', JSON.stringify(scheduleListAddArray));
@@ -1587,21 +1330,12 @@ export default function CampaignScheduleScreen(props) {
         ];
       };
       const uniqueData = removeDuplicates(scheduleListAddArrayZZZ, 'randomId');
-
-      //
-
-      //
-      //networkSelectSocialMedia
-      //setScheduleData(uniqueData);
       setScheduleData(uniqueData);
       setTotalIndex(uniqueData.length);
       setWeekendDayList('');
       setNetworkFinalData(networkData);
     }
-    //setScheduleData(scheduleListAddArray);
-    // var AddnewSchedule = {'CompaignNetworks': networkSelectSocialMedia,'compaignExecutionSchedules':scheduleListAddArray};
     setAddScheduleDataForSubmit(scheduleListAddArray);
-    // setScheduleData(scheduleListAddArray);
     console.log(
       'scheduleListAddArray scheduleListAddArray ww  ',
       JSON.stringify(scheduleListAddArray),
@@ -1612,7 +1346,6 @@ export default function CampaignScheduleScreen(props) {
     );
     console.log('DataNetwork DataNetwork ', JSON.stringify(DataNetwork));
     console.log('scheduleListAddArray', JSON.stringify(scheduleListAddArray));
-    //console.log('myBundlingsData myBundlingsData ', JSON.stringify(myBundlingsData));
     let totalPrice = 0;
     let totalMessageCount = 0;
     let itemCount = 0;
@@ -1639,45 +1372,17 @@ export default function CampaignScheduleScreen(props) {
       'SubmitDataArray',
       JSON.stringify(scheduleListAddArrayZZZ),
     );
-    //AsyncStorage.setItem('SubmitDataArray', JSON.stringify(scheduleListAddArray));
-    //
-    //setNetworkFinalData(networkFinalData);
-    //
   };
-  const CheckDataforSubmitClick = () => {
-    setAddScheduleDataForSubmit(scheduleListAddArray);
-  };
-  //
-  //
+
   const AddCampaignClick = async () => {
-    //
-    //
-    // console.log('networkFinalData 123 ', JSON.stringify(networkFinalData));
     setNetworkSelectedAddSchedule(networkFinalData);
     console.log(
       'imageSelectedData Captured Image:',
       JSON.stringify(imageSelectedData),
     );
-    /* if(SelectStartDate <= 0){
-            Toast.show('Please select valid start date');
-            return;
-        }
-        if(SelectEndDate <= 0){
-            Toast.show('Please select valid end date');
-            return;
-        }
-        if(SelectStartTime <= 0){
-            Toast.show('Please select start time');
-            //return;
-        }
-        if(SelectEndTime <= 0){
-            Toast.show('Please select end time');
-            //return;
-        }*/
+
     if (weekendDayList == '' || weekendDayList == '') {
       Toast.showWithGravity('Please select Day', Toast.LONG, Toast.CENTER);
-      //Toast.show('Please select Day');
-      //
       return;
     }
     await CallCampaignData();
@@ -1686,8 +1391,6 @@ export default function CampaignScheduleScreen(props) {
       compaignExecutionSchedules == ''
     ) {
     }
-    //var CampaignListDataadd = {'CompaignNetworks': networksDetail,'compaignExecutionSchedules': compaignExecutionSchedules};
-    // var CampaignListDataadd = {'CompaignNetworks': networkFinalData,'compaignExecutionSchedules': compaignExecutionSchedules};
     var CampaignListDataadd = {
       CompaignNetworks: networkSelectSocialMedia,
       compaignExecutionSchedules: compaignExecutionSchedules,
@@ -1696,31 +1399,20 @@ export default function CampaignScheduleScreen(props) {
       'CampaignListDataadd 683 ',
       JSON.stringify(CampaignListDataadd),
     );
-    // AsyncStorage.setItem('CampaignListDataa', {'CompaignNetworks': networksDetail,'compaignExecutionSchedules': compaignExecutionSchedules});
 
     if (CampaignListDataadd == '' || CampaignListDataadd == null) {
     } else {
       setAddScheduleDataForSubmit(
         CampaignListDataadd.compaignExecutionSchedules,
       );
-      //setScheduleData(CampaignListDataadd.compaignExecutionSchedules);
-      //Network Count
       var networkcount = CampaignListDataadd.CompaignNetworks;
-      //setNetworkSelectSocialMedia(networkcount);
 
       let counter = 0;
       for (let i = 0; i < networkcount.length; i++) {
         if (networkcount[i].networkId != '') counter++;
       }
       setNetworkCount(counter);
-      //Schedule Count
-      //Network name start
-      //var networkcount = CampaignListDataadd.CompaignNetworks;
-      //setSelectNetworkName.push(networksDetail);
-      //setNetworkCount(counter);
-      //Network name End
       var schCountval = compaignExecutionSchedulesFlatlist;
-      //var schCountval = CampaignListDataadd.compaignExecutionSchedules;
       let schcounter = 0;
       for (let i = 0; i < schCountval.length; i++) {
         if (schCountval[i].randomId != '') schcounter++;
@@ -1749,9 +1441,6 @@ export default function CampaignScheduleScreen(props) {
         } else if (IntervalTypeCampaignnew == 7) {
           setIntervalValue('Other');
         }
-        //setScheduleData(campaignListData.CompaignNetworks);
-
-        //ScheduleSummaryListClick();
         setspinner(true);
         ClearDataAfterAddSchedule();
       }
@@ -1766,15 +1455,11 @@ export default function CampaignScheduleScreen(props) {
         JSON.stringify(Asyncdata),
       );
       var addScheduleDataForSubmit = Asyncdata;
-      //var addScheduleDataForSubmit = scheduleListAddArrayZZZ;
       var discount = 0;
       console.log(
         'addScheduleDataForSubmit click ',
         JSON.stringify(addScheduleDataForSubmit),
       );
-
-      //var subimtData = JSON.stringify({'id':0,"lastUpdatedBy":userId,"status": 1,'orgId':Number(organizationId),'hashTags':Hashtag,'template':template,'subject':Subject,'CompaignNetworks': networksDetail,'compaignExecutionSchedules': compaignExecutionSchedules});
-      //var subimtDataBody = {'id':0,"createdBy":Number(userId),"lastUpdatedBy":Number(userId),"status": 1,'orgId':Number(organizationId),'hashTags':Hashtag,'description':template,'name':Subject,'title':Subject,'CompaignNetworks': networksDetail,'compaignExecutionSchedules': compaignExecutionSchedules};
       var subimtDataBody = {
         id:
           campaignIdForEdit == '' || campaignIdForEdit == null
@@ -1809,8 +1494,6 @@ export default function CampaignScheduleScreen(props) {
       setspinner(true);
       var headerFetch = {
         method: 'POST',
-        //body: JSON.stringify({username:textInputEmail.trim(),email:textInputEmail.trim(),password:Ba1se64.btoa(textInputPassword.trim()),storeid:storeindex.id.toString()}),
-        //data: imageDataSubmit,
         body: JSON.stringify(subimtDataBody),
         //body: JSON.stringify(subimtDataBody),
         headers: {
@@ -1883,12 +1566,9 @@ export default function CampaignScheduleScreen(props) {
                       ' imgData imgData imgData: ',
                       JSON.stringify(data),
                     );
-                    //setImageDataSubmit(data);
                   }
                 }
-              } catch (error) {
-                //console.error('Error occurred:', error); // Handle the error here
-              }
+              } catch (error) {}
               data.append('compaignid', ID);
               data.append('userid', userId);
               //data.append('userid', Number(Asyncdata[0].id));
@@ -1938,12 +1618,10 @@ export default function CampaignScheduleScreen(props) {
                     responseJson.message != ''
                       ? Toast.show(' ' + responseJson.message + ' ')
                       : Toast.show('Data and file successfully submit');
-                    //props.navigation.replace('Campaign Schedule');
                     setspinner(false);
                     setModalVisible(true);
                     setTimeout(() => {
                       setModalVisible(false);
-                      //setModalSpinner_Load(false);
                       props.navigation.replace('My Campaigns');
                     }, 4000);
                   }
@@ -1956,7 +1634,6 @@ export default function CampaignScheduleScreen(props) {
                     Toast.CENTER,
                   );
                   setModalVisible(false);
-                  // setModalSpinner_Load(false);
                   return;
                 });
             }
@@ -1971,74 +1648,18 @@ export default function CampaignScheduleScreen(props) {
           );
           return;
         });
-      //Comment Data
-      /*.then((responseJson) => {
-                  setspinner(false);
-                  
-                  if(responseJson.status==false && responseJson.errorCode=='404')
-                  {
-                      responseJson.message!=''?Toast.show(' '+ responseJson.message +' '):Toast.show('Data not found');
-                       return;
-                  }
-                  else if(responseJson.status==false && responseJson.errorCode=='202')
-                  {
-                       responseJson.message!=''?Toast.show(' '+ responseJson.message +' '):Toast.show('Api validation failed');
-                       return;
-                  }
-                  else if(responseJson.status==true && responseJson.errorCode=='407')
-                  {
-                         responseJson.message!=''?Toast.show(' '+ responseJson.message +' '):Toast.show('Too many requests, must be 40 Seconds interval between next request!');
-                         return;
-                  }
-                  else if(responseJson.status==true && responseJson.errorCode=='200')
-                  {
-                         responseJson.message!=''?Toast.show(' '+ responseJson.message +' '):Toast.show('Subject is added successfully');;
-                         return;
-                  }
-                  else if(responseJson.data.length == 0)
-                  {
-                        Toast.show('Oops login failed incorrect username/password');
-                        return;
-                  }
-                  else
-                  {
-                        if(responseJson.Error){
-                             Toast.show('Network request failed');
-                        }
-                        // AsyncStorage.setItem('LoginInformation', JSON.stringify(responseJson.data));
-                        props.navigation.replace('Campaign Schedule');
-                        setspinner(false);
-                        setmodalVisible(true);
-                        setTimeout(() =>{
-                              setmodalVisible(false);
-                              setModalSpinner_Load(true);
-                              props.navigation.replace('Dashboard');
-                             //props.navigation.replace('Campaign Schedule');
-                        }, 4000);
-                  }
-             }).catch((error) => {
-                   console.error('service error', error);
-                   setspinner(false);
-                   Toast.showWithGravity('Internet connection failed, try another time !!!',Toast.LONG,Toast.CENTER);
-             });*/
     });
   }
-  //function ClearDataAfterAddSchedule() {
   const ClearDataAfterAddSchedule = async () => {
     AsyncStorage.removeItem('WeekendDayDataList');
     await AsyncStorage.setItem('selectIntervalTypeId', '1');
     AsyncStorage.removeItem('SelectIntervalVal');
-    //AsyncStorage.removeItem('startDate');
-    //AsyncStorage.removeItem('endDate');
-    //setStartDateForAlert('');
-    //setEndDateForAlert('');
     setNetworkEditWithScheduleDisabled(true);
     setWeekendDayList('');
     setCheckUpdateData('');
     setScheduleMessageCount('');
     setNetworkSelectSocialMedia('');
     setSelectStatusValue(0);
-    //setNetworkFinalData(networkData);
     setSelectAutoGenerateValue(0);
     setSelectIntervalType(0);
     setIntervalVal('');
@@ -2056,79 +1677,8 @@ export default function CampaignScheduleScreen(props) {
     setSelectSaturday('');
     setspinner(false);
     setAddScheduleVisible(true);
-    //Toast.showWithGravity('Add schedule successfully!',Toast.LONG,Toast.CENTER);
-    //alert('Add schedule successfully');
   };
-  function onPicture(vehicleImages) {
-    setPicture({vehicleImages});
-  }
-  const requestCameraPermission = async () => {
-    check(
-      Platform.OS === 'ios'
-        ? PERMISSIONS.IOS.CAMERA
-        : PERMISSIONS.ANDROID.CAMERA,
-    )
-      .then(result => {
-        switch (result) {
-          case RESULTS.UNAVAILABLE:
-            console.log(
-              'This feature is not available (on this device / in this context)',
-            );
-            break;
-          case RESULTS.DENIED:
-            console.log(
-              'The permission has not been requested / is denied but requestable',
-            );
-            request(
-              Platform.OS === 'ios'
-                ? PERMISSIONS.IOS.CAMERA
-                : PERMISSIONS.ANDROID.CAMERA,
-            ).then(result => {
-              if (result == 'granted') {
-                launchCamera(
-                  {
-                    mediaType: 'photo',
-                    multiple: true,
-                    includeBase64: true,
-                    maxHeight: 100,
-                    maxWidth: 100,
-                  },
-                  response => {
-                    response.assets != undefined
-                      ? setimg(response.assets)
-                      : setimg('');
-                  },
-                );
-              }
-            });
-            break;
-          case RESULTS.LIMITED:
-            break;
-          case RESULTS.GRANTED:
-            launchCamera(
-              {
-                mediaType: 'photo',
-                multiple: true,
-                includeBase64: true,
-                maxHeight: 100,
-                maxWidth: 100,
-              },
-              response => {
-                response.assets != undefined
-                  ? setimg(response.assets)
-                  : setimg('');
-              },
-            );
-            break;
-          case RESULTS.BLOCKED:
-            setpermissionVisible(true);
-            break;
-        }
-      })
-      .catch(error => {
-        // …
-      });
-  };
+
   function OpencameraClick() {
     console.log(
       'imageSelectedData.length AttatchmentPdf ',
@@ -2141,7 +1691,7 @@ export default function CampaignScheduleScreen(props) {
       Opencamera();
     }
   }
-  Opencamera = () => {
+  const Opencamera = () => {
     global.EditAttachment = 1;
     try {
       launchCamera({mediaType: 'photo', includeBase64: true}, response => {
@@ -2214,101 +1764,7 @@ export default function CampaignScheduleScreen(props) {
       Opengallery();
     }
   }
-  const SelectedImageData = [];
-  Opengallery = () => {
-    global.EditAttachment = 1;
-    try {
-      setModalVisiblecamera(false);
-      launchImageLibrary(
-        {mediaType: 'photo', includeBase64: true},
-        response => {
-          setModalVisiblecamera(false);
-          if (response.assets == undefined || response.assets == '') {
-          } else {
-            //setModalVisiblecamera(false);
-            console.log('response Select img ' + JSON.stringify(response));
-            var ImageName = Math.floor(100 + Math.random() * 900).toString();
-            //
-            var ImageResponseData = response.assets[0];
-            var fileTypeMake = ImageResponseData.fileName;
-            var uri = ImageResponseData.uri;
-            var fileType = ImageResponseData.type;
-            var fileNameType = '.' + fileTypeMake.split('.')[1];
-            //var fileType = ImageResponseDatatype;
-            var fileName = ImageName + fileNameType;
-            var ImageId = ImageName;
-            var height = ImageResponseData.height;
-            var base64 = ImageResponseData.base64;
 
-            setImgUriBase64(base64);
-            var ImageDetailFlatList = {
-              fileName: fileName,
-              uri: uri,
-              fileType: fileType,
-              height: height,
-              base64: base64,
-              ImageId: ImageId,
-            };
-            console.log(
-              'imageSelectedData Captured Image: 1709',
-              ImageDetailFlatList,
-            );
-            console.log(
-              'imageSelectedData Captured Image: 1710',
-              imageSelectedDataFlatelist,
-            );
-            setImageSelectedDataFlatelist(prevv => [
-              ...prevv,
-              ImageDetailFlatList,
-            ]);
-            console.log(
-              'imageSelectedData Captured Image: 1711',
-              imageSelectedDataFlatelist,
-            );
-            var imageDetail = {
-              fileName: fileName,
-              uri: uri,
-              fileType: fileType,
-              height: height,
-              ImageId: ImageId,
-            };
-
-            setImageSelectedData(prevv => [...prevv, imageDetail]);
-            if (imageSelectedData.length <= 1) {
-              setModalVisiblecamera(true);
-            } else {
-              setModalVisiblecamera(false);
-            }
-            console.log(
-              'imageSelectedData Captured Image:',
-              JSON.stringify(imageSelectedData),
-            );
-            console.log(
-              'imageSelectedData length : ',
-              JSON.stringify(imageSelectedData.length),
-            );
-            //console.log('imageSelectedData Captured Image:', JSON.stringify(imageSelectedData.length));
-            //console.log('response img height ' + JSON.stringify(response.fileSize));
-            // console.log('rSelectedImageDataesponse img width ' + JSON.stringify(response.width));
-            // var width = this.width;
-            // var height = this.height;
-            if (
-              response.width < 250 ||
-              response.height < 250 ||
-              response.fileSize < 40
-            ) {
-              alert(
-                'Picture of min. size (Width * height, e.g 250 * 250, 40 KB) is allowed, select another picture and upload',
-              );
-              return;
-            }
-          }
-        },
-      );
-    } catch (error) {
-      console.log('Message', JSON.stringify(error));
-    }
-  };
   const AttatchmentPdfClick = async () => {
     global.EditAttachment = 1;
     try {
@@ -2320,13 +1776,10 @@ export default function CampaignScheduleScreen(props) {
         var ImageName = Math.floor(100 + Math.random() * 900).toString();
         global.PdfPreviousId = ImageName;
         var PdfResponseData = response[0];
-        //console.log('PdfResponseData ' + JSON.stringify(PdfResponseData));
         var uri = PdfResponseData.uri;
         setPdfUri(uri);
         var fileType = PdfResponseData.type;
         var fileNameType = '.' + fileType.split('/')[1];
-        //console.log('fileNameType ', fileNameType)
-        //var fileName = PdfResponseData.name;
         var fileName = ImageName + fileNameType;
         var ImageId = ImageName;
         var height = '';
@@ -2337,74 +1790,22 @@ export default function CampaignScheduleScreen(props) {
           height: height,
           ImageId: ImageId,
         };
-        //setPDFSelectData(imageDetail);
         console.log('imageDetail last :', JSON.stringify(imageDetail));
         setImageSelectedData(prevv => [...prevv, imageDetail]);
-        //setImageSelectedData(imageSelectedData.filter((e, i) => e.ImageId !== imageDetail));
-        // console.log('Get Video Data: ', JSON.stringify(imageSelectedData));
-        // console.log('imageSelectedData Captured Image:', JSON.stringify(imageSelectedData));
       }
     } catch (err) {
       if (DocumentPicker.isCancel(err)) {
-        // User cancelled the document picker
       } else {
-        // Error occurred while picking the document
       }
     }
   };
   function GetVideoFromCamera() {
     setModalVisiblecamera(false);
-    launchCamera({durationLimit: 180, mediaType: 'video'}, response =>
-      //launchImageLibrary({durationLimit:580, mediaType: 'video'},(response) =>
-      {
-        setModalVisiblecamera(false);
-        //
-        //setimg(response);
-        //
-        if (response.assets == undefined || response.assets == '') {
-        } else {
-          //setgallery(true)
-          var ImageName = Math.floor(100 + Math.random() * 900).toString();
-          global.VideoPreviousId = ImageName;
-          var ImageResponseData = response.assets[0];
-          var fileTypeMake = ImageResponseData.fileName;
-          var uri = ImageResponseData.uri;
-          setVideouri(uri);
-          var fileTypeName = ImageResponseData.type.split('/')[1];
-          var fileType = ImageResponseData.type;
-          var fileName = ImageName + '.' + fileTypeName;
-          var ImageId = ImageName;
-          var height = ImageResponseData.height;
-          var imageDetail = {
-            fileName: fileName,
-            uri: uri,
-            fileType: fileType,
-            height: height,
-            ImageId: ImageId,
-          };
-          //console.log('imageDetail: ', JSON.stringify(imageDetail));
-          //setGetSelectVideoData(imageDetail);
-          //setImageSelectedData(imageDetail);
-          setImageSelectedData(prevv => [...prevv, imageDetail]);
-          console.log('imageSelectedData: ', JSON.stringify(imageSelectedData));
-          // setImageSelectedData(imageSelectedData.filter((e, i) => e.networkId !== imageDetail));
-          // console.log('Get Video Data: ', JSON.stringify(imageSelectedData));
-        }
-      },
-    );
-    //
-  }
-  function GetVideoFromGallery() {
-    setModalVisiblecamera(false);
-    //launchCamera({durationLimit:580, mediaType: 'video'},(response) =>
-    launchImageLibrary({durationLimit: 580, mediaType: 'video'}, response => {
+    launchCamera({durationLimit: 180, mediaType: 'video'}, response => {
       setModalVisiblecamera(false);
-      //
-      //setimg(response);
-      //
+
       if (response.assets == undefined || response.assets == '') {
       } else {
-        //setgallery(true)
         var ImageName = Math.floor(100 + Math.random() * 900).toString();
         global.VideoPreviousId = ImageName;
         var ImageResponseData = response.assets[0];
@@ -2423,20 +1824,43 @@ export default function CampaignScheduleScreen(props) {
           height: height,
           ImageId: ImageId,
         };
-        //console.log('imageDetail: ', JSON.stringify(imageDetail));
-        //setGetSelectVideoData(imageDetail);
-        //setImageSelectedData(imageDetail);
         setImageSelectedData(prevv => [...prevv, imageDetail]);
         console.log('imageSelectedData: ', JSON.stringify(imageSelectedData));
-        // setImageSelectedData(imageSelectedData.filter((e, i) => e.networkId !== imageDetail));
-        // console.log('Get Video Data: ', JSON.stringify(imageSelectedData));
       }
     });
     //
   }
-  function DeleteAttachmentFile() {
-    setAttatchmentAutoGenerate('');
+  function GetVideoFromGallery() {
+    setModalVisiblecamera(false);
+    launchImageLibrary({durationLimit: 580, mediaType: 'video'}, response => {
+      setModalVisiblecamera(false);
+      if (response.assets == undefined || response.assets == '') {
+      } else {
+        var ImageName = Math.floor(100 + Math.random() * 900).toString();
+        global.VideoPreviousId = ImageName;
+        var ImageResponseData = response.assets[0];
+        var fileTypeMake = ImageResponseData.fileName;
+        var uri = ImageResponseData.uri;
+        setVideouri(uri);
+        var fileTypeName = ImageResponseData.type.split('/')[1];
+        var fileType = ImageResponseData.type;
+        var fileName = ImageName + '.' + fileTypeName;
+        var ImageId = ImageName;
+        var height = ImageResponseData.height;
+        var imageDetail = {
+          fileName: fileName,
+          uri: uri,
+          fileType: fileType,
+          height: height,
+          ImageId: ImageId,
+        };
+        setImageSelectedData(prevv => [...prevv, imageDetail]);
+        console.log('imageSelectedData: ', JSON.stringify(imageSelectedData));
+      }
+    });
+    //
   }
+
   function AddScheduleClick() {
     setScheduleSummeryVisible(false);
     global.Network_Detail = 1;
@@ -2446,16 +1870,11 @@ export default function CampaignScheduleScreen(props) {
       setScheduleSummeryVisible(true);
       checkdataclick();
       global.Network_Detail = 0;
-      //ClickcheckData();
-      //ScheduleSummaryDetail();
-      // SchedulesDataAsyncClick();
     } else {
       Toast.show('No data found in Schedule');
     }
   }
-  //New Date Time Select
   const showDatePicker = () => {
-    // Toast.show('Campaign start Date readonly');
     setDatePickerVisibility(true);
   };
   const hideDatePicker = () => {
@@ -2474,10 +1893,7 @@ export default function CampaignScheduleScreen(props) {
       console.error('Error storing data:', error);
     }
   };
-  //New Date Time Select
-  //End Date Time Select
   const showEndDatePicker = () => {
-    //Toast.show('Campaign end Date readonly');
     setEndDatePickerVisibility(true);
   };
   const hideEndDatePicker = () => {
@@ -2486,9 +1902,7 @@ export default function CampaignScheduleScreen(props) {
   const handleEndConfirm = async date => {
     try {
       setSelectEndDate(date);
-
       var endDate = date.toString();
-      //AsyncStorage.setItem('selectScheduleEndDate', JSON.stringify(date));
       await AsyncStorage.setItem('endDate', endDate);
       hideEndDatePicker();
       MakeBudget();
@@ -2496,43 +1910,15 @@ export default function CampaignScheduleScreen(props) {
       console.error('Error storing data:', error);
     }
   };
-  //New Date Time Select
-  //Start Time Select
-  const showStartTimePicker = () => {
-    setSelectStartTimePickerVisibility(true);
-  };
+
   const hideStartTimePicker = () => {
     setSelectStartTimePickerVisibility(false);
   };
-  const handleStartTimeConfirm = date => {
-    //console.warn("A date has been picked: ", date);
-    setSelectStartTime(date);
-    // setSelectStartDate(date);
-    hideStartTimePicker();
-  };
-  //Start Time Select
-  const showEndTimePicker = () => {
-    setSelectEndTimePickerVisibility(true);
-  };
+
   const hideEndTimePicker = () => {
     setSelectEndTimePickerVisibility(false);
   };
-  const handleEndTimeConfirm = date => {
-    //console.warn("A date has been picked: ", date);
-    setSelectEndTime(date);
-    hideEndTimePicker();
-    //ClickWeekendDays();
-    //MakeBudget();
-  };
-  const VehicleRefresh = () => {};
-  const reportfunctionhide = () => {
-    //AddOfferRefresh();
-    setreportmodalVisible(false);
-  };
-  const RefreshAfterChangeStatus = () => {
-    AddOfferRefresh();
-    setreportmodalVisible(false);
-  };
+
   //campaign Date Select start
   const showCampaignStartDatePicker = () => {
     setIsCampaignStartDateVisible(true);
@@ -2564,9 +1950,7 @@ export default function CampaignScheduleScreen(props) {
   const hideCampaignEndConfirm = () => {
     setIsCampaignEndDateVisible(false);
   };
-  //campaign Date Select end
   function NextAddSchedule() {
-    //
     global.NextSchedule = 1;
     if (networkData == null || networkData == '') {
       console.log('NextAddSchedule empty ' + JSON.stringify(networkData));
@@ -2575,7 +1959,6 @@ export default function CampaignScheduleScreen(props) {
         Toast.LONG,
         Toast.CENTER,
       );
-      //ActionNetworkDataClick();
     } else {
       setIndex(2);
       AddScheduleClick();
@@ -2585,19 +1968,14 @@ export default function CampaignScheduleScreen(props) {
       console.log('NextAddSchedule  ' + JSON.stringify(networkData));
       setNetworkFinalData(networkData);
       setNetworkSelectedData(networkData);
-      //setNetworkData(networkData);
-      //ActionNetworkDataClick();
       setTotalNetworkSelect(networkData.length);
     }
   }
   function ActionNetworkDataClick(SelectProps) {
-    // var SelectProps = {'networkId':props.id,'id':0,'name':props.name,'description':props.description,'categoryId':props.categoryId,'status':props.status,'createdBy':props.createdBy};
     setNetworkData(prev => [...prev, SelectProps]);
     if (global.NextSchedule == 1) {
       NetworkSelectClick();
     }
-    //console.log('networkData 742 ' + JSON.stringify(networkData));
-    //AddScheduleClick();
   }
   function ActionNetworkDataRemoveClick(SelectProps) {
     setNetworkData(
@@ -2606,15 +1984,10 @@ export default function CampaignScheduleScreen(props) {
     if (global.NextSchedule == 1) {
       NetworkSelectClick();
     }
-    // AddScheduleClick();
   }
   function ActionNetworkSelectedDataClick(SelectProps) {
     setNetworkSelectSocialMedia(prev => [...prev, SelectProps]);
-    //setNetworkFinalData(prev => [...prev, SelectProps]);
-
     setSelectedNetworkShowBudget(networkSelectSocialMedia);
-
-    //CheckNetworkSelected();
   }
   function ActionNetworkSelectedDataRemoveClick(SelectProps) {
     console.log(
@@ -2626,9 +1999,7 @@ export default function CampaignScheduleScreen(props) {
         (e, i) => e.networkId !== SelectProps.networkId,
       ),
     );
-    //setNetworkFinalData(networkFinalData.filter((e, i) => e.networkId !== SelectProps.networkId));
     setSelectedNetworkShowBudget(networkSelectSocialMedia);
-    //CheckNetworkSelected();
   }
   function NetworkSelectClick() {
     console.log('all networkData ' + JSON.stringify(networkData));
@@ -2643,26 +2014,14 @@ export default function CampaignScheduleScreen(props) {
     setModalVisiblecamera(true);
     global.AttatchmentType = 1;
   }
-  function CheckNetworkSelected() {
-    console.lo('networkSelectSocialMedia ', networkSelectSocialMedia);
-    if (networkSelectSocialMedia == '' || networkSelectSocialMedia == null) {
-      setSelectNetworkQuotaVisible(true);
-    } else {
-      setSelectNetworkQuotaVisible(true);
-    }
-  }
+
   function AttatchmentVideo() {
     console.log(
       'imageSelectedData.length AttatchmentVideo ',
       imageSelectedData.length,
     );
-    //if(imageSelectedData.length >= 3){
-    //  AttachmentComplate();
-    // }
-    // else{
     setModalVisiblecamera(true);
     global.AttatchmentType = 2;
-    //  }
   }
   function AttatchmentPdf() {
     console.log(
@@ -2676,19 +2035,6 @@ export default function CampaignScheduleScreen(props) {
       global.AttatchmentType = 3;
     }
   }
-  const countSundays = () => {
-    const startDate = SelectCampaignStartDate; //new Date('2023-08-01'); // Replace with your desired start date
-    const endDate = SelectCampaignEndDate; //new Date('2023-08-24'); // Replace with your desired end date
-    let currentDate = new Date(startDate);
-    let count = 0;
-    while (currentDate <= endDate) {
-      if (currentDate.getDay() === 0) {
-        // Sunday (0-indexed day)
-        count++;
-      }
-      currentDate.setDate(currentDate.getDate() + 1);
-    }
-  };
 
   // function ClickWeekendDays(value) {
   const ClickWeekendDays = async value => {
@@ -2716,12 +2062,9 @@ export default function CampaignScheduleScreen(props) {
       SelectIntervalTypeIdVal == 4 ||
       SelectIntervalTypeIdVal == 5
     ) {
-      //if(selectIntervalTypeForDays =='' || selectIntervalTypeForDays ==1 || selectIntervalTypeForDays == 3 || selectIntervalTypeForDays == 4 || selectIntervalTypeForDays == 5 ){
-      //
       if (value == 1) {
         if (selectSunday == true) {
           setSelectSunday(false);
-          //setWeekendDayList(weekendDayList.filter((e, i) => e !== value));
           var updatedArray = [...weekendDayList.filter((e, i) => e !== value)];
 
           setWeekendDayList(updatedArray);
@@ -2735,15 +2078,12 @@ export default function CampaignScheduleScreen(props) {
           setSelectThursday(false);
           setSelectFriday(false);
           setSelectSaturday(false);
-          //setWeekendDayList(prev => [...prev, value]);
           var updatedArray = [value];
-
           setWeekendDayList(updatedArray);
         }
       } else if (value == 2) {
         if (selectMonday == true) {
           setSelectMonday(false);
-          //setWeekendDayList(weekendDayList.filter((e, i) => e !== value));
           var updatedArray = [...weekendDayList.filter((e, i) => e !== value)];
 
           setWeekendDayList(updatedArray);
@@ -2757,7 +2097,6 @@ export default function CampaignScheduleScreen(props) {
           setSelectThursday(false);
           setSelectFriday(false);
           setSelectSaturday(false);
-          //setWeekendDayList(prev => [...prev, value]);
           var updatedArray = [value];
 
           setWeekendDayList(updatedArray);
@@ -2765,7 +2104,6 @@ export default function CampaignScheduleScreen(props) {
       } else if (value == 3) {
         if (selectTuesday == true) {
           setSelectTuesday(false);
-          //setWeekendDayList(weekendDayList.filter((e, i) => e !== value));
           var updatedArray = [...weekendDayList.filter((e, i) => e !== value)];
 
           setWeekendDayList(updatedArray);
@@ -2779,7 +2117,6 @@ export default function CampaignScheduleScreen(props) {
           setSelectThursday(false);
           setSelectFriday(false);
           setSelectSaturday(false);
-          //setWeekendDayList(prev => [...prev, value]);
           var updatedArray = [value];
 
           setWeekendDayList(updatedArray);
@@ -2787,7 +2124,6 @@ export default function CampaignScheduleScreen(props) {
       } else if (value == 4) {
         if (selectWednesday == true) {
           setSelectWednesday(false);
-          //setWeekendDayList(weekendDayList.filter((e, i) => e !== value));
           var updatedArray = [...weekendDayList.filter((e, i) => e !== value)];
 
           setWeekendDayList(updatedArray);
@@ -2801,7 +2137,6 @@ export default function CampaignScheduleScreen(props) {
           setSelectThursday(false);
           setSelectFriday(false);
           setSelectSaturday(false);
-          //setWeekendDayList(prev => [...prev, value]);
           var updatedArray = [value];
 
           setWeekendDayList(updatedArray);
@@ -2809,7 +2144,6 @@ export default function CampaignScheduleScreen(props) {
       } else if (value == 5) {
         if (selectThursday == true) {
           setSelectThursday(false);
-          //setWeekendDayList(weekendDayList.filter((e, i) => e !== value));
           var updatedArray = [...weekendDayList.filter((e, i) => e !== value)];
 
           setWeekendDayList(updatedArray);
@@ -2823,7 +2157,6 @@ export default function CampaignScheduleScreen(props) {
           setSelectThursday(true);
           setSelectFriday(false);
           setSelectSaturday(false);
-          //setWeekendDayList(prev => [...prev, value]);
           var updatedArray = [value];
 
           setWeekendDayList(updatedArray);
@@ -2831,7 +2164,6 @@ export default function CampaignScheduleScreen(props) {
       } else if (value == 6) {
         if (selectFriday == true) {
           setSelectFriday(false);
-          //setWeekendDayList(weekendDayList.filter((e, i) => e !== value));
           var updatedArray = [...weekendDayList.filter((e, i) => e !== value)];
 
           setWeekendDayList(updatedArray);
@@ -2845,7 +2177,6 @@ export default function CampaignScheduleScreen(props) {
           setSelectThursday(false);
           setSelectFriday(true);
           setSelectSaturday(false);
-          //setWeekendDayList(prev => [...prev, value]);
           var updatedArray = [value];
 
           setWeekendDayList(updatedArray);
@@ -2853,9 +2184,7 @@ export default function CampaignScheduleScreen(props) {
       } else if (value == 7) {
         if (selectSaturday == true) {
           setSelectSaturday(false);
-          // setWeekendDayList(weekendDayList.filter((e, i) => e !== value));
           var updatedArray = [...weekendDayList.filter((e, i) => e !== value)];
-
           setWeekendDayList(updatedArray);
         }
         if (selectSaturday == false) {
@@ -2867,173 +2196,106 @@ export default function CampaignScheduleScreen(props) {
           setSelectThursday(false);
           setSelectFriday(false);
           setSelectSaturday(true);
-          //setWeekendDayList(prev => [...prev, value]);
           var updatedArray = [value];
-
           setWeekendDayList(updatedArray);
         }
       }
-
       AsyncStorage.setItem('WeekendDayDataList', JSON.stringify(updatedArray));
       MakeBudget();
     } else {
       if (value == 1) {
         if (selectSunday == true) {
           setSelectSunday(false);
-          // setWeekendDayList(weekendDayList.filter((e, i) => e !== value));
           var updatedArray = [...weekendDayList.filter((e, i) => e !== value)];
-
           setWeekendDayList(updatedArray);
         }
         if (selectSunday == false) {
           setSelectSunday(true);
-          //setWeekendDayList(prev => [...prev, value]);
           var updatedArray = [...weekendDayList, value];
-
           setWeekendDayList(updatedArray);
         }
       } else if (value == 2) {
         if (selectMonday == true) {
           setSelectMonday(false);
-          //setWeekendDayList(weekendDayList.filter((e, i) => e !== value));
           var updatedArray = [...weekendDayList.filter((e, i) => e !== value)];
-
           setWeekendDayList(updatedArray);
         }
         if (selectMonday == false) {
           setSelectMonday(true);
-          // setWeekendDayList(prev => [...prev, value]);
           var updatedArray = [...weekendDayList, value];
-
           setWeekendDayList(updatedArray);
         }
       } else if (value == 3) {
         if (selectTuesday == true) {
           setSelectTuesday(false);
-          //setWeekendDayList(weekendDayList.filter((e, i) => e !== value));
           var updatedArray = [...weekendDayList.filter((e, i) => e !== value)];
-
           setWeekendDayList(updatedArray);
         }
         if (selectTuesday == false) {
           setSelectTuesday(true);
-          //setWeekendDayList(prev => [...prev, value]);
           var updatedArray = [...weekendDayList, value];
-
           setWeekendDayList(updatedArray);
         }
       } else if (value == 4) {
         if (selectWednesday == true) {
           setSelectWednesday(false);
-          //setWeekendDayList(weekendDayList.filter((e, i) => e !== value));
           var updatedArray = [...weekendDayList.filter((e, i) => e !== value)];
-
           setWeekendDayList(updatedArray);
         }
         if (selectWednesday == false) {
           setSelectWednesday(true);
-          //setWeekendDayList(prev => [...prev, value]);
           var updatedArray = [...weekendDayList, value];
-
           setWeekendDayList(updatedArray);
         }
       } else if (value == 5) {
         if (selectThursday == true) {
           setSelectThursday(false);
-          // setWeekendDayList(weekendDayList.filter((e, i) => e !== value));
           var updatedArray = [...weekendDayList.filter((e, i) => e !== value)];
-
           setWeekendDayList(updatedArray);
         }
         if (selectThursday == false) {
           setSelectThursday(true);
-          //setWeekendDayList(prev => [...prev, value]);
           var updatedArray = [...weekendDayList, value];
-
           setWeekendDayList(updatedArray);
         }
       } else if (value == 6) {
         if (selectFriday == true) {
           setSelectFriday(false);
-          //setWeekendDayList(weekendDayList.filter((e, i) => e !== value));
           var updatedArray = [...weekendDayList.filter((e, i) => e !== value)];
-
           setWeekendDayList(updatedArray);
         }
         if (selectFriday == false) {
           setSelectFriday(true);
-          //setWeekendDayList(prev => [...prev, value]);
           var updatedArray = [...weekendDayList, value];
-
           setWeekendDayList(updatedArray);
         }
       } else if (value == 7) {
         if (selectSaturday == true) {
           setSelectSaturday(false);
-          //setWeekendDayList(weekendDayList.filter((e, i) => e !== value));
           var updatedArray = [...weekendDayList.filter((e, i) => e !== value)];
-
           setWeekendDayList(updatedArray);
         }
         if (selectSaturday == false) {
           setSelectSaturday(true);
-          //setWeekendDayList(prev => [...prev, value]);
           var updatedArray = [...weekendDayList, value];
-
           setWeekendDayList(updatedArray);
         }
       }
-
       setSelectedWeekDayList(updatedArray);
       AsyncStorage.setItem('WeekendDayDataList', JSON.stringify(updatedArray));
       MakeBudget();
     }
     //AsyncStorage.setItem('WeekendDaySelect', JSON.stringify(weekendDayList));
   };
-  function countWeekdaysAndSundays(value) {
-    if (SelectStartDate.length <= 0) {
-      var StartDatePick = SelectCampaignStartDate;
-    } else {
-      var StartDatePick = SelectStartDate;
-    }
-    if (SelectEndDate.length <= 0) {
-      var EndDatePick = SelectCampaignEndDate;
-    } else {
-      var EndDatePick = SelectEndDate;
-    }
-    const startDate = StartDatePick;
-    const endDate = EndDatePick;
-    let weekdays = 0;
-    let RepeatDay = 0;
-    const currentDate = new Date(startDate);
-    while (currentDate <= endDate) {
-      const dayOfWeek = currentDate.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
 
-      if (dayOfWeek >= 1 && dayOfWeek <= 6) {
-        weekdays++;
-      }
-      if (dayOfWeek === value - 1) {
-        RepeatDay++;
-      }
-      currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
-
-      setNoOfDayRepeateInTime(RepeatDay);
-    }
-    return {weekdays, RepeatDay};
-  }
   function DeleteScheduleList(propsDelete) {
     var newdatacheck = scheduleListAddArray.filter(
       (e, i) => e.randomId !== propsDelete.randomId,
     );
     setScheduleListAddArray(newdatacheck);
     setScheduleListAddArrayZZZ(newdatacheck);
-    //AddScheduleClick();
-    //ScheduleSummaryListClick();
     setDeleteScheduleVisible(true);
-    //setNetworkData(propsDelete.filter((e, i) => e.randomId !== propsDelete.randomId));
-    //AddScheduleClick();
   }
-  // function UpdateScheduleList(propsUpdate) {
   const UpdateScheduleList = async propsUpdate => {
     setNetworkEditWithScheduleDisabled(false);
 
@@ -3051,8 +2313,6 @@ export default function CampaignScheduleScreen(props) {
       var FilterSelectedNetwork = DataNetwork.filter(
         (e, i) => e.networkId === propsUpdate.props.networkId,
       );
-      //
-      //
       var FilterSelectedNetworkSingleJson = FilterSelectedNetwork.map(item => {
         return {
           id: item.id,
@@ -3069,8 +2329,6 @@ export default function CampaignScheduleScreen(props) {
           lastUpdatedBy: Number(userId),
         };
       });
-
-      //var NetworkEditWithSchedule = [{"networkId": propsUpdate.props.networkId}]
       var NetworkEditWithSchedule = FilterSelectedNetworkSingleJson;
     } else {
       console.log(
@@ -3081,21 +2339,13 @@ export default function CampaignScheduleScreen(props) {
     }
     setNetworkSelectSocialMedia(NetworkEditWithSchedule);
     setNetworkUpdateSelected(NetworkEditWithSchedule);
-    //await AsyncStorage.setItem('NetworkSelectSocialMediaNew', NetworkEditWithSchedule);
-    //
     setCheckUpdateData(propsUpdate);
-    //global.UpdatRandomId = propsUpdate.randomId;
     varPropsVal = propsUpdate.props;
-    //const selectedItem = propsUpdate.props.find(item => item.networkId === networkId);
-    //
-
     setSelectStartDate(varPropsVal.startTime);
     setSelectEndDate(varPropsVal.finishTime);
     var endDate = varPropsVal.finishTime.toString();
     await AsyncStorage.setItem('startDate', varPropsVal.startTime);
     await AsyncStorage.setItem('endDate', endDate);
-    //setSelectStartDate(varPropsVal.scheduleStartDate);
-    //setSelectEndDate(varPropsVal.scheduleStartDate);
     setScheduleMessageCount(varPropsVal.budget);
     setTotalMessageCountAdd(varPropsVal.messageCount);
     setIntervalVal(varPropsVal.interval.toString());
@@ -3112,7 +2362,6 @@ export default function CampaignScheduleScreen(props) {
     if (varPropsVal.intervalTypeId == 6) {
       setIntervalValDisabled(true);
     }
-    //setSelectIntervalType(varPropsVal.intervalTypeId-1);
     selectType(varPropsVal.status);
     var selectday = varPropsVal.days;
     AsyncStorage.setItem('WeekendDayDataList', JSON.stringify(selectday));
@@ -3128,61 +2377,7 @@ export default function CampaignScheduleScreen(props) {
     MakeBudget();
     AddScheduleClick();
   };
-  function ScheduleDetail(props) {
-    setNetworksSummary(props.networkId);
-    setIntervalSummary(props.interval);
-    setStartDateSummary(props.startTime);
-    setEndDateSummary(props.finishTim);
-    setRandomSummary(props.randomId);
-    setIsFixedSummary(props.isFixedTime);
-    if (props.intervalTypeId != null || props.intervalTypeId != '') {
-      var IntervalTypeIdCheck = props.intervalTypeId;
-      if (IntervalTypeIdCheck == 1) {
-        setIntervalTypeIdSummary('One Time');
-      } else if (IntervalTypeIdCheck == 2) {
-        setIntervalTypeIdSummary('Daily');
-      } else if (IntervalTypeIdCheck == 3) {
-        setIntervalTypeIdSummary('Weekly');
-      } else if (IntervalTypeIdCheck == 4) {
-        setIntervalTypeIdSummary('Monthly');
-      } else if (IntervalTypeIdCheck == 5) {
-        setIntervalTypeIdSummary('Yearly');
-      } else if (IntervalTypeIdCheck == 6) {
-        setIntervalTypeIdSummary('Custom');
-      } else if (IntervalTypeIdCheck == 7) {
-        setIntervalTypeIdSummary('Other');
-      }
-    }
-    if (props.status != null || props.status != '') {
-      var SelectstatusCheck = props.status;
-      if (SelectstatusCheck == 1) {
-        setStatusSummary('Active');
-      } else if (SelectstatusCheck == 2) {
-        setStatusSummary('Pause');
-      } else if (SelectstatusCheck == 3) {
-        setStatusSummary('Canceled');
-      }
-    }
-    if (props.intervalTypeId != null || props.intervalTypeId != '') {
-      var SelectDaysCheck = props.days;
-      if (SelectDaysCheck == 1) {
-        setSelectDaysSummary('Sun');
-      } else if (SelectDaysCheck == 2) {
-        setSelectDaysSummary('Mon');
-      } else if (SelectDaysCheck == 3) {
-        setSelectDaysSummary('Tue');
-      } else if (SelectDaysCheck == 4) {
-        setSelectDaysSummary('Wed');
-      } else if (SelectDaysCheck == 5) {
-        setSelectDaysSummary('Thu');
-      } else if (SelectDaysCheck == 6) {
-        setSelectDaysSummary('Fri');
-      } else if (SelectDaysCheck == 7) {
-        setSelectDaysSummary('Sat');
-      }
-    }
-    setScheduleSummaryDetailVisible(true);
-  }
+
   function DeletePdfAttachment() {
     if (global.EditAttachment == 1) {
       var PdfId = global.PdfPreviousId;
@@ -3245,11 +2440,7 @@ export default function CampaignScheduleScreen(props) {
       imageSelectedDataFlatelist.length,
     );
   }
-  function AttachmentPreviewClick() {
-    setModalVisiblecamera(true);
 
-    //setImageSelectedData(prevv => [...prevv, imageDetail]);
-  }
   function AttachmentsEnabledClick() {
     if (AttachmentsEnabled == true) {
       setAttachmentsEnabled(false);
@@ -3269,7 +2460,6 @@ export default function CampaignScheduleScreen(props) {
       'Only three Attachments are allowed! If you want to change any one please remove attached',
     );
   }
-  //function ChangeIntervalVal(value) {
   const ChangeIntervalVal = async value => {
     console.log(
       'ChangeIntervalVal value ********************************** ',
@@ -3279,7 +2469,6 @@ export default function CampaignScheduleScreen(props) {
       'ChangeIntervalVal value ********************************** ',
       selectIntervalTypeForDays,
     );
-    // AsyncStorage.removeItem('SelectIntervalVal');
     await AsyncStorage.setItem('SelectIntervalVal', value);
     setIntervalVal(value);
     var value = selectIntervalTypeForDays;
@@ -3287,7 +2476,6 @@ export default function CampaignScheduleScreen(props) {
   };
   function CloseAttachment() {
     setModalVisiblecamera(false);
-    //imageSelectedDataFlatelist
     console.log(
       'CloseAttachment imageSelectedData: ',
       JSON.stringify(imageSelectedData),

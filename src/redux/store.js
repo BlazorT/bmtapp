@@ -9,7 +9,7 @@ const persistConfig = {
   key: 'root',
   version: 1,
   storage: AsyncStorage,
-  whitelist: ['theme'], // Specify persisted reducers
+  whitelist: ['theme', 'user', 'lovs'], // Specify persisted reducers
 };
 // Wrap root reducer with persistReducer
 const persistedReducer = persistReducer(persistConfig, rootReducer);

@@ -6,7 +6,6 @@ import {
   Dimensions,
   Image,
   Modal,
-  NativeModules,
   Platform,
   StyleSheet,
   Text,
@@ -14,6 +13,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import DeviceInfo from 'react-native-device-info';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Toast from 'react-native-simple-toast';
 import {Button} from '../../components';
@@ -23,7 +23,6 @@ import SignupWithFacebook from '../../components/SignupWithFacebook';
 import {colors} from '../../styles';
 import servicesettings from '../dataservices/servicesettings';
 const googleIcon = require('../../../assets/images/icons/google.png');
-import DeviceInfo from 'react-native-device-info';
 
 import {
   GoogleSignin,
@@ -34,26 +33,17 @@ import {LoginManager} from 'react-native-fbsdk-next';
 import Icons from 'react-native-vector-icons/AntDesign';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {useTheme} from '../../hooks/useTheme';
-const {RNTwitterSignIn} = NativeModules;
+import {useUser} from '../../hooks/useUser';
 
 export default function LoginScreen(props) {
   const theme = useTheme();
-  const [storeindex, setstoreindex] = useState(0);
-  const [MyData, setMyData] = useState([]);
-  //const [emailfocus,setemailFocus]= useState(false);
+  const {loginUser} = useUser();
   const [spinner, setspinner] = useState(false);
-  //const customestyleEmail = emailfocus ? styles.textinputFocuse : styles.inputfield;
-  const [focus, setFocus] = useState(false);
-  const customestyle = focus
-    ? styles.textinputpasswordFocuse
-    : styles.inputfieldpassword;
+
   const profilelogo = require('../../../assets/images/BDMT.png');
-  const [textInputEmail, setTextInputEmail] = useState('');
-  const [textInputPassword, setTextInputPassword] = useState('');
+
   const [userInfo, setUserInfo] = useState('');
   const [Email, setEmail] = useState('');
-  const [data, setdata] = useState([]);
-  const [orgindex, setorgindex] = useState(0);
   const [emailfocus, setemailFocus] = useState(false);
   const customestyleEmail = emailfocus
     ? styles.sectionStyleOnEmailFocus
@@ -64,8 +54,6 @@ export default function LoginScreen(props) {
     ? styles.sectionStyleOnFocus
     : styles.sectionStyle;
   const [show, setshow] = useState(true);
-  const [showtick, setshowtick] = useState(false);
-  const [selectedItems, setSelectedItems] = useState('');
   const [modalVisible, setmodalVisible] = useState(false);
   const [FacebookmodalVisible, setfacebookmodalVisible] = useState(false);
   const [modalVisiblecamera, setmodalVisiblecamera] = useState(false);
@@ -79,13 +67,9 @@ export default function LoginScreen(props) {
       setshow(false);
     }
   };
-  //const emailRef = useRef();
-  //const passwordRef = useRef();
-  var regExp =
-    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
   useEffect(() => {
     global.SocialMedia = 0;
-    //
     GoogleSignin.configure({
       webClientId:
         '344400656576-n1btnvu3unr8ioidunk8i6d6ne6qb903.apps.googleusercontent.com',
@@ -101,40 +85,25 @@ export default function LoginScreen(props) {
   const Signup = async () => {
     global.SocialMedia = 1;
     try {
-      // alert('GoogleSignin ' + JSON.stringify(GoogleSignin));
       console.log('GoogleSignin Info --> ', JSON.stringify(GoogleSignin));
       await GoogleSignin.hasPlayServices({
-        // Check if device has Google Play Services installed
-        // Always resolves to true on iOS
         showPlayServicesUpdateDialog: true,
       });
       const userInfo = await GoogleSignin.signIn();
-      // alert('userInfo ' + JSON.stringify(userInfo));
+
       console.log('User Info --> ', JSON.stringify(userInfo));
-      //console.log('User Info --> givenName ', JSON.stringify(userInfo.user.givenName));
+
       var givenName = userInfo.user.givenName;
       var name = userInfo.user.name;
-      // console.log('User userInfo.user.familyName ', JSON.stringify(userInfo.user.familyName));
-      // console.log('givenName givenName includes ', JSON.stringify(givenName.includes(" ")));
-      //console.log('givenName givenName .includes(" ") ', JSON.stringify(givenName.replace(' ','.')));
-      // console.log('givenName givenName ', JSON.stringify(givenName.replace(' ','.')));
-      // console.log('givenName first name', JSON.stringify(givenName.split(' ')[0]));
-      //console.log('givenName last name ', JSON.stringify(givenName.split(' '))[1]);
-      //var firstName = (givenName.includes(" "));
+
       if (givenName.length >= '0' && givenName.includes(' ')) {
         var firstName = givenName.split(' ')[0];
         var lastName = givenName.split(' ')[1];
         var userName = givenName.replace(' ', '.');
-        // console.log('firstName firstName firstName firstName ', JSON.stringify(firstName));
-        // console.log('lastName lastName lastName lastName ', JSON.stringify(lastName));
-        //console.log('userName userName userName userName ', JSON.stringify(userName));
       } else if (name.length >= '0' && name.includes(' ')) {
         var firstName = name.split(' ')[0];
         var lastName = name.split(' ')[1];
         var userName = name.replace(' ', '.');
-        //console.log('name firstName firstName firstName firstName ', JSON.stringify(firstName));
-        //console.log('name lastName lastName lastName lastName ', JSON.stringify(lastName));
-        //console.log('name userName userName userName userName ', JSON.stringify(userName));
       }
       var facebookOS = 5;
       AsyncStorage.removeItem('SignupWithGoogle_Facebook');
@@ -153,17 +122,13 @@ export default function LoginScreen(props) {
         'SignupWithGoogle_Facebook',
         JSON.stringify(GoogleData),
       );
-      // console.log('User Info --> ', JSON.stringify(userInfo));
+
       setUserInfo(userInfo);
-      //props.navigation.navigate('Sign Up');
       setmodalVisiblecamera(false);
       if (global.Signup_LoginWithGoogle == 1) {
-        //
         ContinueWithSocialMedia();
       } else if (global.Signup_LoginWithGoogle == 2) {
-        //
         ContinueWithSocialMedia();
-        //LoginContinueWithSocialMedia();
       }
     } catch (error) {
       console.log('Message', JSON.stringify(error));
@@ -179,99 +144,28 @@ export default function LoginScreen(props) {
     }
   };
 
-  const Constants = {
-    //Dev Parse keys
-    TWITTER_API_KEY: 'VTicm877GQgV2ODMzmPXdAwnJ',
-    TWITTER_SECRET_KEY: 'vAUfRCUxwmZwYYJTvaDEDotqLk6bHfVIGyzSkeVH2xxJgm7jF0',
-  };
-  const AccessToken = {
-    //Dev Parse keys
-    TWITTER_API_KEY: 'VTicm877GQgV2ODMzmPXdAwnJ',
-    TWITTER_SECRET_KEY: 'vAUfRCUxwmZwYYJTvaDEDotqLk6bHfVIGyzSkeVH2xxJgm7jF0',
-  };
-  twitterLogin = () => {
-    global.SocialMedia = 3;
-
-    const fcmSocialToken = servicesettings.fcmToken;
-    RNTwitterSignIn.init(
-      Constants.TWITTER_API_KEY,
-      Constants.TWITTER_SECRET_KEY,
-    );
-    RNTwitterSignIn.logIn()
-      .then(loginData => {
-        const {authToken, authTokenSecret} = loginData;
-        if (authToken && authTokenSecret) {
-          // You can use this data here and move next
-        }
-      })
-      .catch(error => {});
-  };
-  const SigninWithFaceboonClick = () => {
-    setfacebookmodalVisible(true);
-  };
-  const TermsAndConditionsClose = () => {
-    setmodalVisibleTermsAndConditions(false);
-  };
   const ClickTerms_Condition = () => {
     setmodalVisibleTermsAndConditions(true);
-  };
-  const twitterLoginXX = () => {
-    //RNTwitterSignIn.init(Constants.TWITTER_API_KEY, Constants.TWITTER_SECRET_KEY)
-    //RNTwitterSignIn.init(APIKEY)
-    RNTwitterSignIn.init(
-      Constants.TWITTER_API_KEY,
-      Constants.TWITTER_SECRET_KEY,
-    );
-    //console.log('RNTwitterSignIn ' + JSON.stringify(RNTwitterSignIn.init()));
-    RNTwitterSignIn.logIn()
-      .then(loginData => {
-        const {authToken, authTokenSecret} = loginData;
-        if (authToken && authTokenSecret) {
-          this.setState({
-            isLoggedIn: true,
-          });
-        }
-      })
-      .catch(error => {
-        //
-      });
   };
   async function UserCreate() {
     global.ContinueWithFacebook = 0;
     //props.navigation.navigate('Sign Up');
     setmodalVisiblecamera(true);
   }
-  async function facebookClick() {
-    global.SocialMedia = 1;
-    props.navigation.navigate('Sign Up Facebook');
-  }
+
   const checkTextInput = () => {
-    //var reg = /^\S*$/;
-    let uniqueId = DeviceInfo.getDeviceId();
     if (Email.trim() == '') {
       Toast.show('Please enter username or email');
-      //emailRef.current.focus();
+
       return;
     }
-    //if (reg.test(textInputEmail.trim()) === false) {
-    //Toast.showWithGravity('Incorrect user name or email',Toast.LONG,Toast.CENTER)
-    // return;
-    // }
+
     if (Password == '') {
       Toast.show('Please enter password');
-      //passwordRef.current.focus();
+
       return;
     }
-    // if(textInputEmail.includes(".") && textInputEmail.includes("@")){
-    //Toast.show('@ and . use');
-    //  var emailcheck = textInputEmail.trim();
-    //  }else{
-    //Toast.show('@ only use');
-    //   var usernamecheck = textInputEmail.trim();
-    //}
-    //
-    var UserName = 'Blazor^^018';
-    // var Password = 'Blazor~~^^##';
+
     setspinner(true);
     var headerFetch = {
       method: 'POST',
@@ -288,18 +182,14 @@ export default function LoginScreen(props) {
         Authorization: servicesettings.AuthorizationKey,
       },
     };
-    //useraccount //users
-    //
+
     console.log('headerFetch from login', JSON.stringify(headerFetch.body));
-    //if()
-    //
-    //fetch(servicesettings.baseuri + 'auhtenticateorguser',headerFetch).then(response =>  response.json())
-    //.then((responseJson) => {
+
     fetch(servicesettings.baseuri + 'authenticateorguser', headerFetch)
       .then(response => response.json())
       .then(responseJson => {
         setspinner(false);
-
+        console.log('headerFetch from login', JSON.stringify(responseJson));
         if (responseJson.status == false && responseJson.errorCode == '404') {
           {
             responseJson.message != ''
@@ -340,6 +230,7 @@ export default function LoginScreen(props) {
             'LoginInformation',
             JSON.stringify(responseJson.data),
           );
+          loginUser(responseJson.data[0]);
           global.Storeid = responseJson.data[0].storeid;
           global.ROLEID = responseJson.data[0].roleid;
           global.USERID = responseJson.data[0].id;
@@ -364,136 +255,7 @@ export default function LoginScreen(props) {
         );
       });
   };
-  const LoginContinueWithSocialMedia = () => {
-    LoginManager.setLoginBehavior('web_only');
 
-    // ClearAsyncStorage();
-
-    // Sign with google start
-    // if(global.Signup_LoginWithGoogle == 3){AsyncStorage.getItem('SignupWithFacebook')}
-    //else if(global.Signup_LoginWithGoogle == 2){AsyncStorage.getItem('SignupWithFacebook')}
-    //(global.Signup_LoginWithGoogle == 2){AsyncStorage.getItem('SignupWithFacebook')}
-    //AsyncStorage.getItem('SignupWithFacebook')
-    AsyncStorage.getItem('SignupWithGoogle_Facebook').then(function (res) {
-      let Asyncdata = JSON.parse(res);
-      console.log(
-        ' SignupWithGoogle SignupWithGoogle SignupWithGoogle SignupWithGoogle ',
-        Asyncdata,
-      );
-      if (Asyncdata != null) {
-        setspinner(true);
-        //var imgurl = Asyncdata.user.photo;
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        var UserName = Asyncdata.userName;
-        var Password = Asyncdata.userID;
-        var email = Asyncdata.email;
-        //var authToken = (Asyncdata.user.idToken);
-        //var FirstName = (Asyncdata.user.name).split(' ')[0];
-        // var LastName = (Asyncdata.user.name).split(' ')[1];
-
-        var headerFetch = {
-          method: 'POST',
-          body: JSON.stringify({
-            email: email.trim(),
-            password: Base64.btoa(Password.trim()),
-            orgid: '1',
-          }),
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json; charset=utf-8',
-            Authorization: servicesettings.AuthorizationKey,
-          },
-        };
-        console.log('headerFetch ', JSON.stringify(headerFetch));
-        fetch(servicesettings.baseuri + 'useraccount', headerFetch)
-          .then(response => response.json())
-          .then(responseJson => {
-            setspinner(false);
-
-            if (
-              responseJson.status == false &&
-              responseJson.errorCode == '404'
-            ) {
-              {
-                responseJson.message != ''
-                  ? Toast.show(' ' + responseJson.message + ' ')
-                  : Toast.show('Data not found');
-              }
-              return;
-            } else if (
-              responseJson.status == false &&
-              responseJson.errorCode == '202'
-            ) {
-              {
-                responseJson.message != ''
-                  ? Toast.show(' ' + responseJson.message + ' ')
-                  : Toast.show('Api validation failed');
-              }
-              return;
-            } else if (
-              responseJson.status == true &&
-              responseJson.errorCode == '407'
-            ) {
-              {
-                responseJson.message != ''
-                  ? Toast.show(' ' + responseJson.message + ' ')
-                  : Toast.show(
-                      'Too many requests, must be 40 Seconds interval between next request!',
-                    );
-              }
-              return;
-            } else if (responseJson.data.length == 0) {
-              setspinner(false);
-              Toast.show('Oops login failed incorrect username/password');
-              return;
-            } else {
-              if (responseJson.Error) {
-                Toast.show('Network request failed');
-              }
-              AsyncStorage.setItem(
-                'LoginInformation',
-                JSON.stringify(responseJson.data),
-              );
-              global.Storeid = responseJson.data[0].storeid;
-              global.ROLEID = responseJson.data[0].roleid;
-              global.USERID = responseJson.data[0].id;
-              global.StoreName = responseJson.data[0].TradeName;
-              //console.log("global.Storeid check " + global.Storeid)
-
-              Toast.show('Login success');
-              setmodalVisible(true);
-              setTimeout(() => {
-                setmodalVisible(false);
-                setspinner(false);
-                props.navigation.replace('Dashboard');
-              }, 4000);
-            }
-            // ClearAsyncStorage();
-          })
-          .catch(error => {
-            setspinner(false);
-            console.error('service error', error);
-            Toast.showWithGravity(
-              'Internet connection failed, try another time !!!',
-              Toast.LONG,
-              Toast.CENTER,
-            );
-          });
-      }
-    });
-    const ClearAsyncStorageXX = async function () {
-      await AsyncStorage.clear();
-      // setspinner(false);
-    };
-
-    // Sign with google end
-  };
   const ContinueWithSocialMedia = () => {
     setspinner(true);
     LoginManager.setLoginBehavior('web_only');
@@ -702,9 +464,6 @@ export default function LoginScreen(props) {
     });
   };
 
-  ClearAsyncStorage = async () => {
-    await AsyncStorage.clear();
-  };
   function PressSignUp() {
     setmodalVisiblecamera(false);
     ContinueWithSocialMedia();
@@ -722,14 +481,7 @@ export default function LoginScreen(props) {
     global.Signup_LoginWithGoogle = 2;
     Signup();
   }
-  function SignupWithFacebookClick() {
-    global.Signup_LoginWithGoogle = 3;
-    ContinueWithSocialMedia();
-  }
-  function LoginWithFacebookClick() {
-    // global.Signup_LoginWithGoogle = 2;
-    ContinueWithSocialMedia();
-  }
+
   function CreateUser() {
     global.SocialMedia = 0;
 
@@ -739,8 +491,6 @@ export default function LoginScreen(props) {
   function closeSocialMediaModal() {
     setmodalVisiblecamera(false);
   }
-  // console.log('Check store data ' + JSON.stringify(data.sort(function(obj1, obj2) {return obj1.storeid - obj2.storeid;})[0].name));
-  //console.log('Check store data ' + JSON.stringify(data.sort(function(obj1, obj2) {return obj1.storeid - obj2.storeid;})[0].id));
   return (
     <View style={[styles.container, {backgroundColor: theme.backgroundColor}]}>
       <View
@@ -1004,7 +754,6 @@ export default function LoginScreen(props) {
 }
 const styles = StyleSheet.create({
   container: {
-    //backgroundColor: '#011112',// '#011f4b',//colors.BlazorBg,
     color: colors.white,
     backgroundColor: colors.white,
     flex: 1,
@@ -1012,7 +761,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
   },
   field: {
-    //backgroundColor:'red',
     alignItems: 'center',
     justifyContent: 'space-around',
     zIndex: 3,
@@ -1021,7 +769,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-around',
     zIndex: 3,
-    //width: Dimensions.get('window').width-180,
   },
   termOfUse: {
     marginTop: 3,
@@ -1056,16 +803,10 @@ const styles = StyleSheet.create({
   btnlogin: {
     backgroundColor: colors.Blazorbutton,
     width: Dimensions.get('window').width - 50,
-    //marginLeft:25,
     marginHorizontal: 25,
     marginVertical: 10,
-    //margin: 10,
-    //paddingVertical:22,
-    //paddingHorizontal:22,
-    //marginHorizontal:22,
     borderRadius: 8,
     height: 46,
-    //borderWidth: 1,
     borderColor: colors.InputControlBorderColor,
   },
   TitleLogo: {
@@ -1076,18 +817,12 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto',
   },
   TitleLogoView: {
-    // marginTop:10,
     paddingBottom: 2 + '%',
-    //flexDirection: 'row',
     alignItems: 'center',
-    //justifyContent: 'space-around',
   },
   TitleLogoViewModal: {
-    // marginTop:10,
     paddingBottom: 12 + '%',
-    //flexDirection: 'row',
     alignItems: 'center',
-    //justifyContent: 'space-around',
   },
   ButtonView: {
     padding: 12,
@@ -1098,25 +833,21 @@ const styles = StyleSheet.create({
   signupEmailView: {
     paddingBottom: 15,
     paddingTop: 16,
-    //paddingHorizontal:25,
     flexDirection: 'row',
     justifyContent: 'space-around',
   },
   LoginView: {
     paddingBottom: 15,
-    //paddingHorizontal:25,
     flexDirection: 'row',
     justifyContent: 'space-around',
   },
   signupView: {
     paddingBottom: 15,
-    //paddingHorizontal:25,
     flexDirection: 'row',
     justifyContent: 'space-around',
   },
   signupWithEmailView: {
     paddingBottom: 19,
-    //paddingHorizontal:25,
     flexDirection: 'row',
     justifyContent: 'space-around',
   },
@@ -1126,7 +857,6 @@ const styles = StyleSheet.create({
   },
   btnfacebook: {
     backgroundColor: colors.Blazorbutton,
-    //backgroundColor: '#3c5a9b',
     flexDirection: 'row',
     width: Dimensions.get('window').width - 50,
     color: 'white',
@@ -1143,7 +873,6 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 4,
     borderBottomLeftRadius: 4,
     backgroundColor: 'red',
-    //backgroundColor:'#22355a',
     width: 15 + '%',
     height: 46,
   },
@@ -1154,7 +883,6 @@ const styles = StyleSheet.create({
     color: 'white',
     borderTopLeftRadius: 4,
     borderBottomLeftRadius: 4,
-    // border-top-left-radius
     backgroundColor: '#cb4023',
     width: 15 + '%',
     height: 46,
@@ -1169,7 +897,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderTopLeftRadius: 4,
     borderBottomLeftRadius: 4,
-    // border-top-left-radius
     backgroundColor: '#f0eff5',
     borderColor: colors.borderColor,
     borderWidth: 1,
@@ -1198,24 +925,17 @@ const styles = StyleSheet.create({
   },
   iconimage: {
     width: Dimensions.get('window').width,
-    //height:170,
-    //height: Dimensions.get('window').height-0,
     alignItems: 'center',
     marginTop: 5 + '%',
   },
   textinputFocuse: {
     backgroundColor: colors.red,
     borderColor: colors.InputControlBorderFocusColor,
-    //borderColor: '#d3ad1457',
-    //borderColor: colors.InputControlBorderFocusColor,
     width: Dimensions.get('window').width - 50,
     height: 46,
     marginTop: 10,
-    //fontWeight: 'bold',
     fontSize: 15,
-    //marginLeft:5,
     borderRadius: 4,
-    //textAlign: 'center',
     borderWidth: 1,
     shadowColor: colors.red,
     shadowOffset: {
@@ -1232,16 +952,10 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width - 50,
     height: 46,
     marginTop: 13,
-    //fontWeight: 'bold',
     fontSize: 15,
     borderRadius: 4,
     flexDirection: 'row',
     borderWidth: 1,
-    //shadowColor: colors.red,
-    //shadowOffset: {
-    //  width: 0,
-    //  height: 12,
-    //},
     shadowOpacity: 0.58,
     shadowRadius: 16.0,
     elevation: 24,

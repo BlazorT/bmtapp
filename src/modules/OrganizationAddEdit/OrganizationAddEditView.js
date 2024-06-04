@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import CheckBox from '@react-native-community/checkbox';
 import NetInfo from '@react-native-community/netinfo';
 import React, {useEffect, useState} from 'react';
@@ -17,22 +16,23 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import {PERMISSIONS, RESULTS, check, request} from 'react-native-permissions';
 import SearchableDropdown from 'react-native-searchable-dropdown';
 import Toast from 'react-native-simple-toast';
+import {useSelector} from 'react-redux';
 import {Button, Dropdown, TextInput} from '../../components';
 import Alert from '../../components/Alert';
 import TermsAndConditions from '../../components/Terms&Conditions';
+import {useTheme} from '../../hooks/useTheme';
+import {useUser} from '../../hooks/useUser';
 import {colors} from '../../styles';
 import servicesettings from '../dataservices/servicesettings';
-import {useTheme} from '../../hooks/useTheme';
 const DownArrowIcon = require('../../../assets/images/downarrow.png');
 const UpArrowIcon = require('../../../assets/images/uparrow.png');
 const profileIcon = require('../../../assets/images/defaultUser.png');
-const arrowback = require('../../../assets/images/icons/BackArrow.png');
 //import messaging from '@react-native-firebase/messaging';
-const CurrentDate = new Date();
-var filterID = null;
 export default function OrganizationAddEditScreen(props) {
   //console.log('props new ' + JSON.stringify(props));
   const theme = useTheme();
+  const {user, isAuthenticated} = useUser();
+  const lovs = useSelector(state => state.lovs).lovs;
   const [spinner, setspinner] = useState(false);
   const [img, setimg] = useState('');
   const [EditImgURI, setEditImgURI] = useState('');
@@ -40,8 +40,6 @@ export default function OrganizationAddEditScreen(props) {
   const [facebookId, setFacebookId] = useState('');
   const [instagramId, setInstagramId] = useState('');
   const [iban, setIban] = useState('');
-  const [cityindex, setcityindex] = useState(-1);
-  const [orgindex, setorgindex] = useState(0);
   const [orgdata, setorgdata] = useState([]);
   const [orgName, setOrgName] = useState('');
   const [orgNamefocus, setOrgNameFocus] = useState(false);
@@ -60,44 +58,32 @@ export default function OrganizationAddEditScreen(props) {
   const [selectCountryId, setSelectCountryId] = useState('');
   const [selectCityName, setSelectCityName] = useState('');
   const [selectCityId, setSelectCityId] = useState('');
-  const [selectCityVal, setSelectCityVal] = useState('');
-  const [selectCountry, setSelectCountry] = useState('');
-  const [selectState, setSelectState] = useState('');
+
   const [Emailfocus, setEmailFocus] = useState(false);
   const customestyleEmail = Emailfocus
     ? styles.sectionStyleOnFocus
     : styles.sectionStyle;
-  const [Password, setPassword] = useState('');
-  const [StateIndex, setStateIndex] = useState('');
+
   const [CityIndex, setCityIndex] = useState('');
-  const [cityArray, setCityArray] = useState('');
-  const [Cities, setCities] = useState('');
+
   const [cityNameDetail, setCityNameDetail] = useState([]);
   const [CityDataList, setCityDataList] = useState([]);
-  const [onlyState, setOnlyState] = useState([]);
-  const [SelectCity, setSelectCity] = useState([]);
-  const [stateId, setStateId] = useState('');
+
   const [cityNameAdd, setCityNameAdd] = useState('');
-  const [selectedItems, setSelectedItems] = useState('');
 
   //const [cityNameDetail, setCityNameDetail] = useState('');
-  const [CurrencyItem, setCurrencyItem] = useState('');
-  const [packagesList, setPackagesList] = useState('');
+  const [CurrencyItem, setCurrencyItem] = useState([]);
   const [stateList, setStateList] = useState('');
-  const [statusItem, setStatusItem] = useState('');
+  const [statusItem, setStatusItem] = useState([]);
   const [currencySelectedId, setCurrencySelectedId] = useState('');
   const [selectedCurrencyId, setSelectedCurrencyId] = useState('');
   const [statusSelectedId, setStatusSelectedId] = useState('0');
-  //const [packageSelectedId, setPackageSelectedId] = useState('0');
-  //const [selectedPackageId, setSelectedPackageId] = useState('');
+
   const [selectedStatusId, setSelectedStatusId] = useState('');
   const [editOrgId, setEditOrgId] = useState('');
   const [userId, setUserId] = useState('');
   const [organizationId, setOrganizationId] = useState('');
-  const [Passwordfocus, setPasswordFocus] = useState(false);
-  const customestylePassword = Passwordfocus
-    ? styles.sectionStyleOnFocus
-    : styles.sectionStyle;
+
   const [orgAddress, setOrgAddress] = useState('');
   const [confirmationVisible, setconfirmationVisible] = useState(false);
   const [EditconfirmationVisible, setEditconfirmationVisible] = useState(false);
@@ -251,56 +237,28 @@ export default function OrganizationAddEditScreen(props) {
         return;
       }
     });
-    cityNameAdd;
 
-    LoginInfoLoad();
-    getdata();
-    CitiesLoad();
-    getAllStatesData();
-    getAllPackagesData();
-    getAllCurrencyData();
-    getAllStatusData();
+    loginInfoLoaded();
+    setCityNameDetail(lovs['bmtcities']);
+    setStateList(lovs['bmtlovs'].states);
+    setCurrencyItem(lovs['bmtlovs'].currencies);
+    setStatusItem(lovs['bmtlovs'].statuses);
     EditClick();
   }, []);
-  function CitiesLoad() {
-    var headerFetch = {
-      method: 'POST',
-      // body: null,
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json; charset=utf-8',
-        Authorization: servicesettings.AuthorizationKey,
-      },
-    };
-
-    fetch(servicesettings.baseuri + 'bmtcities', headerFetch)
-      .then(response => response.json())
-      .then(responseJson => {
-        setCityNameDetail(responseJson.data);
-      })
-      .catch(error => {
-        console.error(error);
-        Toast.showWithGravity(
-          'Internet connection failed, try another time !!!',
-          Toast.LONG,
-          Toast.CENTER,
-        );
-      });
-  }
 
   function EditClick() {
     setEditconfirmationVisible(true);
   }
   function LoadOrganization() {
     setspinner(true);
-    if (organizationId == '') {
-      var UserOrgId = global.ORGANIZATIONID;
-    } else {
-      var UserOrgId = organizationId;
-    }
+
     var headerFetch = {
       method: 'POST',
-      body: JSON.stringify({id: UserOrgId, Name: '', Status: 1}),
+      body: JSON.stringify({
+        id: organizationId.toString(),
+        Name: '',
+        Status: 1,
+      }),
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json; charset=utf-8',
@@ -311,14 +269,20 @@ export default function OrganizationAddEditScreen(props) {
     fetch(servicesettings.baseuri + 'orgs', headerFetch)
       .then(response => response.json())
       .then(responseJson => {
-        if (responseJson.data != null) {
+        console.log('body orgs  =>', headerFetch.body);
+        console.log('data response orgs  =>', responseJson);
+        if (responseJson.data != null && responseJson.data.length > 0) {
           var EditOrg = responseJson.data[0];
 
-          var defaultImage = 'compaignImages//16271.jpg';
-          var EditImg =
-            servicesettings.Imagebaseuri +
-            defaultImage.replace(/\\/g, '/').replace(',', '').replace('//', '');
-
+          var defaultImage = 'compaignImages/16271.jpg';
+          let EditImg =
+            EditOrg.logoAvatar !== null
+              ? servicesettings.Imagebaseuri +
+                EditOrg.logoAvatar
+                  .replace(/\\/g, '/')
+                  .replace(',', '')
+                  .replace('//', '')
+              : servicesettings.Imagebaseuri + 'compaignImages/16271.jpg';
           setEditImgURI(EditImg);
           //setimg(EditOrg.logoAvatar);
           setselectterms(true);
@@ -354,6 +318,9 @@ export default function OrganizationAddEditScreen(props) {
           //
           //
           setspinner(false);
+        } else {
+          Toast.show(responseJson.message || 'Organization not found');
+          setspinner(false);
         }
       })
       .catch(error => {
@@ -367,72 +334,17 @@ export default function OrganizationAddEditScreen(props) {
         //setVisible(false);
       });
   }
-  function getdata() {
-    AsyncStorage.getItem('OrgInformation').then(function (res) {
-      let Asyncdata = JSON.parse(res);
-      if (Asyncdata != null) {
-        let Asyncdata = JSON.parse(res);
-        //setorgdata(orgdata => [...Asyncdata, {"id": 0,"name": "Select Organization"}]);
-        setorgdata(Asyncdata);
-        //setOrganizationId(Asyncdata[0].orgid);
-        //
-      }
-    });
+
+  function loginInfoLoaded() {
+    if (isAuthenticated) {
+      setUserId(user.id);
+      setOrganizationId(user.orgid);
+      global.ORGANIZATIONID = user.orgid;
+    } else {
+      props.navigation.replace('Login');
+    }
   }
-  function LoginInfoLoad() {
-    AsyncStorage.getItem('LoginInformation').then(function (res) {
-      let Asyncdata = JSON.parse(res);
-      if (Asyncdata != null) {
-        let Asyncdata = JSON.parse(res);
-        setUserId(Asyncdata[0].id);
-        setOrganizationId(Asyncdata[0].orgid);
-        global.ORGANIZATIONID = Asyncdata[0].orgid;
-        //
-      } else {
-        props.navigation.replace('Login');
-      }
-    });
-  }
-  function getAllCurrencyData() {
-    AsyncStorage.getItem('AllCurrenciesData').then(function (res) {
-      let Asyncdata = JSON.parse(res);
-      if (Asyncdata != null) {
-        let Asyncdata = JSON.parse(res);
-        console.log('Asyncdata AllCurrenciesData ' + JSON.stringify(Asyncdata));
-        setCurrencyItem(Asyncdata);
-      }
-    });
-  }
-  function getAllStatusData() {
-    AsyncStorage.getItem('AllStatusData').then(function (res) {
-      let Asyncdata = JSON.parse(res);
-      if (Asyncdata != null) {
-        let Asyncdata = JSON.parse(res);
-        console.log('Asyncdata AllStatusData ' + JSON.stringify(Asyncdata));
-        setStatusItem(Asyncdata);
-      }
-    });
-  }
-  function getAllPackagesData() {
-    AsyncStorage.getItem('AllPackagesData').then(function (res) {
-      let Asyncdata = JSON.parse(res);
-      if (Asyncdata != null) {
-        let Asyncdata = JSON.parse(res);
-        console.log('Asyncdata AllPackagesData ' + JSON.stringify(Asyncdata));
-        setPackagesList(Asyncdata);
-      }
-    });
-  }
-  function getAllStatesData() {
-    AsyncStorage.getItem('AllStateListData').then(function (res) {
-      let Asyncdata = JSON.parse(res);
-      if (Asyncdata != null) {
-        let Asyncdata = JSON.parse(res);
-        console.log('Asyncdata AllPackagesData ' + JSON.stringify(Asyncdata));
-        setStateList(Asyncdata);
-      }
-    });
-  }
+
   /************************************************************* submit data **********************************************************/
   function submit() {
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
@@ -470,14 +382,7 @@ export default function OrganizationAddEditScreen(props) {
       Toast.showWithGravity('Please select "Status"', Toast.LONG, Toast.CENTER);
       return;
     }
-    //if (Password.trim()=="") {Toast.showWithGravity('Please enter "Password"',Toast.LONG,Toast.CENTER);return;}
-    //if (selectterms==false) {Toast.showWithGravity('For signup , you must need to agree with terms & contents policy.',Toast.LONG,Toast.CENTER);return; }
-    // setspinner(true);
-    //messaging()
-    //.getToken()
-    //.then((fcmToken) => {
-    //let uniqueId = DeviceInfo.getUniqueId();
-    //
+
     const data = new FormData();
     if (img != '') {
       data.append('files', {
@@ -710,6 +615,10 @@ export default function OrganizationAddEditScreen(props) {
                     : {uri: 'data:image/png;base64,' + img[0].base64}
                 }
                 style={styles.ProfileStyle}
+                onError={() => {
+                  console.log('error image');
+                  setEditImgURI('');
+                }}
               />
             )}
           </TouchableOpacity>
@@ -917,9 +826,9 @@ export default function OrganizationAddEditScreen(props) {
                         itemsContainerStyle={itemsContainerStyle}
                         items={CityDataList}
                         placeholder={
-                          cityNameAdd == ''
+                          selectCityName == ''
                             ? '  Select City...'
-                            : ' ' + cityNameAdd
+                            : ' ' + selectCityName
                         }
                         //placeholder={selectedItems == ''?"  Select Show Room...":'  ' + selectedItems.id}
                         placeholderTextColor={
@@ -1118,69 +1027,6 @@ export default function OrganizationAddEditScreen(props) {
           />
         </View>
       </ScrollView>
-      {/* {SelectAreaEnabled && (
-        <View style={[styles.modalMainView]}>
-          <View
-            style={[
-              styles.modalSearchView,
-              {backgroundColor: theme.backgroundColor},
-            ]}>
-            <View style={styles.centeredfilterView}>
-              <View style={styles.sectionStylenew} marginTop={8}>
-                <Dropdown
-                  placeholderTextColor="gray"
-                  onSelect={value => SelectCountryClick(value)}
-                  selectedIndex={selectCountryVal}
-                  style={[
-                    styles.TextDropdown,
-                    {
-                      backgroundColor: theme.inputBackColor,
-                      color: theme.textColor,
-                    },
-                  ]}
-                  items={stateList}
-                  placeholder="Select Country..."
-                  clearTextOnFocus={true}
-                  keyboardAppearance={'dark'}
-                  maxLength={5}
-                />
-              </View>
-              <View
-                style={[
-                  styles.textSearchabled,
-                  {backgroundColor: theme.inputBackColor},
-                ]}>
-                <SearchableDropdown
-                  onTextChange={text => textChangeClick(text)}
-                  onItemSelect={item => SearchableClick(item)}
-                  //onItemSelect={item => setSelectedItems(item)}
-                  selectedIndex={CityIndex}
-                  //onItemSelect={item => setSelectedItems(item)}
-                  containerStyle={containerStyle}
-                  textInputStyle={textInputStyle}
-                  itemStyle={itemStyle}
-                  itemTextStyle={itemTextStyle}
-                  itemsContainerStyle={itemsContainerStyle}
-                  items={CityDataList}
-                  placeholder={
-                    selectCityId == ''
-                      ? '  Select City...'
-                      : ' ' + selectCityName
-                  }
-                  //placeholder={selectedItems == ''?"  Select Show Room...":'  ' + selectedItems.id}
-                  placeholderTextColor={
-                    selectCityId !== ''
-                      ? theme.textColor
-                      : theme.placeholderColor
-                  }
-                  resPtValue={false}
-                  underlineColorAndroid="transparent"
-                />
-              </View>
-            </View>
-          </View>
-        </View>
-      )} */}
     </View>
   );
 }
