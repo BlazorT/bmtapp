@@ -71,7 +71,7 @@ const apiConfigs = [
 ];
 export default function HomeScreen(props) {
   const theme = useTheme();
-  const {isAuthenticated} = useUser();
+  const {user, isAuthenticated} = useUser();
 
   const {data, loading, error} = useFetchData(apiConfigs);
   const [Visible, setVisible] = useState(false);
@@ -79,8 +79,9 @@ export default function HomeScreen(props) {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    // console.log(user.orgid);
     if (!loading && !error) {
-      // console.log(JSON.stringify(data));
+      console.log(JSON.stringify(data['mybundlings']));
       dispatch(setLovs(data));
     }
   }, [loading]);

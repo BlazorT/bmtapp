@@ -31,7 +31,6 @@ import moment from 'moment';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Spinner from 'react-native-loading-spinner-overlay';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import {PERMISSIONS, RESULTS, check, request} from 'react-native-permissions';
 import RadioForm from 'react-native-simple-radio-button';
 import Toast from 'react-native-simple-toast';
 import Video from 'react-native-video';
@@ -46,18 +45,19 @@ import profileIcon from '../../../assets/images/picture.png';
 import PlusIcon from '../../../assets/images/plusicon.png';
 import UpArrowIcon from '../../../assets/images/uparrow.png';
 import {useTheme} from '../../hooks/useTheme';
+import {useUser} from '../../hooks/useUser';
 import servicesettings from '../dataservices/servicesettings';
+import {useSelector} from 'react-redux';
 
 export default function CampaignScheduleScreen(props) {
   const theme = useTheme();
+  const {user, isAuthenticated} = useUser();
+  const lovs = useSelector(state => state.lovs).lovs;
 
   var defaultDateTime = new Date();
 
-  const [selectIndexStatus, setselectIndexStatus] = useState(-1);
   const [selectIntervalType, setSelectIntervalType] = useState(0);
   const [selectIntervalTypeId, setSelectIntervalTypeId] = useState(0);
-  const [isFixedTime, setIsFixedTime] = useState(0);
-  // const [CampaignEndTime, setcampaignEndTime] = useState('');
   const [Subject, setSubject] = useState('');
   const [scheduleData, setScheduleData] = useState('');
   const [totalIndex, setTotalIndex] = useState('');
@@ -65,18 +65,11 @@ export default function CampaignScheduleScreen(props) {
   const [networkCount, setNetworkCount] = useState('');
   const [networkSelectSocialMedia, setNetworkSelectSocialMedia] = useState('');
   const [networkUpdateSelected, setNetworkUpdateSelected] = useState('');
-  const [selectNetworkName, setSelectNetworkName] = useState([]);
   const [scheduleCount, setScheduleCount] = useState('');
-  //const [weekDays, setWeekDays] = useState('');
-  //const [dayDetail, setDayDetail] = useState('');
   const [intervalVal, setIntervalVal] = useState('');
   const [intervalValDisabled, setIntervalValDisabled] = useState(false);
   const [addScheduleButton, setAddScheduleButton] = useState(true);
-  //const [timeintervel, settimeintervel] = useState('');
-  //const [Sender, setSender] = useState('');
-  //const [recipients, setrecipients] = useState('');
   const [Index, setIndex] = useState(0);
-  //const [indexCount, setIndexCount] = useState('');
   const [template, settemplate] = useState('');
   const [NetworkSelectedAddSchedule, setNetworkSelectedAddSchedule] =
     useState('');
@@ -84,13 +77,6 @@ export default function CampaignScheduleScreen(props) {
   const [campaignStatus, setCampaignStatus] = useState('');
   const [selectAutoGenerate, setSelectAutoGenerate] = useState('');
   const [Hashtag, setHashtag] = useState('');
-  //const [serverstatus, setserverstatus] = useState('');
-  const [intervalTypeCampaign, setIntervalTypeCampaign] = useState('');
-  //const [POP, setPOP] = useState('');
-  //const [Port, setPort] = useState('');
-  //const [Senderid, setSenderid] = useState('');
-  // const [User, setUser] = useState('');
-  const [scheduleSelectEndDate, setScheduleSelectEndDate] = useState('');
   const [selectTotalDays, setSelectTotalDays] = useState('');
   const [organizationId, setOrganizationId] = useState('');
   const [userId, setUserId] = useState('');
@@ -98,13 +84,11 @@ export default function CampaignScheduleScreen(props) {
   const [Videouri, setVideouri] = useState('');
   const [ImgUriBase64, setImgUriBase64] = useState('');
   const [PdfUri, setPdfUri] = useState('');
-  const [attatchmentAutoGenerate, setAttatchmentAutoGenerate] = useState('');
   const [Visible, setVisible] = useState(false);
   const [networkEditWithScheduleDisabled, setNetworkEditWithScheduleDisabled] =
     useState(false);
   const [AttachmentsEnabled, setAttachmentsEnabled] = useState(false);
   const [SelectAreaEnabled, setSelectAreaEnabled] = useState(false);
-  const [Buttonsvisible, setButtonsvisible] = useState(false);
   const [sheduleSummeryVisible, setScheduleSummeryVisible] = useState(false);
   const [selectSunday, setSelectSunday] = useState(false);
   const [selectMonday, setSelectMonday] = useState(false);
@@ -113,21 +97,13 @@ export default function CampaignScheduleScreen(props) {
   const [selectThursday, setSelectThursday] = useState(false);
   const [selectFriday, setSelectFriday] = useState(false);
   const [selectSaturday, setSelectSaturday] = useState(false);
-  //const [isStartDatePickerVisible, setStartDatePickerVisibility] = useState(false);
   const [modalVisiblecamera, setModalVisiblecamera] = useState(false);
-  const [scheduleSummaryDetailVisible, setScheduleSummaryDetailVisible] =
-    useState(false);
+
   const [isEndDatePickerVisible, setEndDatePickerVisibility] = useState(false);
-  //const [isSelectTimePickerVisible, setSelectTimePickerVisibility] = useState(false);
   const [isSelectStartTimePickerVisible, setSelectStartTimePickerVisibility] =
     useState(false);
   const [isSelectEndTimePickerVisible, setSelectEndTimePickerVisibility] =
     useState(false);
-  //const [updatetimePickerVisible, setupdatetimePickerVisible] = useState(false);
-  //const [updatetimePickerEndVisible, setupdatetimePickerEndVisible] = useState(false);
-  const [reportmodalVisible, setreportmodalVisible] = useState(false);
-  const [pic, setpic] = useState('');
-  const [scheduleAddData, setScheduleAddData] = useState('');
   const [imageSelectedData, setImageSelectedData] = useState('');
   const [imageSelectedDataFlatelist, setImageSelectedDataFlatelist] =
     useState('');
@@ -137,23 +113,9 @@ export default function CampaignScheduleScreen(props) {
   const [SelectStartDate, setSelectStartDate] = useState('');
   const [SelectCampaignStartDate, setSelectCampaignStartDate] = useState('');
   const [SelectCampaignEndDate, setSelectCampaignEndDate] = useState('');
-  const [networksSummary, setNetworksSummary] = useState('');
-  const [intervalTypeIdSummary, setIntervalTypeIdSummary] = useState('');
-  const [intervalSummary, setIntervalSummary] = useState('');
-  const [startDateSummary, setStartDateSummary] = useState('');
-  const [endDateSummary, setEndDateSummary] = useState('');
-  const [selectDaysSummary, setSelectDaysSummary] = useState('');
-  const [randomSummary, setRandomSummary] = useState('');
-  const [statusSummary, setStatusSummary] = useState('');
-  const [isFixedSummary, setIsFixedSummary] = useState('');
   const [totalMessageCountAdd, setTotalMessageCountAdd] = useState('');
-
-  const [SelectNetworkQuotaVisible, setSelectNetworkQuotaVisible] =
-    useState(false);
-  const [modalSpinner_Load, setModalSpinner_Load] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [spinner, setspinner] = useState(false);
-  const [camera, setcamera] = useState(false);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [IsCampaignStartDateVisible, setIsCampaignStartDateVisible] =
     useState(false);
@@ -179,19 +141,19 @@ export default function CampaignScheduleScreen(props) {
   const [arr, setArr] = useState([]);
   const [weekendDayList, setWeekendDayList] = useState([]);
   const [selectedWeekDayList, setSelectedWeekDayList] = useState([]);
-  const [selectStatusValue, setSelectStatusValue] = useState(0);
+  const [selectStatusValue, setSelectStatusValue] = useState(1);
   const [selectAutoGenerateValue, setSelectAutoGenerateValue] = useState(1);
   const [
     selectAutoGenerateEnabled_Disabled,
     setSelectAutoGenerateEnabled_Disabled,
   ] = useState(false);
-  const [selectIntervalTypeVal, setSelectIntervalTypeVal] = useState('');
+  const [selectIntervalTypeVal, setSelectIntervalTypeVal] = useState([]);
   const [selectCountryVal, setSelectCountryVal] = useState('');
   const [selectCountryId, setSelectCountryId] = useState('');
   const [selectStateId, setSelectStateId] = useState('');
-  const [selectStateVal, setSelectStateVal] = useState('');
-  const [selectCountry, setSelectCountry] = useState('');
-  const [selectState, setSelectState] = useState('');
+  const [selectStateVal, setSelectStateVal] = useState([]);
+  const [selectCountry, setSelectCountry] = useState([]);
+  const [selectState, setSelectState] = useState([]);
   const [selectedNetworkShowBudget, setSelectedNetworkShowBudget] =
     useState('');
   const [orgCurrencyName, setOrgCurrencyName] = useState('');
@@ -268,7 +230,6 @@ export default function CampaignScheduleScreen(props) {
     props.navigation.goBack();
   };
   useEffect(() => {
-    //***********************************************************************************************************************************//
     NetInfo.fetch().then(state => {
       if (state.isConnected == false) {
         Toast.showWithGravity(
@@ -279,108 +240,32 @@ export default function CampaignScheduleScreen(props) {
         return;
       }
     });
-    LoginInfoLoad();
-    LoadBundLing();
-    LoadOrgData();
-  }, [arr]);
+    loadInitialData();
+  }, []);
   /**************************************** validation ************************************************/
-
-  function LoginInfoLoad() {
-    AsyncStorage.getItem('LoginInformation').then(function (res) {
-      let Asyncdata = JSON.parse(res);
-      if (Asyncdata != null) {
-        let Asyncdata = JSON.parse(res);
-        setUserId(Asyncdata[0].id);
-        setOrganizationId(Asyncdata[0].orgid);
+  const loadInitialData = async () => {
+    try {
+      if (isAuthenticated) {
+        const networks = await lovs['mybundlings'];
+        const bmtLovs = await lovs['bmtlovs'];
+        console.log({networks});
+        setUserId(user.id);
+        setDataNetwork(networks);
+        if (global.UpdateCampaign == 1) {
+          UpdateCampaignDetail(networks);
+        }
+        setSelectState(bmtLovs.states);
+        setSelectIntervalTypeVal(bmtLovs.intervals);
+        setSelectCountry(bmtLovs.countries);
+        setOrganizationId(user.orgid);
       } else {
         props.navigation.replace('Login');
       }
-    });
-  }
-  function getdata() {
-    var headerFetch = {
-      method: 'POST',
-      body: JSON.stringify({
-        orgId: Number(organizationId),
-        email: '',
-        firstName: '',
-        lastName: '',
-        roleName: '',
-        address: '',
-        stateName: '',
-        userCode: '',
-        title: '',
-        traceId: 0,
-        status: 1,
-      }),
-      //body: JSON.stringify({orgId:orgId,status:1,name:Search,networkId:0,id:0,lastUpdatedBy:userId}),
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json; charset=utf-8',
-        Authorization: servicesettings.AuthorizationKey,
-      },
-    };
-    //
-    fetch(servicesettings.baseuri + 'bmtlovs', headerFetch)
-      //fetch(servicesettings.baseuri + 'bmtlovs',servicesettings.headerFetch)
-      .then(response => response.json())
-      .then(responseJson => {
-        console.log('responseJson bmtlovs ', JSON.stringify(responseJson.data));
-        var changeCountryName = responseJson.data.countries;
-        var changeStateName = responseJson.data.states;
-        var changecurrencies = responseJson.data.currencies;
-        //var changeStatusName = responseJson.data.statuses;
-        var StateNameArray = changeStateName.map(element => ({
-          id: element.id,
-          name: element.desc,
-        }));
-        setSelectState(StateNameArray);
-        var CountryNameArray = changeCountryName.map(element => ({
-          id: element.id,
-          name: element.desc,
-        }));
-        setSelectCountry(CountryNameArray);
-        // var StatusNameArray =changeStatusName.map((element)=>({value: element.id, label: element.name}));
-        // setSelectStatusArray(StatusNameArray);
-        var IntervalTypeData = responseJson.data.intervals;
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-        setSelectIntervalTypeVal(responseJson.data.intervals);
-        //setSelectIntervalTypeVal(selectIntervalTypeVal => [...IntervalTypeData, {"id": 0,"name": "Select Interval Type","code":null,"desc":"Select Interval Type","lvType":5,"sortOrder":0}]);
-        //setorgdata(orgdata => [...orgdata, {"id": 1,"name": "App user"}]);
-        //await AsyncStorage.setItem('selectIntervalTypeId', '1');
-        // setSelectCity(responseJson.data.states);
-        //setSelectArea(responseJson.data.states);
-        console.log('changecurrencies ', JSON.stringify(changecurrencies));
-        console.log('IntervalTypeData ', JSON.stringify(IntervalTypeData));
-        console.log(
-          'selectIntervalTypeVal ',
-          JSON.stringify(selectIntervalTypeVal),
-        );
-      })
-      .catch(error => {
-        console.error(error);
-        Toast.showWithGravity(
-          'Internet connection failed, try another time !!!',
-          Toast.LONG,
-          Toast.CENTER,
-        );
-      });
-  }
-  function LoadBundLing() {
-    AsyncStorage.getItem('myBundlingsAsync').then(function (res) {
-      if (res != null) {
-        let Asyncdata = JSON.parse(res);
-
-        setDataNetwork(Asyncdata);
-        //console.log('Asyncdata DataNetwork DataNetwork  ', JSON.stringify(DataNetwork));
-        if (global.UpdateCampaign == 1) {
-          var AllNetworkList = Asyncdata;
-          UpdateCampaignDetail(AllNetworkList);
-        }
-        getdata();
-      }
-    });
-  }
   //const MakeBudget = () => {
   const MakeBudget = async () => {
     try {
@@ -390,11 +275,7 @@ export default function CampaignScheduleScreen(props) {
       const SelectIntervalTypeIdVal = await AsyncStorage.getItem(
         'selectIntervalTypeId',
       );
-      //if(SelectIntervalTypeIdVal =='' || SelectIntervalTypeIdVal ==null){
-      // SelectIntervalTypeIdVal == 1;
-      // }
 
-      // await AsyncStorage.setItem('SelectIntervalVal', value);
       if (startDateAsync.length <= 0) {
         var StartDatePick = SelectCampaignStartDate;
       } else {
@@ -406,7 +287,6 @@ export default function CampaignScheduleScreen(props) {
         //var EndDatePick = SelectEndDate;
         var EndDatePick = new Date(endDateAsync);
       }
-      // const EditSelctedNetwork = await AsyncStorage.getItem('NetworkSelectSocialMediaNew');
 
       setStartDateForAlert(StartDatePick);
       setEndDateForAlert(EndDatePick);
@@ -779,26 +659,7 @@ export default function CampaignScheduleScreen(props) {
     setSelectStateVal(value);
     setSelectStateId(selectState[value].id);
   }
-  function LoadOrgData() {
-    AsyncStorage.getItem('OrgInformation').then(function (res) {
-      let Asyncdata = JSON.parse(res);
-      console.log(
-        'LoadOrgData LoadOrgData Asyncdata  ',
-        JSON.stringify(Asyncdata),
-      );
-      var CurrencyIdDetail = Asyncdata[0].currencyId;
-      console.log(
-        'currencyId currencyId currencyId ',
-        JSON.stringify(CurrencyIdDetail),
-      );
-      console.log(
-        'currencyId currencyId currencyId ',
-        JSON.stringify(CurrencyIdDetail.currencyId),
-      );
-      setOrgCurrencyId(CurrencyIdDetail.currencyId);
-      setOrgCurrencyName(CurrencyIdDetail.currencyName);
-    });
-  }
+
   const UpdateCampaignDetail = async AllNetworkList => {
     AsyncStorage.getItem('CampaignUpdate').then(function (res) {
       let Asyncdata = JSON.parse(res);
@@ -1885,7 +1746,6 @@ export default function CampaignScheduleScreen(props) {
       setSelectStartDate(date);
 
       var startDate = date.toString();
-      //AsyncStorage.setItem('selectScheduleEndDate', JSON.stringify(date));
       await AsyncStorage.setItem('startDate', startDate);
       hideDatePicker();
       MakeBudget();
@@ -2285,7 +2145,6 @@ export default function CampaignScheduleScreen(props) {
       AsyncStorage.setItem('WeekendDayDataList', JSON.stringify(updatedArray));
       MakeBudget();
     }
-    //AsyncStorage.setItem('WeekendDaySelect', JSON.stringify(weekendDayList));
   };
 
   function DeleteScheduleList(propsDelete) {
@@ -2557,40 +2416,52 @@ export default function CampaignScheduleScreen(props) {
       </View>
     </TouchableOpacity>
   );
-  if (Index == 0) {
-    return (
-      <KeyboardAwareScrollView
-        resetScrollToCoords={{x: 0, y: 0}}
-        contentContainerStyle={[
-          styles.container,
-          {backgroundColor: theme.backgroundColor},
-        ]}
-        scrollEnabled={false}>
-        <TouchableOpacity>
-          <AppBreadcrumb
-            crumbs={[
-              {
-                text: 'Campaign',
-              },
-              {text: 'Networks'},
-              {text: 'Schedule'},
-            ]}
-            onSelect={index => {
-              handlePress(index);
-            }}
-            selectedIndex={Index}
-          />
-        </TouchableOpacity>
-        <ScrollView>
-          <Alert
-            massagetype={'warning'}
-            hide={hidepermission}
-            confirm={confirmpermission}
-            Visible={permissionVisible}
-            alerttype={'confirmation'}
-            Title={'Confirmation'}
-            Massage={'"Spentem" would like to access camera ?'}></Alert>
-          <View>
+  // if (spinner) {
+  //   return (
+  //     <View>
+  //       <Spinner
+  //         visible={spinner}
+  //         textContent={'Loading...'}
+  //         textStyle={{color: '#FFF'}}
+  //       />
+  //     </View>
+  //   );
+  // }
+
+  return (
+    <KeyboardAwareScrollView
+      resetScrollToCoords={{x: 0, y: 0}}
+      contentContainerStyle={[
+        styles.container,
+        {backgroundColor: theme.backgroundColor},
+      ]}
+      scrollEnabled={false}>
+      <TouchableOpacity>
+        <AppBreadcrumb
+          crumbs={[
+            {
+              text: 'Campaign',
+            },
+            {text: 'Networks'},
+            {text: 'Schedule'},
+          ]}
+          onSelect={index => {
+            handlePress(index);
+          }}
+          selectedIndex={Index}
+        />
+      </TouchableOpacity>
+      <ScrollView>
+        {Index == 0 && (
+          <>
+            <Alert
+              massagetype={'warning'}
+              hide={hidepermission}
+              confirm={confirmpermission}
+              Visible={permissionVisible}
+              alerttype={'confirmation'}
+              Title={'Confirmation'}
+              Massage={'"Spentem" would like to access camera ?'}></Alert>
             <Alert
               massagetype={'warning'}
               hide={hide}
@@ -2599,108 +2470,77 @@ export default function CampaignScheduleScreen(props) {
               alerttype={'confirmation'}
               Title={'Confirmation'}
               Massage={'Do you want to discard ?'}></Alert>
-            <View style={styles.uploadmodelcontainer}>
-              <TextInput
-                placeholderTextColor={theme.placeholderColor}
-                style={[
-                  styles.sectionStyle,
-                  Subject == '' ? styles.mandatoryControl : null,
-                  ,
-                  {
-                    backgroundColor: theme.inputBackColor,
-                    color: theme.textColor,
-                  },
-                ]}
-                value={Subject}
-                onChangeText={value => setSubject(value)}
-                placeholder="Subject"
-                clearTextOnFocus={true}
-                keyboardAppearance={'dark'}
-                KeyboardType={'default'}
-                maxLength={80}
-                minLength={3}
-              />
-              <TextInput
-                placeholderTextColor={theme.placeholderColor}
-                style={[
-                  styles.sectionStyle,
-                  Hashtag == '' ? styles.mandatoryControl : null,
-                  ,
-                  {
-                    backgroundColor: theme.inputBackColor,
-                    color: theme.textColor,
-                  },
-                ]}
-                value={Hashtag}
-                onChangeText={value => setHashtag(value)}
-                placeholder="Hashtag"
-                clearTextOnFocus={true}
-                keyboardAppearance={'dark'}
-                KeyboardType={'default'}
-                maxLength={100}
-                minLength={3}
-              />
-              <TextInput
-                multiline={true}
-                textAlignVertical="top"
-                placeholderTextColor={theme.placeholderColor}
-                style={[
-                  styles.sectionStyleTitle,
-                  template == '' ? styles.mandatoryControl : null,
-                  ,
-                  {
-                    backgroundColor: theme.inputBackColor,
-                    color: theme.textColor,
-                  },
-                ]}
-                value={template}
-                onChangeText={value => settemplate(value)}
-                placeholder="Template..."
-                clearTextOnFocus={true}
-                keyboardAppearance={'dark'}
-                KeyboardType={'default'}
-                maxLength={200}
-              />
-              {SelectAreaEnabled == false ? (
-                <TouchableOpacity
-                  style={{
-                    width: 100 + '%',
-                    marginLeft: 4,
-                    marginTop: 12,
-                    flexDirection: 'row',
-                    textAlign: 'center',
-                  }}
-                  onPress={() => CampaignAudienceEnabledClick()}>
-                  <View style={{flexDirection: 'row', width: 90 + '%'}}>
-                    <Text
-                      style={[
-                        styles.AttachmentHeading,
-                        {color: theme.textColor},
-                      ]}>
-                      Campaign Audience
-                    </Text>
-                  </View>
-                  <View style={{width: 10 + '%'}}>
-                    <Image
-                      source={UpArrowIcon}
-                      style={[
-                        styles.AttachmentHeadingIcon,
-                        {tintColor: theme.tintColor},
-                      ]}
-                    />
-                  </View>
-                </TouchableOpacity>
-              ) : (
-                <View
-                  style={{
-                    width: Dimensions.get('window').width - 50,
-                    marginHorizontal: 25,
-                  }}>
+            <View>
+              <View style={styles.uploadmodelcontainer}>
+                <TextInput
+                  placeholderTextColor={theme.placeholderColor}
+                  style={[
+                    styles.sectionStyle,
+                    Subject == '' ? styles.mandatoryControl : null,
+                    ,
+                    {
+                      backgroundColor: theme.inputBackColor,
+                      color: theme.textColor,
+                    },
+                  ]}
+                  value={Subject}
+                  onChangeText={value => setSubject(value)}
+                  placeholder="Subject"
+                  clearTextOnFocus={true}
+                  keyboardAppearance={'dark'}
+                  KeyboardType={'default'}
+                  maxLength={80}
+                  minLength={3}
+                />
+                <TextInput
+                  placeholderTextColor={theme.placeholderColor}
+                  style={[
+                    styles.sectionStyle,
+                    Hashtag == '' ? styles.mandatoryControl : null,
+                    ,
+                    {
+                      backgroundColor: theme.inputBackColor,
+                      color: theme.textColor,
+                    },
+                  ]}
+                  value={Hashtag}
+                  onChangeText={value => setHashtag(value)}
+                  placeholder="Hashtag"
+                  clearTextOnFocus={true}
+                  keyboardAppearance={'dark'}
+                  KeyboardType={'default'}
+                  maxLength={100}
+                  minLength={3}
+                />
+                <TextInput
+                  multiline={true}
+                  textAlignVertical="top"
+                  placeholderTextColor={theme.placeholderColor}
+                  style={[
+                    styles.sectionStyleTitle,
+                    template == '' ? styles.mandatoryControl : null,
+                    ,
+                    {
+                      backgroundColor: theme.inputBackColor,
+                      color: theme.textColor,
+                    },
+                  ]}
+                  value={template}
+                  onChangeText={value => settemplate(value)}
+                  placeholder="Template..."
+                  clearTextOnFocus={true}
+                  keyboardAppearance={'dark'}
+                  KeyboardType={'default'}
+                  maxLength={200}
+                />
+                {SelectAreaEnabled == false ? (
                   <TouchableOpacity
                     style={{
-                      textAlign: 'center',
+                      width: 100 + '%',
+                      marginLeft: 4,
+                      marginTop: 12,
                       flexDirection: 'row',
-                      marginTop: 10,
+                      textAlign: 'center',
                     }}
                     onPress={() => CampaignAudienceEnabledClick()}>
                     <View style={{flexDirection: 'row', width: 90 + '%'}}>
@@ -2714,7 +2554,7 @@ export default function CampaignScheduleScreen(props) {
                     </View>
                     <View style={{width: 10 + '%'}}>
                       <Image
-                        source={DownArrowIcon}
+                        source={UpArrowIcon}
                         style={[
                           styles.AttachmentHeadingIcon,
                           {tintColor: theme.tintColor},
@@ -2722,87 +2562,84 @@ export default function CampaignScheduleScreen(props) {
                       />
                     </View>
                   </TouchableOpacity>
-                  <View style={styles.CampaignAudienceView}>
-                    <View style={{textAlign: 'center'}}>
-                      <Dropdown
-                        placeholderTextColor="gray"
-                        onSelect={value => SelectCountryClick(value)}
-                        selectedIndex={selectCountryVal}
-                        style={[
-                          styles.CampaignAudiencePickerstyle,
-                          styles.mandatoryControl,
-                          {backgroundColor: theme.inputBackColor},
-                        ]}
-                        items={selectCountry}
-                        placeholder="Select Country..."
-                        clearTextOnFocus={true}
-                        keyboardAppearance={'dark'}
-                        maxLength={5}
-                      />
+                ) : (
+                  <View
+                    style={{
+                      width: Dimensions.get('window').width - 50,
+                      marginHorizontal: 25,
+                    }}>
+                    <TouchableOpacity
+                      style={{
+                        textAlign: 'center',
+                        flexDirection: 'row',
+                        marginTop: 10,
+                      }}
+                      onPress={() => CampaignAudienceEnabledClick()}>
+                      <View style={{flexDirection: 'row', width: 90 + '%'}}>
+                        <Text
+                          style={[
+                            styles.AttachmentHeading,
+                            {color: theme.textColor},
+                          ]}>
+                          Campaign Audience
+                        </Text>
+                      </View>
+                      <View style={{width: 10 + '%'}}>
+                        <Image
+                          source={DownArrowIcon}
+                          style={[
+                            styles.AttachmentHeadingIcon,
+                            {tintColor: theme.tintColor},
+                          ]}
+                        />
+                      </View>
+                    </TouchableOpacity>
+                    <View style={styles.CampaignAudienceView}>
+                      <View style={{textAlign: 'center'}}>
+                        <Dropdown
+                          placeholderTextColor="gray"
+                          onSelect={value => SelectCountryClick(value)}
+                          selectedIndex={selectCountryVal}
+                          style={[
+                            styles.CampaignAudiencePickerstyle,
+                            styles.mandatoryControl,
+                            {backgroundColor: theme.inputBackColor},
+                          ]}
+                          items={selectCountry}
+                          placeholder="Select Country..."
+                          clearTextOnFocus={true}
+                          keyboardAppearance={'dark'}
+                          maxLength={5}
+                        />
+                      </View>
+                      <View style={{textAlign: 'center'}}>
+                        <Dropdown
+                          placeholderTextColor="gray"
+                          onSelect={value => SelectStateClick(value)}
+                          selectedIndex={selectStateVal}
+                          style={[
+                            styles.CampaignAudiencePickerstyle,
+                            styles.mandatoryControl,
+                            {backgroundColor: theme.inputBackColor},
+                          ]}
+                          items={selectState}
+                          placeholder="Select State..."
+                          clearTextOnFocus={true}
+                          keyboardAppearance={'dark'}
+                          maxLength={5}
+                        />
+                      </View>
                     </View>
-                    <View style={{textAlign: 'center'}}>
-                      <Dropdown
-                        placeholderTextColor="gray"
-                        onSelect={value => SelectStateClick(value)}
-                        selectedIndex={selectStateVal}
-                        style={[
-                          styles.CampaignAudiencePickerstyle,
-                          styles.mandatoryControl,
-                          {backgroundColor: theme.inputBackColor},
-                        ]}
-                        items={selectState}
-                        placeholder="Select State..."
-                        clearTextOnFocus={true}
-                        keyboardAppearance={'dark'}
-                        maxLength={5}
-                      />
-                    </View>
                   </View>
-                </View>
-              )}
-              {AttachmentsEnabled == false ? (
-                <TouchableOpacity
-                  style={{
-                    width: 100 + '%',
-                    marginLeft: 4,
-                    marginTop: 12,
-                    flexDirection: 'row',
-                    textAlign: 'center',
-                  }}
-                  onPress={() => AttachmentsEnabledClick()}>
-                  <View style={{flexDirection: 'row', width: 90 + '%'}}>
-                    <Text
-                      style={[
-                        styles.AttachmentHeading,
-                        {color: theme.textColor},
-                      ]}>
-                      Attachments
-                    </Text>
-                    <Image
-                      source={AttachmentIcon}
-                      style={[
-                        styles.AttachmentHeadingIcon,
-                        {tintColor: theme.tintColor},
-                      ]}
-                    />
-                  </View>
-                  <View style={{width: 10 + '%'}}>
-                    <Image
-                      source={UpArrowIcon}
-                      style={[
-                        styles.AttachmentHeadingIcon,
-                        {tintColor: theme.tintColor},
-                      ]}
-                    />
-                  </View>
-                </TouchableOpacity>
-              ) : (
-                <View>
+                )}
+                {AttachmentsEnabled == false ? (
                   <TouchableOpacity
                     style={{
-                      textAlign: 'center',
+                      width: 100 + '%',
+                      marginLeft: 4,
+                      marginTop: 12,
                       flexDirection: 'row',
-                      marginTop: 5,
+                      textAlign: 'center',
                     }}
                     onPress={() => AttachmentsEnabledClick()}>
                     <View style={{flexDirection: 'row', width: 90 + '%'}}>
@@ -2823,7 +2660,7 @@ export default function CampaignScheduleScreen(props) {
                     </View>
                     <View style={{width: 10 + '%'}}>
                       <Image
-                        source={DownArrowIcon}
+                        source={UpArrowIcon}
                         style={[
                           styles.AttachmentHeadingIcon,
                           {tintColor: theme.tintColor},
@@ -2831,132 +2668,476 @@ export default function CampaignScheduleScreen(props) {
                       />
                     </View>
                   </TouchableOpacity>
-                  <View style={styles.ProfileImgView}>
-                    <View style={{width: 33 + '%', textAlign: 'center'}}>
-                      <Text
-                        style={[
-                          styles.AttatchmentTitle,
-                          {color: theme.textColor},
-                        ]}>
-                        Photo
-                      </Text>
-                      {ImgUriBase64 == null || ImgUriBase64 == '' ? (
-                        <TouchableOpacity
-                          selectable={true}
-                          style={styles.ProfileStyleView}
-                          onPress={() => {
-                            CapturePhoto();
-                          }}>
-                          <Image
-                            source={
-                              img == '' || img == undefined
-                                ? profileIcon
-                                : {uri: 'data:image/png;base64,' + img.base64}
-                            }
-                            style={styles.ProfileStyle}
-                          />
-                        </TouchableOpacity>
-                      ) : (
-                        <View style={{textAlign: 'center'}}>
+                ) : (
+                  <View>
+                    <TouchableOpacity
+                      style={{
+                        textAlign: 'center',
+                        flexDirection: 'row',
+                        marginTop: 5,
+                      }}
+                      onPress={() => AttachmentsEnabledClick()}>
+                      <View style={{flexDirection: 'row', width: 90 + '%'}}>
+                        <Text
+                          style={[
+                            styles.AttachmentHeading,
+                            {color: theme.textColor},
+                          ]}>
+                          Attachments
+                        </Text>
+                        <Image
+                          source={AttachmentIcon}
+                          style={[
+                            styles.AttachmentHeadingIcon,
+                            {tintColor: theme.tintColor},
+                          ]}
+                        />
+                      </View>
+                      <View style={{width: 10 + '%'}}>
+                        <Image
+                          source={DownArrowIcon}
+                          style={[
+                            styles.AttachmentHeadingIcon,
+                            {tintColor: theme.tintColor},
+                          ]}
+                        />
+                      </View>
+                    </TouchableOpacity>
+                    <View style={styles.ProfileImgView}>
+                      <View style={{width: 33 + '%', textAlign: 'center'}}>
+                        <Text
+                          style={[
+                            styles.AttatchmentTitle,
+                            {color: theme.textColor},
+                          ]}>
+                          Photo
+                        </Text>
+                        {ImgUriBase64 == null || ImgUriBase64 == '' ? (
                           <TouchableOpacity
-                            style={styles.CrossIconStyleView}
-                            onPress={() => CapturePhoto()}>
+                            selectable={true}
+                            style={styles.ProfileStyleView}
+                            onPress={() => {
+                              CapturePhoto();
+                            }}>
                             <Image
-                              source={PlusIcon}
-                              style={[
-                                styles.CrossIconStyle,
-                                {tintColor: theme.tintColor},
-                              ]}
+                              source={
+                                img == '' || img == undefined
+                                  ? profileIcon
+                                  : {uri: 'data:image/png;base64,' + img.base64}
+                              }
+                              style={styles.ProfileStyle}
                             />
                           </TouchableOpacity>
+                        ) : (
+                          <View style={{textAlign: 'center'}}>
+                            <TouchableOpacity
+                              style={styles.CrossIconStyleView}
+                              onPress={() => CapturePhoto()}>
+                              <Image
+                                source={PlusIcon}
+                                style={[
+                                  styles.CrossIconStyle,
+                                  {tintColor: theme.tintColor},
+                                ]}
+                              />
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              style={styles.ProfileStylePreviewView}
+                              onPress={() => CapturePhoto()}>
+                              <Image
+                                source={{
+                                  uri: 'data:image/png;base64,' + ImgUriBase64,
+                                }}
+                                style={styles.ProfileStylePreview}
+                              />
+                            </TouchableOpacity>
+                          </View>
+                        )}
+                      </View>
+                      <View style={{width: 33 + '%', textAlign: 'center'}}>
+                        <Text
+                          style={[
+                            styles.AttatchmentTitle,
+                            {color: theme.textColor},
+                          ]}>
+                          Video
+                        </Text>
+                        {Videouri == null || Videouri == '' ? (
                           <TouchableOpacity
-                            style={styles.ProfileStylePreviewView}
-                            onPress={() => CapturePhoto()}>
-                            <Image
-                              source={{
-                                uri: 'data:image/png;base64,' + ImgUriBase64,
-                              }}
-                              style={styles.ProfileStylePreview}
-                            />
-                          </TouchableOpacity>
-                        </View>
-                      )}
-                    </View>
-                    <View style={{width: 33 + '%', textAlign: 'center'}}>
-                      <Text
-                        style={[
-                          styles.AttatchmentTitle,
-                          {color: theme.textColor},
-                        ]}>
-                        Video
-                      </Text>
-                      {Videouri == null || Videouri == '' ? (
-                        <TouchableOpacity
-                          selectable={true}
-                          style={styles.ProfileStyleView}
-                          onPress={() => AttatchmentVideo()}>
-                          <Image
-                            source={
-                              img1 == '' || img1 == undefined
-                                ? profileIcon
-                                : {
-                                    uri:
-                                      'data:image/png;base64,' + img1[0].base64,
-                                  }
-                            }
-                            style={styles.ProfileStyle}
-                          />
-                        </TouchableOpacity>
-                      ) : (
-                        <View style={{textAlign: 'center', marginLeft: 20}}>
-                          <TouchableOpacity
-                            style={styles.CrossIconStyleView}
+                            selectable={true}
+                            style={styles.ProfileStyleView}
                             onPress={() => AttatchmentVideo()}>
                             <Image
-                              source={PlusIcon}
-                              style={[
-                                styles.CrossIconStyle,
-                                {tintColor: theme.tintColor},
-                              ]}
+                              source={
+                                img1 == '' || img1 == undefined
+                                  ? profileIcon
+                                  : {
+                                      uri:
+                                        'data:image/png;base64,' +
+                                        img1[0].base64,
+                                    }
+                              }
+                              style={styles.ProfileStyle}
                             />
                           </TouchableOpacity>
+                        ) : (
+                          <View style={{textAlign: 'center', marginLeft: 20}}>
+                            <TouchableOpacity
+                              style={styles.CrossIconStyleView}
+                              onPress={() => AttatchmentVideo()}>
+                              <Image
+                                source={PlusIcon}
+                                style={[
+                                  styles.CrossIconStyle,
+                                  {tintColor: theme.tintColor},
+                                ]}
+                              />
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              style={styles.VideoControlView}
+                              onPress={() => AttatchmentVideo()}>
+                              <Video
+                                playableDuration={0.5}
+                                resizeMode="cover"
+                                paused={false}
+                                source={{uri: Videouri}}
+                                style={[
+                                  {width: 100, height: 100, borderRadius: 50},
+                                ]}
+                                //   style={{width: 75, height: 75}}
+                              />
+                            </TouchableOpacity>
+                          </View>
+                        )}
+                      </View>
+                      <View style={{width: 33 + '%', textAlign: 'center'}}>
+                        <Text
+                          style={[
+                            styles.AttatchmentTitle,
+                            {color: theme.textColor},
+                          ]}>
+                          PDF
+                        </Text>
+                        {PdfUri == null || PdfUri == '' ? (
                           <TouchableOpacity
-                            style={styles.VideoControlView}
-                            onPress={() => AttatchmentVideo()}>
-                            <Video
-                              playableDuration={0.5}
-                              resizeMode="cover"
-                              paused={false}
-                              source={{uri: Videouri}}
-                              style={[
-                                {width: 100, height: 100, borderRadius: 50},
-                              ]}
-                              //   style={{width: 75, height: 75}}
+                            selectable={true}
+                            style={styles.ProfileStyleView}
+                            onPress={() => AttatchmentPdf()}>
+                            <Image
+                              source={PdfIcon}
+                              style={styles.ProfileStyle}
                             />
                           </TouchableOpacity>
-                        </View>
-                      )}
+                        ) : (
+                          <View style={{textAlign: 'center', marginLeft: 20}}>
+                            <TouchableOpacity
+                              style={styles.CrossIconStyleView}
+                              onPress={() => DeletePdfAttachment()}>
+                              <Image
+                                source={Crossicon}
+                                style={[
+                                  styles.CrossIconStyle,
+                                  {tintColor: theme.tintColor},
+                                ]}
+                              />
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              style={styles.ProfileStylePreviewView}>
+                              <Image
+                                source={pdfViewIcon}
+                                style={styles.ProfileStylePreview}
+                              />
+                            </TouchableOpacity>
+                          </View>
+                        )}
+                      </View>
                     </View>
-                    <View style={{width: 33 + '%', textAlign: 'center'}}>
+                  </View>
+                )}
+                <View style={styles.MainViewStartEndTime}>
+                  <View style={styles.TimeView_Start_End}>
+                    <View
+                      style={[
+                        styles.sectionStyleTime_End,
+                        SelectCampaignStartDate == ''
+                          ? styles.mandatoryControl
+                          : null,
+                        ,
+                        {backgroundColor: theme.inputBackColor},
+                      ]}>
+                      <TouchableOpacity
+                        style={styles.btnStartTime}
+                        onPress={() => showCampaignStartDatePicker()}>
+                        <Text
+                          style={[
+                            [styles.StartTimeText, {color: theme.textColor}],
+                            {color: theme.textColor},
+                          ]}>
+                          {SelectCampaignStartDate != ''
+                            ? moment(SelectCampaignStartDate).format(
+                                'DD-MM-YYYY',
+                              )
+                            : 'Campaign Start'}
+                        </Text>
+                      </TouchableOpacity>
+                      <View>
+                        <DateTimePickerModal
+                          isVisible={IsCampaignStartDateVisible}
+                          minimumDate={new Date(defaultDateTime)}
+                          mode="date"
+                          onConfirm={handleCampaignStartConfirm}
+                          onCancel={hideCampaignStartConfirm}
+                        />
+                      </View>
+                    </View>
+                  </View>
+                  <View style={styles.TimeView_Start_End}>
+                    <View
+                      style={[
+                        styles.sectionStyleTime_End,
+                        SelectCampaignEndDate == ''
+                          ? styles.mandatoryControl
+                          : null,
+                        ,
+                        {backgroundColor: theme.inputBackColor},
+                      ]}>
+                      <TouchableOpacity
+                        style={styles.btnStartTime}
+                        onPress={() => showCampaignEndDatePicker()}>
+                        <Text
+                          style={[
+                            [styles.StartTimeText, {color: theme.textColor}],
+                            {color: theme.textColor},
+                          ]}>
+                          {SelectCampaignEndDate != ''
+                            ? moment(SelectCampaignEndDate).format('DD-MM-YYYY')
+                            : 'Campaign End'}
+                        </Text>
+                      </TouchableOpacity>
+                      <View>
+                        <DateTimePickerModal
+                          isVisible={IsCampaignEndDateVisible}
+                          minimumDate={new Date(SelectCampaignStartDate)}
+                          mode="date"
+                          onConfirm={handleCampaignEndConfirm}
+                          onCancel={hideCampaignEndConfirm}
+                        />
+                      </View>
+                    </View>
+                  </View>
+                </View>
+                <View
+                  style={[
+                    styles.radiostyleView,
+                    {backgroundColor: theme.inputBackColor},
+                  ]}>
+                  <View style={styles.radiostyle}>
+                    <View
+                      style={{marginTop: 13, height: 45, flexDirection: 'row'}}>
+                      <RadioForm
+                        radio_props={Statustype}
+                        initial={0}
+                        formHorizontal={true}
+                        labelHorizontal={true}
+                        buttonColor={theme.buttonBackColor}
+                        selectedButtonColor={theme.selectedCheckBox}
+                        labelStyle={{
+                          marginVertical: 10,
+                          marginHorizontal: 1,
+                          paddingRight: 12,
+                          color: theme.textColor,
+                          bottom: 5,
+                        }}
+                        animation={true}
+                        onPress={value => {
+                          selectType(value);
+                        }}
+                      />
+                    </View>
+                  </View>
+                </View>
+                <View style={styles.termsView}>
+                  <TouchableOpacity
+                    onPress={() => selectAutoGenerateClick()}
+                    style={{
+                      flexDirection: 'row',
+                      width: 100 + '%',
+                      paddingLeft: 5,
+                      paddingTop: 5,
+                      zIndex: 902,
+                    }}>
+                    <Text
+                      style={[
+                        [
+                          Platform.OS === 'ios'
+                            ? styles.lblDayNameIos
+                            : styles.lblDayName,
+                          {color: theme.textColor},
+                        ],
+                        {color: theme.textColor},
+                      ]}>
+                      {' '}
+                      Auto Generate Lead
+                    </Text>
+                    {selectAutoGenerateEnabled_Disabled == true ? (
+                      <Image
+                        resizeMode="contain"
+                        source={checkedCheckbox}
+                        style={[
+                          [
+                            styles.checkboxChecked_Unchecked,
+                            {tintColor: theme.selectedCheckBox},
+                          ],
+                          {tintColor: theme.selectedCheckBox},
+                        ]}
+                      />
+                    ) : (
+                      <Image
+                        resizeMode="contain"
+                        source={uncheckedCheckbox}
+                        style={[
+                          [
+                            styles.checkboxChecked_Unchecked,
+                            {tintColor: theme.selectedCheckBox},
+                          ],
+                          {tintColor: theme.buttonBackColor},
+                        ]}
+                      />
+                    )}
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.ButtonViewNewCampaign}>
+                  <Button
+                    style={[styles.btnCancel, {flexBasis: '46%'}]}
+                    bgColor={theme.buttonBackColor}
+                    caption="Cancel"
+                    onPress={() => CancelClick()}
+                  />
+                  <Button
+                    style={[styles.btnSubmit, {flexBasis: '46%'}]}
+                    bgColor={theme.buttonBackColor}
+                    caption="Next"
+                    onPress={() => checkTextInputRecord()}
+                  />
+                </View>
+              </View>
+            </View>
+            <Modal
+              animationType="fade"
+              transparent={true}
+              supportedOrientations={['portrait']}
+              visible={modalVisiblecamera}>
+              <View style={[styles.centeredView]}>
+                <View
+                  style={[
+                    styles.modalView,
+                    {backgroundColor: theme.modalBackColor},
+                  ]}>
+                  <View style={styles.textview}>
+                    {global.AttatchmentType == 1 ? (
                       <Text
                         style={[
-                          styles.AttatchmentTitle,
+                          styles.cameraheading,
                           {color: theme.textColor},
                         ]}>
-                        PDF
+                        Pick Avatar
                       </Text>
-                      {PdfUri == null || PdfUri == '' ? (
+                    ) : (
+                      <Text
+                        style={[
+                          styles.cameraheading,
+                          {color: theme.textColor},
+                        ]}>
+                        Pick Video
+                      </Text>
+                    )}
+                  </View>
+                  {global.AttatchmentType == 1 ? (
+                    <View>
+                      {imageSelectedDataFlatelist == null ||
+                      imageSelectedDataFlatelist == '' ? null : (
+                        <View>
+                          <TouchableOpacity
+                            style={styles.ClearAllPhoto}></TouchableOpacity>
+                          <FlatList
+                            data={imageSelectedDataFlatelist}
+                            renderItem={({item}) => (
+                              <ImageItem
+                                base64={item.base64}
+                                ImageId={item.ImageId}
+                                uri={item.uri}
+                              />
+                            )}
+                            keyExtractor={item => item.ImageId}
+                            numColumns={1}
+                            horizontal={true}
+                          />
+                        </View>
+                      )}
+                      <View style={styles.textview}>
                         <TouchableOpacity
                           selectable={true}
-                          style={styles.ProfileStyleView}
-                          onPress={() => AttatchmentPdf()}>
-                          <Image source={PdfIcon} style={styles.ProfileStyle} />
+                          onPress={() => OpencameraClick()}>
+                          <Text
+                            style={[
+                              styles.cameraopention,
+                              {color: theme.textColor},
+                            ]}>
+                            Take Photo...
+                          </Text>
                         </TouchableOpacity>
-                      ) : (
-                        <View style={{textAlign: 'center', marginLeft: 20}}>
+                      </View>
+                      <View style={styles.textview}>
+                        <TouchableOpacity
+                          selectable={true}
+                          onPress={() => OpenGalleryClick()}>
+                          <Text
+                            style={[
+                              styles.cameraopention,
+                              {color: theme.textColor},
+                            ]}>
+                            Choose from Library...
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  ) : (
+                    <View style={styles.textview}>
+                      <TouchableOpacity
+                        selectable={true}
+                        onPress={() => {
+                          imageSelectedData.length >= '2'
+                            ? AttachmentComplate()
+                            : GetVideoFromCamera();
+                        }}>
+                        <Text
+                          style={[
+                            styles.cameraopention,
+                            {color: theme.textColor},
+                          ]}>
+                          Choose Video ...
+                        </Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        selectable={true}
+                        onPress={() => {
+                          imageSelectedData.length >= '2'
+                            ? AttachmentComplate()
+                            : GetVideoFromGallery();
+                        }}>
+                        <Text
+                          style={[
+                            styles.cameraopention,
+                            {color: theme.textColor},
+                          ]}>
+                          Choose Video from Gallery...
+                        </Text>
+                      </TouchableOpacity>
+                      {Videouri == null || Videouri == '' ? null : (
+                        <View>
                           <TouchableOpacity
-                            style={styles.CrossIconStyleView}
-                            onPress={() => DeletePdfAttachment()}>
+                            style={styles.CrossIconStyleVideoView}
+                            onPress={() => DeleteVideoAttachment()}>
                             <Image
                               source={Crossicon}
                               style={[
@@ -2965,360 +3146,36 @@ export default function CampaignScheduleScreen(props) {
                               ]}
                             />
                           </TouchableOpacity>
-                          <TouchableOpacity
-                            style={styles.ProfileStylePreviewView}>
-                            <Image
-                              source={pdfViewIcon}
-                              style={styles.ProfileStylePreview}
+                          <TouchableOpacity style={styles.VideoControlPreview}>
+                            <Video
+                              playableDuration={0}
+                              paused={false}
+                              resizeMode="cover"
+                              source={{uri: Videouri}}
+                              style={{marginTop: 12, width: 170, height: 150}}
                             />
                           </TouchableOpacity>
                         </View>
                       )}
                     </View>
-                  </View>
-                </View>
-              )}
-              <View style={styles.MainViewStartEndTime}>
-                <View style={styles.TimeView_Start_End}>
-                  <View
-                    style={[
-                      styles.sectionStyleTime_End,
-                      SelectCampaignStartDate == ''
-                        ? styles.mandatoryControl
-                        : null,
-                      ,
-                      {backgroundColor: theme.inputBackColor},
-                    ]}>
-                    <TouchableOpacity
-                      style={styles.btnStartTime}
-                      onPress={() => showCampaignStartDatePicker()}>
-                      <Text
-                        style={[
-                          [styles.StartTimeText, {color: theme.textColor}],
-                          {color: theme.textColor},
-                        ]}>
-                        {SelectCampaignStartDate != ''
-                          ? moment(SelectCampaignStartDate).format('DD-MM-YYYY')
-                          : 'Campaign Start'}
-                      </Text>
-                    </TouchableOpacity>
-                    <View>
-                      <DateTimePickerModal
-                        isVisible={IsCampaignStartDateVisible}
-                        minimumDate={new Date(defaultDateTime)}
-                        mode="date"
-                        onConfirm={handleCampaignStartConfirm}
-                        onCancel={hideCampaignStartConfirm}
-                      />
-                    </View>
-                  </View>
-                </View>
-                <View style={styles.TimeView_Start_End}>
-                  <View
-                    style={[
-                      styles.sectionStyleTime_End,
-                      SelectCampaignEndDate == ''
-                        ? styles.mandatoryControl
-                        : null,
-                      ,
-                      {backgroundColor: theme.inputBackColor},
-                    ]}>
-                    <TouchableOpacity
-                      style={styles.btnStartTime}
-                      onPress={() => showCampaignEndDatePicker()}>
-                      <Text
-                        style={[
-                          [styles.StartTimeText, {color: theme.textColor}],
-                          {color: theme.textColor},
-                        ]}>
-                        {SelectCampaignEndDate != ''
-                          ? moment(SelectCampaignEndDate).format('DD-MM-YYYY')
-                          : 'Campaign End'}
-                      </Text>
-                    </TouchableOpacity>
-                    <View>
-                      <DateTimePickerModal
-                        isVisible={IsCampaignEndDateVisible}
-                        minimumDate={SelectCampaignStartDate}
-                        mode="date"
-                        onConfirm={handleCampaignEndConfirm}
-                        onCancel={hideCampaignEndConfirm}
-                      />
-                    </View>
-                  </View>
-                </View>
-              </View>
-              <View
-                style={[
-                  styles.radiostyleView,
-                  {backgroundColor: theme.inputBackColor},
-                ]}>
-                <View style={styles.radiostyle}>
-                  <View
-                    style={{marginTop: 13, height: 45, flexDirection: 'row'}}>
-                    <RadioForm
-                      radio_props={Statustype}
-                      initial={selectStatusValue}
-                      formHorizontal={true}
-                      labelHorizontal={true}
-                      buttonColor={theme.buttonBackColor}
-                      selectedButtonColor={theme.selectedCheckBox}
-                      labelStyle={{
-                        marginVertical: 10,
-                        marginHorizontal: 1,
-                        paddingRight: 12,
-                        color: theme.textColor,
-                        bottom: 5,
-                      }}
-                      animation={true}
-                      onPress={value => {
-                        selectType(value);
-                      }}
-                    />
-                  </View>
-                </View>
-              </View>
-              <View style={styles.termsView}>
-                <TouchableOpacity
-                  onPress={() => selectAutoGenerateClick()}
-                  style={{
-                    flexDirection: 'row',
-                    width: 100 + '%',
-                    paddingLeft: 5,
-                    paddingTop: 5,
-                    zIndex: 902,
-                  }}>
-                  <Text
-                    style={[
-                      [
-                        Platform.OS === 'ios'
-                          ? styles.lblDayNameIos
-                          : styles.lblDayName,
-                        {color: theme.textColor},
-                      ],
-                      {color: theme.textColor},
-                    ]}>
-                    {' '}
-                    Auto Generate Lead
-                  </Text>
-                  {selectAutoGenerateEnabled_Disabled == true ? (
-                    <Image
-                      resizeMode="contain"
-                      source={checkedCheckbox}
-                      style={[
-                        [
-                          styles.checkboxChecked_Unchecked,
-                          {tintColor: theme.selectedCheckBox},
-                        ],
-                        {tintColor: theme.selectedCheckBox},
-                      ]}
-                    />
-                  ) : (
-                    <Image
-                      resizeMode="contain"
-                      source={uncheckedCheckbox}
-                      style={[
-                        [
-                          styles.checkboxChecked_Unchecked,
-                          {tintColor: theme.selectedCheckBox},
-                        ],
-                        {tintColor: theme.buttonBackColor},
-                      ]}
-                    />
                   )}
-                </TouchableOpacity>
-              </View>
-              <View style={styles.ButtonViewNewCampaign}>
-                <Button
-                  style={[styles.btnCancel, {flexBasis: '46%'}]}
-                  bgColor={theme.buttonBackColor}
-                  caption="Cancel"
-                  onPress={() => CancelClick()}
-                />
-                <Button
-                  style={[styles.btnSubmit, {flexBasis: '46%'}]}
-                  bgColor={theme.buttonBackColor}
-                  caption="Next"
-                  onPress={() => checkTextInputRecord()}
-                />
-              </View>
-            </View>
-          </View>
-          <Modal
-            animationType="fade"
-            transparent={true}
-            supportedOrientations={['portrait']}
-            visible={modalVisiblecamera}>
-            <View style={[styles.centeredView]}>
-              <View
-                style={[
-                  styles.modalView,
-                  {backgroundColor: theme.modalBackColor},
-                ]}>
-                <View style={styles.textview}>
-                  {global.AttatchmentType == 1 ? (
-                    <Text
-                      style={[styles.cameraheading, {color: theme.textColor}]}>
-                      Pick Avatar
-                    </Text>
-                  ) : (
-                    <Text
-                      style={[styles.cameraheading, {color: theme.textColor}]}>
-                      Pick Video
-                    </Text>
-                  )}
-                </View>
-                {global.AttatchmentType == 1 ? (
-                  <View>
-                    {imageSelectedDataFlatelist == null ||
-                    imageSelectedDataFlatelist == '' ? null : (
-                      <View>
-                        <TouchableOpacity
-                          style={styles.ClearAllPhoto}></TouchableOpacity>
-                        <FlatList
-                          data={imageSelectedDataFlatelist}
-                          renderItem={({item}) => (
-                            <ImageItem
-                              base64={item.base64}
-                              ImageId={item.ImageId}
-                              uri={item.uri}
-                            />
-                          )}
-                          keyExtractor={item => item.ImageId}
-                          numColumns={1}
-                          horizontal={true}
-                        />
-                      </View>
-                    )}
-                    <View style={styles.textview}>
-                      <TouchableOpacity
-                        selectable={true}
-                        onPress={() => OpencameraClick()}>
-                        <Text
-                          style={[
-                            styles.cameraopention,
-                            {color: theme.textColor},
-                          ]}>
-                          Take Photo...
-                        </Text>
-                      </TouchableOpacity>
-                    </View>
-                    <View style={styles.textview}>
-                      <TouchableOpacity
-                        selectable={true}
-                        onPress={() => OpenGalleryClick()}>
-                        <Text
-                          style={[
-                            styles.cameraopention,
-                            {color: theme.textColor},
-                          ]}>
-                          Choose from Library...
-                        </Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                ) : (
-                  <View style={styles.textview}>
+                  <View style={styles.cancelview}>
                     <TouchableOpacity
                       selectable={true}
-                      onPress={() => {
-                        imageSelectedData.length >= '2'
-                          ? AttachmentComplate()
-                          : GetVideoFromCamera();
-                      }}>
+                      onPress={() => CloseAttachment()}>
                       <Text
-                        style={[
-                          styles.cameraopention,
-                          {color: theme.textColor},
-                        ]}>
-                        Choose Video ...
+                        style={[styles.cameracancel, {color: theme.textColor}]}>
+                        OK
                       </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity
-                      selectable={true}
-                      onPress={() => {
-                        imageSelectedData.length >= '2'
-                          ? AttachmentComplate()
-                          : GetVideoFromGallery();
-                      }}>
-                      <Text
-                        style={[
-                          styles.cameraopention,
-                          {color: theme.textColor},
-                        ]}>
-                        Choose Video from Gallery...
-                      </Text>
-                    </TouchableOpacity>
-                    {Videouri == null || Videouri == '' ? null : (
-                      <View>
-                        <TouchableOpacity
-                          style={styles.CrossIconStyleVideoView}
-                          onPress={() => DeleteVideoAttachment()}>
-                          <Image
-                            source={Crossicon}
-                            style={[
-                              styles.CrossIconStyle,
-                              {tintColor: theme.tintColor},
-                            ]}
-                          />
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.VideoControlPreview}>
-                          <Video
-                            playableDuration={0}
-                            paused={false}
-                            resizeMode="cover"
-                            source={{uri: Videouri}}
-                            style={{marginTop: 12, width: 170, height: 150}}
-                          />
-                        </TouchableOpacity>
-                      </View>
-                    )}
                   </View>
-                )}
-                <View style={styles.cancelview}>
-                  <TouchableOpacity
-                    selectable={true}
-                    onPress={() => CloseAttachment()}>
-                    <Text
-                      style={[styles.cameracancel, {color: theme.textColor}]}>
-                      OK
-                    </Text>
-                  </TouchableOpacity>
                 </View>
               </View>
-            </View>
-          </Modal>
-        </ScrollView>
-      </KeyboardAwareScrollView>
-    );
-  }
-  if (Index == 1) {
-    return (
-      <View
-        style={[styles.container, {backgroundColor: theme.backgroundColor}]}>
-        <ScrollView>
-          <TouchableOpacity>
-            <AppBreadcrumb
-              crumbs={[
-                {
-                  text: 'Campaign',
-                },
-                {
-                  text:
-                    'Networks' +
-                    (totalNetworkSelect == null || totalNetworkSelect == ''
-                      ? ''
-                      : '(' + totalNetworkSelect + ')'),
-                },
-                {text: 'Schedule'},
-              ]}
-              onSelect={index => {
-                handlePress(index);
-              }}
-              selectedIndex={Index}
-            />
-          </TouchableOpacity>
-          <View style={styles.container}>
+            </Modal>
+          </>
+        )}
+        {Index == 1 && (
+          <View>
             <FlatList
               data={DataNetwork}
               //keyExtractor={(item, networkId) => networkId}
@@ -3365,67 +3222,9 @@ export default function CampaignScheduleScreen(props) {
               />
             </View>
           </View>
-        </ScrollView>
-      </View>
-    );
-  } else if (Index == 2) {
-    /************************************************************* Address **********************************************************/
-    return (
-      <View
-        style={[styles.container, {backgroundColor: theme.backgroundColor}]}>
-        <Alert
-          massagetype={'warning'}
-          hide={hide}
-          confirm={confirm}
-          Visible={Visible}
-          alerttype={'confirmation'}
-          Title={'Confirmation'}
-          Massage={'Do you want to close ?'}></Alert>
-        <AlertBMT
-          massagetype={'warning'}
-          hide={hideAddSchedule}
-          confirm={confirmAddSchedule}
-          Visible={addScheduleVisible}
-          alerttype={'confirmation'}
-          Title={'Confirmation'}
-          Massage={
-            'Schedule from ' +
-            moment(startDateForAlert).format('DD-MM-YYYY') +
-            ' to ' +
-            moment(endDateForAlert).format('DD-MM-YYYY') +
-            ' added successfully'
-          }></AlertBMT>
-        <AlertBMT
-          massagetype={'warning'}
-          hide={hideDeleteSchedule}
-          confirm={confirmDeleteSchedule}
-          Visible={deleteScheduleVisible}
-          alerttype={'confirmation'}
-          Title={'Confirmation'}
-          Massage={'Schedule delete successfully'}></AlertBMT>
-        <TouchableOpacity>
-          <AppBreadcrumb
-            crumbs={[
-              {
-                text: 'Campaign',
-              },
-              {
-                text:
-                  'Networks' +
-                  (totalNetworkSelect != null || totalNetworkSelect != ''
-                    ? '(' + totalNetworkSelect + ')'
-                    : ''),
-              },
-              {text: 'Schedule'},
-            ]}
-            onSelect={index => {
-              handlePress(index);
-            }}
-            selectedIndex={Index}
-          />
-        </TouchableOpacity>
-        <View style={styles.containerView}>
-          <View>
+        )}
+        {Index == 2 && (
+          <>
             <Alert
               massagetype={'warning'}
               hide={hide}
@@ -3434,638 +3233,685 @@ export default function CampaignScheduleScreen(props) {
               alerttype={'confirmation'}
               Title={'Confirmation'}
               Massage={'Do you want to close ?'}></Alert>
-            <View
-              style={[
-                styles.ButtonViewstyle,
-                {backgroundColor: theme.cardBackColor},
-              ]}>
-              <TouchableOpacity
-                style={[
-                  global.Network_Detail == 0
-                    ? styles.btnNetWork
-                    : styles.btnNetWorkClick,
-                  {borderColor: theme.buttonBackColor},
-                ]}
-                onPress={() => AddScheduleClick()}>
-                <Text
-                  style={[styles.NetWork_DetailText, {color: theme.textColor}]}>
-                  Add Schedule
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  global.Network_Detail == 1
-                    ? styles.btnCampaignDetail
-                    : styles.btnCampaignDetailClick,
-                  {borderColor: theme.buttonBackColor},
-                ]}
-                onPress={() => ScheduleSummaryListClick()}>
-                <Text
-                  style={[styles.NetWork_DetailText, {color: theme.textColor}]}>
-                  Schedules{' '}
-                  {totalIndex == null || totalIndex == ''
-                    ? ''
-                    : '(' + totalIndex + ')'}
-                </Text>
-              </TouchableOpacity>
-            </View>
-            {sheduleSummeryVisible == false ? (
-              <ScrollView>
-                <View style={styles.SelectedNetworkView}>
-                  <FlatList
-                    data={networkSelectedData}
-                    keyExtractor={(item, id) => id.toString()}
-                    renderItem={
-                      ({item}) => (
-                        <NetworksSelectedView
-                          NetworkSelectedAddSchedule={networkSelectSocialMedia}
-                          networkSelectSocialMedia={networkSelectSocialMedia}
-                          ActionNetworkSelectedDataClick={
-                            ActionNetworkSelectedDataClick
-                          }
-                          ActionNetworkSelectedDataRemoveClick={
-                            ActionNetworkSelectedDataRemoveClick
-                          }
-                          data={item.data}
-                          id={item.id}
-                          networkId={item.networkId}
-                          name={item.desc}
-                          purchasedQouta={item.purchasedQouta}
-                          unitPriceInclTax={item.unitPriceInclTax}
-                          usedQuota={item.usedQuota}
-                          IconName={item.desc}
-                          description={item.desc}
-                          categoryId={item.categoryId}
-                          status={item.status}
-                          createdBy={item.createdBy}
-                          createdAt={item.createdAt}
-                          lastUpdatedAt={
-                            item.lastUpdatedAt
-                          }></NetworksSelectedView>
-                      )
-                      //<NetworksSelectedView NetworkSelectedAddSchedule={networkSelectSocialMedia} networkSelectSocialMedia={networkSelectSocialMedia} ActionNetworkSelectedDataClick={ActionNetworkSelectedDataClick} ActionNetworkSelectedDataRemoveClick={ActionNetworkSelectedDataRemoveClick} data={item.data} id={item.id} networkId={item.networkId} name={item.networkName} purchasedQouta={item.purchasedQouta} unitPriceInclTax={item.unitPriceInclTax} usedQuota={item.usedQuota} IconName={item.networkName} description={item.networkDesc} categoryId={item.categoryId} status={item.status} createdBy={item.createdBy} createdAt={item.createdAt} lastUpdatedAt={item.lastUpdatedAt} ></NetworksSelectedView>
-                    }
-                    numColumns={2}
-                    columnWrapperStyle={styles.row}
-                    //numColumns={1}
-                    horizontal={false}
-                  />
-                </View>
-                <View style={styles.IntervalType_Time}>
-                  <View style={{width: 60 + '%'}}>
-                    <Dropdown
-                      placeholderTextColor="gray"
-                      onSelect={value => SelectIntervalClick(value)}
-                      selectedIndex={selectIntervalType}
-                      style={[
-                        styles.Pickerstyle,
-                        {backgroundColor: theme.inputBackColor},
-                      ]}
-                      items={selectIntervalTypeVal}
-                      placeholder="Interval Type..."
-                      clearTextOnFocus={true}
-                      keyboardAppearance={'dark'}
-                      maxLength={5}
-                    />
-                  </View>
-                  <View style={{marginLeft: 14, width: 35 + '%'}}>
-                    <TextInput
-                      placeholderTextColor={theme.placeholderColor}
-                      editable={intervalValDisabled}
-                      style={[
-                        styles.sectionIntervalStyle,
-                        {
-                          backgroundColor: theme.inputBackColor,
-                          color: theme.textColor,
-                        },
-                      ]}
-                      value={intervalVal}
-                      onChangeText={value => ChangeIntervalVal(value)}
-                      placeholder="Minute (1-60)"
-                      clearTextOnFocus={true}
-                      keyboardAppearance={'dark'}
-                      keyboardType="number-pad"
-                      maxLength={4}
-                    />
-                  </View>
-                </View>
+            <AlertBMT
+              massagetype={'warning'}
+              hide={hideAddSchedule}
+              confirm={confirmAddSchedule}
+              Visible={addScheduleVisible}
+              alerttype={'confirmation'}
+              Title={'Confirmation'}
+              Massage={
+                'Schedule from ' +
+                moment(startDateForAlert).format('DD-MM-YYYY') +
+                ' to ' +
+                moment(endDateForAlert).format('DD-MM-YYYY') +
+                ' added successfully'
+              }></AlertBMT>
+            <AlertBMT
+              massagetype={'warning'}
+              hide={hideDeleteSchedule}
+              confirm={confirmDeleteSchedule}
+              Visible={deleteScheduleVisible}
+              alerttype={'confirmation'}
+              Title={'Confirmation'}
+              Massage={'Schedule delete successfully'}></AlertBMT>
+            <View>
+              <View>
+                <Alert
+                  massagetype={'warning'}
+                  hide={hide}
+                  confirm={confirm}
+                  Visible={Visible}
+                  alerttype={'confirmation'}
+                  Title={'Confirmation'}
+                  Massage={'Do you want to close ?'}></Alert>
                 <View
                   style={[
-                    styles.DaysMainView,
-                    {backgroundColor: theme.inputBackColor},
+                    styles.ButtonViewstyle,
+                    {backgroundColor: theme.cardBackColor},
                   ]}>
-                  <Text
+                  <TouchableOpacity
                     style={[
-                      Platform.OS === 'ios'
-                        ? styles.TitleDayNameIOS
-                        : styles.TitleDayName,
-                      {
-                        color: theme.textColor,
-                        backgroundColor: theme.inputBackColor,
-                      },
-                    ]}>
-                    {' '}
-                    Days{' '}
-                  </Text>
-                  <View style={styles.termsView}>
-                    <TouchableOpacity
-                      onPress={() => ClickWeekendDays(1)}
-                      style={{
-                        flexDirection: 'row',
-                        width: 25 + '%',
-                        paddingLeft: 5,
-                        zIndex: 902,
-                      }}>
-                      {selectSunday == true ? (
-                        <Image
-                          resizeMode="contain"
-                          source={checkedCheckbox}
-                          style={[
-                            styles.checkboxChecked_Unchecked,
-                            {tintColor: theme.selectedCheckBox},
-                          ]}
-                        />
-                      ) : (
-                        <Image
-                          resizeMode="contain"
-                          source={uncheckedCheckbox}
-                          style={[
-                            styles.checkboxChecked_Unchecked,
-                            {tintColor: theme.selectedCheckBox},
-                          ]}
-                        />
-                      )}
-                      <Text
-                        style={[
-                          Platform.OS === 'ios'
-                            ? styles.lblDayNameIos
-                            : styles.lblDayName,
-                          {color: theme.textColor},
-                        ]}>
-                        {' '}
-                        Sun
-                      </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => ClickWeekendDays(2)}
-                      style={{
-                        flexDirection: 'row',
-                        width: 25 + '%',
-                        paddingLeft: 5,
-                        zIndex: 902,
-                      }}>
-                      {selectMonday == true ? (
-                        <Image
-                          resizeMode="contain"
-                          source={checkedCheckbox}
-                          style={[
-                            styles.checkboxChecked_Unchecked,
-                            {tintColor: theme.selectedCheckBox},
-                          ]}
-                        />
-                      ) : (
-                        <Image
-                          resizeMode="contain"
-                          source={uncheckedCheckbox}
-                          style={[
-                            styles.checkboxChecked_Unchecked,
-                            {tintColor: theme.selectedCheckBox},
-                          ]}
-                        />
-                      )}
-                      <Text
-                        style={[
-                          Platform.OS === 'ios'
-                            ? styles.lblDayNameIos
-                            : styles.lblDayName,
-                          {color: theme.textColor},
-                        ]}>
-                        {' '}
-                        Mon
-                      </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => ClickWeekendDays(3)}
-                      style={{
-                        flexDirection: 'row',
-                        width: 25 + '%',
-                        paddingLeft: 5,
-                        zIndex: 902,
-                      }}>
-                      {selectTuesday == true ? (
-                        <Image
-                          resizeMode="contain"
-                          source={checkedCheckbox}
-                          style={[
-                            styles.checkboxChecked_Unchecked,
-                            {tintColor: theme.selectedCheckBox},
-                          ]}
-                        />
-                      ) : (
-                        <Image
-                          resizeMode="contain"
-                          source={uncheckedCheckbox}
-                          style={[
-                            styles.checkboxChecked_Unchecked,
-                            {tintColor: theme.selectedCheckBox},
-                          ]}
-                        />
-                      )}
-                      <Text
-                        style={[
-                          Platform.OS === 'ios'
-                            ? styles.lblDayNameIos
-                            : styles.lblDayName,
-                          {color: theme.textColor},
-                        ]}>
-                        {' '}
-                        Tue
-                      </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => ClickWeekendDays(4)}
-                      style={{
-                        flexDirection: 'row',
-                        width: 25 + '%',
-                        paddingLeft: 5,
-                        zIndex: 902,
-                      }}>
-                      {selectWednesday == true ? (
-                        <Image
-                          resizeMode="contain"
-                          source={checkedCheckbox}
-                          style={[
-                            styles.checkboxChecked_Unchecked,
-                            {tintColor: theme.selectedCheckBox},
-                          ]}
-                        />
-                      ) : (
-                        <Image
-                          resizeMode="contain"
-                          source={uncheckedCheckbox}
-                          style={[
-                            styles.checkboxChecked_Unchecked,
-                            {tintColor: theme.selectedCheckBox},
-                          ]}
-                        />
-                      )}
-                      <Text
-                        style={[
-                          Platform.OS === 'ios'
-                            ? styles.lblDayNameIos
-                            : styles.lblDayName,
-                          {color: theme.textColor},
-                        ]}>
-                        {' '}
-                        Wed
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                  <View style={styles.termsView}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        ClickWeekendDays(5);
-                      }}
-                      style={{
-                        flexDirection: 'row',
-                        width: 25 + '%',
-                        paddingLeft: 5,
-                        zIndex: 902,
-                      }}>
-                      {selectThursday == true ? (
-                        <Image
-                          resizeMode="contain"
-                          source={checkedCheckbox}
-                          style={[
-                            styles.checkboxChecked_Unchecked,
-                            {tintColor: theme.selectedCheckBox},
-                          ]}
-                        />
-                      ) : (
-                        <Image
-                          resizeMode="contain"
-                          source={uncheckedCheckbox}
-                          style={[
-                            styles.checkboxChecked_Unchecked,
-                            {tintColor: theme.selectedCheckBox},
-                          ]}
-                        />
-                      )}
-                      <Text
-                        style={[
-                          Platform.OS === 'ios'
-                            ? styles.lblDayNameIos
-                            : styles.lblDayName,
-                          {color: theme.textColor},
-                        ]}>
-                        {' '}
-                        Thu
-                      </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => {
-                        ClickWeekendDays(6);
-                      }}
-                      style={{
-                        flexDirection: 'row',
-                        width: 25 + '%',
-                        paddingLeft: 5,
-                        zIndex: 902,
-                      }}>
-                      {selectFriday == true ? (
-                        <Image
-                          resizeMode="contain"
-                          source={checkedCheckbox}
-                          style={[
-                            styles.checkboxChecked_Unchecked,
-                            {tintColor: theme.selectedCheckBox},
-                          ]}
-                        />
-                      ) : (
-                        <Image
-                          resizeMode="contain"
-                          source={uncheckedCheckbox}
-                          style={[
-                            styles.checkboxChecked_Unchecked,
-                            {tintColor: theme.selectedCheckBox},
-                          ]}
-                        />
-                      )}
-                      <Text
-                        style={[
-                          Platform.OS === 'ios'
-                            ? styles.lblDayNameIos
-                            : styles.lblDayName,
-                          {color: theme.textColor},
-                        ]}>
-                        {' '}
-                        Fri
-                      </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => {
-                        ClickWeekendDays(7);
-                      }}
-                      style={{
-                        flexDirection: 'row',
-                        width: 25 + '%',
-                        paddingLeft: 5,
-                        zIndex: 902,
-                      }}>
-                      {selectSaturday == true ? (
-                        <Image
-                          resizeMode="contain"
-                          source={checkedCheckbox}
-                          style={[
-                            styles.checkboxChecked_Unchecked,
-                            {tintColor: theme.selectedCheckBox},
-                          ]}
-                        />
-                      ) : (
-                        <Image
-                          resizeMode="contain"
-                          source={uncheckedCheckbox}
-                          style={[
-                            styles.checkboxChecked_Unchecked,
-                            {tintColor: theme.selectedCheckBox},
-                          ]}
-                        />
-                      )}
-                      <Text
-                        style={[
-                          Platform.OS === 'ios'
-                            ? styles.lblDayNameIos
-                            : styles.lblDayName,
-                          {color: theme.textColor},
-                        ]}>
-                        {' '}
-                        Sat
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-                <View style={styles.MainViewStartEndTime}>
-                  <View style={styles.ScheduleTimeView_Start}>
-                    <View
+                      global.Network_Detail == 0
+                        ? styles.btnNetWork
+                        : styles.btnNetWorkClick,
+                      {borderColor: theme.buttonBackColor},
+                    ]}
+                    onPress={() => AddScheduleClick()}>
+                    <Text
                       style={[
-                        styles.sectionStyleTime_End,
-                        {backgroundColor: theme.inputBackColor},
+                        styles.NetWork_DetailText,
+                        {color: theme.textColor},
                       ]}>
-                      <TouchableOpacity
-                        style={styles.btnStartTime}
-                        onPress={() => showDatePicker()}>
-                        <Text
-                          style={[
-                            styles.StartTimeText,
-                            {color: theme.textColor},
-                          ]}>
-                          {SelectStartDate == ''
-                            ? moment(SelectCampaignStartDate).format(
-                                'DD-MM-YYYY HH:mm',
-                              )
-                            : moment(SelectStartDate).format(
-                                'DD-MM-YYYY HH:mm',
-                              )}
-                        </Text>
-                      </TouchableOpacity>
-                      <View>
-                        <DateTimePickerModal
-                          isVisible={isDatePickerVisible}
-                          minimumDate={new Date(SelectCampaignStartDate)}
-                          maximumDate={new Date(SelectCampaignEndDate)}
-                          mode="datetime"
-                          onConfirm={handleConfirm}
-                          onCancel={hideDatePicker}
-                        />
-                      </View>
-                    </View>
-                  </View>
-                  <View style={styles.ScheduleTimeView_End}>
-                    <View
-                      style={[
-                        styles.sectionStyleTime_End,
-                        {backgroundColor: theme.inputBackColor},
-                      ]}>
-                      <TouchableOpacity
-                        style={styles.btnStartTime}
-                        onPress={() => showEndDatePicker()}>
-                        <Text
-                          style={[
-                            styles.StartTimeText,
-                            {color: theme.textColor},
-                          ]}>
-                          {SelectEndDate == ''
-                            ? moment(SelectCampaignEndDate).format(
-                                'DD-MM-YYYY HH:mm',
-                              )
-                            : moment(SelectEndDate).format('DD-MM-YYYY HH:mm')}
-                        </Text>
-                      </TouchableOpacity>
-                      <View>
-                        <DateTimePickerModal
-                          isVisible={isEndDatePickerVisible}
-                          minimumDate={SelectStartDate}
-                          maximumDate={new Date(SelectCampaignEndDate)}
-                          mode="datetime"
-                          onConfirm={handleEndConfirm}
-                          onCancel={hideEndDatePicker}
-                        />
-                      </View>
-                    </View>
-                  </View>
-                </View>
-                <View
-                  style={{
-                    width: Dimensions.get('window').width - 30,
-                    marginHorizontal: 15,
-                    marginTop: 8,
-                  }}>
-                  <FlatList
-                    data={networkSelectSocialMedia}
-                    renderItem={renderItemsss}
-                    //numColumns={1}
-                    horizontal={false}
-                    keyExtractor={item => item.networkId.toString()}
-                  />
-                </View>
-              </ScrollView>
-            ) : (
-              <ScrollView>
-                <View style={styles.MainViewScheduleView}>
-                  <SafeAreaView>
-                    <FlatList
-                      data={scheduleData}
-                      keyExtractor={(item, randomId) => randomId.toString()}
-                      renderItem={({item, index}) => (
-                        <AddScheduleList
-                          UpdateScheduleList={UpdateScheduleList}
-                          DeleteScheduleList={DeleteScheduleList}
-                          index={index}
-                          orgCurrencyName={orgCurrencyName}
-                          networkId={item.networkId}
-                          budget={item.budget}
-                          messageCount={item.messageCount}
-                          props={item}
-                          randomId={item.randomId}
-                          intervalType={item.intervalType}
-                          scheduleStartDate={item.startTime}
-                          scheduleEndDate={item.finishTime}
-                          scheduleStartTime={item.scheduleStartTime}
-                          scheduleEndTime={
-                            item.scheduleEndTime
-                          }></AddScheduleList>
-                      )}
-                      //renderItem={({item,index}) => <AddScheduleList UpdateScheduleList={UpdateScheduleList} DeleteScheduleList={DeleteScheduleList} networkCount={networkCount} networkSelectSocialMedia={networkSelectSocialMedia} setScheduleCount={index} index={index} networkId={item.networkId} props={item} randomId={item.randomId} intervalType={item.intervalType} scheduleStartDate={item.startTime} scheduleEndDate={item.finishTime} scheduleStartTime={item.scheduleStartTime} scheduleEndTime={item.scheduleEndTime} ></AddScheduleList>}
-                      numColumns={1}
-                      horizontal={false}
-                      //keyExtractor={item => item.randomId}
-                      //renderItem={({item}) => this.renderItem.bind(this,item)}
-                      // extraData={item => item.randomId}
-                    />
-                  </SafeAreaView>
-                  <View
+                      Add Schedule
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
                     style={[
-                      styles.ScheduleView,
-                      {backgroundColor: theme.inputBackColor},
-                    ]}>
-                    <View style={styles.BudgetScheduleRowData}>
-                      <View style={{flexDirection: 'row'}}>
-                        <Text
-                          style={[styles.lblBudget, {color: theme.textColor}]}>
-                          Campaign Message :{' '}
-                        </Text>
-                        <Text
+                      global.Network_Detail == 1
+                        ? styles.btnCampaignDetail
+                        : styles.btnCampaignDetailClick,
+                      {borderColor: theme.buttonBackColor},
+                    ]}
+                    onPress={() => ScheduleSummaryListClick()}>
+                    <Text
+                      style={[
+                        styles.NetWork_DetailText,
+                        {color: theme.textColor},
+                      ]}>
+                      Schedules{' '}
+                      {totalIndex == null || totalIndex == ''
+                        ? ''
+                        : '(' + totalIndex + ')'}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                {sheduleSummeryVisible == false ? (
+                  <ScrollView>
+                    <View style={styles.SelectedNetworkView}>
+                      <FlatList
+                        data={networkSelectedData}
+                        keyExtractor={(item, id) => id.toString()}
+                        renderItem={
+                          ({item}) => (
+                            <NetworksSelectedView
+                              NetworkSelectedAddSchedule={
+                                networkSelectSocialMedia
+                              }
+                              networkSelectSocialMedia={
+                                networkSelectSocialMedia
+                              }
+                              ActionNetworkSelectedDataClick={
+                                ActionNetworkSelectedDataClick
+                              }
+                              ActionNetworkSelectedDataRemoveClick={
+                                ActionNetworkSelectedDataRemoveClick
+                              }
+                              data={item.data}
+                              id={item.id}
+                              networkId={item.networkId}
+                              name={item.desc}
+                              purchasedQouta={item.purchasedQouta}
+                              unitPriceInclTax={item.unitPriceInclTax}
+                              usedQuota={item.usedQuota}
+                              IconName={item.desc}
+                              description={item.desc}
+                              categoryId={item.categoryId}
+                              status={item.status}
+                              createdBy={item.createdBy}
+                              createdAt={item.createdAt}
+                              lastUpdatedAt={
+                                item.lastUpdatedAt
+                              }></NetworksSelectedView>
+                          )
+                          //<NetworksSelectedView NetworkSelectedAddSchedule={networkSelectSocialMedia} networkSelectSocialMedia={networkSelectSocialMedia} ActionNetworkSelectedDataClick={ActionNetworkSelectedDataClick} ActionNetworkSelectedDataRemoveClick={ActionNetworkSelectedDataRemoveClick} data={item.data} id={item.id} networkId={item.networkId} name={item.networkName} purchasedQouta={item.purchasedQouta} unitPriceInclTax={item.unitPriceInclTax} usedQuota={item.usedQuota} IconName={item.networkName} description={item.networkDesc} categoryId={item.categoryId} status={item.status} createdBy={item.createdBy} createdAt={item.createdAt} lastUpdatedAt={item.lastUpdatedAt} ></NetworksSelectedView>
+                        }
+                        numColumns={2}
+                        columnWrapperStyle={styles.row}
+                        //numColumns={1}
+                        horizontal={false}
+                      />
+                    </View>
+                    <View style={styles.IntervalType_Time}>
+                      <View style={{width: 60 + '%'}}>
+                        <Dropdown
+                          placeholderTextColor="gray"
+                          onSelect={value => SelectIntervalClick(value)}
+                          selectedIndex={selectIntervalType}
                           style={[
-                            styles.lblBudgetVal,
-                            {color: theme.textColor},
-                          ]}>
-                          {totalMessageCountAdd.toFixed(2)}
-                        </Text>
+                            styles.Pickerstyle,
+                            {backgroundColor: theme.inputBackColor},
+                          ]}
+                          items={selectIntervalTypeVal}
+                          placeholder="Interval Type..."
+                          clearTextOnFocus={true}
+                          keyboardAppearance={'dark'}
+                          maxLength={5}
+                        />
                       </View>
-                      <View style={{flexDirection: 'row'}}>
-                        <Text
-                          style={[styles.lblBudget, {color: theme.textColor}]}>
-                          Campaign Budget :{' '}
-                        </Text>
-                        <Text
+                      <View style={{marginLeft: 14, width: 35 + '%'}}>
+                        <TextInput
+                          placeholderTextColor={theme.placeholderColor}
+                          editable={intervalValDisabled}
                           style={[
-                            styles.lblBudgetVal,
+                            styles.sectionIntervalStyle,
                             {
+                              backgroundColor: theme.inputBackColor,
                               color: theme.textColor,
                             },
-                          ]}>
-                          {totalBudget.toFixed(2)}
-                          {' ' + orgCurrencyName}
-                        </Text>
+                          ]}
+                          value={intervalVal}
+                          onChangeText={value => ChangeIntervalVal(value)}
+                          placeholder="Minute (1-60)"
+                          clearTextOnFocus={true}
+                          keyboardAppearance={'dark'}
+                          keyboardType="number-pad"
+                          maxLength={4}
+                        />
                       </View>
                     </View>
-                  </View>
-                </View>
-                <Model modalVisible={modalVisible}></Model>
-                <Spinner
-                  visible={spinner}
-                  textContent={'Loading...'}
-                  textStyle={{color: '#FFF'}}
-                />
-              </ScrollView>
-            )}
-            {sheduleSummeryVisible == false ? (
-              <View style={styles.ButtonScheduleView}>
-                <Button
-                  style={[styles.btnCancel, {flexBasis: '47%'}]}
-                  bgColor={theme.buttonBackColor}
-                  caption="Back"
-                  onPress={() => setIndex(1)}
-                />
-                {addScheduleButton == true ? (
-                  <Button
-                    style={[styles.btnSubmit, {flexBasis: '47%'}]}
-                    bgColor={theme.buttonBackColor}
-                    caption="+ Schedule"
-                    onPress={() => AddCampaignClick()}
-                  />
+                    <View
+                      style={[
+                        styles.DaysMainView,
+                        {backgroundColor: theme.inputBackColor},
+                      ]}>
+                      <Text
+                        style={[
+                          Platform.OS === 'ios'
+                            ? styles.TitleDayNameIOS
+                            : styles.TitleDayName,
+                          {
+                            color: theme.textColor,
+                            backgroundColor: theme.inputBackColor,
+                          },
+                        ]}>
+                        {' '}
+                        Days{' '}
+                      </Text>
+                      <View style={styles.termsView}>
+                        <TouchableOpacity
+                          onPress={() => ClickWeekendDays(1)}
+                          style={{
+                            flexDirection: 'row',
+                            width: 25 + '%',
+                            paddingLeft: 5,
+                            zIndex: 902,
+                          }}>
+                          {selectSunday == true ? (
+                            <Image
+                              resizeMode="contain"
+                              source={checkedCheckbox}
+                              style={[
+                                styles.checkboxChecked_Unchecked,
+                                {tintColor: theme.selectedCheckBox},
+                              ]}
+                            />
+                          ) : (
+                            <Image
+                              resizeMode="contain"
+                              source={uncheckedCheckbox}
+                              style={[
+                                styles.checkboxChecked_Unchecked,
+                                {tintColor: theme.selectedCheckBox},
+                              ]}
+                            />
+                          )}
+                          <Text
+                            style={[
+                              Platform.OS === 'ios'
+                                ? styles.lblDayNameIos
+                                : styles.lblDayName,
+                              {color: theme.textColor},
+                            ]}>
+                            {' '}
+                            Sun
+                          </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() => ClickWeekendDays(2)}
+                          style={{
+                            flexDirection: 'row',
+                            width: 25 + '%',
+                            paddingLeft: 5,
+                            zIndex: 902,
+                          }}>
+                          {selectMonday == true ? (
+                            <Image
+                              resizeMode="contain"
+                              source={checkedCheckbox}
+                              style={[
+                                styles.checkboxChecked_Unchecked,
+                                {tintColor: theme.selectedCheckBox},
+                              ]}
+                            />
+                          ) : (
+                            <Image
+                              resizeMode="contain"
+                              source={uncheckedCheckbox}
+                              style={[
+                                styles.checkboxChecked_Unchecked,
+                                {tintColor: theme.selectedCheckBox},
+                              ]}
+                            />
+                          )}
+                          <Text
+                            style={[
+                              Platform.OS === 'ios'
+                                ? styles.lblDayNameIos
+                                : styles.lblDayName,
+                              {color: theme.textColor},
+                            ]}>
+                            {' '}
+                            Mon
+                          </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() => ClickWeekendDays(3)}
+                          style={{
+                            flexDirection: 'row',
+                            width: 25 + '%',
+                            paddingLeft: 5,
+                            zIndex: 902,
+                          }}>
+                          {selectTuesday == true ? (
+                            <Image
+                              resizeMode="contain"
+                              source={checkedCheckbox}
+                              style={[
+                                styles.checkboxChecked_Unchecked,
+                                {tintColor: theme.selectedCheckBox},
+                              ]}
+                            />
+                          ) : (
+                            <Image
+                              resizeMode="contain"
+                              source={uncheckedCheckbox}
+                              style={[
+                                styles.checkboxChecked_Unchecked,
+                                {tintColor: theme.selectedCheckBox},
+                              ]}
+                            />
+                          )}
+                          <Text
+                            style={[
+                              Platform.OS === 'ios'
+                                ? styles.lblDayNameIos
+                                : styles.lblDayName,
+                              {color: theme.textColor},
+                            ]}>
+                            {' '}
+                            Tue
+                          </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() => ClickWeekendDays(4)}
+                          style={{
+                            flexDirection: 'row',
+                            width: 25 + '%',
+                            paddingLeft: 5,
+                            zIndex: 902,
+                          }}>
+                          {selectWednesday == true ? (
+                            <Image
+                              resizeMode="contain"
+                              source={checkedCheckbox}
+                              style={[
+                                styles.checkboxChecked_Unchecked,
+                                {tintColor: theme.selectedCheckBox},
+                              ]}
+                            />
+                          ) : (
+                            <Image
+                              resizeMode="contain"
+                              source={uncheckedCheckbox}
+                              style={[
+                                styles.checkboxChecked_Unchecked,
+                                {tintColor: theme.selectedCheckBox},
+                              ]}
+                            />
+                          )}
+                          <Text
+                            style={[
+                              Platform.OS === 'ios'
+                                ? styles.lblDayNameIos
+                                : styles.lblDayName,
+                              {color: theme.textColor},
+                            ]}>
+                            {' '}
+                            Wed
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                      <View style={styles.termsView}>
+                        <TouchableOpacity
+                          onPress={() => {
+                            ClickWeekendDays(5);
+                          }}
+                          style={{
+                            flexDirection: 'row',
+                            width: 25 + '%',
+                            paddingLeft: 5,
+                            zIndex: 902,
+                          }}>
+                          {selectThursday == true ? (
+                            <Image
+                              resizeMode="contain"
+                              source={checkedCheckbox}
+                              style={[
+                                styles.checkboxChecked_Unchecked,
+                                {tintColor: theme.selectedCheckBox},
+                              ]}
+                            />
+                          ) : (
+                            <Image
+                              resizeMode="contain"
+                              source={uncheckedCheckbox}
+                              style={[
+                                styles.checkboxChecked_Unchecked,
+                                {tintColor: theme.selectedCheckBox},
+                              ]}
+                            />
+                          )}
+                          <Text
+                            style={[
+                              Platform.OS === 'ios'
+                                ? styles.lblDayNameIos
+                                : styles.lblDayName,
+                              {color: theme.textColor},
+                            ]}>
+                            {' '}
+                            Thu
+                          </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() => {
+                            ClickWeekendDays(6);
+                          }}
+                          style={{
+                            flexDirection: 'row',
+                            width: 25 + '%',
+                            paddingLeft: 5,
+                            zIndex: 902,
+                          }}>
+                          {selectFriday == true ? (
+                            <Image
+                              resizeMode="contain"
+                              source={checkedCheckbox}
+                              style={[
+                                styles.checkboxChecked_Unchecked,
+                                {tintColor: theme.selectedCheckBox},
+                              ]}
+                            />
+                          ) : (
+                            <Image
+                              resizeMode="contain"
+                              source={uncheckedCheckbox}
+                              style={[
+                                styles.checkboxChecked_Unchecked,
+                                {tintColor: theme.selectedCheckBox},
+                              ]}
+                            />
+                          )}
+                          <Text
+                            style={[
+                              Platform.OS === 'ios'
+                                ? styles.lblDayNameIos
+                                : styles.lblDayName,
+                              {color: theme.textColor},
+                            ]}>
+                            {' '}
+                            Fri
+                          </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() => {
+                            ClickWeekendDays(7);
+                          }}
+                          style={{
+                            flexDirection: 'row',
+                            width: 25 + '%',
+                            paddingLeft: 5,
+                            zIndex: 902,
+                          }}>
+                          {selectSaturday == true ? (
+                            <Image
+                              resizeMode="contain"
+                              source={checkedCheckbox}
+                              style={[
+                                styles.checkboxChecked_Unchecked,
+                                {tintColor: theme.selectedCheckBox},
+                              ]}
+                            />
+                          ) : (
+                            <Image
+                              resizeMode="contain"
+                              source={uncheckedCheckbox}
+                              style={[
+                                styles.checkboxChecked_Unchecked,
+                                {tintColor: theme.selectedCheckBox},
+                              ]}
+                            />
+                          )}
+                          <Text
+                            style={[
+                              Platform.OS === 'ios'
+                                ? styles.lblDayNameIos
+                                : styles.lblDayName,
+                              {color: theme.textColor},
+                            ]}>
+                            {' '}
+                            Sat
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                    <View style={styles.MainViewStartEndTime}>
+                      <View style={styles.ScheduleTimeView_Start}>
+                        <View
+                          style={[
+                            styles.sectionStyleTime_End,
+                            {backgroundColor: theme.inputBackColor},
+                          ]}>
+                          <TouchableOpacity
+                            style={styles.btnStartTime}
+                            onPress={() => showDatePicker()}>
+                            <Text
+                              style={[
+                                styles.StartTimeText,
+                                {color: theme.textColor},
+                              ]}>
+                              {SelectStartDate == ''
+                                ? moment(SelectCampaignStartDate).format(
+                                    'DD-MM-YYYY HH:mm',
+                                  )
+                                : moment(SelectStartDate).format(
+                                    'DD-MM-YYYY HH:mm',
+                                  )}
+                            </Text>
+                          </TouchableOpacity>
+                          <View>
+                            <DateTimePickerModal
+                              isVisible={isDatePickerVisible}
+                              minimumDate={new Date(SelectCampaignStartDate)}
+                              maximumDate={new Date(SelectCampaignEndDate)}
+                              mode="datetime"
+                              onConfirm={handleConfirm}
+                              onCancel={hideDatePicker}
+                            />
+                          </View>
+                        </View>
+                      </View>
+                      <View style={styles.ScheduleTimeView_End}>
+                        <View
+                          style={[
+                            styles.sectionStyleTime_End,
+                            {backgroundColor: theme.inputBackColor},
+                          ]}>
+                          <TouchableOpacity
+                            style={styles.btnStartTime}
+                            onPress={() => showEndDatePicker()}>
+                            <Text
+                              style={[
+                                styles.StartTimeText,
+                                {color: theme.textColor},
+                              ]}>
+                              {SelectEndDate == ''
+                                ? moment(SelectCampaignEndDate).format(
+                                    'DD-MM-YYYY HH:mm',
+                                  )
+                                : moment(SelectEndDate).format(
+                                    'DD-MM-YYYY HH:mm',
+                                  )}
+                            </Text>
+                          </TouchableOpacity>
+                          <View>
+                            <DateTimePickerModal
+                              isVisible={isEndDatePickerVisible}
+                              minimumDate={SelectStartDate}
+                              maximumDate={new Date(SelectCampaignEndDate)}
+                              mode="datetime"
+                              onConfirm={handleEndConfirm}
+                              onCancel={hideEndDatePicker}
+                            />
+                          </View>
+                        </View>
+                      </View>
+                    </View>
+                    <View
+                      style={{
+                        width: Dimensions.get('window').width - 30,
+                        marginHorizontal: 15,
+                        marginTop: 8,
+                      }}>
+                      <FlatList
+                        data={networkSelectSocialMedia}
+                        renderItem={renderItemsss}
+                        //numColumns={1}
+                        horizontal={false}
+                        keyExtractor={item => item.networkId.toString()}
+                      />
+                    </View>
+                  </ScrollView>
                 ) : (
-                  <Button
-                    style={[styles.btnSubmit, {flexBasis: '47%'}]}
-                    bgColor={theme.buttonBackColor}
-                    caption="+ Quota"
-                    onPress={() => MakeBudget()}
-                  />
+                  <ScrollView>
+                    <View style={styles.MainViewScheduleView}>
+                      <SafeAreaView>
+                        <FlatList
+                          data={scheduleData}
+                          keyExtractor={(item, randomId) => randomId.toString()}
+                          renderItem={({item, index}) => (
+                            <AddScheduleList
+                              UpdateScheduleList={UpdateScheduleList}
+                              DeleteScheduleList={DeleteScheduleList}
+                              index={index}
+                              orgCurrencyName={orgCurrencyName}
+                              networkId={item.networkId}
+                              budget={item.budget}
+                              messageCount={item.messageCount}
+                              props={item}
+                              randomId={item.randomId}
+                              intervalType={item.intervalType}
+                              scheduleStartDate={item.startTime}
+                              scheduleEndDate={item.finishTime}
+                              scheduleStartTime={item.scheduleStartTime}
+                              scheduleEndTime={
+                                item.scheduleEndTime
+                              }></AddScheduleList>
+                          )}
+                          //renderItem={({item,index}) => <AddScheduleList UpdateScheduleList={UpdateScheduleList} DeleteScheduleList={DeleteScheduleList} networkCount={networkCount} networkSelectSocialMedia={networkSelectSocialMedia} setScheduleCount={index} index={index} networkId={item.networkId} props={item} randomId={item.randomId} intervalType={item.intervalType} scheduleStartDate={item.startTime} scheduleEndDate={item.finishTime} scheduleStartTime={item.scheduleStartTime} scheduleEndTime={item.scheduleEndTime} ></AddScheduleList>}
+                          numColumns={1}
+                          horizontal={false}
+                          //keyExtractor={item => item.randomId}
+                          //renderItem={({item}) => this.renderItem.bind(this,item)}
+                          // extraData={item => item.randomId}
+                        />
+                      </SafeAreaView>
+                      <View
+                        style={[
+                          styles.ScheduleView,
+                          {backgroundColor: theme.inputBackColor},
+                        ]}>
+                        <View style={styles.BudgetScheduleRowData}>
+                          <View style={{flexDirection: 'row'}}>
+                            <Text
+                              style={[
+                                styles.lblBudget,
+                                {color: theme.textColor},
+                              ]}>
+                              Campaign Message :{' '}
+                            </Text>
+                            <Text
+                              style={[
+                                styles.lblBudgetVal,
+                                {color: theme.textColor},
+                              ]}>
+                              {totalMessageCountAdd.toFixed(2)}
+                            </Text>
+                          </View>
+                          <View style={{flexDirection: 'row'}}>
+                            <Text
+                              style={[
+                                styles.lblBudget,
+                                {color: theme.textColor},
+                              ]}>
+                              Campaign Budget :{' '}
+                            </Text>
+                            <Text
+                              style={[
+                                styles.lblBudgetVal,
+                                {
+                                  color: theme.textColor,
+                                },
+                              ]}>
+                              {totalBudget.toFixed(2)}
+                              {' ' + orgCurrencyName}
+                            </Text>
+                          </View>
+                        </View>
+                      </View>
+                    </View>
+                    <Model modalVisible={modalVisible}></Model>
+                    <Spinner
+                      visible={spinner}
+                      textContent={'Loading...'}
+                      textStyle={{color: '#FFF'}}
+                    />
+                  </ScrollView>
                 )}
+                {sheduleSummeryVisible == false ? (
+                  <View style={styles.ButtonScheduleView}>
+                    <Button
+                      style={[styles.btnCancel, {flexBasis: '47%'}]}
+                      bgColor={theme.buttonBackColor}
+                      caption="Back"
+                      onPress={() => setIndex(1)}
+                    />
+                    {addScheduleButton == true ? (
+                      <Button
+                        style={[styles.btnSubmit, {flexBasis: '47%'}]}
+                        bgColor={theme.buttonBackColor}
+                        caption="+ Schedule"
+                        onPress={() => AddCampaignClick()}
+                      />
+                    ) : (
+                      <Button
+                        style={[styles.btnSubmit, {flexBasis: '47%'}]}
+                        bgColor={theme.buttonBackColor}
+                        caption="+ Quota"
+                        onPress={() => MakeBudget()}
+                      />
+                    )}
+                  </View>
+                ) : null}
+                {sheduleSummeryVisible == true ? (
+                  <View style={styles.ButtonSubmitView}>
+                    <Button
+                      style={[styles.btnSubmit, {flexBasis: '98%'}]}
+                      bgColor={theme.buttonBackColor}
+                      caption="Submit"
+                      onPress={() => ClickSubmitData()}
+                    />
+                  </View>
+                ) : null}
               </View>
-            ) : null}
-            {sheduleSummeryVisible == true ? (
-              <View style={styles.ButtonSubmitView}>
-                <Button
-                  style={[styles.btnSubmit, {flexBasis: '98%'}]}
-                  bgColor={theme.buttonBackColor}
-                  caption="Submit"
-                  onPress={() => ClickSubmitData()}
-                />
-              </View>
-            ) : null}
-          </View>
-        </View>
-      </View>
-    );
-  }
+            </View>
+          </>
+        )}
+      </ScrollView>
+    </KeyboardAwareScrollView>
+  );
 }
 /************************************************************ styles ***************************************************/
 const styles = StyleSheet.create({
   container: {
-    //backgroundColor: 'gray',
     flex: 1,
     alignItems: 'center',
   },
   containerView: {
-    //backgroundColor: 'green',
-    //backgroundColor: 'gray',
     flex: 1,
     alignItems: 'center',
   },
   SelectedNetworkView: {
-    // backgroundColor: colors.red,
-    //backgroundColor: 'gray',
     //flex: 1,
     alignItems: 'center',
   },
