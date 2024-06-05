@@ -1,3 +1,4 @@
+import moment from 'moment';
 import React, {Fragment, useEffect, useState} from 'react';
 import {
   Dimensions,
@@ -9,7 +10,18 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import Toast from 'react-native-simple-toast';
+import GestureRecognizer from 'react-native-swipe-gestures';
+import Icons from 'react-native-vector-icons/AntDesign';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import DoubleClick from 'rn-double-click';
+import MycampaignScheduleList from '.././components/MycampaignScheduleList';
+import NetworkMycampaign from '.././components/NetworkMycampaign';
+import networknamesettings from '.././modules/dataservices/networknamesettings';
+import servicesettings from '.././modules/dataservices/servicesettings';
+import {useTheme} from '../hooks/useTheme';
 import {colors} from '../styles';
+
 const BDMT = require('../../assets/images/pepsilogo.png');
 const deleteicon = require('../../assets/images/deleteicon.png');
 const playicon = require('../../assets/images/playicon.png');
@@ -17,18 +29,6 @@ const pauseicon = require('../../assets/images/pauseicon.png');
 const AttachmentIcon = require('../../assets/images/attachment.png');
 
 const AutoGenerateYes = require('../../assets/images/autogenerateyes.png');
-import GestureRecognizer from 'react-native-swipe-gestures';
-import DoubleClick from 'rn-double-click';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Icons from 'react-native-vector-icons/AntDesign';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import MycampaignScheduleList from '.././components/MycampaignScheduleList';
-import NetworkMycampaign from '.././components/NetworkMycampaign';
-import networknamesettings from '.././modules/dataservices/networknamesettings';
-import servicesettings from '.././modules/dataservices/servicesettings';
-import moment from 'moment';
-import Toast from 'react-native-simple-toast';
-import {useTheme} from '../hooks/useTheme';
 export default function Myvehicle(props) {
   const theme = useTheme();
   useEffect(() => {
@@ -38,20 +38,17 @@ export default function Myvehicle(props) {
   }, []);
 
   const [Buttonsvisible, setButtonsvisible] = useState(false);
+  const [onImageError, setOnImageError] = useState(false);
+  const [isImageError, setIsImageError] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [CancelVisible, setCancelVisible] = useState(false);
   const [NetworkVisible, setNetworkVisible] = useState(false);
   const [CampaignVisible, setCampaignVisible] = useState(false);
   const [ScheduleVisible, setScheduleVisible] = useState(false);
   const [config, SetConfig] = useState(false);
-  const [CompleteVisible, setCompleteVisible] = useState(false);
   const [modalVisiblecamera, setModalVisiblecamera] = useState(false);
-  const [demandfocus, setDemandfocus] = useState(false);
   const [sidebarshowhide, setsidebarshowhide] = useState(false);
 
-  const [numberSend, setNumberSend] = useState('');
   const [attachmentDataList, setAttachmentDataList] = useState('');
-  const [status, setStatus] = useState('');
   const [name, setName] = useState('');
   const [networkId, setNetworkId] = useState('');
   const [title, setTitle] = useState('');
@@ -84,25 +81,34 @@ export default function Myvehicle(props) {
     //
     setButtonsvisible(false);
   }
-  function ButtonShowxx() {
-    var value = AsyncStorage.getItem('LoginInformation');
-    value.then(data => {
-      let Asyncdata = JSON.parse(data);
-    });
-  }
+
   const clickForDetailother = async () => {
     //console.log('clickForDetailother clickForDetailother ' + JSON.stringify(props.data));
     //console.log('clickForDetailother clickForDetailother networkData ' + JSON.stringify(networkData));
     var AttachmentCount = props.data.attachments.length;
     setAttachmentDataList(AttachmentCount);
     //
-    var networkcount = JSON.parse(props.data.compaignsdetails);
-    const itemCount = networkcount.length;
-    setNetworkCount(itemCount);
+    let itemCount;
+    const cam = props.data.compaignsdetails;
+    // console.log({cam});
+    if (
+      props.data.compaignsdetails != null ||
+      props.data.compaignsdetails != ''
+    ) {
+      let networkcount = props.data.compaignsdetails
+        ? JSON.parse(props.data.compaignsdetails)
+        : [];
+      itemCount = networkcount.length;
+      setNetworkCount(itemCount);
+    } else {
+      setNetworkCount(0);
+    }
     var myCampaignDetail = props;
     // console.log('myCampaignDetail myCampaignDetail ' + myCampaignDetail.id + JSON.stringify(myCampaignDetail.compaignNetworks));
+    // console.log(myCampaignDetail.compaignNetworks);
     if (
       myCampaignDetail.compaignNetworks != '' &&
+      myCampaignDetail.compaignNetworks != null &&
       myCampaignDetail.compaignNetworks.length >= 4
     ) {
       //console.log('myCampaignDetail not empty ' + JSON.stringify(myCampaignDetail));
@@ -132,8 +138,7 @@ export default function Myvehicle(props) {
   const UpdateCampaign = async props => {
     global.UpdateCampaign = 1;
     console.log('UpdateCampaign click ' + JSON.stringify(props));
-    AsyncStorage.setItem('CampaignUpdate', JSON.stringify(props));
-    props.OpenUpdateCampaign();
+    props.OpenUpdateCampaign(props);
   };
   const clickForDetail = async props => {
     //console.log('clickForDetail click ' + JSON.stringify(props));
@@ -212,66 +217,10 @@ export default function Myvehicle(props) {
         ScheduleVisible,
     );
   }
-  function whatsappSendMessage() {
-    var ContactNumber = this.props.contact;
-    //if(ContactNumber == )
-    var ContactNum = ContactNumber.replace(/^0+/, '');
-    //var ContactNum = '92' + this.props.contact.replace(/^0+/, '');
 
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append(
-      'Authorization',
-      'Bearer EAAIKVlitaIYBALY9AJyZBZAD8Pfbyb1S8QW7XuvxeptMkoGxqT9Sa766eggme2tURaTKliDVx5PKJ2ZAJBpAcLjQJ7MArzt8cWLZBaHTGZCQSi9C0VxiqE60e1zqPuF88os3rvxOj1kU7X9ZA5SRoKOOpcCSkItl83Thxw7DTRulTQ9wEQ9KyScPwflOuiVwGJoZCqJZA3Eg9QZDZD',
-    );
-
-    var raw = JSON.stringify({
-      messaging_product: 'whatsapp',
-      //"to": "92" + ContactNum,
-      to: ContactNum,
-      //"to": "923042676412",
-      //"to": "96265777766",
-      type: 'template',
-      template: {
-        name: 'hello_world',
-        language: {
-          code: 'en_US',
-        },
-      },
-    });
-    //var newcontact = ContactNum;
-    //console.log('newcontact newcontact ' + newcontact.replace(/^0+/, ''));
-    var requestOptions = {
-      method: 'POST',
-      headers: myHeaders,
-      body: raw,
-      redirect: 'follow',
-    };
-    SuccessMessage();
-    fetch(
-      'https://graph.facebook.com/v16.0/115772434768092/messages',
-      requestOptions,
-    )
-      .then(response => response.text())
-      .then(result => console.log(result))
-      .catch(error => console.log('error', error));
-  }
-  function SuccessMessage() {
-    setModalVisible(true);
-    setTimeout(() => {
-      setModalVisible(false);
-    }, 4000);
-    var Number = this.props.contact;
-
-    Toast.show('Your message to ' + Number + ' has been send successfully!');
-  }
-  function checkloginfordelete() {
-    Toast.show('You need license for delete');
-  }
   function SettingClickForChange(props) {
     console.log('SettingClickForChange click ' + JSON.stringify(props));
     // props.SettingClickForChange(props);
-    AsyncStorage.setItem('CampaignChangeStatus', JSON.stringify(props));
     props.SettingClickForChangeFlatList(props);
   }
   const ClickDeleteData = async props => {
@@ -374,7 +323,9 @@ export default function Myvehicle(props) {
               }
               onPress={() => clickForDetail(props)}>
               <View style={{width: 15 + '%'}}>
-                {props.logoAvatar == '' || props.logoAvatar == null ? (
+                {props.logoAvatar == '' ||
+                props.logoAvatar == null ||
+                isImageError ? (
                   <Image source={BDMT} style={styles.ProfileStyle} />
                 ) : (
                   <Image
@@ -387,6 +338,9 @@ export default function Myvehicle(props) {
                           .replace(' //', ''),
                     }}
                     style={styles.ProfileStyle}
+                    onError={() => {
+                      setIsImageError(true);
+                    }}
                   />
                 )}
               </View>
@@ -470,7 +424,9 @@ export default function Myvehicle(props) {
             ]}>
             <View style={styles.Img_OrgView}>
               <View style={{width: 24 + '%'}}>
-                {props.logoAvatar == '' || props.logoAvatar == null ? (
+                {props.logoAvatar == '' ||
+                props.logoAvatar == null ||
+                onImageError ? (
                   <Image source={BDMT} style={styles.OrgLogo} />
                 ) : (
                   <Image
@@ -483,6 +439,9 @@ export default function Myvehicle(props) {
                           .replace(' //', ''),
                     }}
                     style={styles.OrgLogo}
+                    onError={() => {
+                      setOnImageError(true);
+                    }}
                   />
                 )}
               </View>
@@ -537,7 +496,10 @@ export default function Myvehicle(props) {
               ) : (
                 <View style={{flexDirection: 'row'}}>
                   <TouchableOpacity
-                    style={styles.btnCampaignDetailClick}
+                    style={[
+                      styles.btnCampaignDetailClick,
+                      {borderBottomWidth: 0},
+                    ]}
                     onPress={() => NotNetworkDetailClick()}>
                     <Text
                       style={[
@@ -548,7 +510,7 @@ export default function Myvehicle(props) {
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
-                    style={styles.btnNetWorkClick}
+                    style={[styles.btnNetWorkClick, {borderBottomWidth: 0}]}
                     onPress={() => NetworkDetailClick()}>
                     <Text
                       style={[

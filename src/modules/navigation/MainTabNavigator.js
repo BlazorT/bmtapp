@@ -1,23 +1,22 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {useIsFocused} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
 import {Image, Platform, StyleSheet, Text, View} from 'react-native';
+import AntdIcon from 'react-native-vector-icons/AntDesign';
+import {useTheme} from '../../hooks/useTheme';
+import {useUser} from '../../hooks/useUser';
 import {colors} from '../../styles';
 import TabNavigator from './TabNavigator';
 import tabNavigationData from './tabNavigationData';
-import {useTheme} from '../../hooks/useTheme';
-import AntdIcon from 'react-native-vector-icons/AntDesign';
 const Tab = createBottomTabNavigator();
 export default function BottomTabs() {
   const isFocused = useIsFocused();
+  const {user, isAuthenticated} = useUser();
   const theme = useTheme();
   const [Data, setData] = useState(null);
   useEffect(() => {
-    AsyncStorage.getItem('LoginInformation').then(function (res) {
-      let Asyncdata = JSON.parse(res);
-      setData(Asyncdata);
-    });
+    if (isAuthenticated) setData(user);
+    else setData(null);
   }, [isFocused]);
   if (Data == null) {
     return (

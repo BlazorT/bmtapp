@@ -9,18 +9,23 @@ export default function PreferencesAndSettingsScreen() {
   const theme = useTheme();
   const {user} = useUser();
   const [switchValue, setSwitchValue] = useState(true);
+  const [onImageError, setOnImageError] = useState(false);
   const toggleSwitch = value => {
     setSwitchValue(value);
   };
 
   const userImage = `${servicesettings.Imagebaseuri}${user.avatar?.replace(/\\/g, '/').replace(',', '').replace(' //', '')}`;
+  console.log('userImage', user.avatar);
 
   return (
     <View style={[styles.container, {backgroundColor: theme.backgroundColor}]}>
       <View style={styles.ProfileImgView}>
         <Image
-          source={user.avatar == '' ? userProfile : {uri: userImage}}
+          source={
+            user.avatar == '' || onImageError ? userProfile : {uri: userImage}
+          }
           style={[styles.ProfileStyle, {tintColor: theme.buttonBackColor}]}
+          onError={() => setOnImageError(true)}
         />
       </View>
       <View style={styles.lblView}>

@@ -81,10 +81,10 @@ export default function HomeScreen(props) {
   useEffect(() => {
     // console.log(user.orgid);
     if (!loading && !error) {
-      console.log(JSON.stringify(data['mybundlings']));
+      // console.log(JSON.stringify(data));
       dispatch(setLovs(data));
     }
-  }, [loading]);
+  }, [loading, data]);
 
   useEffect(() => {
     if (isAuthenticated) {

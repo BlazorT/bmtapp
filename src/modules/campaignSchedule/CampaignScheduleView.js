@@ -31,9 +31,10 @@ import moment from 'moment';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Spinner from 'react-native-loading-spinner-overlay';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import RadioForm from 'react-native-simple-radio-button';
+import RadioForm from 'react-native-simple-radio-buttons';
 import Toast from 'react-native-simple-toast';
 import Video from 'react-native-video';
+import {useSelector} from 'react-redux';
 import AttachmentIcon from '../../../assets/images/attachment2.png';
 import checkedCheckbox from '../../../assets/images/checkboxchecked.png';
 import uncheckedCheckbox from '../../../assets/images/checkboxunchecked.png';
@@ -47,7 +48,6 @@ import UpArrowIcon from '../../../assets/images/uparrow.png';
 import {useTheme} from '../../hooks/useTheme';
 import {useUser} from '../../hooks/useUser';
 import servicesettings from '../dataservices/servicesettings';
-import {useSelector} from 'react-redux';
 
 export default function CampaignScheduleScreen(props) {
   const theme = useTheme();
@@ -182,9 +182,9 @@ export default function CampaignScheduleScreen(props) {
     setDeleteScheduleVisible(false);
   };
   const Statustype = [
-    {value: 1, label: 'Active'},
-    {value: 2, label: 'Paused'},
-    {value: 3, label: 'Cancelled'},
+    {value: 0, label: 'Active'},
+    {value: 1, label: 'Paused'},
+    {value: 2, label: 'Cancelled'},
   ];
 
   const IntervalType = [
@@ -661,136 +661,103 @@ export default function CampaignScheduleScreen(props) {
   }
 
   const UpdateCampaignDetail = async AllNetworkList => {
-    AsyncStorage.getItem('CampaignUpdate').then(function (res) {
-      let Asyncdata = JSON.parse(res);
-      if (Asyncdata != null) {
-        var currentdate = new Date();
-        console.log(
-          'CampaignUpdate CampaignUpdate detail ' + JSON.stringify(Asyncdata),
-        );
-        console.log(
-          'AllNetworkList AllNetworkList  ' + JSON.stringify(AllNetworkList),
-        );
+    const Asyncdata = props.route.params.campaign;
+    console.log({Asyncdata});
+    if (Asyncdata != null) {
+      var currentdate = new Date();
+      console.log(
+        'CampaignUpdate CampaignUpdate detail ' + JSON.stringify(Asyncdata),
+      );
+      console.log(
+        'AllNetworkList AllNetworkList  ' + JSON.stringify(AllNetworkList),
+      );
 
-        var UpdateCampaign = Asyncdata.data;
-        setSelectCampaignStartDate(UpdateCampaign.startTime);
-        setSelectCampaignEndDate(UpdateCampaign.finishTime);
-        setHashtag(UpdateCampaign.hashTags);
-        setSubject(UpdateCampaign.name);
-        setCampaignIdForEdit(UpdateCampaign.id);
-        setHashtag(UpdateCampaign.hashTags);
-        settemplate(UpdateCampaign.description);
-        setSelectStartDate(UpdateCampaign.startTime);
-        setSelectEndDate(UpdateCampaign.finishTime);
-        setTotalBudget(UpdateCampaign.totalBudget);
-        var AutoGenerate = 1;
-        if (AutoGenerate == 1) {
-          setSelectAutoGenerateEnabled_Disabled(true);
+      var UpdateCampaign = Asyncdata.data;
+      setSelectCampaignStartDate(UpdateCampaign.startTime);
+      setSelectCampaignEndDate(UpdateCampaign.finishTime);
+      setHashtag(UpdateCampaign.hashTags);
+      setSubject(UpdateCampaign.name);
+      setCampaignIdForEdit(UpdateCampaign.id);
+      setHashtag(UpdateCampaign.hashTags);
+      settemplate(UpdateCampaign.description);
+      setSelectStartDate(UpdateCampaign.startTime);
+      setSelectEndDate(UpdateCampaign.finishTime);
+      setTotalBudget(UpdateCampaign.totalBudget);
+      var AutoGenerate = 1;
+      if (AutoGenerate == 1) {
+        setSelectAutoGenerateEnabled_Disabled(true);
+      } else {
+        setSelectAutoGenerateEnabled_Disabled(false);
+      }
+      setSelectAutoGenerate(AutoGenerate);
+      var MyStatus = 2;
+      setSelectStatusValue(MyStatus);
+      var Campaignschedule = JSON.stringify(Asyncdata.data.compaignschedules);
+      if (Asyncdata.data.attachments.length <= 0) {
+        console.log(
+          'Asyncdata.data.attachments.length if ' +
+            Asyncdata.data.attachments.length,
+        );
+        var attachmentData = '';
+      } else {
+        console.log(
+          'Asyncdata.data.attachments.length ' +
+            Asyncdata.data.attachments.length,
+        );
+        var attachmentData = JSON.parse(Asyncdata.data.attachments);
+        console.log('attachmentData ' + JSON.stringify(attachmentData));
+        //
+        const namesArray = attachmentData.map(item => item.image.split('.')[1]);
+        console.log('namesArray ' + JSON.stringify(namesArray));
+        if (
+          attachmentData.find(item => item.image.split('.')[1] === 'pdf') ==
+            null ||
+          attachmentData.find(item => item.image.split('.')[1] === 'pdf') == ''
+        ) {
         } else {
-          setSelectAutoGenerateEnabled_Disabled(false);
+          var FoundElementPdf = attachmentData.find(
+            item => item.image.split('.')[1] === 'pdf',
+          );
+          setPdfUri(FoundElementPdf.image);
         }
-        setSelectAutoGenerate(AutoGenerate);
-        var MyStatus = 2;
-        setSelectStatusValue(MyStatus);
-        var Campaignschedule = JSON.stringify(Asyncdata.data.compaignschedules);
-        if (Asyncdata.data.attachments.length <= 0) {
-          console.log(
-            'Asyncdata.data.attachments.length if ' +
-              Asyncdata.data.attachments.length,
+        var FoundElementMP4 = attachmentData.find(
+          item => item.image.split('.')[1] === 'mp4',
+        );
+        if (attachmentData.find(item => item.image.split('.')[1] == 'png')) {
+          var FoundElement = attachmentData.find(
+            item => item.image.split('.')[1] === 'png',
           );
-          var attachmentData = '';
-        } else {
-          console.log(
-            'Asyncdata.data.attachments.length ' +
-              Asyncdata.data.attachments.length,
+        }
+        if (attachmentData.find(item => item.image.split('.')[1] == 'jpg')) {
+          var FoundElement = attachmentData.find(
+            item => item.image.split('.')[1] === 'jpg',
           );
-          var attachmentData = JSON.parse(Asyncdata.data.attachments);
-          console.log('attachmentData ' + JSON.stringify(attachmentData));
-          //
-          const namesArray = attachmentData.map(
-            item => item.image.split('.')[1],
+        }
+        if (attachmentData.find(item => item.image.split('.')[1] == 'BMP')) {
+          var FoundElement = attachmentData.find(
+            item => item.image.split('.')[1] === 'BMP',
           );
-          console.log('namesArray ' + JSON.stringify(namesArray));
-          if (
-            attachmentData.find(item => item.image.split('.')[1] === 'pdf') ==
-              null ||
-            attachmentData.find(item => item.image.split('.')[1] === 'pdf') ==
-              ''
-          ) {
-          } else {
-            var FoundElementPdf = attachmentData.find(
-              item => item.image.split('.')[1] === 'pdf',
-            );
-            setPdfUri(FoundElementPdf.image);
-          }
-          var FoundElementMP4 = attachmentData.find(
-            item => item.image.split('.')[1] === 'mp4',
+        }
+        if (attachmentData.find(item => item.image.split('.')[1] == 'WEBP')) {
+          var FoundElement = attachmentData.find(
+            item => item.image.split('.')[1] === 'WEBP',
           );
-          if (attachmentData.find(item => item.image.split('.')[1] == 'png')) {
-            var FoundElement = attachmentData.find(
-              item => item.image.split('.')[1] === 'png',
-            );
-          }
-          if (attachmentData.find(item => item.image.split('.')[1] == 'jpg')) {
-            var FoundElement = attachmentData.find(
-              item => item.image.split('.')[1] === 'jpg',
-            );
-          }
-          if (attachmentData.find(item => item.image.split('.')[1] == 'BMP')) {
-            var FoundElement = attachmentData.find(
-              item => item.image.split('.')[1] === 'BMP',
-            );
-          }
-          if (attachmentData.find(item => item.image.split('.')[1] == 'WEBP')) {
-            var FoundElement = attachmentData.find(
-              item => item.image.split('.')[1] === 'WEBP',
-            );
-          }
+        }
 
-          console.log(
-            'attachmentData name ',
-            attachmentData[0].image.split('.')[1],
-          );
-          console.log(
-            'attachmentData type ',
-            attachmentData[0].image.split('.')[1],
-          );
-          var AttachmentForEdit = attachmentData.map(item => {
-            if (
-              item.image.split('.')[1] == 'mp4' ||
-              item.image.split('.')[1] == 'pdf'
-            ) {
-              if (item.image.split('.')[1] == 'mp4') {
-                return {
-                  id: item.Id,
-                  ImageId: item.image.split('/')[2].split('.')[0],
-                  fileName: item.image.split('/')[2],
-                  uri:
-                    servicesettings.Imagebaseuri +
-                    item.image
-                      .replace(/\\/g, '/')
-                      .replace(',', '')
-                      .replace(' //', ''),
-                  height: '',
-                  fileType: 'video/' + item.image.split('.')[1],
-                };
-              }
-              if (item.image.split('.')[1] == 'pdf') {
-                return {
-                  id: item.Id,
-                  ImageId: item.image.split('/')[2].split('.')[0],
-                  fileName: item.image.split('/')[2],
-                  uri:
-                    servicesettings.Imagebaseuri +
-                    item.image
-                      .replace(/\\/g, '/')
-                      .replace(',', '')
-                      .replace(' //', ''),
-                  height: '',
-                  fileType: 'application/' + item.image.split('.')[1],
-                };
-              }
-            } else {
+        console.log(
+          'attachmentData name ',
+          attachmentData[0].image.split('.')[1],
+        );
+        console.log(
+          'attachmentData type ',
+          attachmentData[0].image.split('.')[1],
+        );
+        var AttachmentForEdit = attachmentData.map(item => {
+          if (
+            item.image.split('.')[1] == 'mp4' ||
+            item.image.split('.')[1] == 'pdf'
+          ) {
+            if (item.image.split('.')[1] == 'mp4') {
               return {
                 id: item.Id,
                 ImageId: item.image.split('/')[2].split('.')[0],
@@ -801,132 +768,160 @@ export default function CampaignScheduleScreen(props) {
                     .replace(/\\/g, '/')
                     .replace(',', '')
                     .replace(' //', ''),
-                //uri: item.image,
                 height: '',
-                fileType: 'image/' + item.image.split('.')[1],
+                fileType: 'video/' + item.image.split('.')[1],
               };
             }
-          });
-
-          global.EditAttachment = 2;
-
-          setImageSelectedDataFlatelist(AttachmentForEdit);
-          setImageSelectedData(AttachmentForEdit);
-
-          var VideoUriLink =
-            servicesettings.Imagebaseuri + FoundElementMP4.image;
-
-          setVideouri(VideoUriLink);
-        }
-        console.log(
-          'ScheduleDataUpdate ScheduleDataUpdate ',
-          Asyncdata.data.compaignschedules.length,
-        );
-        if (Asyncdata.data.compaignschedules.length <= 0) {
-          console.log(
-            'Asyncdata.data.attachments.length if ' +
-              Asyncdata.data.attachments.length,
-          );
-        } else {
-          var ScheduleDataUpdate = JSON.parse(Asyncdata.data.compaignschedules);
-          console.log(
-            'ScheduleDataUpdate ScheduleDataUpdate ' +
-              JSON.stringify(ScheduleDataUpdate),
-          );
-          compaignExecutionSchedulesFlatlist.push({ScheduleDataUpdate});
-
-          var ScheduleDataEdit = ScheduleDataUpdate.map(item => {
+            if (item.image.split('.')[1] == 'pdf') {
+              return {
+                id: item.Id,
+                ImageId: item.image.split('/')[2].split('.')[0],
+                fileName: item.image.split('/')[2],
+                uri:
+                  servicesettings.Imagebaseuri +
+                  item.image
+                    .replace(/\\/g, '/')
+                    .replace(',', '')
+                    .replace(' //', ''),
+                height: '',
+                fileType: 'application/' + item.image.split('.')[1],
+              };
+            }
+          } else {
             return {
-              id: item.id,
-              randomId: item.id,
-              rowVer: 0,
-              networkId: item.NetworkId,
-              interval: item.Interval,
-              intervaltypename: item.intervaltypename,
-              intervalTypeId: item.IntervalTypeId,
-              compaignDetailId: item.CompaignDetailId,
-              status: 1,
-              budget: item.budget,
-              messageCount: item.MessageCount,
-              //days: item.days,
-              days: item.days.split(',').map(numberStr => parseInt(numberStr)),
-              startTime: item.StartTime,
-              finishTime: item.FinishTime,
-              scheduleStartTime: item.StartTime,
-              scheduleEndTime: item.FinishTime,
+              id: item.Id,
+              ImageId: item.image.split('/')[2].split('.')[0],
+              fileName: item.image.split('/')[2],
+              uri:
+                servicesettings.Imagebaseuri +
+                item.image
+                  .replace(/\\/g, '/')
+                  .replace(',', '')
+                  .replace(' //', ''),
+              //uri: item.image,
+              height: '',
+              fileType: 'image/' + item.image.split('.')[1],
             };
-          });
-
-          console.log('NewJson NewJson ' + JSON.stringify(ScheduleDataEdit));
-          setScheduleListAddArray(ScheduleDataEdit);
-          setScheduleListAddArrayZZZ(ScheduleDataEdit);
-        }
-
-        var NetworkDetailList = JSON.parse(Asyncdata.data.compaignsdetails);
-        console.log(
-          'DataNetwork DataNetwork DataNetwork ',
-          JSON.stringify(DataNetwork),
-        );
-        var networkcount = NetworkDetailList;
-
-        let counter = 0;
-        for (let i = 0; i < networkcount.length; i++) {
-          if (networkcount[i].networkId != '') counter++;
-        }
-        setNetworkCount(counter);
-
-        var Allprops = [
-          'id',
-          'networkId',
-          'orgId',
-          'status',
-          'name',
-          'networkName',
-          'networkDesc',
-          'bufferQuota',
-          'orgId',
-          'purchasedQouta',
-          'unitPriceInclTax',
-          'usedQuota',
-        ];
-        var resultAllNetwork = AllNetworkList.filter(function (o1) {
-          return NetworkDetailList.some(function (o2) {
-            return o1.networkId === o2.networkId;
-          });
-        }).map(function (o) {
-          return Allprops.reduce(function (newo, name) {
-            newo[name] = o[name];
-            return newo;
-          }, {});
+          }
         });
 
-        console.log('NetworkDetailList ' + JSON.stringify(NetworkDetailList));
-        // var NetworkJson = resultAllNetwork.map((item) => {
-        var NetworkJson = resultAllNetwork.map(item => {
+        global.EditAttachment = 2;
+
+        setImageSelectedDataFlatelist(AttachmentForEdit);
+        setImageSelectedData(AttachmentForEdit);
+
+        var VideoUriLink = servicesettings.Imagebaseuri + FoundElementMP4.image;
+
+        setVideouri(VideoUriLink);
+      }
+      console.log(
+        'ScheduleDataUpdate ScheduleDataUpdate ',
+        Asyncdata.data.compaignschedules.length,
+      );
+      if (Asyncdata.data.compaignschedules.length <= 0) {
+        console.log(
+          'Asyncdata.data.attachments.length if ' +
+            Asyncdata.data.attachments.length,
+        );
+      } else {
+        var ScheduleDataUpdate = JSON.parse(Asyncdata.data.compaignschedules);
+        console.log(
+          'ScheduleDataUpdate ScheduleDataUpdate ' +
+            JSON.stringify(ScheduleDataUpdate),
+        );
+        compaignExecutionSchedulesFlatlist.push({ScheduleDataUpdate});
+
+        var ScheduleDataEdit = ScheduleDataUpdate.map(item => {
           return {
             id: item.id,
-            networkId: item.networkId,
-            desc: item.networkDesc,
-            name: item.networkName,
-            purchasedQouta: item.purchasedQouta,
-            unitPriceInclTax: item.unitPriceInclTax,
-            usedQuota: item.usedQuota,
+            randomId: item.id,
             rowVer: 0,
-            compaignId: 0,
-            status: Number(item.status),
-            createdBy: Number(userId),
-            lastUpdatedBy: Number(userId),
-            createdAt: moment.utc(NetworkDetailList.createdAt).format(),
-            lastUpdatedAt: moment.utc(currentdate).format(),
+            networkId: item.NetworkId,
+            interval: item.Interval,
+            intervaltypename: item.intervaltypename,
+            intervalTypeId: item.IntervalTypeId,
+            compaignDetailId: item.CompaignDetailId,
+            status: 1,
+            budget: item.budget,
+            messageCount: item.MessageCount,
+            //days: item.days,
+            days: item.days.split(',').map(numberStr => parseInt(numberStr)),
+            startTime: item.StartTime,
+            finishTime: item.FinishTime,
+            scheduleStartTime: item.StartTime,
+            scheduleEndTime: item.FinishTime,
           };
         });
 
-        console.log('NetworkJson data ' + JSON.stringify(NetworkJson));
-
-        setNetworkData(NetworkJson);
-        setNetworkFinalData(NetworkJson);
+        console.log('NewJson NewJson ' + JSON.stringify(ScheduleDataEdit));
+        setScheduleListAddArray(ScheduleDataEdit);
+        setScheduleListAddArrayZZZ(ScheduleDataEdit);
       }
-    });
+
+      var NetworkDetailList = JSON.parse(Asyncdata.data.compaignsdetails);
+      console.log(
+        'DataNetwork DataNetwork DataNetwork ',
+        JSON.stringify(DataNetwork),
+      );
+      var networkcount = NetworkDetailList;
+
+      let counter = 0;
+      for (let i = 0; i < networkcount.length; i++) {
+        if (networkcount[i].networkId != '') counter++;
+      }
+      setNetworkCount(counter);
+
+      var Allprops = [
+        'id',
+        'networkId',
+        'orgId',
+        'status',
+        'name',
+        'networkName',
+        'networkDesc',
+        'bufferQuota',
+        'orgId',
+        'purchasedQouta',
+        'unitPriceInclTax',
+        'usedQuota',
+      ];
+      var resultAllNetwork = AllNetworkList.filter(function (o1) {
+        return NetworkDetailList.some(function (o2) {
+          return o1.networkId === o2.networkId;
+        });
+      }).map(function (o) {
+        return Allprops.reduce(function (newo, name) {
+          newo[name] = o[name];
+          return newo;
+        }, {});
+      });
+
+      console.log('NetworkDetailList ' + JSON.stringify(NetworkDetailList));
+      // var NetworkJson = resultAllNetwork.map((item) => {
+      var NetworkJson = resultAllNetwork.map(item => {
+        return {
+          id: item.id,
+          networkId: item.networkId,
+          desc: item.networkDesc,
+          name: item.networkName,
+          purchasedQouta: item.purchasedQouta,
+          unitPriceInclTax: item.unitPriceInclTax,
+          usedQuota: item.usedQuota,
+          rowVer: 0,
+          compaignId: 0,
+          status: Number(item.status),
+          createdBy: Number(userId),
+          lastUpdatedBy: Number(userId),
+          createdAt: moment.utc(NetworkDetailList.createdAt).format(),
+          lastUpdatedAt: moment.utc(currentdate).format(),
+        };
+      });
+
+      console.log('NetworkJson data ' + JSON.stringify(NetworkJson));
+
+      setNetworkData(NetworkJson);
+      setNetworkFinalData(NetworkJson);
+    }
   };
 
   function checkTextInputRecord() {
@@ -2461,7 +2456,7 @@ export default function CampaignScheduleScreen(props) {
               Visible={permissionVisible}
               alerttype={'confirmation'}
               Title={'Confirmation'}
-              Massage={'"Spentem" would like to access camera ?'}></Alert>
+              Massage={'"BMT" would like to access camera ?'}></Alert>
             <Alert
               massagetype={'warning'}
               hide={hide}
@@ -2885,8 +2880,10 @@ export default function CampaignScheduleScreen(props) {
                           isVisible={IsCampaignStartDateVisible}
                           minimumDate={new Date(defaultDateTime)}
                           mode="date"
+                          display="inline"
                           onConfirm={handleCampaignStartConfirm}
                           onCancel={hideCampaignStartConfirm}
+                          isDarkModeEnabled={true}
                         />
                       </View>
                     </View>
@@ -2935,22 +2932,31 @@ export default function CampaignScheduleScreen(props) {
                     <View
                       style={{marginTop: 13, height: 45, flexDirection: 'row'}}>
                       <RadioForm
-                        radio_props={Statustype}
-                        initial={0}
-                        formHorizontal={true}
-                        labelHorizontal={true}
-                        buttonColor={theme.buttonBackColor}
-                        selectedButtonColor={theme.selectedCheckBox}
-                        labelStyle={{
-                          marginVertical: 10,
-                          marginHorizontal: 1,
-                          paddingRight: 12,
-                          color: theme.textColor,
-                          bottom: 5,
+                        items={Statustype}
+                        value={selectStatus}
+                        setValue={v => {
+                          selectType(v);
+                          console.log({v});
                         }}
-                        animation={true}
-                        onPress={value => {
-                          selectType(value);
+                        withLabels={true}
+                        buttonOuterColor={theme.selectedCheckBox}
+                        defaultButtonColor={theme.selectedCheckBox}
+                        buttonOuterSize={30}
+                        buttonInnerColor={theme.selectedCheckBox}
+                        buttonInnerSize={26}
+                        radioFormStyle={{
+                          flexDirection: 'row',
+                          flexWrap: 'wrap',
+                          justifyContent: 'space-between',
+                        }}
+                        radioButtonItemStyle={{
+                          // backgroundColor: '#d3d3d3',
+                          width: 110,
+                          marginBottom: 10,
+                        }}
+                        radioButtonLabelStyle={{
+                          fontSize: 16,
+                          color: theme.textColor,
                         }}
                       />
                     </View>
@@ -3177,6 +3183,9 @@ export default function CampaignScheduleScreen(props) {
         {Index == 1 && (
           <View>
             <FlatList
+              scrollEnabled={false}
+              nestedScrollEnabled={true}
+              scroll
               data={DataNetwork}
               //keyExtractor={(item, networkId) => networkId}
               keyExtractor={(item, networkId) => networkId.toString()}
@@ -3310,6 +3319,8 @@ export default function CampaignScheduleScreen(props) {
                   <ScrollView>
                     <View style={styles.SelectedNetworkView}>
                       <FlatList
+                        nestedScrollEnabled={true}
+                        scrollEnabled={false}
                         data={networkSelectedData}
                         keyExtractor={(item, id) => id.toString()}
                         renderItem={

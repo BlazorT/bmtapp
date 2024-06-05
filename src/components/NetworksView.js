@@ -46,6 +46,7 @@ export default function NetworksView(props) {
     }
     //);
     //
+    // console.log(props.networkId);
     if (props.networkId == 1) {
       setSocialmediaIcon(SMSIcon);
     } else if (props.networkId == 2) {

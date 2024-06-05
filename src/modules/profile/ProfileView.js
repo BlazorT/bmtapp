@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import CheckBox from '@react-native-community/checkbox';
 import NetInfo from '@react-native-community/netinfo';
 import Base64 from 'Base64';
@@ -18,21 +17,23 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Spinner from 'react-native-loading-spinner-overlay';
 import {PERMISSIONS, RESULTS, check, request} from 'react-native-permissions';
 import Toast from 'react-native-simple-toast';
+import {useSelector} from 'react-redux';
 import {Button, Dropdown, TextInput} from '../../components';
 import Alert from '../../components/Alert';
 import TermsAndConditions from '../../components/Terms&Conditions';
+import {useTheme} from '../../hooks/useTheme';
 import {colors} from '../../styles';
 import servicesettings from '../dataservices/servicesettings';
-import {useTheme} from '../../hooks/useTheme';
 const profileIcon = require('../../../assets/images/defaultUser.png');
 //import messaging from '@react-native-firebase/messaging';
 export default function VehicalSallerScreen(props) {
   //console.log('props new ' + JSON.stringify(props));
+  const lovs = useSelector(state => state.lovs).lovs;
   const theme = useTheme();
   const [spinner, setspinner] = useState(false);
   const [img, setimg] = useState('');
   const [cityindex, setcityindex] = useState(-1);
-  const [orgindex, setorgindex] = useState(0);
+  const [orgindex, setorgindex] = useState('');
   const [orgdata, setorgdata] = useState([]);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -172,16 +173,7 @@ export default function VehicalSallerScreen(props) {
     getdata();
   }, []);
   function getdata() {
-    AsyncStorage.getItem('OrgInformation').then(function (res) {
-      let Asyncdata = JSON.parse(res);
-      if (Asyncdata != null) {
-        let Asyncdata = JSON.parse(res);
-        //setorgdata(orgdata => [...Asyncdata, {"id": 0,"name": "Select Organization"}]);
-        setorgdata(Asyncdata);
-        //setOrganizationId(Asyncdata[0].orgid);
-        //
-      }
-    });
+    setorgdata(lovs['orgs']);
   }
   /************************************************************* submit data **********************************************************/
   function submit() {
@@ -466,9 +458,7 @@ export default function VehicalSallerScreen(props) {
               styles.Pickerstyle,
               {backgroundColor: theme.inputBackColor, color: theme.textColor},
             ]}
-            items={orgdata.sort(function (obj1, obj2) {
-              return obj1.id - obj2.id;
-            })}
+            items={orgdata}
             placeholder="Select organization..."
             selectedItemViewStyle={colors.red}
             clearTextOnFocus={true}

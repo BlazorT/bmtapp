@@ -7,12 +7,10 @@ import {useTheme} from '../hooks/useTheme';
 
 const RNSDropDown = ({
   items,
-  color = 'green',
   onSelect,
   style,
   borderColor = colors.borderColor,
-  selectedIndex = -1,
-  selectedvalue = 0,
+  selectedIndex = '',
   placeholder = 'Please Select...',
 }) => {
   const [isOpened, setIsOpened] = useState(false);
@@ -73,7 +71,11 @@ const RNSDropDown = ({
         </Text>
         <Icon
           name={isOpened ? 'angle-up' : 'angle-down'}
-          color={selectedIndex == -1 ? 'gray' : '#ffff'}
+          color={
+            selectedIndex == '' || selectedIndex == -1
+              ? 'gray'
+              : theme.tintColor
+          }
           size={20}
           style={styles.icon}
         />

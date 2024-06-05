@@ -1,5 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {
   Dimensions,
@@ -24,25 +22,20 @@ import {colors} from '../../styles';
 const deleteicon = require('../../../assets/images/deleteicon.png');
 const crossIcon = require('../../../assets/images/cross.png');
 const pdfview = require('../../../assets/images/pdfdownload.png');
-const playicon = require('../../../assets/images/playicon.png');
-const pauseicon = require('../../../assets/images/pauseicon.png');
 
-import {useNavigation, useRoute} from '@react-navigation/native';
-import servicesettings from '../dataservices/servicesettings';
+import moment from 'moment';
+import {useRoute} from '@react-navigation/native';
 import {useTheme} from '../../hooks/useTheme';
-var canceltime = 40;
+import {useUser} from '../../hooks/useUser';
+import servicesettings from '../dataservices/servicesettings';
 export default function MyCampaignScreen(props) {
+  const {user, isAuthenticated} = useUser();
   const theme = useTheme();
-  const navigation = useNavigation();
   const route = useRoute();
   global.currentscreen = route.name;
-  const [Index, setIndex] = useState(0);
   const [Visible, setVisible] = useState(false);
-  const [VisibleConfirmation, setVisibleConfirmation] = useState(false);
   const [shouldShow, setShouldShow] = useState(false);
   const [data, setdata] = useState([]);
-  const [networkDataList, setNetworkDataList] = useState('');
-  const [campaignScheduleList, setCampaignScheduleList] = useState('');
   const [userId, setUserId] = useState('');
   const [orgId, setOrgId] = useState('');
   const [attachmentData, setAttachmentData] = useState('');
@@ -53,12 +46,7 @@ export default function MyCampaignScreen(props) {
   const [selectedCampaingId, setSelectedCampaingId] = useState('');
   const [selectStatusId, setSelectStatusId] = useState('');
   const [selectedCampaingStatus, setSelectedCampaingStatus] = useState('');
-  const [store_id, setstore_id] = useState(0);
-  const [status, setstatus] = useState(1);
-  const [ordertime, setordertime] = useState(null);
-  const [timeintervel, settimeintervel] = useState(null);
-  const [loginVisible, setloginVisible] = useState(false);
-  const [refreshing, setRefreshing] = React.useState(false);
+  const [campaignId, setCampaignId] = useState(0);
   const [changeViewVisible, setChangeViewVisible] = useState(false);
   const [attachmentViewVisible, setAttachmentViewVisible] = useState(false);
   const [attachmentFullView, setAttachmentFullView] = useState(false);
@@ -72,7 +60,8 @@ export default function MyCampaignScreen(props) {
     setVisible(false);
   };
   const confirm = value => {
-    setVisible(false);
+    console.log({selectStatusId});
+    // setVisible(false);
     ClickCampaignStatusChange(value);
   };
   useEffect(() => {
@@ -80,67 +69,55 @@ export default function MyCampaignScreen(props) {
   }, []);
   function Loaddata() {
     setspinner(true);
-    AsyncStorage.getItem('LoginInformation').then(function (res) {
-      if (res != null) {
-        let Asyncdata = JSON.parse(res);
-        setUserId(Asyncdata[0].id);
-        setOrgId(Asyncdata[0].orgid);
-        const date = new Date();
-        var headerFetch = {
-          method: 'POST',
-          body: JSON.stringify({
-            orgId: Asyncdata[0].orgid,
-            status: 0,
-            name: '',
-            networkId: 0,
-            id: 0,
-            lastUpdatedBy: Asyncdata[0].id,
-          }),
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json; charset=utf-8',
-            Authorization: servicesettings.AuthorizationKey,
-          },
-        };
+    if (isAuthenticated) {
+      setUserId(user.id);
+      setOrgId(user.orgid);
+      const date = new Date();
+      let headerFetch = {
+        method: 'POST',
+        body: JSON.stringify({
+          orgId: user.orgid,
+          status: 0,
+          name: '',
+          networkId: 0,
+          id: 0,
+          lastUpdatedBy: user.id,
+        }),
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json; charset=utf-8',
+          Authorization: servicesettings.AuthorizationKey,
+        },
+      };
+      fetch(servicesettings.baseuri + 'bmtcompaigns', headerFetch)
+        .then(response => response.json())
+        .then(responseJson => {
+          console.log('data response bmtcompaigns  =>', headerFetch.body);
+          console.log(
+            'data response bmtcompaigns  =>',
+            JSON.stringify(responseJson.data.length),
+          );
 
-        fetch(servicesettings.baseuri + 'bmtcompaigns', headerFetch)
-          .then(response => response.json())
-          .then(responseJson => {
-            console.log('data response bmtcompaigns  =>', headerFetch.body);
-            console.log(
-              'data response bmtcompaigns  =>',
-              JSON.stringify(responseJson.data),
-            );
-            //console.log("data response bmtcompaigns data  =>", JSON.stringify(responseJson.data));
-            //console.log("data response compaignsdetails  =>", JSON.stringify(responseJson.data.compaignsdetails));
-            //console.log("data response compaignschedules  =>", JSON.stringify(responseJson.data.compaignschedules));
-            //var myCampaignDetail = responseJson.data;
-            //
-            // console.log('myCampaignDetail ' + JSON.stringify(JSON.parse(myCampaignDetail.compaignNetworks)));
-            if (responseJson.data != null) {
-              setdata(responseJson.data);
-              //setNetworkDataList(responseJson.data.compaignsdetails);
-              //setCampaignScheduleList(responseJson.data.compaignschedules);
-              //console.log("NetworkDataList  =>", JSON.stringify(networkDataList));
-              setspinner(false);
-            } else {
-              setspinner(false);
-            }
-          })
-          .catch(error => {
-            console.error('service error', error);
-            Toast.showWithGravity(
-              'Internet connection failed, try another time !!!',
-              Toast.LONG,
-              Toast.CENTER,
-            );
+          if (responseJson.data != null) {
+            setdata(responseJson.data);
             setspinner(false);
-          });
-      } else {
-        global.SignUp_Login = 1;
-        props.navigation.replace('Login');
-      }
-    });
+          } else {
+            setspinner(false);
+          }
+        })
+        .catch(error => {
+          console.error('service error', error);
+          Toast.showWithGravity(
+            'Internet connection failed, try another time !!!',
+            Toast.LONG,
+            Toast.CENTER,
+          );
+          setspinner(false);
+        });
+    } else {
+      global.SignUp_Login = 1;
+      props.navigation.replace('Login');
+    }
   }
   function searchDataClick() {
     if (Search == null || Search == '') {
@@ -157,7 +134,6 @@ export default function MyCampaignScreen(props) {
         id: 0,
         lastUpdatedBy: userId,
       }),
-      // body: JSON.stringify({orgId:Asyncdata[0].orgid,status:1,name:Search,networkId:0,id:0,lastUpdatedBy:Asyncdata[0].id}),
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json; charset=utf-8',
@@ -198,7 +174,6 @@ export default function MyCampaignScreen(props) {
     var currentDate = new Date();
     var headerFetch = {
       method: 'POST',
-      // 'id':(campaignIdForEdit=='' || campaignIdForEdit == null?0:campaignIdForEdit),"selectCountryId":Number(selectCountryId),"selectStateId":Number(selectStateId),"createdBy":Number(userId),"lastUpdatedBy":Number(userId),'status':campaignStatus==null||campaignStatus==''?1:campaignStatus,'orgId':Number(organizationId),'hashTags':Hashtag,'description':template,'name':Subject,'title':Subject,'autoGenerateLeads':selectAutoGenerate==null||selectAutoGenerate==""?0:selectAutoGenerate,'startTime':moment.utc(SelectCampaignStartDate!=''?SelectCampaignStartDate:'').format(),'finishTime':moment.utc(SelectCampaignEndDate!=''?SelectCampaignEndDate:'').format(),'CompaignNetworks': networkFinalData,'compaignExecutionSchedules': addScheduleDataForSubmit,'totalBudget':totalBudget,'discount':discount,};
       body: JSON.stringify({
         orgId: Number(orgId),
         status: selectStatusId,
@@ -237,8 +212,6 @@ export default function MyCampaignScreen(props) {
             ? Toast.show(' ' + responseJson.message + ' ')
             : Toast.show('Data updated successfully');
           Loaddata();
-          //setdata(responseJson.data)
-          //setspinner(false);
         } else {
           Toast.showWithGravity(
             'Internet connection failed, try another time !!!',
@@ -256,29 +229,24 @@ export default function MyCampaignScreen(props) {
         );
       });
   }
-  function SettingClickForChangeFlatList() {
-    AsyncStorage.getItem('CampaignChangeStatus').then(function (res) {
-      let Asyncdata = JSON.parse(res);
-
-      //
-      //
-      //
-      //
-      setSelectedCampaingStatus(Asyncdata.data.status);
-      setSelectedCampaingId(Asyncdata.id);
-      if (changeViewVisible == true) {
-        setChangeViewVisible(false);
-      }
-      if (changeViewVisible == false) {
-        setChangeViewVisible(true);
-      }
-    });
+  function SettingClickForChangeFlatList(props) {
+    const campaignStatus = props;
+    console.log(campaignStatus.id, campaignStatus.data.status);
+    setSelectedCampaingStatus(campaignStatus.data.status);
+    setSelectedCampaingId(campaignStatus.id);
+    if (changeViewVisible == true) {
+      setChangeViewVisible(false);
+    }
+    if (changeViewVisible == false) {
+      setChangeViewVisible(true);
+    }
   }
   function StatusChangeOnClick(props) {
     console.log('DeleteData click ' + JSON.stringify(props));
     console.log('DeleteData click ' + JSON.stringify(props.id));
     console.log('DeleteData click ' + JSON.stringify(props.data.status));
     var value = props.data.status;
+
     if (value == '1') {
       value = '5';
       global.StatusName = 'Active';
@@ -287,25 +255,13 @@ export default function MyCampaignScreen(props) {
       global.StatusName = 'Delete';
     }
     setSelectStatusId(value);
+    setCampaignId(props.id);
     ClickStatus(value);
   }
   function ClickCampaignStatusChange(value) {
-    // if(value==1){
-    //  global.StatusName = 'Active';
-    //
-    // }
-    // else{
-    //      global.StatusName = 'Delete';
-    // }
-    AsyncStorage.getItem('CampaignChangeStatus').then(function (res) {
-      let Asyncdata = JSON.parse(res);
-      var SelectStatusVal = Asyncdata.id;
-      ClickCompaignStatus(SelectStatusVal);
-
-      //setChangeViewVisible(false)
-    });
+    ClickCompaignStatus(campaignId);
   }
-  function ClickCampaignStatusName(value) {
+  function ClickCampaignStatusName(value, id) {
     setSelectStatusId(value);
     if (value == '1') {
       global.StatusName = 'Active';
@@ -314,10 +270,7 @@ export default function MyCampaignScreen(props) {
     }
   }
   function AttachmentPreviewDetail(AttachmentPreview) {
-    //
-    // console.log('AttachmentPreviewDetail click ' + AttachmentPreview[0].image.replace(/\\/g, "/").replace(',',"").replace(' //',""));
     setAttachmentData(JSON.parse(AttachmentPreview));
-    //
     if (attachmentViewVisible == true) {
       setAttachmentViewVisible(false);
     }
@@ -326,8 +279,6 @@ export default function MyCampaignScreen(props) {
     }
   }
   function AttachmentFullViewClick(image) {
-    //console.log('image click full link ' + servicesettings.Imagebaseuri + image.replace(/\\/g, "/").replace(',',"").replace(' //',""));
-    //
     setImg_Video(image);
     setImg_VideoType(image);
     if (attachmentFullView == true) {
@@ -342,8 +293,9 @@ export default function MyCampaignScreen(props) {
   function AddNewCampaignClick() {
     (global.UpdateCampaign = 0), props.navigation.navigate('Campaign Schedule');
   }
-  function OpenUpdateCampaign() {
-    (global.UpdateCampaign = 1), props.navigation.navigate('Campaign Schedule');
+  function OpenUpdateCampaign(campaignData) {
+    (global.UpdateCampaign = 1),
+      props.navigation.navigate('Campaign Schedule', {campaign: campaignData});
   }
   function functionCombined() {
     setShouldShow(!shouldShow);
@@ -543,6 +495,11 @@ export default function MyCampaignScreen(props) {
         )}
         numColumns={1}
         horizontal={false}
+        initialNumToRender={10} // Render only a few initial items
+        windowSize={21} // Maintain a small window for efficient rendering
+        removeClippedSubviews={true} // Unload off-screen views
+        onEndReachedThreshold={0.1} // Load more data when the user is within 10% of the end
+        maxToRenderPerBatch={5} // Render a small batch at a time
       />
       {changeViewVisible == true ? (
         <View style={styles.ChangeActionMainView}>

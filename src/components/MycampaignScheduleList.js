@@ -88,6 +88,23 @@ export default function MycampaignScheduleList(props) {
     // }
     props.ActionButtonClick();
   }
+  const calculateDays = dayNumberString => {
+    console.log({dayNumberString});
+    const dayMap = {
+      1: 'Sun',
+      2: 'Mon',
+      3: 'Tue',
+      4: 'Wed',
+      5: 'Thu',
+      6: 'Fri',
+      7: 'Sat',
+    };
+
+    const dayNumbers = dayNumberString.split(',').map(Number);
+    const dayNames = dayNumbers.map(dayNumber => dayMap[dayNumber]);
+
+    return dayNames.join(', ');
+  };
   return (
     <Fragment>
       <View
@@ -112,7 +129,7 @@ export default function MycampaignScheduleList(props) {
                 {'Interval Type: ' + props.intervaltypename}
               </Text>
               <Text style={[styles.DaysStyle, {color: theme.textColor}]}>
-                {'  Days: ' + props.days}
+                {'  Days: ' + calculateDays(props.days)}
               </Text>
             </View>
             <View style={{flex: 1, flexDirection: 'row'}}>

@@ -7,7 +7,7 @@ const useFetchData = apiConfigs => {
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const {user} = useUser();
+  const {user, isAuthenticated} = useUser();
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -21,7 +21,7 @@ const useFetchData = apiConfigs => {
               method: method || 'POST',
               body: JSON.stringify(
                 endpoint == 'mybundlings'
-                  ? {...body, id: user.orgid}
+                  ? {...body, id: isAuthenticated ? user.orgid : 0}
                   : body || {},
               ),
               headers: {
@@ -36,6 +36,7 @@ const useFetchData = apiConfigs => {
               headerFetch,
             );
             const result = await response.json();
+            // console.log('result', result);
 
             return {[endpoint]: result.data};
           }),
@@ -53,7 +54,7 @@ const useFetchData = apiConfigs => {
       }
     };
     fetchData();
-  }, [apiConfigs]);
+  }, [isAuthenticated]);
 
   return {data, loading, error};
 };
