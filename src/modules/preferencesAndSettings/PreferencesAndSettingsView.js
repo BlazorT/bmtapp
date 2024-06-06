@@ -15,7 +15,7 @@ export default function PreferencesAndSettingsScreen() {
   };
 
   const userImage = `${servicesettings.Imagebaseuri}${user.avatar?.replace(/\\/g, '/').replace(',', '').replace(' //', '')}`;
-  console.log('userImage', user.avatar);
+  console.log('userImage', user);
 
   return (
     <View style={[styles.container, {backgroundColor: theme.backgroundColor}]}>

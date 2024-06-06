@@ -4,6 +4,7 @@ import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {useSelector} from 'react-redux';
 import {useTheme} from '../hooks/useTheme';
 import {colors} from '../styles';
+import {dateFormatter} from '../helper/dateFormatter';
 const EMAIL = require('../../assets/images/Email.png');
 const INSTAGRAM = require('../../assets/images/instagram.png');
 const LINKEDIN = require('../../assets/images/linkedin.png');
@@ -159,7 +160,7 @@ export default function MycampaignScheduleList(props) {
               }}>
               <View style={styles.Itemdetail}>
                 <Text style={[styles.StartTime, {color: theme.textColor}]}>
-                  {moment(props.startTime).format('MM-DD-YY hh:mm a')}
+                  {dateFormatter(props.startTime)}
                 </Text>
               </View>
               <View style={styles.ItemdetailMiddle}>
@@ -169,7 +170,7 @@ export default function MycampaignScheduleList(props) {
               </View>
               <View style={styles.ItemFinishdetail}>
                 <Text style={[styles.FinishTime, {color: theme.textColor}]}>
-                  {moment(props.finishTime).format('MM-DD-YY hh:mm a')}
+                  {dateFormatter(props.finishTime)}
                 </Text>
               </View>
             </View>

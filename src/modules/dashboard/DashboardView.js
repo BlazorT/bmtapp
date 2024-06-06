@@ -17,7 +17,7 @@ export default function DashboardScreen(props) {
   const [spinner, setspinner] = useState(false);
 
   const [data, setData] = useState({
-    datasets: [{data: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120]}],
+    datasets: [{data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}],
     labels: [
       'Jan',
       'Feb',

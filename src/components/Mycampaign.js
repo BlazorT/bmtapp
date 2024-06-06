@@ -39,6 +39,7 @@ import deleteicon from '../../assets/images/deleteicon.png';
 import pauseicon from '../../assets/images/pauseicon.png';
 import BDMT from '../../assets/images/pepsilogo.png';
 import playicon from '../../assets/images/playicon.png';
+import {dateFormatter} from '../helper/dateFormatter';
 
 export default function Myvehicle(props) {
   const theme = useTheme();
@@ -347,7 +348,7 @@ export default function Myvehicle(props) {
                 <View style={styles.ItemDetailViewsecond}>
                   <View style={styles.Itemdetail}>
                     <Text style={[styles.StartTime, {color: theme.textColor}]}>
-                      {moment(props.startTime).format('MM-DD-YY hh:mm a')}
+                      {dateFormatter(props.startTime)}
                     </Text>
                   </View>
                   <View style={styles.ItemdetailMiddle}>
@@ -357,7 +358,7 @@ export default function Myvehicle(props) {
                   </View>
                   <View style={styles.Itemdetail}>
                     <Text style={[styles.FinishTime, {color: theme.textColor}]}>
-                      {moment(props.finishTime).format('MM-DD-YY hh:mm a')}
+                      {dateFormatter(props.startTime)}
                     </Text>
                     <View></View>
                   </View>
@@ -723,7 +724,7 @@ export default function Myvehicle(props) {
                   <Text style={[styles.titleDetail, {color: theme.textColor}]}>
                     {startTime == '' || startTime == null
                       ? '--'
-                      : moment(startTime).format('MM-DD-YY hh:mm a')}
+                      : dateFormatter(startTime)}
                   </Text>
                 </View>
                 <View style={styles.CampaignDetailStyle}>
@@ -733,7 +734,7 @@ export default function Myvehicle(props) {
                   <Text style={[styles.titleDetail, {color: theme.textColor}]}>
                     {finishTime == '' || finishTime == null
                       ? '--'
-                      : moment(finishTime).format('MM-DD-YY hh:mm a')}
+                      : dateFormatter(finishTime)}
                   </Text>
                 </View>
                 <View style={styles.CampaignDetailStyle}>

@@ -414,26 +414,23 @@ export default function LoginScreen(props) {
                 'userOrgId > ',
                 userOrgId,
               );
-              var UserInfo = [
-                {
-                  address: '',
-                  avatar: responseJsonAdd.avatar,
-                  email: responseJsonAdd.email,
-                  firstname: responseJsonAdd.firstName,
-                  id: userId.toString(),
-                  lastname: responseJsonAdd.lastName,
-                  orgid: userOrgId.toString(),
-                  orgname: responseJsonAdd.orgName,
-                  roleid: userRoleId.toString(),
-                  status: userStatusId.toString(),
-                  username: responseJsonAdd.userName,
-                },
-              ];
+              var UserInfo = {
+                address: '',
+                avatar: responseJsonAdd.avatar,
+                email: responseJsonAdd.email,
+                firstname: responseJsonAdd.firstName,
+                id: userId.toString(),
+                lastname: responseJsonAdd.lastName,
+                orgid: userOrgId.toString(),
+                orgname: responseJsonAdd.orgName,
+                roleid: userRoleId.toString(),
+                status: userStatusId.toString(),
+                username: responseJsonAdd.userName,
+              };
 
-              AsyncStorage.setItem(
-                'LoginInformation',
-                JSON.stringify(UserInfo),
-              );
+              console.log({responseJsonAdd, UserInfo});
+              loginUser(UserInfo);
+
               setspinner(false);
               Toast.show('Save successfully');
               setTimeout(() => {

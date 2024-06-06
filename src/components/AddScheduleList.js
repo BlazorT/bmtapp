@@ -269,7 +269,7 @@ export default function AddScheduleList(props) {
                     styles.lblHeadingSchaduleVal,
                     {color: theme.textColor},
                   ]}>
-                  {moment(props.scheduleStartTime).format('hh:mm a')}
+                  {moment(props.scheduleStartTime).format('HH:mm')}
                 </Text>
               </View>
               <View style={styles.ScheduleRowData}>
@@ -282,7 +282,7 @@ export default function AddScheduleList(props) {
                     styles.lblHeadingSchaduleVal,
                     {color: theme.textColor},
                   ]}>
-                  {moment(props.scheduleEndTime).format('hh:mm a')}
+                  {moment(props.scheduleEndTime).format('HH:mm')}
                 </Text>
               </View>
             </View>

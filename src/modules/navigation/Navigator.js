@@ -26,6 +26,7 @@ function CustomDrawerContent(props) {
   const theme = useTheme();
   const {user, isAuthenticated, logoutUser} = useUser();
   const [Visible, setVisible] = useState(false);
+  const [isImageError, setIsImageError] = useState(false);
   const CancelClick = () => {
     setVisible(true);
   };
@@ -88,8 +89,13 @@ function CustomDrawerContent(props) {
       {isAuthenticated && (
         <View style={styles.avatarContainer}>
           <Image
-            source={user?.avatar == '' ? userProfile : {uri: userProfileImage}}
+            source={
+              user?.avatar == '' || isImageError
+                ? userProfile
+                : {uri: userProfileImage}
+            }
             style={styles.avatar}
+            onError={() => setIsImageError(true)}
           />
           <View style={{paddingLeft: 6}}>
             <View style={{flexDirection: 'row'}}>
