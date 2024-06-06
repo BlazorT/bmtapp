@@ -1,18 +1,32 @@
 import React, {useState} from 'react';
-import {Image, Modal, StyleSheet, View} from 'react-native';
+import {Image, Modal, StyleSheet, Text, View} from 'react-native';
+import {useTheme} from '../hooks/useTheme';
+import {Dimensions} from 'react-native';
 const Model = props => {
-  const [modalVisible, setModalVisible] = useState(false);
   const tickIcon = require('../../assets/images/th.png');
+  const theme = useTheme();
   return (
     <View style={styles.centeredView}>
       <Modal
         animationType="fade"
         transparent={true}
-        visible={props.modalVisible}
-      >
+        visible={props.modalVisible}>
         <View style={styles.modalView}>
           <Image source={tickIcon} style={styles.iconimage} />
         </View>
+        <Text
+          style={{
+            color: theme.textColor,
+            position: 'absolute',
+            fontSize: 20,
+            width: '70%',
+            textAlign: 'center',
+            fontWeight: 'bold',
+            top: Dimensions.get('screen').height / 1.65,
+            left: Dimensions.get('screen').width / 6.5,
+          }}>
+          {props.message}
+        </Text>
       </Modal>
     </View>
   );

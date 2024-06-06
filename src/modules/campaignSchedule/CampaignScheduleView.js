@@ -70,6 +70,8 @@ export default function CampaignScheduleScreen(props) {
   const [intervalValDisabled, setIntervalValDisabled] = useState(false);
   const [addScheduleButton, setAddScheduleButton] = useState(true);
   const [Index, setIndex] = useState(0);
+  const [updateMessage, setUpdateMessage] = useState('');
+
   const [template, settemplate] = useState('');
   const [NetworkSelectedAddSchedule, setNetworkSelectedAddSchedule] =
     useState('');
@@ -1355,7 +1357,9 @@ export default function CampaignScheduleScreen(props) {
         totalBudget: totalBudget,
         discount: discount,
       };
-      setspinner(true);
+      setUpdateMessage(`${Subject} has been created successfully.`);
+      // setspinner(true);
+      console.log(JSON.stringify(subimtDataBody));
       var headerFetch = {
         method: 'POST',
         body: JSON.stringify(subimtDataBody),
@@ -3975,7 +3979,9 @@ export default function CampaignScheduleScreen(props) {
                         </View>
                       </View>
                     </View>
-                    <Model modalVisible={modalVisible}></Model>
+                    <Model
+                      modalVisible={modalVisible}
+                      message={updateMessage}></Model>
                     <Spinner
                       visible={spinner}
                       textContent={'Loading...'}
@@ -4008,6 +4014,7 @@ export default function CampaignScheduleScreen(props) {
                     )}
                   </View>
                 ) : null}
+
                 {sheduleSummeryVisible == true ? (
                   <View style={styles.ButtonSubmitView}>
                     <Button

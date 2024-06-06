@@ -29,6 +29,7 @@ import {useRoute} from '@react-navigation/native';
 import {useTheme} from '../../hooks/useTheme';
 import {useUser} from '../../hooks/useUser';
 import servicesettings from '../dataservices/servicesettings';
+import Model from '../../components/Model';
 export default function MyCampaignScreen(props) {
   const {user, isAuthenticated} = useUser();
   const theme = useTheme();
@@ -40,6 +41,8 @@ export default function MyCampaignScreen(props) {
   const [userId, setUserId] = useState('');
   const [orgId, setOrgId] = useState('');
   const [attachmentData, setAttachmentData] = useState('');
+  const [modalVisible, setmodalVisible] = useState(false);
+  const [updateMessage, setUpdateMessage] = useState('');
   const [Search, setSearch] = useState('');
   const [img_Video, setImg_Video] = useState('');
   const [img_VideoType, setImg_VideoType] = useState('');
@@ -65,6 +68,8 @@ export default function MyCampaignScreen(props) {
   const confirm = value => {
     console.log({selectStatusId});
     // setVisible(false);
+    hide();
+
     ClickCampaignStatusChange(value);
   };
   useEffect(() => {
@@ -75,7 +80,6 @@ export default function MyCampaignScreen(props) {
     if (isAuthenticated) {
       setUserId(user.id);
       setOrgId(user.orgid);
-      const date = new Date();
       let headerFetch = {
         method: 'POST',
         body: JSON.stringify({
@@ -214,7 +218,12 @@ export default function MyCampaignScreen(props) {
           responseJson.message != ''
             ? Toast.show(' ' + responseJson.message + ' ')
             : Toast.show('Data updated successfully');
-          Loaddata();
+
+          setmodalVisible(true);
+          setTimeout(() => {
+            setmodalVisible(false);
+            Loaddata();
+          }, 1000);
         } else {
           Toast.showWithGravity(
             'Internet connection failed, try another time !!!',
@@ -246,9 +255,6 @@ export default function MyCampaignScreen(props) {
     }
   }
   function StatusChangeOnClick(props) {
-    console.log('DeleteData click ' + JSON.stringify(props));
-    console.log('DeleteData click ' + JSON.stringify(props.id));
-    console.log('DeleteData click ' + JSON.stringify(props.data.status));
     var value = props.data.status;
 
     if (value == '1') {
@@ -258,8 +264,12 @@ export default function MyCampaignScreen(props) {
       value = '1';
       global.StatusName = 'Delete';
     }
+    console.log(props.title);
     setSelectStatusId(value);
     setCampaignId(props.id);
+    setUpdateMessage(
+      `${props.title} campaign has been ${value == 1 ? 'Activated' : 'Deleted'} successfully`,
+    );
     ClickStatus(value);
   }
   function ClickCampaignStatusChange(value) {
@@ -517,6 +527,7 @@ export default function MyCampaignScreen(props) {
         onEndReachedThreshold={0.1} // Load more data when the user is within 10% of the end
         maxToRenderPerBatch={5} // Render a small batch at a time
       />
+      <Model modalVisible={modalVisible} message={updateMessage}></Model>
       {changeViewVisible == true ? (
         <View style={styles.ChangeActionMainView}>
           <View

@@ -16,8 +16,13 @@ import Alert from '../../components/Alert';
 import Model from '../../components/Model';
 import {colors} from '../../styles';
 import servicesettings from '../dataservices/servicesettings';
+import {useTheme} from '../../hooks/useTheme';
+import {useUser} from '../../hooks/useUser';
 const Password = require('../../../assets/images/icons/Password1.png');
 export default function ForgotPasswordScreen(props) {
+  const theme = useTheme();
+  const {user, isAuthenticated} = useUser();
+
   const [Email, setEmail] = useState('');
   const [Emailfocus, setEmailFocus] = useState(false);
   const customestyleEmail = Emailfocus
@@ -101,14 +106,12 @@ export default function ForgotPasswordScreen(props) {
   };
   /*********************************************************** useEffect *************************************************/
   useEffect(() => {
-    AsyncStorage.getItem('LoginInformation').then(function (res) {
-      let Asyncdata = JSON.parse(res);
-      if (Asyncdata != null) {
-        setEmail(Asyncdata.Email);
-      } else {
-        setEmail('');
-      }
-    });
+    if (isAuthenticated) {
+      setEmail(user.Email);
+    } else {
+      setEmail('');
+    }
+
     console.disableYellowBox = true;
   }, []);
   //******************************************************send email*********************************************************//
@@ -297,7 +300,7 @@ return () => clearInterval(interval)*/
                   />
  */
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {backgroundColor: theme.backgroundColor}]}>
       {spinner == true ? (
         <View style={styles.modalView}>
           <View>
@@ -331,20 +334,26 @@ return () => clearInterval(interval)*/
       <ScrollView>
         <View style={styles.textContainer}>
           <View style={styles.sectionStyleText}>
-            <Text style={styles.lblOTP}>
+            <Text style={[styles.lblOTP, {color: theme.textColor}]}>
               Enter your email and we'll send you a security code to get back
               into your account.
             </Text>
           </View>
           <View
-            style={
+            style={[
               disableemail == true
                 ? customestyleEmail
-                : customestyleEmaildisable
-            }>
+                : customestyleEmaildisable,
+              {backgroundColor: theme.inputBackColor},
+            ]}>
             <TextInput
-              placeholderTextColor="#a2a2a2"
-              style={disableemail == true ? styles.Text : styles.Textdisable}
+              placeholderTextColor={theme.placeholderColor}
+              style={[
+                disableemail == true
+                  ? [styles.Text, {color: theme.textColor}]
+                  : styles.Textdisable,
+                {backgroundColor: theme.inputBackColor, color: theme.textColor},
+              ]}
               editable={disableemail}
               placeholder="Registration email address"
               value={Email}
@@ -358,7 +367,7 @@ return () => clearInterval(interval)*/
           </View>
           <Button
             style={[styles.btnverify, {flexBasis: '47%'}]}
-            bgColor={colors.Blazorbutton}
+            bgColor={theme.buttonBackColor}
             caption="Send Code"
             onPress={() => SendEmail()}
           />
@@ -370,16 +379,22 @@ return () => clearInterval(interval)*/
                 </Text>
               </View>
               <View
-                style={
-                  disablecode == true ? customestyleOTP : customestyleOTPdisable
-                }>
+                style={[
+                  disablecode == true
+                    ? customestyleOTP
+                    : customestyleOTPdisable,
+                  {backgroundColor: theme.inputBackColor},
+                ]}>
                 <TextInput
-                  placeholderTextColor="#a2a2a2"
+                  placeholderTextColor={theme.placeholderColor}
                   clearTextOnFocus={true}
                   editable={disablecode}
-                  style={
-                    disablecode == true ? styles.TextOTP : styles.TextOTPdisable
-                  }
+                  style={[
+                    disablecode == true
+                      ? styles.TextOTP
+                      : styles.TextOTPdisable,
+                    {color: theme.textColor},
+                  ]}
                   value={OTP}
                   onChangeText={value => setOTP(value)}
                   onEndEditing={() => setOTPFocus(false)}
@@ -394,7 +409,7 @@ return () => clearInterval(interval)*/
               </View>
               <Button
                 style={[styles.btnverify, {flexBasis: '47%'}]}
-                bgColor={colors.Blazorbutton}
+                bgColor={theme.buttonBackColor}
                 caption="Verify"
                 onPress={() => CheckVerify()}
               />
@@ -404,11 +419,18 @@ return () => clearInterval(interval)*/
           )}
           {vesible == true ? (
             <View>
-              <View style={customestylePassword}>
-                <Icon name="lock" style={styles.imageStyle} />
+              <View
+                style={[
+                  customestylePassword,
+                  {backgroundColor: theme.inputBackColor},
+                ]}>
+                <Icon
+                  name="lock"
+                  style={[styles.imageStyle, {color: theme.buttonBackColor}]}
+                />
                 <TextInput
-                  placeholderTextColor="#a2a2a2"
-                  style={styles.Text}
+                  placeholderTextColor={theme.placeholderColor}
+                  style={[styles.Text, {color: theme.textColor}]}
                   value={Password}
                   onEndEditing={() => setPasswordFocus(false)}
                   onFocus={() => setPasswordFocus(true)}
@@ -420,11 +442,18 @@ return () => clearInterval(interval)*/
                   maxLength={10}
                 />
               </View>
-              <View style={customestyleConfirmPassword}>
-                <Icon name="lock" style={styles.imageStyle} />
+              <View
+                style={[
+                  customestyleConfirmPassword,
+                  {backgroundColor: theme.inputBackColor},
+                ]}>
+                <Icon
+                  name="lock"
+                  style={[styles.imageStyle, {color: theme.buttonBackColor}]}
+                />
                 <TextInput
-                  placeholderTextColor="#a2a2a2"
-                  style={styles.Text}
+                  placeholderTextColor={theme.placeholderColor}
+                  style={[styles.Text, {color: theme.textColor}]}
                   value={ConfirmPassword}
                   onEndEditing={() => setConfirmPasswordFocus(false)}
                   onFocus={() => setConfirmPasswordFocus(true)}
@@ -439,13 +468,13 @@ return () => clearInterval(interval)*/
               <View style={styles.ButtonView}>
                 <Button
                   style={[styles.btnCancel, {flexBasis: '47%'}]}
-                  bgColor={colors.BlazorCancleButton}
+                  bgColor={theme.buttonBackColor}
                   caption="Cancel"
                   onPress={() => CancelClick()}
                 />
                 <Button
                   style={[styles.btnSubmit, {flexBasis: '47%'}]}
-                  bgColor={colors.Blazorbutton}
+                  bgColor={theme.buttonBackColor}
                   caption="Submit"
                   onPress={() => changeCancelClick()}
                 />
