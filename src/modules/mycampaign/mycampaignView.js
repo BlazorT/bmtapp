@@ -25,7 +25,7 @@ const crossIcon = require('../../../assets/images/cross.png');
 const pdfview = require('../../../assets/images/pdfdownload.png');
 
 import moment from 'moment';
-import {useRoute} from '@react-navigation/native';
+import {useIsFocused, useRoute} from '@react-navigation/native';
 import {useTheme} from '../../hooks/useTheme';
 import {useUser} from '../../hooks/useUser';
 import servicesettings from '../dataservices/servicesettings';
@@ -33,6 +33,7 @@ import Model from '../../components/Model';
 export default function MyCampaignScreen(props) {
   const {user, isAuthenticated} = useUser();
   const theme = useTheme();
+  const isFocused = useIsFocused();
   const route = useRoute();
   global.currentscreen = route.name;
   const [Visible, setVisible] = useState(false);
@@ -73,8 +74,8 @@ export default function MyCampaignScreen(props) {
     ClickCampaignStatusChange(value);
   };
   useEffect(() => {
-    Loaddata();
-  }, []);
+    if (isFocused) Loaddata();
+  }, [isFocused]);
   function Loaddata() {
     setspinner(true);
     if (isAuthenticated) {
