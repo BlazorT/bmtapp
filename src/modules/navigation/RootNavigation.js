@@ -37,7 +37,7 @@ export default function NavigatorView(props) {
           <IconFontAwesome
             name={appTheme == 'dark' ? 'toggle-on' : 'toggle-off'}
             size={28}
-            color={theme.textColor}
+            color={appTheme == 'dark' ? theme.buttonBackColor : theme.textColor}
           />
         </TouchableOpacity>
       </View>

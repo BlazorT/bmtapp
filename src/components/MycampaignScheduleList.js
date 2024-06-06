@@ -82,7 +82,7 @@ export default function MycampaignScheduleList(props) {
             alignItems: 'center',
             justifyContent: 'space-between',
             paddingHorizontal: 5,
-            paddingVertical: 5,
+            paddingVertical: 3,
             borderRadius: 3,
           }}>
           <View>
@@ -92,7 +92,7 @@ export default function MycampaignScheduleList(props) {
               style={styles.socialMediaIcon}
             />
           </View>
-          <View style={{flex: 1, marginLeft: 5, rowGap: 1}}>
+          <View style={{flex: 1, marginLeft: 10, rowGap: 1}}>
             <View
               style={{
                 flex: 1,

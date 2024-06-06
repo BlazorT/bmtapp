@@ -342,7 +342,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
   },
   BottomView: {
-    paddingHorizontal: 12,
+    marginHorizontal: 12,
+    paddingHorizontal: 6,
     paddingTop: 4,
     marginTop: 12,
     margin: 2,
