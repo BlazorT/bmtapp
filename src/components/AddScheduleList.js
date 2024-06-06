@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
 import React, {Fragment, useEffect, useState} from 'react';
 import {
@@ -13,15 +12,14 @@ import {
 import GestureRecognizer from 'react-native-swipe-gestures';
 import Icons from 'react-native-vector-icons/AntDesign';
 import DoubleClick from 'rn-double-click';
-import {colors} from '../styles';
 import {useTheme} from '../hooks/useTheme';
+import {colors} from '../styles';
 //const iconwave = require('../../assets/images/pages/wave.png');
 export default function AddScheduleList(props) {
   const theme = useTheme();
   const [intervalValue, setIntervalValue] = useState();
   const [scheduleSummaryDetailVisible, setScheduleSummaryDetailVisible] =
     useState(false);
-  const [networksSummary, setNetworksSummary] = useState('');
   const [selectedNetwork, setSelectedNetwork] = useState('');
   const [intervalTypeIdSummary, setIntervalTypeIdSummary] = useState('');
   const [networkCount, setNetworkCount] = useState('');
@@ -29,24 +27,11 @@ export default function AddScheduleList(props) {
   const [startDateSummary, setStartDateSummary] = useState('');
   const [endDateSummary, setEndDateSummary] = useState('');
   const [selectDaysSummary, setSelectDaysSummary] = useState('');
-  const [selectSunSummary, setSelectSunSummary] = useState('');
   const [orgCurrencyName, setOrgCurrencyName] = useState('');
-  const [selectMonSummary, setSelectMonSummary] = useState('');
-  const [selectTueSummary, setSelectTueSummary] = useState('');
-  const [selectWedSummary, setSelectWedSummary] = useState('');
-  const [selectThuSummary, setSelectThuSummary] = useState('');
-  const [selectFriSummary, setSelectFriSummary] = useState('');
-  const [selectSatSummary, setSelectSatSummary] = useState('');
-  const [networkTotalPriceSummary, setNetworkTotalPriceSummary] = useState('');
+  const [Buttonsvisible, setButtonsvisible] = useState(false);
   const [randomSummary, setRandomSummary] = useState('');
-  const [networkTotalPrice, setNetworkTotalPrice] = useState();
   const [statusSummary, setStatusSummary] = useState('');
   const [isFixedSummary, setIsFixedSummary] = useState('');
-
-  // var propsdetail = props.props;
-  //const uniqueNames = propsdetail.filter((val, randomId, array) => {
-  //return array.indexOf(val) == randomId;
-  //});
 
   useEffect(() => {
     if (
@@ -73,7 +58,6 @@ export default function AddScheduleList(props) {
     }
     setSelectedNetwork(props.networkSelectSocialMedia);
     var NetworkTotalBudget = props.budget;
-    setNetworkTotalPrice(NetworkTotalBudget);
     //var networkcountVal = props.networkSelectSocialMedia;
     if (
       props.props.CompaignNetworks == '' ||
@@ -93,39 +77,6 @@ export default function AddScheduleList(props) {
     }
     //setNetworkCount('2');
   }, []);
-  //export default class Myvehicle extends PureComponent {
-  //const Condition = [{src: 0},{src: 1}];
-
-  const [Buttonsvisible, setButtonsvisible] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [CancelVisible, setCancelVisible] = useState(false);
-  const [NetworkVisible, setNetworkVisible] = useState(false);
-  const [config, SetConfig] = useState(false);
-  const [CompleteVisible, setCompleteVisible] = useState(false);
-  const [modalVisiblecamera, setModalVisiblecamera] = useState(false);
-  const [demandfocus, setDemandfocus] = useState(false);
-  const [sidebarshowhide, setsidebarshowhide] = useState(false);
-
-  // const [numberSend, setNumberSend] = useState('');
-  //const [status, setStatus] = useState('');
-  //const [name, setName] = useState('');
-  // const [networkId, setNetworkId] = useState('');
-  const [title, setTitle] = useState('');
-  const [orgName, setOrgName] = useState('');
-  const [networkName, setNetworkName] = useState('');
-  const [contact, setContact] = useState('');
-  const [budget, setBudget] = useState('');
-  const [discount, setDiscount] = useState('');
-  const [hashTags, setHashTags] = useState('');
-  const [description, setDescription] = useState('');
-
-  const [approvalTime, setApprovalTime] = useState('');
-  const [startTime, setStartTime] = useState('');
-  const [finishTime, setFinishTime] = useState('');
-  //const [data, setData] = useState([]);
-  //const [myData, setMyData] = useState([]);
-
-  //const [compaignNetworksAllData, setcompaignNetworksAllData] = useState('');
 
   function Edit_Add_DeleteClick() {
     setButtonsvisible(true);
@@ -145,9 +96,7 @@ export default function AddScheduleList(props) {
   }
   function ScheduleDetail(props) {
     var PropsDetail = props.props;
-    setNetworksSummary(PropsDetail.networkId);
     setIntervalSummary(PropsDetail.interval);
-    setNetworkTotalPriceSummary(PropsDetail.NetworkTotalBudget);
     setOrgCurrencyName(props.orgCurrencyName);
     setStartDateSummary(PropsDetail.startTime);
     setEndDateSummary(PropsDetail.finishTime);
@@ -174,13 +123,6 @@ export default function AddScheduleList(props) {
         setIntervalTypeIdSummary('Other');
       }
       //
-      AsyncStorage.getItem('networkDataForDetail').then(function (res) {
-        let Asyncdata = JSON.parse(res);
-        if (Asyncdata != null) {
-          // );
-          setNetworkDescriptionList(Asyncdata.desc);
-        }
-      });
     }
     if (PropsDetail.status != null || PropsDetail.status != '') {
       var SelectstatusCheck = PropsDetail.status;
@@ -246,7 +188,7 @@ export default function AddScheduleList(props) {
         ]}>
         <GestureRecognizer
           onSwipeLeft={() => Edit_Add_DeleteClick()}
-          config={config}>
+          config={false}>
           <DoubleClick onClick={() => ScheduleDetail(props)}>
             <View style={{flexDirection: 'row', height: 25}}>
               <View style={styles.ScheduleRowDataSmall}>

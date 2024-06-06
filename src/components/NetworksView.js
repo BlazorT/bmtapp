@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
 import React, {Fragment, useEffect, useState} from 'react';
 import {
@@ -9,8 +8,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {colors, fonts} from '../styles';
 import {useTheme} from '../hooks/useTheme';
+import {useUser} from '../hooks/useUser';
+import {colors, fonts} from '../styles';
 const checkedCheckbox = require('../../assets/images/checkboxchecked.png');
 const uncheckedCheckbox = require('../../assets/images/checkboxunchecked.png');
 const EmailIcon = require('../../assets/images/Email.png');
@@ -24,11 +24,12 @@ const SMSIcon = require('../../assets/images/SMS.png');
 const FacebookIcon = require('../../assets/images/Facebook.png');
 export default function NetworksView(props) {
   const theme = useTheme();
+  const {user} = useUser();
 
   const [selectSocialMediaNetwork, setSelectSocialMediaNetwork] =
     useState(false);
   const [selectNetworkId, setSelectNetworkId] = useState('');
-  const [socialmediaIcon, setSocialmediaIcon] = useState();
+  const [socialmediaIcon, setSocialmediaIcon] = useState(SMSIcon);
   useEffect(() => {
     //);
     if (props.networkData.length <= 1) {
@@ -70,98 +71,97 @@ export default function NetworksView(props) {
   function NetworkSelect(props) {
     //
     //
-    AsyncStorage.getItem('LoginInformation').then(function (res) {
-      let Asyncdata = JSON.parse(res);
-      global.NextSchedule = 0;
-      if (selectNetworkId.length >= 0) {
-        if (selectSocialMediaNetwork == true) {
-          setSelectSocialMediaNetwork(false);
-          var currentdate = new Date();
-          var SelectProps = {
-            networkId: props.networkId,
-            orgId: Number(props.orgId),
-            rowVer: 0,
-            purchasedQouta: props.purchasedQouta,
-            unitPriceInclTax: props.unitPriceInclTax,
-            usedQuota: props.usedQuota,
-            compaignId: 0,
-            id: 0,
-            desc: props.networkDesc,
-            status: 1,
-            createdBy: Number(Asyncdata[0].id),
-            lastUpdatedBy: Number(Asyncdata[0].id),
-            createdAt: moment.utc(currentdate).format(),
-            lastUpdatedAt: moment.utc(currentdate).format(),
-          };
-          props.ActionNetworkDataRemoveClick(SelectProps);
-        }
-        if (selectSocialMediaNetwork == false) {
-          var SelectProps = {
-            networkId: props.networkId,
-            orgId: Number(props.orgId),
-            rowVer: 0,
-            purchasedQouta: props.purchasedQouta,
-            unitPriceInclTax: props.unitPriceInclTax,
-            usedQuota: props.usedQuota,
-            compaignId: 0,
-            id: 0,
-            desc: props.networkDesc,
-            status: 1,
-            createdBy: Number(Asyncdata[0].id),
-            lastUpdatedBy: Number(Asyncdata[0].id),
-            createdAt: moment.utc(currentdate).format(),
-            lastUpdatedAt: moment.utc(currentdate).format(),
-          };
-          setSelectSocialMediaNetwork(true);
-          props.ActionNetworkDataClick(SelectProps);
-        }
-      } else if (
-        selectNetworkId.length >= 1 ||
-        selectNetworkId == props.networkId
-      ) {
-        if (selectSocialMediaNetwork == true) {
-          setSelectSocialMediaNetwork(false);
-          var currentdate = new Date();
-          var SelectProps = {
-            networkId: props.networkId,
-            orgId: Number(Asyncdata[0].orgid),
-            rowVer: 0,
-            purchasedQouta: props.purchasedQouta,
-            unitPriceInclTax: props.unitPriceInclTax,
-            usedQuota: props.usedQuota,
-            compaignId: 0,
-            id: 0,
-            desc: props.networkDesc,
-            status: 1,
-            createdBy: Number(Asyncdata[0].id),
-            lastUpdatedBy: Number(Asyncdata[0].id),
-            createdAt: moment.utc(currentdate).format(),
-            lastUpdatedAt: moment.utc(currentdate).format(),
-          };
-          props.ActionNetworkDataRemoveClick(SelectProps);
-        }
-        if (selectSocialMediaNetwork == false) {
-          var SelectProps = {
-            networkId: props.networkId,
-            orgId: Number(Asyncdata[0].orgid),
-            rowVer: 0,
-            purchasedQouta: props.purchasedQouta,
-            unitPriceInclTax: props.unitPriceInclTax,
-            usedQuota: props.usedQuota,
-            compaignId: 0,
-            id: 0,
-            desc: props.networkDesc,
-            status: 1,
-            createdBy: Number(Asyncdata[0].id),
-            lastUpdatedBy: Number(Asyncdata[0].id),
-            createdAt: moment.utc(currentdate).format(),
-            lastUpdatedAt: moment.utc(currentdate).format(),
-          };
-          setSelectSocialMediaNetwork(true);
-          props.ActionNetworkDataClick(SelectProps);
-        }
+    const Asyncdata = user;
+    console.log({user});
+    global.NextSchedule = 0;
+    if (selectNetworkId.length >= 0) {
+      if (selectSocialMediaNetwork == true) {
+        setSelectSocialMediaNetwork(false);
+        var currentdate = new Date();
+        var SelectProps = {
+          networkId: props.networkId,
+          orgId: Number(props.orgId),
+          rowVer: 0,
+          purchasedQouta: props.purchasedQouta,
+          unitPriceInclTax: props.unitPriceInclTax,
+          usedQuota: props.usedQuota,
+          compaignId: 0,
+          id: 0,
+          desc: props.networkDesc,
+          status: 1,
+          createdBy: Number(Asyncdata.id),
+          lastUpdatedBy: Number(Asyncdata.id),
+          createdAt: moment.utc(currentdate).format(),
+          lastUpdatedAt: moment.utc(currentdate).format(),
+        };
+        props.ActionNetworkDataRemoveClick(SelectProps);
       }
-    });
+      if (selectSocialMediaNetwork == false) {
+        var SelectProps = {
+          networkId: props.networkId,
+          orgId: Number(props.orgId),
+          rowVer: 0,
+          purchasedQouta: props.purchasedQouta,
+          unitPriceInclTax: props.unitPriceInclTax,
+          usedQuota: props.usedQuota,
+          compaignId: 0,
+          id: 0,
+          desc: props.networkDesc,
+          status: 1,
+          createdBy: Number(Asyncdata.id),
+          lastUpdatedBy: Number(Asyncdata.id),
+          createdAt: moment.utc(currentdate).format(),
+          lastUpdatedAt: moment.utc(currentdate).format(),
+        };
+        setSelectSocialMediaNetwork(true);
+        props.ActionNetworkDataClick(SelectProps);
+      }
+    } else if (
+      selectNetworkId.length >= 1 ||
+      selectNetworkId == props.networkId
+    ) {
+      if (selectSocialMediaNetwork == true) {
+        setSelectSocialMediaNetwork(false);
+        var currentdate = new Date();
+        var SelectProps = {
+          networkId: props.networkId,
+          orgId: Number(Asyncdata.orgid),
+          rowVer: 0,
+          purchasedQouta: props.purchasedQouta,
+          unitPriceInclTax: props.unitPriceInclTax,
+          usedQuota: props.usedQuota,
+          compaignId: 0,
+          id: 0,
+          desc: props.networkDesc,
+          status: 1,
+          createdBy: Number(Asyncdata.id),
+          lastUpdatedBy: Number(Asyncdata.id),
+          createdAt: moment.utc(currentdate).format(),
+          lastUpdatedAt: moment.utc(currentdate).format(),
+        };
+        props.ActionNetworkDataRemoveClick(SelectProps);
+      }
+      if (selectSocialMediaNetwork == false) {
+        var SelectProps = {
+          networkId: props.networkId,
+          orgId: Number(Asyncdata[0].orgid),
+          rowVer: 0,
+          purchasedQouta: props.purchasedQouta,
+          unitPriceInclTax: props.unitPriceInclTax,
+          usedQuota: props.usedQuota,
+          compaignId: 0,
+          id: 0,
+          desc: props.networkDesc,
+          status: 1,
+          createdBy: Number(Asyncdata.id),
+          lastUpdatedBy: Number(Asyncdata.id),
+          createdAt: moment.utc(currentdate).format(),
+          lastUpdatedAt: moment.utc(currentdate).format(),
+        };
+        setSelectSocialMediaNetwork(true);
+        props.ActionNetworkDataClick(SelectProps);
+      }
+    }
   }
   return (
     <Fragment>

@@ -1,16 +1,35 @@
 <resources>
-<!-- Base application theme. -->
-<style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-<!-- Customize your theme here. -->
-<item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
-<item name="android:datePickerDialogTheme">@style/Dialog.Theme</item>
-<item name="android:timePickerDialogTheme">@style/Dialog.Theme</item>
-</style>
-<!-- Configuration for Dialog.theme. -->
-<style name="Dialog.Theme" parent="Theme.AppCompat.Light.Dialog">
-<!-- BackgroundColor of the date modal -->
-<item name="colorAccent">#c9c9c9</item>
-<!-- Change textColor of the date modal -->
-<item name="android:textColorPrimary">#000000</item>
-</style>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+      <!-- Customize your theme here. -->
+      <item name="android:windowBackground">@color/background</item>
+      <item name="colorPrimary">@color/foreground</item>
+      <item name="colorPrimaryDark">@color/darkgrey</item>
+      <item name="android:navigationBarColor">@color/darkgrey</item>
+      <item name="colorAccent">@color/highlight</item>
+      <item name="android:datePickerDialogTheme">@style/MyDatePickerDialogTheme</item>
+   </style>
+   
+   <style name="MyDatePickerDialogTheme" parent="android:Theme.Material.Light.Dialog">
+      <!-- If you want you can override only colorAccent -->
+      <item name="colorPrimary">@color/foreground</item>
+      <item name="colorPrimaryDark">@color/foreground</item>
+      <item name="android:colorAccent">@color/highlight</item>
+      
+      <!-- Or you can change very item color -->
+      <item name="android:datePickerStyle">@style/MyDatePickerStyle</item>
+   </style>
+   
+   <style name="MyDatePickerStyle" parent="@android:style/Widget.Material.Light.DatePicker">
+      <item name="android:headerBackground">@color/highlight</item>
+      <item name="android:dayOfWeekBackground">@color/highlight</item>
+      <item name="android:dayOfWeekTextAppearance">@color/highlight</item>
+      <item name="android:headerMonthTextAppearance">@color/highlight</item>
+      <item name="android:headerDayOfMonthTextAppearance">@color/highlight</item>
+      <item name="android:headerYearTextAppearance">@color/highlight</item>
+      <item name="android:yearListItemTextAppearance">@color/highlight</item>
+      <item name="android:yearListSelectorColor">@color/highlight</item>
+      <item name="android:calendarTextColor">@color/highlight</item>
+   </style>
 </resources>

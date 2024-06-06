@@ -1,3 +1,4 @@
+// External Libraries
 import moment from 'moment';
 import React, {Fragment, useEffect, useState} from 'react';
 import {
@@ -12,85 +13,73 @@ import {
 } from 'react-native';
 import Toast from 'react-native-simple-toast';
 import GestureRecognizer from 'react-native-swipe-gestures';
+
+// Icons
 import Icons from 'react-native-vector-icons/AntDesign';
 import Icon from 'react-native-vector-icons/FontAwesome';
+
+// Components
 import DoubleClick from 'rn-double-click';
-import MycampaignScheduleList from '.././components/MycampaignScheduleList';
-import NetworkMycampaign from '.././components/NetworkMycampaign';
-import networknamesettings from '.././modules/dataservices/networknamesettings';
-import servicesettings from '.././modules/dataservices/servicesettings';
+import MycampaignScheduleList from '../components/MycampaignScheduleList';
+import NetworkMycampaign from '../components/NetworkMycampaign';
+
+// Services
+import servicesettings from '../modules/dataservices/servicesettings';
+
+// Hooks
 import {useTheme} from '../hooks/useTheme';
+
+// Styles
 import {colors} from '../styles';
 
-const BDMT = require('../../assets/images/pepsilogo.png');
-const deleteicon = require('../../assets/images/deleteicon.png');
-const playicon = require('../../assets/images/playicon.png');
-const pauseicon = require('../../assets/images/pauseicon.png');
-const AttachmentIcon = require('../../assets/images/attachment.png');
+// Images
+import AttachmentIcon from '../../assets/images/attachment.png';
+import AutoGenerateYes from '../../assets/images/autogenerateyes.png';
+import deleteicon from '../../assets/images/deleteicon.png';
+import pauseicon from '../../assets/images/pauseicon.png';
+import BDMT from '../../assets/images/pepsilogo.png';
+import playicon from '../../assets/images/playicon.png';
 
-const AutoGenerateYes = require('../../assets/images/autogenerateyes.png');
 export default function Myvehicle(props) {
   const theme = useTheme();
-  useEffect(() => {
-    clickForDetailother();
-
-    setNetworkId(networknamesettings(props.networkId));
-  }, []);
 
   const [Buttonsvisible, setButtonsvisible] = useState(false);
   const [onImageError, setOnImageError] = useState(false);
   const [isImageError, setIsImageError] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
   const [NetworkVisible, setNetworkVisible] = useState(false);
   const [CampaignVisible, setCampaignVisible] = useState(false);
   const [ScheduleVisible, setScheduleVisible] = useState(false);
-  const [config, SetConfig] = useState(false);
   const [modalVisiblecamera, setModalVisiblecamera] = useState(false);
   const [sidebarshowhide, setsidebarshowhide] = useState(false);
-
   const [attachmentDataList, setAttachmentDataList] = useState('');
   const [name, setName] = useState('');
-  const [networkId, setNetworkId] = useState('');
-  const [title, setTitle] = useState('');
-  const [orgName, setOrgName] = useState('');
-  const [networkName, setNetworkName] = useState('');
   const [contact, setContact] = useState('');
   const [totalBudget, setTotalBudget] = useState('');
   const [discount, setDiscount] = useState('');
   const [hashTags, setHashTags] = useState('');
   const [description, setDescription] = useState('');
-  const [approvalTime, setApprovalTime] = useState('');
   const [startTime, setStartTime] = useState('');
   const [finishTime, setFinishTime] = useState('');
   const [networkCount, setNetworkCount] = useState('');
-  const [networkIcon, setNetworkIcon] = useState('');
   const [networkData, setNetworkData] = useState([]);
   const [campaignScheduleData, setCampaignScheduleData] = useState([]);
 
-  const [myData, setMyData] = useState([]);
-  const [networkIDList, setNetworkIDList] = useState([]);
-  const [networkIDList1, setNetworkIDList1] = useState([]);
-  const [networkIDList2, setNetworkIDList2] = useState([]);
-  const [networkIDList3, setNetworkIDList3] = useState([]);
-  const [networkIDList4, setNetworkIDList4] = useState([]);
-  //const [compaignNetworksAllData, setcompaignNetworksAllData] = useState('');
+  useEffect(() => {
+    clickForDetailother();
+  }, []);
+
   function Edit_CancelClick() {
     setButtonsvisible(true);
   }
   function clickButtonsvisible() {
-    //
     setButtonsvisible(false);
   }
 
   const clickForDetailother = async () => {
-    //console.log('clickForDetailother clickForDetailother ' + JSON.stringify(props.data));
-    //console.log('clickForDetailother clickForDetailother networkData ' + JSON.stringify(networkData));
     var AttachmentCount = props.data.attachments.length;
     setAttachmentDataList(AttachmentCount);
     //
     let itemCount;
-    const cam = props.data.compaignsdetails;
-    // console.log({cam});
     if (
       props.data.compaignsdetails != null ||
       props.data.compaignsdetails != ''
@@ -103,37 +92,6 @@ export default function Myvehicle(props) {
     } else {
       setNetworkCount(0);
     }
-    var myCampaignDetail = props;
-    // console.log('myCampaignDetail myCampaignDetail ' + myCampaignDetail.id + JSON.stringify(myCampaignDetail.compaignNetworks));
-    // console.log(myCampaignDetail.compaignNetworks);
-    if (
-      myCampaignDetail.compaignNetworks != '' &&
-      myCampaignDetail.compaignNetworks != null &&
-      myCampaignDetail.compaignNetworks.length >= 4
-    ) {
-      //console.log('myCampaignDetail not empty ' + JSON.stringify(myCampaignDetail));
-
-      setNetworkIDList(
-        JSON.parse(myCampaignDetail.compaignNetworks)[0].networkId,
-      );
-      setNetworkIDList1(
-        JSON.parse(myCampaignDetail.compaignNetworks)[1].networkId,
-      );
-      setNetworkIDList2(
-        JSON.parse(myCampaignDetail.compaignNetworks)[2].networkId,
-      );
-      setNetworkIDList3(
-        JSON.parse(myCampaignDetail.compaignNetworks)[3].networkId,
-      );
-      setNetworkIDList4(
-        JSON.parse(myCampaignDetail.compaignNetworks)[4].networkId,
-      );
-      //
-      //console.log('myCampaignDetail ' + JSON.stringify(JSON.parse(myCampaignDetail.compaignNetworks)));
-      // MyData(JSON.parse(myCampaignDetail.compaignNetworks));
-    }
-
-    //console.log('myData myData ' + JSON.stringify(myData));
   };
   const UpdateCampaign = async props => {
     global.UpdateCampaign = 1;
@@ -141,10 +99,6 @@ export default function Myvehicle(props) {
     props.OpenUpdateCampaign(props);
   };
   const clickForDetail = async props => {
-    //console.log('clickForDetail click ' + JSON.stringify(props));
-
-    // console.log('clickForDetail network network network network network  ' + JSON.stringify());
-    //myCampaignDetail = [{img: this.props}];
     global.Network_Detail = 1;
     setModalVisiblecamera(true);
     setNetworkVisible(true);
@@ -154,24 +108,16 @@ export default function Myvehicle(props) {
     setNetworkData(JSON.parse(props.data.compaignsdetails));
     setCampaignScheduleData(JSON.parse(props.data.compaignschedules));
     setName(myCampaignDetail.name);
-    setTitle(myCampaignDetail.title);
-    setOrgName(myCampaignDetail.orgName);
     //setNetworkName(myCampaignDetail.networkName);
     setContact(myCampaignDetail.contact);
     setTotalBudget(myCampaignDetail.totalBudget);
     setDiscount(myCampaignDetail.discount);
     setHashTags(myCampaignDetail.hashTags);
     setDescription(myCampaignDetail.description);
-    setApprovalTime(myCampaignDetail.approvalTime);
     setStartTime(myCampaignDetail.startTime);
     setFinishTime(myCampaignDetail.finishTime);
-
-    const namesArray = networkData.map(item => item.networkName.split(','));
-    setNetworkName(namesArray);
   };
-  function CancelShow() {
-    setButtonsvisible(false);
-  }
+
   function CloseModalDetail() {
     setModalVisiblecamera(false);
   }
@@ -218,10 +164,10 @@ export default function Myvehicle(props) {
     );
   }
 
-  function SettingClickForChange(props) {
-    console.log('SettingClickForChange click ' + JSON.stringify(props));
+  function SettingClickForChange(data) {
+    console.log('SettingClickForChange click ' + JSON.stringify(data));
     // props.SettingClickForChange(props);
-    props.SettingClickForChangeFlatList(props);
+    props.SettingClickForChangeFlatList(data);
   }
   const ClickDeleteData = async props => {
     props.StatusChangeOnClick(props);
@@ -256,17 +202,16 @@ export default function Myvehicle(props) {
       <GestureRecognizer
         onSwipeLeft={() => Edit_CancelClick()}
         onSwipeRight={() => Edit_CancelClick()}
-        config={config}>
+        config={false}>
         <DoubleClick onClick={() => CompleteShow(props)}>
           <View
             style={[
               styles.item,
               {
                 backgroundColor: theme.cardBackColor,
-                // borderColor: theme.cardBackColor,
               },
             ]}>
-            {Buttonsvisible == true ? (
+            {Buttonsvisible && (
               <View style={styles.SwipeButtonView}>
                 <View
                   style={{
@@ -314,7 +259,7 @@ export default function Myvehicle(props) {
                   </TouchableOpacity>
                 </View>
               </View>
-            ) : null}
+            )}
             <TouchableOpacity
               style={
                 props.data.status != 1
@@ -322,7 +267,7 @@ export default function Myvehicle(props) {
                   : styles.CampaignStatusActive
               }
               onPress={() => clickForDetail(props)}>
-              <View style={{width: 15 + '%'}}>
+              <View>
                 {props.logoAvatar == '' ||
                 props.logoAvatar == null ||
                 isImageError ? (
@@ -344,37 +289,51 @@ export default function Myvehicle(props) {
                   />
                 )}
               </View>
-              <View style={{width: 84 + '%', marginLeft: 5, paddingTop: 6}}>
-                <View style={{flex: 1, flexDirection: 'row'}}>
-                  <Text style={[styles.TitleStyle, {color: theme.textColor}]}>
-                    {props.title == '' ? props.orgName : props.title}
-                  </Text>
-                  <View style={styles.ActionButtonView}>
-                    {attachmentDataList != 0 || attachmentDataList != '' ? (
+              <View
+                style={{
+                  flex: 1,
+                  height: 70,
+                  paddingVertical: 10,
+                }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                  }}>
+                  <View style={{justifyContent: 'center'}}>
+                    <Text style={[styles.TitleStyle, {color: theme.textColor}]}>
+                      {props.title == '' ? props.orgName : props.title}
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      columnGap: 5,
+                      marginRight: 5,
+                    }}>
+                    {(attachmentDataList != 0 || attachmentDataList != '') && (
                       <TouchableOpacity
                         style={styles.settingIconView}
                         onPress={() => AttachmentPreview(props)}>
                         <Image
                           source={AttachmentIcon}
-                          style={styles.attachmentIcon}
+                          style={[
+                            styles.attachmentIcon,
+                            {tintColor: theme.tintColor},
+                          ]}
                         />
                       </TouchableOpacity>
-                    ) : (
-                      <TouchableOpacity
-                        style={styles.settingIconView}></TouchableOpacity>
                     )}
-                    <View style={{width: 35 + '%', paddingLeft: 5}}>
-                      <Text
-                        style={[
-                          styles.NetworkCountView,
-                          {
-                            color: theme.textColor,
-                            backgroundColor: theme.buttonBackColor,
-                          },
-                        ]}>
-                        {networkCount}
-                      </Text>
-                    </View>
+                    <Text
+                      style={[
+                        styles.NetworkCountView,
+                        {
+                          color: theme.textColor,
+                          backgroundColor: theme.buttonBackColor,
+                        },
+                      ]}>
+                      {networkCount}
+                    </Text>
                     <TouchableOpacity
                       style={styles.settingIconView}
                       onPress={() => SettingClickForChange(props)}>
@@ -1067,12 +1026,7 @@ export default function Myvehicle(props) {
 }
 const styles = StyleSheet.create({
   TitleStyle: {
-    marginRight: 2 + '%',
-    paddingTop: 8,
     fontSize: 15,
-    // color: ,
-    width: 60 + '%',
-    //backgroundColor:'green'
   },
   ActionButtonView: {
     width: 38 + '%',
@@ -1083,27 +1037,26 @@ const styles = StyleSheet.create({
   },
   CampaignStatusActive: {
     width: 100 + '%',
+    height: 70,
     borderColor: 'red',
     borderWidth: 2,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     borderColor: colors.PagePanelTab,
     borderWidth: 1,
     borderRadius: 5,
   },
   CampaignStatusInactive: {
-    width: 100 + '%',
+    height: 70,
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    // backgroundColor: colors.PagePanelTab,
     borderColor: colors.red,
     borderWidth: 1,
     borderRadius: 5,
   },
   NetworkCountView: {
-    marginTop: 3,
-    marginRight: 12,
-    // marginLeft: 12,
     paddingTop: 6,
     backgroundColor: '#1da1f2',
     width: 29,
@@ -1113,13 +1066,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     textAlign: 'center',
   },
-  settingIconView: {
-    //marginRight: 12,
-    paddingTop: 2,
-    // color: theme.textColor,
-    width: 29 + '%',
-    //backgroundColor:'green'
-  },
+  settingIconView: {},
   attachmentIcon: {
     height: 29,
     width: 29,
@@ -1260,11 +1207,10 @@ const styles = StyleSheet.create({
   },
   StartTime: {
     //marginLeft: 10,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.TextColorOther,
   },
   FinishTime: {
-    marginLeft: 10,
     fontSize: 15,
     color: colors.TextColorOther,
   },
@@ -1273,9 +1219,6 @@ const styles = StyleSheet.create({
     width: 24,
     marginHorizontal: 6,
     marginTop: 2,
-    //color: '#25d366',
-    //textAlign: 'right',
-    // backgroundColor:'gray',
   },
   ButtonView: {
     position: 'absolute',
@@ -1314,21 +1257,19 @@ const styles = StyleSheet.create({
     //bottom: 5,
   },
   ItemDetailViewsecond: {
-    marginLeft: 1 + '%',
     flexDirection: 'row',
-    marginTop: 2 + '%',
-    width: 100 + '%',
-    marginBottom: 3 + '%',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    // backgroundColor: 'red',
+    marginRight: 5,
   },
   Itemdetail: {
-    flexDirection: 'row',
-    width: 45 + '%',
-    //backgroundColor:'red'
-    //width: Dimensions.get('window').width,
+    // flexDirection: 'row',
+    // width: 45 + '%',
   },
   ItemdetailMiddle: {
-    flexDirection: 'row',
-    width: 8 + '%',
+    // flexDirection: 'row',
+    // width: 8 + '%',
   },
   item: {
     marginTop: 3 + '%',
@@ -1346,14 +1287,12 @@ const styles = StyleSheet.create({
     paddingTop: 12,
   },
   ProfileStyle: {
-    // marginTop:5,
-    marginRight: 5,
-    marginLeft: 5,
+    // marginRight: 5,
+    // marginLeft: 5,
+    marginHorizontal: 5,
     borderRadius: 1,
     borderColor: colors.red,
-    //backgroundColor: "blue",
     borderWidth: 0.6,
-    //backgroundColor: "#e7e9eb59",
     borderRadius: 50,
     height: 50,
     width: 50,

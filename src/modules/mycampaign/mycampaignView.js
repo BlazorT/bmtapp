@@ -19,6 +19,7 @@ import {TextInput} from '../../components';
 import Alert from '../../components/Alert';
 import Mycampaign from '../../components/Mycampaign';
 import {colors} from '../../styles';
+import BDMT from '../../../assets/images/pepsilogo.png';
 const deleteicon = require('../../../assets/images/deleteicon.png');
 const crossIcon = require('../../../assets/images/cross.png');
 const pdfview = require('../../../assets/images/pdfdownload.png');
@@ -44,6 +45,8 @@ export default function MyCampaignScreen(props) {
   const [img_VideoType, setImg_VideoType] = useState('');
   const [searchBudget, setSearchBudget] = useState('');
   const [selectedCampaingId, setSelectedCampaingId] = useState('');
+  const [attachmentImageError, setAttachmentImageError] = useState(false);
+  const [attachmentVideoError, setAttachmentVideoError] = useState(false);
   const [selectStatusId, setSelectStatusId] = useState('');
   const [selectedCampaingStatus, setSelectedCampaingStatus] = useState('');
   const [campaignId, setCampaignId] = useState(0);
@@ -229,9 +232,10 @@ export default function MyCampaignScreen(props) {
         );
       });
   }
-  function SettingClickForChangeFlatList(props) {
-    const campaignStatus = props;
-    console.log(campaignStatus.id, campaignStatus.data.status);
+  function SettingClickForChangeFlatList(campaignData) {
+    const campaignStatus = campaignData;
+    console.log({campaignStatus});
+    // console.log(campaignStatus.id, campaignStatus.data.status);
     setSelectedCampaingStatus(campaignStatus.data.status);
     setSelectedCampaingId(campaignStatus.id);
     if (changeViewVisible == true) {
@@ -340,7 +344,7 @@ export default function MyCampaignScreen(props) {
   const Item = ({image, Id}) => (
     <View style={{textAlign: 'center', marginVertical: 8}}>
       <ScrollView>
-        {image.split('.')[1] == 'mp4' ? (
+        {image.split('.')[1] == 'mp4' && !attachmentVideoError ? (
           <TouchableOpacity onPress={() => AttachmentFullViewClick(image)}>
             <Video
               resizeMode={'stretch'}
@@ -354,10 +358,17 @@ export default function MyCampaignScreen(props) {
                   image.replace(/\\/g, '/').replace(',', '').replace(' //', ''),
               }}
               style={{height: 185, width: 100 + '%'}}
+              onError={() => {
+                setAttachmentVideoError(true);
+              }}
             />
           </TouchableOpacity>
-        ) : null}
-        {image.split('.')[1] != 'pdf' && image.split('.')[1] != 'mp4' ? (
+        ) : (
+          <Image source={BDMT} style={styles.AttachmentImage} />
+        )}
+        {image.split('.')[1] != 'pdf' &&
+        image.split('.')[1] != 'mp4' &&
+        !attachmentImageError ? (
           <TouchableOpacity onPress={() => AttachmentFullViewClick(image)}>
             <Image
               resizeMode="contain"
@@ -367,10 +378,15 @@ export default function MyCampaignScreen(props) {
                   image.replace(/\\/g, '/').replace(',', '').replace(' //', ''),
               }}
               style={styles.AttachmentImage}
+              onError={() => {
+                setAttachmentImageError(true);
+              }}
             />
           </TouchableOpacity>
-        ) : null}
-        {image.split('.')[1] == 'pdf' ? (
+        ) : (
+          <Image source={BDMT} style={styles.AttachmentImage} />
+        )}
+        {image.split('.')[1] == 'pdf' && (
           <TouchableOpacity
             style={{marginBottom: 12}}
             onPress={() => PDFDownloadClick(image)}>
@@ -380,7 +396,7 @@ export default function MyCampaignScreen(props) {
               style={styles.AttachmentPdf}
             />
           </TouchableOpacity>
-        ) : null}
+        )}
       </ScrollView>
     </View>
   );
@@ -510,7 +526,7 @@ export default function MyCampaignScreen(props) {
             ]}>
             <TouchableOpacity
               style={styles.closeIconView}
-              onPress={() => SettingClickForChangeFlatList()}>
+              onPress={() => setChangeViewVisible(false)}>
               <Icons
                 name="close"
                 style={[styles.closeIcon, {color: theme.tintColor}]}
@@ -587,10 +603,15 @@ export default function MyCampaignScreen(props) {
               <TouchableOpacity
                 style={styles.closeIconView}
                 onPress={() => setAttachmentViewVisible(false)}>
-                <Icons name="close" style={styles.closeIcon} />
+                <Icons
+                  name="close"
+                  style={[styles.closeIcon, {color: theme.tintColor}]}
+                />
               </TouchableOpacity>
               <View style={styles.ChangeActionPictureView}>
                 <FlatList
+                  nestedScrollEnabled={true}
+                  scrollEnabled={false}
                   data={attachmentData}
                   renderItem={({item}) => (
                     <Item image={item.image} Id={item.Id} />

@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
 import React, {Fragment, useEffect, useState} from 'react';
 import {
@@ -9,21 +8,15 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {colors, fonts} from '../styles';
 import {useTheme} from '../hooks/useTheme';
+import {useUser} from '../hooks/useUser';
+import {colors, fonts} from '../styles';
 const checkedCheckbox = require('../../assets/images/checkboxchecked.png');
 const uncheckedCheckbox = require('../../assets/images/checkboxunchecked.png');
-const EMAIL = require('../../assets/images/Email.png');
-const INSTAGRAM = require('../../assets/images/instagram.png');
-const LINKEDIN = require('../../assets/images/linkedin.png');
-const SNAPCHAT = require('../../assets/images/snapchat.png');
-const TIKTOCK = require('../../assets/images/tiktok.png');
-const WHATSAPP = require('../../assets/images/Whatsapp.png');
-const TWITTER = require('../../assets/images/Twitter.png');
-const SMS = require('../../assets/images/SMS.png');
-const FACEBOOK = require('../../assets/images/Facebook.png');
+
 export default function NetworksSelectedView(props) {
   const theme = useTheme();
+  const {user} = useUser();
   const [selectSocialMediaNetwork, setSelectSocialMediaNetwork] =
     useState(false);
   const [socialmediaIcon, setSocialmediaIcon] = useState([]);
@@ -45,99 +38,96 @@ export default function NetworksSelectedView(props) {
     setSocialmediaIcon(props.name);
   }, []);
   function NetworkSelect(props) {
-    AsyncStorage.getItem('LoginInformation').then(function (res) {
-      let Asyncdata = JSON.parse(res);
-      global.NextSchedule = 0;
+    global.NextSchedule = 0;
 
-      if (selectFinalNetworkId.length >= 0) {
-        if (selectSocialMediaNetwork == true) {
-          setSelectSocialMediaNetwork(false);
-          var currentdate = new Date();
-          var SelectProps = {
-            networkId: props.networkId,
-            orgId: Number(Asyncdata[0].orgid),
-            rowVer: 0,
-            purchasedQouta: props.purchasedQouta,
-            unitPriceInclTax: props.unitPriceInclTax,
-            usedQuota: props.usedQuota,
-            compaignId: 0,
-            id: 0,
-            desc: props.description,
-            status: 1,
-            createdBy: Number(Asyncdata[0].id),
-            lastUpdatedBy: Number(Asyncdata[0].id),
-            createdAt: moment.utc(currentdate).format(),
-            lastUpdatedAt: moment.utc(currentdate).format(),
-          };
-          props.ActionNetworkSelectedDataRemoveClick(SelectProps);
-        }
-        if (selectSocialMediaNetwork == false) {
-          var SelectProps = {
-            networkId: props.networkId,
-            orgId: Number(Asyncdata[0].orgid),
-            rowVer: 0,
-            purchasedQouta: props.purchasedQouta,
-            unitPriceInclTax: props.unitPriceInclTax,
-            usedQuota: props.usedQuota,
-            compaignId: 0,
-            id: 0,
-            desc: props.description,
-            status: 1,
-            createdBy: Number(Asyncdata[0].id),
-            lastUpdatedBy: Number(Asyncdata[0].id),
-            createdAt: moment.utc(currentdate).format(),
-            lastUpdatedAt: moment.utc(currentdate).format(),
-          };
-          setSelectSocialMediaNetwork(true);
-          props.ActionNetworkSelectedDataClick(SelectProps);
-        }
-      } else if (
-        selectFinalNetworkId.length >= 1 ||
-        selectFinalNetworkId == props.networkId
-      ) {
-        if (selectSocialMediaNetwork == true) {
-          setSelectSocialMediaNetwork(false);
-          var currentdate = new Date();
-          var SelectProps = {
-            networkId: props.networkId,
-            orgId: Number(Asyncdata[0].orgid),
-            rowVer: 0,
-            purchasedQouta: props.purchasedQouta,
-            unitPriceInclTax: props.unitPriceInclTax,
-            usedQuota: props.usedQuota,
-            compaignId: 0,
-            id: 0,
-            desc: props.description,
-            status: 1,
-            createdBy: Number(Asyncdata[0].id),
-            lastUpdatedBy: Number(Asyncdata[0].id),
-            createdAt: moment.utc(currentdate).format(),
-            lastUpdatedAt: moment.utc(currentdate).format(),
-          };
-          props.ActionNetworkSelectedDataRemoveClick(SelectProps);
-        }
-        if (selectSocialMediaNetwork == false) {
-          var SelectProps = {
-            networkId: props.networkId,
-            orgId: Number(Asyncdata[0].orgid),
-            rowVer: 0,
-            purchasedQouta: props.purchasedQouta,
-            unitPriceInclTax: props.unitPriceInclTax,
-            usedQuota: props.usedQuota,
-            compaignId: 0,
-            id: 0,
-            desc: props.description,
-            status: 1,
-            createdBy: Number(Asyncdata[0].id),
-            lastUpdatedBy: Number(Asyncdata[0].id),
-            createdAt: moment.utc(currentdate).format(),
-            lastUpdatedAt: moment.utc(currentdate).format(),
-          };
-          setSelectSocialMediaNetwork(true);
-          props.ActionNetworkSelectedDataClick(SelectProps);
-        }
+    if (selectFinalNetworkId.length >= 0) {
+      if (selectSocialMediaNetwork == true) {
+        setSelectSocialMediaNetwork(false);
+        var currentdate = new Date();
+        var SelectProps = {
+          networkId: props.networkId,
+          orgId: Number(user.orgid),
+          rowVer: 0,
+          purchasedQouta: props.purchasedQouta,
+          unitPriceInclTax: props.unitPriceInclTax,
+          usedQuota: props.usedQuota,
+          compaignId: 0,
+          id: 0,
+          desc: props.description,
+          status: 1,
+          createdBy: Number(user.id),
+          lastUpdatedBy: Number(user.id),
+          createdAt: moment.utc(currentdate).format(),
+          lastUpdatedAt: moment.utc(currentdate).format(),
+        };
+        props.ActionNetworkSelectedDataRemoveClick(SelectProps);
       }
-    });
+      if (selectSocialMediaNetwork == false) {
+        var SelectProps = {
+          networkId: props.networkId,
+          orgId: Number(user.orgid),
+          rowVer: 0,
+          purchasedQouta: props.purchasedQouta,
+          unitPriceInclTax: props.unitPriceInclTax,
+          usedQuota: props.usedQuota,
+          compaignId: 0,
+          id: 0,
+          desc: props.description,
+          status: 1,
+          createdBy: Number(user.id),
+          lastUpdatedBy: Number(user.id),
+          createdAt: moment.utc(currentdate).format(),
+          lastUpdatedAt: moment.utc(currentdate).format(),
+        };
+        setSelectSocialMediaNetwork(true);
+        props.ActionNetworkSelectedDataClick(SelectProps);
+      }
+    } else if (
+      selectFinalNetworkId.length >= 1 ||
+      selectFinalNetworkId == props.networkId
+    ) {
+      if (selectSocialMediaNetwork == true) {
+        setSelectSocialMediaNetwork(false);
+        var currentdate = new Date();
+        var SelectProps = {
+          networkId: props.networkId,
+          orgId: Number(user.orgid),
+          rowVer: 0,
+          purchasedQouta: props.purchasedQouta,
+          unitPriceInclTax: props.unitPriceInclTax,
+          usedQuota: props.usedQuota,
+          compaignId: 0,
+          id: 0,
+          desc: props.description,
+          status: 1,
+          createdBy: Number(user.id),
+          lastUpdatedBy: Number(user.id),
+          createdAt: moment.utc(currentdate).format(),
+          lastUpdatedAt: moment.utc(currentdate).format(),
+        };
+        props.ActionNetworkSelectedDataRemoveClick(SelectProps);
+      }
+      if (selectSocialMediaNetwork == false) {
+        var SelectProps = {
+          networkId: props.networkId,
+          orgId: Number(user.orgid),
+          rowVer: 0,
+          purchasedQouta: props.purchasedQouta,
+          unitPriceInclTax: props.unitPriceInclTax,
+          usedQuota: props.usedQuota,
+          compaignId: 0,
+          id: 0,
+          desc: props.description,
+          status: 1,
+          createdBy: Number(user.id),
+          lastUpdatedBy: Number(user.id),
+          createdAt: moment.utc(currentdate).format(),
+          lastUpdatedAt: moment.utc(currentdate).format(),
+        };
+        setSelectSocialMediaNetwork(true);
+        props.ActionNetworkSelectedDataClick(SelectProps);
+      }
+    }
   }
   return (
     <Fragment>

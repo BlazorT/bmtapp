@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   DrawerContentScrollView,
   DrawerItem,
@@ -69,7 +68,6 @@ function CustomDrawerContent(props) {
     setVisible(false);
     logoutUser();
     Toast.showWithGravity('Logout successfully', Toast.LONG, Toast.CENTER);
-    AsyncStorage.removeItem('LoginInformation');
     props.navigation.navigate('Login');
     global.img = 'data:image/png;base64,' + servicesettings.Default_User_Image;
     global.Email = '';

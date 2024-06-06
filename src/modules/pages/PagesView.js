@@ -1,5 +1,4 @@
 import React, {useState} from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import Toast from 'react-native-simple-toast';
 import AntdIcon from 'react-native-vector-icons/AntDesign';
@@ -15,12 +14,9 @@ import {useTheme} from '../../hooks/useTheme';
 import {useUser} from '../../hooks/useUser';
 import {colors, fonts} from '../../styles';
 import servicesettings from '../dataservices/servicesettings';
-import {useDispatch} from 'react-redux';
-import {clearLovs} from '../../redux/features/bmtLovs/lovsSlice';
 
 export default function PagesScreen(props) {
   const theme = useTheme();
-  const dispatch = useDispatch();
   const {isAuthenticated, user, logoutUser} = useUser();
   const [Visible, setVisible] = useState(false);
 
@@ -30,9 +26,6 @@ export default function PagesScreen(props) {
   const confirm = () => {
     setVisible(false);
     logoutUser();
-    // dispatch(clearLovs());
-    AsyncStorage.removeItem('LoginInformation');
-    AsyncStorage.clear();
     Toast.showWithGravity('LogOut successfully', Toast.LONG, Toast.CENTER);
     props.navigation.navigate('Home');
     global.img = 'data:image/png;base64,' + servicesettings.Default_User_Image;
