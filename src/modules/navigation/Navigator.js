@@ -25,6 +25,7 @@ const Drawer = createDrawerNavigator();
 function CustomDrawerContent(props) {
   const theme = useTheme();
   const {user, isAuthenticated, logoutUser} = useUser();
+  // console.log('user', user);
   const [Visible, setVisible] = useState(false);
   const [isImageError, setIsImageError] = useState(false);
   const CancelClick = () => {
@@ -90,7 +91,7 @@ function CustomDrawerContent(props) {
         <View style={styles.avatarContainer}>
           <Image
             source={
-              user?.avatar == '' || isImageError
+              userProfileImage == '' || isImageError
                 ? userProfile
                 : {uri: userProfileImage}
             }
@@ -100,7 +101,8 @@ function CustomDrawerContent(props) {
           <View style={{paddingLeft: 6}}>
             <View style={{flexDirection: 'row'}}>
               <Text style={[styles.userName, {color: theme.textColor}]}>
-                {user.firstname + ' ' + user.lastname}
+                {user.firstname ||
+                  user.firstName + ' ' + `${user.lastname || user.lastName}`}
               </Text>
               <TouchableOpacity
                 onPress={() => ProfileEdit()}

@@ -352,65 +352,75 @@ export default function MyCampaignScreen(props) {
         console.error('Error downloading file:', error);
       });
   }
-  const Item = ({image, Id}) => (
-    <View style={{textAlign: 'center', marginVertical: 8}}>
-      <ScrollView>
-        {image.split('.')[1] == 'mp4' && !attachmentVideoError ? (
-          <TouchableOpacity onPress={() => AttachmentFullViewClick(image)}>
-            <Video
-              resizeMode={'stretch'}
-              rate={1.0}
-              ignoreSilentSwitch={'obey'}
-              paused={false}
-              //     resizeMode="cover"
-              source={{
-                uri:
-                  servicesettings.Imagebaseuri +
-                  image.replace(/\\/g, '/').replace(',', '').replace(' //', ''),
-              }}
-              style={{height: 185, width: 100 + '%'}}
-              onError={() => {
-                setAttachmentVideoError(true);
-              }}
-            />
-          </TouchableOpacity>
-        ) : (
-          <Image source={BDMT} style={styles.AttachmentImage} />
-        )}
-        {image.split('.')[1] != 'pdf' &&
-        image.split('.')[1] != 'mp4' &&
-        !attachmentImageError ? (
-          <TouchableOpacity onPress={() => AttachmentFullViewClick(image)}>
-            <Image
-              resizeMode="contain"
-              source={{
-                uri:
-                  servicesettings.Imagebaseuri +
-                  image.replace(/\\/g, '/').replace(',', '').replace(' //', ''),
-              }}
-              style={styles.AttachmentImage}
-              onError={() => {
-                setAttachmentImageError(true);
-              }}
-            />
-          </TouchableOpacity>
-        ) : (
-          <Image source={BDMT} style={styles.AttachmentImage} />
-        )}
-        {image.split('.')[1] == 'pdf' && (
-          <TouchableOpacity
-            style={{marginBottom: 12}}
-            onPress={() => PDFDownloadClick(image)}>
-            <Image
-              resizeMode="contain"
-              source={pdfview}
-              style={styles.AttachmentPdf}
-            />
-          </TouchableOpacity>
-        )}
-      </ScrollView>
-    </View>
-  );
+  const Item = ({image, Id}) => {
+    console.log({image});
+    return (
+      <View style={{textAlign: 'center', marginVertical: 8}}>
+        <ScrollView>
+          {image.split('.')[1] == 'mp4' &&
+            (!attachmentVideoError ? (
+              <TouchableOpacity onPress={() => AttachmentFullViewClick(image)}>
+                <Video
+                  resizeMode={'stretch'}
+                  rate={1.0}
+                  ignoreSilentSwitch={'obey'}
+                  paused={false}
+                  //     resizeMode="cover"
+                  source={{
+                    uri:
+                      servicesettings.Imagebaseuri +
+                      image
+                        .replace(/\\/g, '/')
+                        .replace(',', '')
+                        .replace(' //', ''),
+                  }}
+                  style={{height: 185, width: 100 + '%'}}
+                  onError={() => {
+                    setAttachmentVideoError(true);
+                  }}
+                />
+              </TouchableOpacity>
+            ) : (
+              <Image source={BDMT} style={styles.AttachmentImage} />
+            ))}
+          {image.split('.')[1] != 'pdf' &&
+            image.split('.')[1] != 'mp4' &&
+            (!attachmentImageError ? (
+              <TouchableOpacity onPress={() => AttachmentFullViewClick(image)}>
+                <Image
+                  resizeMode="contain"
+                  source={{
+                    uri:
+                      servicesettings.Imagebaseuri +
+                      image
+                        .replace(/\\/g, '/')
+                        .replace(',', '')
+                        .replace(' //', ''),
+                  }}
+                  style={styles.AttachmentImage}
+                  onError={() => {
+                    setAttachmentImageError(true);
+                  }}
+                />
+              </TouchableOpacity>
+            ) : (
+              <Image source={BDMT} style={styles.AttachmentImage} />
+            ))}
+          {image.split('.')[1] == 'pdf' && (
+            <TouchableOpacity
+              style={{marginBottom: 12}}
+              onPress={() => PDFDownloadClick(image)}>
+              <Image
+                resizeMode="contain"
+                source={pdfview}
+                style={styles.AttachmentPdf}
+              />
+            </TouchableOpacity>
+          )}
+        </ScrollView>
+      </View>
+    );
+  };
   return (
     <View style={[styles.container, {backgroundColor: theme.backgroundColor}]}>
       <Spinner
@@ -660,7 +670,7 @@ export default function MyCampaignScreen(props) {
                     .replace(' //', ''),
               }}
               style={{
-                backgroundColor: 'gray',
+                backgroundColor: theme.backgroundColor,
                 width: Dimensions.get('window').width,
                 height: 90 + '%',
               }}
@@ -677,7 +687,7 @@ export default function MyCampaignScreen(props) {
                     .replace(' //', ''),
               }}
               style={{
-                backgroundColor: 'gray',
+                backgroundColor: theme.backgroundColor,
                 width: Dimensions.get('window').width,
                 height: 90 + '%',
               }}

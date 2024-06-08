@@ -15,7 +15,10 @@ export default function PreferencesAndSettingsScreen() {
   };
 
   const userImage = `${servicesettings.Imagebaseuri}${user.avatar?.replace(/\\/g, '/').replace(',', '').replace(' //', '')}`;
-  console.log('userImage', user);
+  // console.log(
+  //   'userImage',
+  //   userImage,
+  // );
 
   return (
     <View style={[styles.container, {backgroundColor: theme.backgroundColor}]}>
@@ -24,13 +27,17 @@ export default function PreferencesAndSettingsScreen() {
           source={
             user.avatar == '' || onImageError ? userProfile : {uri: userImage}
           }
-          style={[styles.ProfileStyle, {tintColor: theme.buttonBackColor}]}
-          onError={() => setOnImageError(true)}
+          style={[styles.ProfileStyle]}
+          onError={() => {
+            setOnImageError(true);
+            console.log('error');
+          }}
         />
       </View>
       <View style={styles.lblView}>
         <Text style={[styles.lblName, {color: theme.textColor}]}>
-          {user.firstname + user.lastname}
+          {user.firstname ||
+            user.firstName + ` ${user.lastname || user.lastName}`}
         </Text>
       </View>
       <View style={styles.lblView1}>

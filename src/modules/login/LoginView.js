@@ -237,11 +237,13 @@ export default function LoginScreen(props) {
           global.StoreName = responseJson.data[0].TradeName;
           //console.log("global.Storeid check " + global.Storeid)
 
-          Toast.show('Login success');
+          Toast.show(
+            `${responseJson.data[0].firstname} ${responseJson.data[0].lastname} has been logged in successfully`,
+          );
           setmodalVisible(true);
           setTimeout(() => {
             setmodalVisible(false);
-            props.navigation.replace('Dashboard');
+            props.navigation.replace('BMT');
           }, 4000);
         }
       })
@@ -249,7 +251,7 @@ export default function LoginScreen(props) {
         setspinner(false);
         console.error('service error', error);
         Toast.showWithGravity(
-          'Internet connection failed, try another time !!!',
+          'Something went wrong, try another time !!!',
           Toast.LONG,
           Toast.CENTER,
         );

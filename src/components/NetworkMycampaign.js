@@ -15,6 +15,7 @@ export default function Myvehicle(props) {
   const theme = useTheme();
   const [networkIcon, setNetworkIcon] = useState(SMS);
   useEffect(() => {
+    console.log(props.item);
     if (props.networkId == 1) {
       setNetworkIcon(SMS);
     }

@@ -184,8 +184,8 @@ const styles = StyleSheet.create({
   },
   item: {
     backgroundColor: colors.PagePanelTab,
-    height: 130,
-    width: 130,
+    height: Platform.OS === 'ios' ? 130 : 120,
+    width: Platform.OS === 'ios' ? 130 : 120,
     paddingVertical: 20,
     borderRadius: 5,
     alignItems: 'center',

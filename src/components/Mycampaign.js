@@ -331,6 +331,7 @@ export default function Myvehicle(props) {
                         overflow: 'hidden',
                         height: 25,
                         width: 25,
+                        justifyContent: 'center',
                       }}>
                       <Text
                         style={[
@@ -559,6 +560,7 @@ export default function Myvehicle(props) {
                   renderItem={({item}) => (
                     <NetworkMycampaign
                       ActionButtonClick={ActionButtonClick}
+                      item={item}
                       data={item.data}
                       id={item.id}
                       freeQouta={item.freeQouta}
@@ -1061,12 +1063,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderColor: colors.red,
-    borderWidth: 1,
+    borderColor: '#8B0000',
+    borderWidth: 0.5,
     borderRadius: 5,
   },
   NetworkCountView: {
-    paddingTop: 6,
+    // paddingTop: 6,
     // backgroundColor: '#1da1f2',
     // width: 29,
     // height: 29,

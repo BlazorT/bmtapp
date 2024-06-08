@@ -339,6 +339,7 @@ export default function OrganizationAddEditScreen(props) {
   function loginInfoLoaded() {
     if (isAuthenticated) {
       setUserId(user.id);
+      console.log('user.orgid', user);
       setOrganizationId(user.orgid);
       global.ORGANIZATIONID = user.orgid;
     } else {

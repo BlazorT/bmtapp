@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Base64 from 'Base64';
 import React, {useEffect, useState} from 'react';
 import {
@@ -8,16 +7,18 @@ import {
   StyleSheet,
   Text,
   View,
+  TextInput,
 } from 'react-native';
 import Toast from 'react-native-simple-toast';
 import Icon from 'react-native-vector-icons/Entypo';
-import {Button, TextInput} from '../../components';
+import {Button} from '../../components';
 import Alert from '../../components/Alert';
 import Model from '../../components/Model';
 import {colors} from '../../styles';
 import servicesettings from '../dataservices/servicesettings';
 import {useTheme} from '../../hooks/useTheme';
 import {useUser} from '../../hooks/useUser';
+import Spinner from 'react-native-loading-spinner-overlay';
 const Password = require('../../../assets/images/icons/Password1.png');
 export default function ForgotPasswordScreen(props) {
   const theme = useTheme();
@@ -133,72 +134,61 @@ export default function ForgotPasswordScreen(props) {
       );
       return;
     }
-    //setOTPmassage('check your email for get "OTP" ');
-    //setTimer(60);
-    //setdisable(true);
 
-    AsyncStorage.getItem('LoginInformation').then(function (res) {
-      setspinner(true);
-      let Asyncdata = JSON.parse(res);
-      var blazorHeader = new Headers();
-      blazorHeader.append('Authorization', servicesettings.AuthorizationKey);
-      blazorHeader.append('Content-Type', 'application/json');
-      var headerFetch = {
-        method: 'POST',
-        body: JSON.stringify({
+    setspinner(true);
+    var blazorHeader = new Headers();
+    blazorHeader.append('Authorization', servicesettings.AuthorizationKey);
+    blazorHeader.append('Content-Type', 'application/json');
+    var headerFetch = {
+      method: 'POST',
+      body: JSON.stringify({
+        email: Email.trim().toLowerCase(),
+        securitytoken: '',
+        password: '',
+        orgid: '0',
+      }),
+      headers: blazorHeader,
+    };
+    // headers: blazorHeader
+    fetch(servicesettings.baseuri + 'forgot', headerFetch)
+      .then(response => response.json())
+      .then(responseJson => {
+        console.log('responseJson', responseJson, {
           email: Email.trim().toLowerCase(),
           securitytoken: '',
           password: '',
           orgid: '0',
-        }),
-        headers: blazorHeader,
-      };
-      // headers: blazorHeader
-      fetch(servicesettings.baseuri + 'forgot', headerFetch)
-        .then(response => response.json())
-        .then(responseJson => {
-          if (responseJson.data == null) {
-            setspinner(false);
-            Toast.showWithGravity(
-              'Registration email address is not correct',
-              Toast.LONG,
-              Toast.CENTER,
-            );
-            return;
-          } else {
-            setspinner(false);
-            setVisibleOTP(true);
-            setdisableemail(false);
-            setdisablecode(true);
-            setvesible(false);
-            setOTP('');
-            setPassword('');
-            setConfirmPassword('');
-          }
-          if (responseJson.data != null) {
-            setGenratedOTP(responseJson.data);
-          }
-        })
-        .catch(error => {
+        });
+        if (responseJson.data == null) {
           setspinner(false);
           Toast.showWithGravity(
-            'Internet connection failed, try another time !!!',
+            'Registration email address is not correct',
             Toast.LONG,
             Toast.CENTER,
           );
-        });
-    });
-    /*
-let interval = setInterval(() => {
-setTimer(lastTimerCount => {
-lastTimerCount <= 1 && clearInterval(interval)
-return lastTimerCount - 1
-})
-}, 1000)
-setTimeout(() =>{
-setdisable(false);
-}, 57000);
-return () => clearInterval(interval)*/
+          return;
+        } else {
+          setspinner(false);
+          setVisibleOTP(true);
+          setdisableemail(false);
+          setdisablecode(true);
+          setvesible(false);
+          setOTP('');
+          setPassword('');
+          setConfirmPassword('');
+        }
+        if (responseJson.data != null) {
+          setGenratedOTP(responseJson.data);
+        }
+      })
+      .catch(error => {
+        setspinner(false);
+        Toast.showWithGravity(
+          'Internet connection failed, try another time !!!',
+          Toast.LONG,
+          Toast.CENTER,
+        );
+      });
   };
   //******************************************************check verification*********************************************************//
   const CheckVerify = () => {
@@ -211,6 +201,7 @@ return () => clearInterval(interval)*/
       return;
     }
     if (OTP.trim() != GenratedOTP) {
+      console.log({GenratedOTP, OTP});
       Toast.showWithGravity(
         'Security code invalid or expired',
         Toast.LONG,
@@ -223,6 +214,7 @@ return () => clearInterval(interval)*/
       Toast.LONG,
       Toast.CENTER,
     );
+    setVisibleOTP(false);
     setdisablecode(false);
     setvesible(true);
   };
@@ -252,69 +244,68 @@ return () => clearInterval(interval)*/
       );
       return;
     }
-    AsyncStorage.getItem('LoginInformation').then(function (res) {
-      let Asyncdata = JSON.parse(res);
-      var blazorHeader = new Headers();
-      blazorHeader.append('Authorization', servicesettings.AuthorizationKey);
-      blazorHeader.append('Content-Type', 'application/json');
-      var headerFetch = {
-        method: 'POST',
-        body: JSON.stringify({
+    setspinner(true);
+    var blazorHeader = new Headers();
+    blazorHeader.append('Authorization', servicesettings.AuthorizationKey);
+    blazorHeader.append('Content-Type', 'application/json');
+    var headerFetch = {
+      method: 'POST',
+      body: JSON.stringify({
+        email: Email.trim().toLowerCase(),
+        securitytoken: OTP,
+        password: Base64.btoa(Password),
+        orgid: '0',
+      }),
+      headers: blazorHeader,
+    };
+    fetch(servicesettings.baseuri + 'forgot', headerFetch)
+      .then(response => response.json())
+      .then(responseJson => {
+        console.log(responseJson, {
           email: Email.trim().toLowerCase(),
           securitytoken: OTP,
           password: Base64.btoa(Password),
           orgid: '0',
-        }),
-        headers: blazorHeader,
-      };
-      fetch(servicesettings.baseuri + 'forgot', headerFetch)
-        .then(response => response.json())
-        .then(responseJson => {
+        });
+        if (responseJson.status == true) {
           Toast.showWithGravity(
             'Pawssword has beeen changed successfully',
             Toast.LONG,
             Toast.CENTER,
           );
+          setspinner(false);
           setshowtick(true);
           setTimeout(() => {
             setshowtick(false);
-            //props.navigation.replace('Login');
+            props.navigation.replace('Login');
           }, 1250);
-        })
-        .catch(error => {
-          Toast.showWithGravity(
-            'Internet connection failed, try another time !!!',
-            Toast.LONG,
-            Toast.CENTER,
+        } else {
+          setspinner(false);
+          Toast.show(
+            responseJson.message ||
+              'Something went wrong, try another time !!!',
           );
-          console.error('service error', error);
-        });
-    });
+        }
+      })
+      .catch(error => {
+        setspinner(false);
+        Toast.showWithGravity(
+          'Internet connection failed, try another time !!!',
+          Toast.LONG,
+          Toast.CENTER,
+        );
+        console.error('service error', error);
+      });
   };
-  /********************************************************* View ****************************************************************/
-  /*
-<Spinner
-                    visible={spinner}
-                    textContent={'Submitting...'}
-                    textStyle={{color: '#FFF'}}
-                  />
- */
+
   return (
     <View style={[styles.container, {backgroundColor: theme.backgroundColor}]}>
-      {spinner == true ? (
-        <View style={styles.modalView}>
-          <View>
-            <ActivityIndicator
-              animating={spinner}
-              size="large"
-              color="#ffffff"
-            />
-            <Text style={styles.gallerytext}>Submitting...</Text>
-          </View>
-        </View>
-      ) : (
-        <View></View>
-      )}
+      <Spinner
+        visible={spinner}
+        textContent={'Submitting...'}
+        textStyle={{color: theme.textColor}}
+        color={theme.textColor}
+      />
       <Alert
         massagetype={'warning'}
         hide={hide}
@@ -371,7 +362,7 @@ return () => clearInterval(interval)*/
             caption="Send Code"
             onPress={() => SendEmail()}
           />
-          {VisibleOTP == true ? (
+          {VisibleOTP && (
             <View>
               <View style={styles.sectionStyleText}>
                 <Text style={styles.lblOTP}>
@@ -402,8 +393,8 @@ return () => clearInterval(interval)*/
                   placeholder="Security code"
                   secureTextEntry={false}
                   // clearTextOnFocus={true}
+                  keyboardType="numeric"
                   keyboardAppearance={'dark'}
-                  KeyboardType="numeric"
                   maxLength={8}
                 />
               </View>
@@ -414,10 +405,8 @@ return () => clearInterval(interval)*/
                 onPress={() => CheckVerify()}
               />
             </View>
-          ) : (
-            <View></View>
           )}
-          {vesible == true ? (
+          {vesible && (
             <View>
               <View
                 style={[
@@ -480,8 +469,6 @@ return () => clearInterval(interval)*/
                 />
               </View>
             </View>
-          ) : (
-            <View></View>
           )}
           <Model modalVisible={showtick}></Model>
         </View>

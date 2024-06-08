@@ -209,12 +209,13 @@ export default function AddScheduleList(props) {
                   style={[styles.lblHeadingSchadule, {color: theme.textColor}]}>
                   Networks
                 </Text>
-                <View style={styles.lblHeadingSchaduleVal1}>
+                <View
+                  style={[
+                    styles.lblHeadingSchaduleVal1,
+                    {backgroundColor: theme.buttonBackColor},
+                  ]}>
                   <Text
-                    style={[
-                      styles.lblNetworkCount,
-                      {backgroundColor: theme.buttonBackColor},
-                    ]}>
+                    style={[styles.lblNetworkCount, {color: theme.textColor}]}>
                     {networkCount}
                   </Text>
                 </View>
@@ -604,22 +605,15 @@ const styles = StyleSheet.create({
     paddingRight: 8,
   },
   lblHeadingSchaduleVal1: {
-    width: 26 + '%',
-    color: 'black',
-    fontSize: 14,
-    textAlign: 'right',
-    paddingRight: 8,
+    width: 18,
+    height: 18,
+    borderRadius: 50,
+    overflow: 'hidden',
+    justifyContent: 'center',
   },
   lblNetworkCount: {
-    backgroundColor: '#1da1f2',
-    width: 23,
-    height: 23,
-    color: 'white',
-    fontSize: 14,
-    borderRadius: 50,
+    fontSize: 12,
     textAlign: 'center',
-    //paddingRight:8,
-    marginLeft: 20 + '%',
   },
   lblHeadingSchadule: {
     width: 54 + '%',
