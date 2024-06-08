@@ -31,18 +31,18 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
-	<key>NSAppleMusicUsageDescription</key>
-	<string>This app requires access to the apple music for video play</string>
+	<!-- <key>NSAppleMusicUsageDescription</key> -->
+	<!-- <string>This app requires access to the apple music for video play</string> -->
 	<key>NSCalendarsUsageDescription</key>
 	<string>This app requires access for date time selection</string>
 	<key>NSCameraUsageDescription</key>
 	<string>This app requires access to the camera for video recording</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>This app require access to the location for device location access</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Your location is not needed. Request has popped up due to a 3rd party framework used by the app, your location will not be revealed</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>This app requires access to the microphone for voice recording during video recording</string>
+	<!-- <key>NSLocationAlwaysUsageDescription</key> -->
+	<!-- <string>This app require access to the location for device location access</string> -->
+	<!-- <key>NSLocationWhenInUseUsageDescription</key> -->
+	<!-- <string>Your location is not needed. Request has popped up due to a 3rd party framework used by the app, your location will not be revealed</string> -->
+	<!-- <key>NSMicrophoneUsageDescription</key> -->
+	<!-- <string>This app requires access to the microphone for voice recording during video recording</string> -->
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>We need access to video from library</string>
 	<key>NSPhotoLibraryUsageDescription</key>

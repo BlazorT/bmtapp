@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
     //backgroundColor: colors.PagePanelTab,
     elevation: 5,
     //paddingLeft:-40,
-    paddingLeft: -40,
+    // paddingLeft: -40,
     shadowColor: 'black',
     shadowOffset: {width: 4, height: 6},
     shadowOpacity: 0.8,

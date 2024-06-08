@@ -574,26 +574,28 @@ export default function LoginScreen(props) {
             style={{flex: 1, height: 1, backgroundColor: colors.borderColorOr}}
           />
         </View>
-        <View style={styles.signupView}>
-          <TouchableOpacity
-            onPress={() => LoginWithGoogle()}
-            style={[
-              [styles.btnfacebook, {backgroundColor: theme.buttonBackColor}],
-              {backgroundColor: theme.buttonBackColor},
-            ]}>
-            <View style={styles.googleIconView}>
-              <Image source={googleIcon} style={styles.googleIcon} />
-            </View>
-            <Text
-              style={
-                Platform.OS === 'ios'
-                  ? styles.textfacebookIOS
-                  : styles.textfacebook
-              }>
-              Sign In With Google
-            </Text>
-          </TouchableOpacity>
-        </View>
+        {Platform.OS === 'android' && (
+          <View style={styles.signupView}>
+            <TouchableOpacity
+              onPress={() => LoginWithGoogle()}
+              style={[
+                [styles.btnfacebook, {backgroundColor: theme.buttonBackColor}],
+                {backgroundColor: theme.buttonBackColor},
+              ]}>
+              <View style={styles.googleIconView}>
+                <Image source={googleIcon} style={styles.googleIcon} />
+              </View>
+              <Text
+                style={
+                  Platform.OS === 'ios'
+                    ? styles.textfacebookIOS
+                    : styles.textfacebook
+                }>
+                Sign In With Google
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
         <ContinueWithFacebook
           PressContinue={PressContinue}
           FacebookmodalVisible={FacebookmodalVisible}
@@ -694,26 +696,28 @@ export default function LoginScreen(props) {
                 </Text>
               </TouchableOpacity>
             </View>
-            <View style={styles.signupView}>
-              <TouchableOpacity
-                onPress={() => SignupWithGoogle()}
-                style={[
-                  styles.btnfacebook,
-                  {backgroundColor: theme.buttonBackColor},
-                ]}>
-                <View style={styles.googleIconView}>
-                  <Image source={googleIcon} style={styles.googleIcon} />
-                </View>
-                <Text
-                  style={
-                    Platform.OS === 'ios'
-                      ? styles.textfacebookIOS
-                      : styles.textfacebook
-                  }>
-                  Sign Up With Google
-                </Text>
-              </TouchableOpacity>
-            </View>
+            {Platform.OS === 'android' && (
+              <View style={styles.signupView}>
+                <TouchableOpacity
+                  onPress={() => SignupWithGoogle()}
+                  style={[
+                    styles.btnfacebook,
+                    {backgroundColor: theme.buttonBackColor},
+                  ]}>
+                  <View style={styles.googleIconView}>
+                    <Image source={googleIcon} style={styles.googleIcon} />
+                  </View>
+                  <Text
+                    style={
+                      Platform.OS === 'ios'
+                        ? styles.textfacebookIOS
+                        : styles.textfacebook
+                    }>
+                    Sign Up With Google
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
             <SignupWithFacebook
               PressSignUp={PressSignUp}
               FacebookmodalVisible={FacebookmodalVisible}

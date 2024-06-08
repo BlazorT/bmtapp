@@ -1,5 +1,12 @@
 import React, {useState} from 'react';
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Dimensions,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import Toast from 'react-native-simple-toast';
 import AntdIcon from 'react-native-vector-icons/AntDesign';
 import signup from '../../../assets/images/drawer/SignUp.png';
@@ -88,6 +95,12 @@ export default function PagesScreen(props) {
       path: 'About',
       condition: true,
     },
+    // {
+    //   // icon: <AntdIcon name="infocirlceo" size={45} color={theme.tintColor} />,
+    //   // text: 'About',
+    //   // path: 'About',
+    //   condition: true,
+    // },
   ];
   const onCardPress = path => {
     if (isAuthenticated) {
@@ -115,7 +128,10 @@ export default function PagesScreen(props) {
         style={{
           flexDirection: 'row',
           flexWrap: 'wrap',
-          width: '100%',
+          justifyContent: 'center',
+          alignItems: 'flex-start',
+          rowGap: 10,
+          columnGap: 10,
         }}>
         {items.map(
           (item, idx) =>
@@ -129,8 +145,6 @@ export default function PagesScreen(props) {
                   styles.item,
                   {
                     backgroundColor: theme.cardBackColor,
-                    marginVertical: 5,
-                    marginHorizontal: 5,
                   },
                 ]}>
                 {item.source ? (
@@ -156,9 +170,12 @@ export default function PagesScreen(props) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
     paddingTop: 10,
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    flexDirection: 'row',
   },
   row: {
     flexDirection: 'row',
@@ -167,8 +184,8 @@ const styles = StyleSheet.create({
   },
   item: {
     backgroundColor: colors.PagePanelTab,
-    height: 120,
-    width: 120,
+    height: 130,
+    width: 130,
     paddingVertical: 20,
     borderRadius: 5,
     alignItems: 'center',
@@ -204,6 +221,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.primary,
   },
   itemImage: {
-    height: 45,
+    height: 50,
   },
 });

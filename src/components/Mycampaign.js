@@ -1,5 +1,4 @@
 // External Libraries
-import moment from 'moment';
 import React, {Fragment, useEffect, useState} from 'react';
 import {
   Dimensions,
@@ -325,16 +324,25 @@ export default function Myvehicle(props) {
                         />
                       </TouchableOpacity>
                     )}
-                    <Text
-                      style={[
-                        styles.NetworkCountView,
-                        {
-                          color: theme.textColor,
-                          backgroundColor: theme.buttonBackColor,
-                        },
-                      ]}>
-                      {networkCount}
-                    </Text>
+                    <View
+                      style={{
+                        backgroundColor: theme.buttonBackColor,
+                        borderRadius: 50,
+                        overflow: 'hidden',
+                        height: 25,
+                        width: 25,
+                      }}>
+                      <Text
+                        style={[
+                          styles.NetworkCountView,
+                          {
+                            color: theme.textColor,
+                            // backgroundColor: theme.buttonBackColor,
+                          },
+                        ]}>
+                        {networkCount}
+                      </Text>
+                    </View>
                     <TouchableOpacity
                       style={styles.settingIconView}
                       onPress={() => SettingClickForChange(props)}>
@@ -1059,12 +1067,12 @@ const styles = StyleSheet.create({
   },
   NetworkCountView: {
     paddingTop: 6,
-    backgroundColor: '#1da1f2',
-    width: 29,
-    height: 29,
+    // backgroundColor: '#1da1f2',
+    // width: 29,
+    // height: 29,
     color: 'white',
     fontSize: 12,
-    borderRadius: 50,
+    // borderRadius: 50,
     textAlign: 'center',
   },
   settingIconView: {},

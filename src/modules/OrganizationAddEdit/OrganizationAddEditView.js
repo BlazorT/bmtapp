@@ -136,7 +136,7 @@ export default function OrganizationAddEditScreen(props) {
     color: theme.textColor,
     paddingLeft: 2,
     backgroundColor: theme.inputBackColor,
-    width: Dimensions.get('window').width - 48,
+    width: Dimensions.get('window').width,
     borderRadius: 4,
     height: 42,
     //paddingLeft:14,
@@ -152,8 +152,9 @@ export default function OrganizationAddEditScreen(props) {
     color: theme.textColor,
   };
   const itemsContainerStyle = {
-    width: Dimensions.get('window').width - 48,
+    width: Dimensions.get('window').width,
     paddingLeft: 2,
+    // height: 42,
     backgroundColor: theme.inputBackColor,
     // backgroundColor: 'green',
     zIndex: 2,
@@ -628,7 +629,12 @@ export default function OrganizationAddEditScreen(props) {
           style={[
             customestyleOrgName,
             orgName == '' ? styles.mandatoryControl : null,
-            {backgroundColor: theme.inputBackColor, color: theme.textColor},
+            {
+              backgroundColor: theme.inputBackColor,
+              color: theme.textColor,
+              // borderWidth: 0,
+              // borderColor: theme.inputBackColor,
+            },
           ]}
           value={orgName}
           onChangeText={value => setOrgName(value)}
@@ -694,8 +700,10 @@ export default function OrganizationAddEditScreen(props) {
         <View
           style={{
             flexDirection: 'row',
-            paddingTop: 12,
-            width: Dimensions.get('window').width - 30,
+            marginTop: 12,
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            // width: Dimensions.get('window').width - 30,
           }}>
           <View style={{width: 53 + '%'}}>
             <Dropdown
@@ -714,7 +722,7 @@ export default function OrganizationAddEditScreen(props) {
               maxLength={5}
             />
           </View>
-          <View style={{marginLeft: 4 + '%', width: 43 + '%'}}>
+          <View style={{width: 43 + '%'}}>
             <TextInput
               placeholderTextColor={theme.placeholderColor}
               style={[
@@ -736,20 +744,21 @@ export default function OrganizationAddEditScreen(props) {
         {SelectAreaEnabled == false ? (
           <TouchableOpacity
             style={{
-              width: Dimensions.get('window').width - 30,
+              // width: Dimensions.get('window').width - 30,
               marginTop: 12,
               flexDirection: 'row',
               textAlign: 'center',
+              justifyContent: 'space-between',
             }}
             onPress={() => functionCombined()}>
-            <View style={{flexDirection: 'row', width: 90 + '%'}}>
+            <View>
               <Text
                 style={[styles.AttachmentHeading, {color: theme.textColor}]}>
                 {' '}
                 Campaign Audience
               </Text>
             </View>
-            <View style={{width: 10 + '%'}}>
+            <View>
               <Image
                 source={UpArrowIcon}
                 style={[
@@ -760,18 +769,23 @@ export default function OrganizationAddEditScreen(props) {
             </View>
           </TouchableOpacity>
         ) : (
-          <View style={{width: Dimensions.get('window').width - 30}}>
+          <View>
             <TouchableOpacity
-              style={{textAlign: 'center', flexDirection: 'row', marginTop: 10}}
+              style={{
+                textAlign: 'center',
+                flexDirection: 'row',
+                marginTop: 10,
+                justifyContent: 'space-between',
+              }}
               onPress={() => functionCombined()}>
-              <View style={{flexDirection: 'row', width: 90 + '%'}}>
+              <View>
                 <Text
                   style={[styles.AttachmentHeading, {color: theme.textColor}]}>
                   {' '}
                   Campaign Audience
                 </Text>
               </View>
-              <View style={{width: 10 + '%'}}>
+              <View>
                 <Image
                   source={DownArrowIcon}
                   style={[
@@ -849,20 +863,21 @@ export default function OrganizationAddEditScreen(props) {
         {SelectSocialAreaEnabled == false ? (
           <TouchableOpacity
             style={{
-              width: Dimensions.get('window').width - 30,
+              // width: Dimensions.get('window').width - 30,
               marginTop: 12,
               flexDirection: 'row',
               textAlign: 'center',
+              justifyContent: 'space-between',
             }}
             onPress={() => SocialControlEnabledClick()}>
-            <View style={{flexDirection: 'row', width: 90 + '%'}}>
+            <View>
               <Text
                 style={[styles.AttachmentHeading, {color: theme.textColor}]}>
                 {' '}
                 Social Control
               </Text>
             </View>
-            <View style={{width: 10 + '%'}}>
+            <View>
               <Image
                 source={UpArrowIcon}
                 style={[
@@ -873,18 +888,26 @@ export default function OrganizationAddEditScreen(props) {
             </View>
           </TouchableOpacity>
         ) : (
-          <View style={{width: Dimensions.get('window').width - 30}}>
+          <View
+            style={{
+              width: '100%',
+            }}>
             <TouchableOpacity
-              style={{textAlign: 'center', flexDirection: 'row', marginTop: 10}}
+              style={{
+                textAlign: 'center',
+                flexDirection: 'row',
+                marginTop: 10,
+                justifyContent: 'space-between',
+              }}
               onPress={() => SocialControlEnabledClick()}>
-              <View style={{flexDirection: 'row', width: 90 + '%'}}>
+              <View style={{}}>
                 <Text
                   style={[styles.AttachmentHeading, {color: theme.textColor}]}>
                   {' '}
                   Social Control
                 </Text>
               </View>
-              <View style={{width: 10 + '%'}}>
+              <View style={{}}>
                 <Image
                   source={DownArrowIcon}
                   style={[
@@ -895,86 +918,78 @@ export default function OrganizationAddEditScreen(props) {
               </View>
             </TouchableOpacity>
             <View style={styles.CampaignAudienceView}>
-              <View style={{textAlign: 'center'}}>
-                <TextInput
-                  placeholderTextColor={theme.placeholderColor}
-                  value={whatsapp}
-                  onChangeText={value => setWhatsapp(value)}
-                  style={[
-                    styles.SocialControlView,
-                    {
-                      backgroundColor: theme.inputBackColor,
-                      color: theme.textColor,
-                    },
-                  ]}
-                  keyboardType="phone-pad"
-                  placeholder="Whatsapp"
-                  clearTextOnFocus={true}
-                  keyboardAppearance={'dark'}
-                  minLength={8}
-                  maxLength={24}
-                />
-              </View>
-              <View style={{textAlign: 'center'}}>
-                <TextInput
-                  placeholderTextColor={theme.placeholderColor}
-                  value={facebookId}
-                  onChangeText={value => setFacebookId(value)}
-                  style={[
-                    styles.SocialControlView,
-                    {
-                      backgroundColor: theme.inputBackColor,
-                      color: theme.textColor,
-                    },
-                  ]}
-                  keyboardType="email-address"
-                  placeholder="Facebook "
-                  clearTextOnFocus={true}
-                  keyboardAppearance={'dark'}
-                  minLength={15}
-                  maxLength={60}
-                />
-              </View>
-              <View style={{textAlign: 'center'}}>
-                <TextInput
-                  placeholderTextColor={theme.placeholderColor}
-                  value={instagramId}
-                  onChangeText={value => setInstagramId(value)}
-                  style={[
-                    styles.SocialControlView,
-                    {
-                      backgroundColor: theme.inputBackColor,
-                      color: theme.textColor,
-                    },
-                  ]}
-                  placeholder="Instagram"
-                  keyboardType="twitter"
-                  clearTextOnFocus={true}
-                  keyboardAppearance={'dark'}
-                  minLength={15}
-                  maxLength={50}
-                />
-              </View>
-              <View style={{textAlign: 'center'}}>
-                <TextInput
-                  placeholderTextColor={theme.placeholderColor}
-                  value={iban}
-                  onChangeText={value => setIban(value)}
-                  style={[
-                    styles.SocialControlView,
-                    {
-                      backgroundColor: theme.inputBackColor,
-                      color: theme.textColor,
-                    },
-                  ]}
-                  placeholder="Iban/Wire Transfer Id"
-                  clearTextOnFocus={true}
-                  keyboardAppearance={'dark'}
-                  maxLength={4}
-                  minLength={3}
-                />
-              </View>
+              <TextInput
+                placeholderTextColor={theme.placeholderColor}
+                value={whatsapp}
+                onChangeText={value => setWhatsapp(value)}
+                style={[
+                  styles.SocialControlView,
+                  {
+                    backgroundColor: theme.inputBackColor,
+                    color: theme.textColor,
+                  },
+                ]}
+                keyboardType="phone-pad"
+                placeholder="Whatsapp"
+                clearTextOnFocus={true}
+                keyboardAppearance={'dark'}
+                minLength={8}
+                maxLength={24}
+              />
+              <TextInput
+                placeholderTextColor={theme.placeholderColor}
+                value={facebookId}
+                onChangeText={value => setFacebookId(value)}
+                style={[
+                  styles.SocialControlView,
+                  {
+                    backgroundColor: theme.inputBackColor,
+                    color: theme.textColor,
+                  },
+                ]}
+                keyboardType="email-address"
+                placeholder="Facebook "
+                clearTextOnFocus={true}
+                keyboardAppearance={'dark'}
+                minLength={15}
+                maxLength={60}
+              />
             </View>
+            <TextInput
+              placeholderTextColor={theme.placeholderColor}
+              value={instagramId}
+              onChangeText={value => setInstagramId(value)}
+              style={[
+                styles.SocialControlView,
+                {
+                  backgroundColor: theme.inputBackColor,
+                  color: theme.textColor,
+                },
+              ]}
+              placeholder="Instagram"
+              keyboardType="twitter"
+              clearTextOnFocus={true}
+              keyboardAppearance={'dark'}
+              minLength={15}
+              maxLength={50}
+            />
+            <TextInput
+              placeholderTextColor={theme.placeholderColor}
+              value={iban}
+              onChangeText={value => setIban(value)}
+              style={[
+                styles.SocialControlView,
+                {
+                  backgroundColor: theme.inputBackColor,
+                  color: theme.textColor,
+                },
+              ]}
+              placeholder="Iban/Wire Transfer Id"
+              clearTextOnFocus={true}
+              keyboardAppearance={'dark'}
+              maxLength={4}
+              minLength={3}
+            />
           </View>
         )}
         <Dropdown
@@ -1035,16 +1050,18 @@ const styles = StyleSheet.create({
   MainViewContainer: {
     backgroundColor: 'white',
     width: Dimensions.get('window').width,
-    paddingLeft: 3.5 + '%',
+    height: Dimensions.get('window').height,
+    paddingHorizontal: 8,
+    // paddingLeft: 3.5 + '%',
   },
   ProfileImgView: {
     // width: Dimensions.get('window').width-30,
     //marginHorizontal:15,
     //backgroundColor:'gray',
     alignItems: 'center',
-    paddingBottom: '0.5%',
-    paddingTop: '0.5%',
-    justifyContent: 'space-around',
+    // paddingBottom: '0.5%',
+    // paddingTop: '0.5%',
+    // justifyContent: 'space-around',
     // marginTop: 2 + '%',
   },
   ProfileStyle: {
@@ -1087,28 +1104,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 3 + '%',
-    height: 46,
+    // height: 46,
     fontSize: 16,
     color: colors.TextBoxColor,
-    width: Dimensions.get('window').width - 30,
-    marginHorizontal: 15,
-    borderWidth: 1,
-    backgroundColor: colors.TextBoxContainer,
-    borderColor: colors.borderColor,
+    borderWidth: 0,
     borderRadius: 4,
   },
   sectionStyleOnFocus: {
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 3 + '%',
-    height: 46,
     fontSize: 16,
     color: colors.TextBoxColor,
-    width: Dimensions.get('window').width - 40,
-    marginHorizontal: 20,
-    borderWidth: 2,
-    backgroundColor: colors.TextBoxContainer,
-    borderColor: colors.borderColor,
     borderRadius: 4,
   },
   termsView: {
@@ -1134,7 +1141,7 @@ const styles = StyleSheet.create({
     borderColor: colors.borderColor,
     borderWidth: 1,
     borderRadius: 4,
-    width: Dimensions.get('window').width - 30,
+    width: '100%',
     height: 46,
     color: colors.TextBoxColor,
     fontSize: 15,
@@ -1157,10 +1164,11 @@ const styles = StyleSheet.create({
   StrengthView: {
     backgroundColor: colors.TextBoxContainer,
     borderColor: colors.borderColor,
-    borderWidth: 1,
+    // borderWidth: 1,
+    // borderBottomColor: 'red',
     borderRadius: 4,
     //width: 45 + '%',
-    height: 46,
+    // height: 46,
     color: colors.TextBoxColor,
     //color: "#ffffff",
     fontSize: 15,
@@ -1170,13 +1178,13 @@ const styles = StyleSheet.create({
     height: 26,
     width: 26,
     alignSelf: 'center',
-    marginTop: 4,
-    marginLeft: 12,
-    marginRight: 8,
+    // marginTop: 4,
+    // marginLeft: 12,
+    // marginRight: 8,
   },
   AttachmentHeading: {
     //marginLeft:8 + '%',
-    marginTop: 1 + '%',
+    // marginTop: 1 + '%',
     color: 'black',
     fontSize: 18,
     fontWeight: 'bold',
@@ -1189,7 +1197,7 @@ const styles = StyleSheet.create({
     height: 75,
     fontSize: 16,
     color: colors.TextBoxColor,
-    width: Dimensions.get('window').width - 30,
+    // width: Dimensions.get('window').width - 30,
     borderWidth: 0,
     backgroundColor: colors.TextBoxContainer,
     borderColor: colors.borderColor,
@@ -1199,9 +1207,10 @@ const styles = StyleSheet.create({
     borderColor: '#ffffff',
     borderWidth: 0,
     borderRadius: 4,
-    width: Dimensions.get('window').width - 40,
-    // marginHorizontal:30,
-    height: 46,
+    width: '100%',
+    // paddhh: 10,
+    // marginHorizontal: 30,
+    // height: 46,r
     color: 'black',
     fontSize: 15,
     marginTop: 15,
@@ -1228,6 +1237,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingBottom: '2%',
     justifyContent: 'space-around',
+    width: '100%',
   },
   mandatoryControl: {
     borderWidth: 1,
@@ -1235,32 +1245,32 @@ const styles = StyleSheet.create({
     borderColor: colors.mandatoryColor,
   },
   modalSearchView: {
-    width: Dimensions.get('window').width - 10,
-    marginHorizontal: 5,
+    // width: Dimensions.get('window').width - 10,
+    // marginHorizontal: 5,
     backgroundColor: 'white',
     alignItems: 'center',
     borderRadius: 6,
   },
   modalMainView: {
     // position: 'absolute',
-    justifyContent: 'space-around',
+    // justifyContent: 'space-around',
     // width: Dimensions.get('window').width - 10,
-    marginHorizontal: 5,
+    // marginHorizontal: 5,
     // top: 45 + '%',
-    backgroundColor: 'white',
-    alignItems: 'center',
+    // backgroundColor: 'white',
+    // alignItems: 'center',
     borderRadius: 6,
     alignItems: 'center',
   },
   centeredfilterView: {
-    width: Dimensions.get('window').width - 20,
-    marginHorizontal: 10,
-    alignItems: 'center',
+    // width: Dimensions.get('window').width - 20,
+    // marginHorizontal: 10,/
+    // alignItems: 'center',
   },
   sectionStylenew: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: 52,
+    // height: 52,
     marginBottom: 11,
     fontSize: 17,
     color: colors.white,
@@ -1269,7 +1279,8 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   TextDropdown: {
-    width: Dimensions.get('window').width - 30,
+    // width: Dimensions.get('window').width - 30,
+    width: '100%',
     borderColor: '#ffffff',
     borderWidth: 0,
     borderRadius: 4,
@@ -1277,15 +1288,18 @@ const styles = StyleSheet.create({
     color: colors.TextBoxColor,
     fontSize: 15,
     marginTop: 10,
+    // paddingHorizontal: 10,
     backgroundColor: colors.TextBoxContainer,
   },
   textSearchabled: {
     backgroundColor: colors.TextBoxContainer,
-    width: Dimensions.get('window').width - 30,
+    width: Dimensions.get('window').width,
     color: 'black',
     marginTop: 8,
     marginBottom: 12,
     borderRadius: 6,
+    // overflow: 'hidden',
+    paddingHorizontal: 10,
   },
   ButtonViewModal: {
     marginTop: 17,

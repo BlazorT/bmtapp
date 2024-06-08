@@ -1,68 +1,54 @@
-# # Uncomment the next line to define a global platform for your project
-# platform :ios, '10.0'
-# require_relative '../node_modules/react-native/scripts/react_native_pods'
-# require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+def node_require(script)
+  # Resolve script with node to allow for hoisting
+  require Pod::Executable.execute_command('node', ['-p',
+    "require.resolve(
+      '#{script}',
+      {paths: [process.argv[1]]},
+    )", __dir__]).strip
+end
 
-# target 'BDMT' do
-#   # Comment the next line if you don't want to use dynamic frameworks
-#   # use_frameworks!
-
-#   config = use_native_modules!
-#   use_react_native!(:path => config["reactNativePath"])
-
-#   permissions_path = '../node_modules/react-native-permissions/ios'
-
-#    #pod 'Permission-AppTrackingTransparency', :path => "#{permissions_path}/AppTrackingTransparency"
-#    # pod 'Permission-BluetoothPeripheral', :path => "#{permissions_path}/BluetoothPeripheral"
-   
-#    pod 'Permission-Calendars', :path => "#{permissions_path}/Calendars"
-#    pod 'Permission-Camera', :path => "#{permissions_path}/Camera"
-#    # pod 'Permission-Contacts', :path => "#{permissions_path}/Contacts"
-#    # pod 'Permission-FaceID', :path => "#{permissions_path}/FaceID"
-#    pod 'Permission-LocationAccuracy', :path => "#{permissions_path}/LocationAccuracy"
-#    pod 'Permission-LocationAlways', :path => "#{permissions_path}/LocationAlways"
-#    pod 'Permission-LocationWhenInUse', :path => "#{permissions_path}/LocationWhenInUse"
-#    pod 'Permission-MediaLibrary', :path => "#{permissions_path}/MediaLibrary"
-#    pod 'Permission-Microphone', :path => "#{permissions_path}/Microphone"
-#   # pod 'Permission-Motion', :path => "#{permissions_path}/Motion"
-#    pod 'Permission-Notifications', :path => "#{permissions_path}/Notifications"
-#    pod 'Permission-PhotoLibrary', :path => "#{permissions_path}/PhotoLibrary"
-#    pod 'Permission-PhotoLibraryAddOnly', :path => "#{permissions_path}/PhotoLibraryAddOnly"
-#  #  pod 'Permission-Reminders', :path => "#{permissions_path}/Reminders"
-#   # pod 'Permission-Siri', :path => "#{permissions_path}/Siri"
-#   # pod 'Permission-SpeechRecognition', :path => "#{permissions_path}/SpeechRecognition"
-#   # pod 'Permission-StoreKit', :path => "#{permissions_path}/StoreKit"
-
-
-
-#   # pod 'react-native-camera', :path => '../node_modules/react-native-camera'
-#   pod 'react-native-pdf', :path => '../node_modules/react-native-pdf'
-
-#   pod 'react-native-document-picker', :path => '../node_modules/react-native-document-picker'
-
-#   pod 'react-native-maps', :path => '../node_modules/react-native-maps'
-
-#   target 'BDMTTests' do
-#     inherit! :search_paths
-#     # Pods for testing
-#   end
-#   use_native_modules!
-# end
-# target 'BDMT-tvOS' do
-#   target 'BDMT-tvOSTests' do
-#     inherit! :search_paths
-#     # Pods for testing
-#   end
-# end
-# Resolve react_native_pods.rb with node to allow for hoisting
-require Pod::Executable.execute_command('node', ['-p',
-  'require.resolve(
-    "react-native/scripts/react_native_pods.rb",
-    {paths: [process.argv[1]]},
-  )', __dir__]).strip
+# Use it to require both react-native's and this package's scripts:
+node_require('react-native/scripts/react_native_pods.rb')
+node_require('react-native-permissions/scripts/setup.rb')
 
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
+
+use_modular_headers!
+# ⬇️ uncomment the permissions you need
+setup_permissions([
+  # 'AppTrackingTransparency',
+  # 'Bluetooth',
+  'Calendars',
+  # 'CalendarsWriteOnly',
+  'Camera',
+  # 'Contacts',
+  # 'FaceID',
+  # 'LocationAccuracy',
+  # 'LocationAlways',
+  # 'LocationWhenInUse',
+  'MediaLibrary',
+  # 'Microphone',
+  # 'Motion',
+  # 'Notifications',
+  'PhotoLibrary',
+  'PhotoLibraryAddOnly',
+  # 'Reminders',
+  # 'Siri',
+  # 'SpeechRecognition',
+  # 'StoreKit',
+])
+
+# If you are using a `react-native-flipper` your iOS build will fail when `NO_FLIPPER=1` is set.
+# because `react-native-flipper` depends on (FlipperKit,...) that will be excluded
+#
+# To fix this you can also exclude `react-native-flipper` using a `react-native.config.js`
+# ```js
+# module.exports = {
+#   dependencies: {
+#     ...(process.env.NO_FLIPPER ? { 'react-native-flipper': { platforms: { ios: null } } } : {}),
+# ```
+# flipper_config = ENV['NO_FLIPPER'] == "1" ? FlipperConfiguration.disabled : FlipperConfiguration.enabled
 
 linkage = ENV['USE_FRAMEWORKS']
 if linkage != nil
@@ -75,6 +61,11 @@ target 'BDMT' do
 
   use_react_native!(
     :path => config[:reactNativePath],
+    # Enables Flipper.
+    #
+    # Note that if you have use_frameworks! enabled, Flipper will not work and
+    # you should disable the next line.
+    # :flipper_configuration => flipper_config,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
@@ -89,8 +80,7 @@ target 'BDMT' do
     react_native_post_install(
       installer,
       config[:reactNativePath],
-      :mac_catalyst_enabled => false,
-      # :ccache_enabled => true
+      :mac_catalyst_enabled => false
     )
   end
 end

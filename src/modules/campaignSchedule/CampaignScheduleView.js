@@ -2994,10 +2994,39 @@ export default function CampaignScheduleScreen(props) {
                           isVisible={IsCampaignStartDateVisible}
                           minimumDate={new Date(defaultDateTime)}
                           mode="date"
-                          display="inline"
+                          // display="spinner"
                           onConfirm={handleCampaignStartConfirm}
                           onCancel={hideCampaignStartConfirm}
-                          isDarkModeEnabled={true}
+                          pickerStyleIOS={{
+                            backgroundColor: theme.cardBackColor,
+                          }}
+                          textColor={theme.textColor}
+                          buttonTextColorIOS={theme.textColor}
+                          pickerContainerStyleIOS={{
+                            backgroundColor: theme.cardBackColor,
+                          }}
+                          customCancelButtonIOS={e => {
+                            console.log({e});
+                            return (
+                              <TouchableOpacity
+                                onPress={() => hideCampaignStartConfirm()}
+                                style={{
+                                  width: '100%',
+                                  backgroundColor: theme.cardBackColor,
+                                  borderRadius: 10,
+                                  paddingVertical: 15,
+                                }}>
+                                <Text
+                                  style={{
+                                    textAlign: 'center',
+                                    fontSize: 20,
+                                    color: theme.textColor,
+                                  }}>
+                                  Cancel
+                                </Text>
+                              </TouchableOpacity>
+                            );
+                          }}
                         />
                       </View>
                     </View>
@@ -3032,6 +3061,36 @@ export default function CampaignScheduleScreen(props) {
                           mode="date"
                           onConfirm={handleCampaignEndConfirm}
                           onCancel={hideCampaignEndConfirm}
+                          pickerStyleIOS={{
+                            backgroundColor: theme.cardBackColor,
+                          }}
+                          textColor={theme.textColor}
+                          buttonTextColorIOS={theme.textColor}
+                          pickerContainerStyleIOS={{
+                            backgroundColor: theme.cardBackColor,
+                          }}
+                          customCancelButtonIOS={e => {
+                            console.log({e});
+                            return (
+                              <TouchableOpacity
+                                onPress={() => hideCampaignEndConfirm()}
+                                style={{
+                                  width: '100%',
+                                  backgroundColor: theme.cardBackColor,
+                                  borderRadius: 10,
+                                  paddingVertical: 15,
+                                }}>
+                                <Text
+                                  style={{
+                                    textAlign: 'center',
+                                    fontSize: 20,
+                                    color: theme.textColor,
+                                  }}>
+                                  Cancel
+                                </Text>
+                              </TouchableOpacity>
+                            );
+                          }}
                         />
                       </View>
                     </View>
@@ -3842,6 +3901,36 @@ export default function CampaignScheduleScreen(props) {
                               mode="datetime"
                               onConfirm={handleConfirm}
                               onCancel={hideDatePicker}
+                              pickerStyleIOS={{
+                                backgroundColor: theme.cardBackColor,
+                              }}
+                              textColor={theme.textColor}
+                              buttonTextColorIOS={theme.textColor}
+                              pickerContainerStyleIOS={{
+                                backgroundColor: theme.cardBackColor,
+                              }}
+                              customCancelButtonIOS={e => {
+                                console.log({e});
+                                return (
+                                  <TouchableOpacity
+                                    onPress={() => hideDatePicker()}
+                                    style={{
+                                      width: '100%',
+                                      backgroundColor: theme.cardBackColor,
+                                      borderRadius: 10,
+                                      paddingVertical: 15,
+                                    }}>
+                                    <Text
+                                      style={{
+                                        textAlign: 'center',
+                                        fontSize: 20,
+                                        color: theme.textColor,
+                                      }}>
+                                      Cancel
+                                    </Text>
+                                  </TouchableOpacity>
+                                );
+                              }}
                             />
                           </View>
                         </View>
@@ -3877,6 +3966,36 @@ export default function CampaignScheduleScreen(props) {
                               mode="datetime"
                               onConfirm={handleEndConfirm}
                               onCancel={hideEndDatePicker}
+                              pickerStyleIOS={{
+                                backgroundColor: theme.cardBackColor,
+                              }}
+                              textColor={theme.textColor}
+                              buttonTextColorIOS={theme.textColor}
+                              pickerContainerStyleIOS={{
+                                backgroundColor: theme.cardBackColor,
+                              }}
+                              customCancelButtonIOS={e => {
+                                console.log({e});
+                                return (
+                                  <TouchableOpacity
+                                    onPress={() => hideEndDatePicker()}
+                                    style={{
+                                      width: '100%',
+                                      backgroundColor: theme.cardBackColor,
+                                      borderRadius: 10,
+                                      paddingVertical: 15,
+                                    }}>
+                                    <Text
+                                      style={{
+                                        textAlign: 'center',
+                                        fontSize: 20,
+                                        color: theme.textColor,
+                                      }}>
+                                      Cancel
+                                    </Text>
+                                  </TouchableOpacity>
+                                );
+                              }}
                             />
                           </View>
                         </View>
