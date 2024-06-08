@@ -30,8 +30,17 @@ export default function NetworksView(props) {
     useState(false);
   const [selectNetworkId, setSelectNetworkId] = useState('');
   const [socialmediaIcon, setSocialmediaIcon] = useState(SMSIcon);
+  const [filterList, setFilterList] = useState([]);
   useEffect(() => {
     //);
+    console.log(props.selectedNetwork, props.id);
+    if (props.selectedNetwork !== null) {
+      const filterNetworkList = props.selectedNetwork.map(item => {
+        return item.networkId;
+      });
+      setFilterList(filterNetworkList);
+      // setSelectNetworkId(props.selectedNetwork[0].id);
+    }
     if (props.networkData.length <= 1) {
     } else {
       const filteredArray = props.networkData.filter(
@@ -144,7 +153,7 @@ export default function NetworksView(props) {
       if (selectSocialMediaNetwork == false) {
         var SelectProps = {
           networkId: props.networkId,
-          orgId: Number(Asyncdata[0].orgid),
+          orgId: Number(Asyncdata.orgid),
           rowVer: 0,
           purchasedQouta: props.purchasedQouta,
           unitPriceInclTax: props.unitPriceInclTax,
@@ -165,95 +174,97 @@ export default function NetworksView(props) {
   }
   return (
     <Fragment>
-      <View style={{width: Dimensions.get('window').width}}>
-        <TouchableOpacity
-          onPress={() => NetworkSelect(props)}
-          style={[
-            styles.btnGetStarted,
-            {backgroundColor: theme.cardBackColor},
-          ]}>
-          <View style={{width: 20 + '%'}}>
-            <Image
-              resizeMode="contain"
-              source={socialmediaIcon}
-              style={styles.itemImage}
-            />
-          </View>
-          <View style={{width: 65 + '%'}}>
-            <View style={{flexDirection: 'row'}}>
-              <Text style={[styles.itemText, {color: theme.textColor}]}>
-                {props.networkName}
+      {!filterList.some(item => item == props.networkId) && (
+        <View style={{width: Dimensions.get('window').width}}>
+          <TouchableOpacity
+            onPress={() => NetworkSelect(props)}
+            style={[
+              styles.btnGetStarted,
+              {backgroundColor: theme.cardBackColor},
+            ]}>
+            <View style={{width: 20 + '%'}}>
+              <Image
+                resizeMode="contain"
+                source={socialmediaIcon}
+                style={styles.itemImage}
+              />
+            </View>
+            <View style={{width: 65 + '%'}}>
+              <View style={{flexDirection: 'row'}}>
+                <Text style={[styles.itemText, {color: theme.textColor}]}>
+                  {props.networkName}
+                </Text>
+                <Text style={[styles.itemText, {color: theme.textColor}]}>
+                  {' '}
+                  ({props.purchasedQouta})
+                </Text>
+              </View>
+              <Text style={[styles.itemTextDetail, {color: theme.textColor}]}>
+                {props.networkDesc == '' || props.networkDesc == null
+                  ? props.networkName
+                  : props.networkDesc}
               </Text>
-              <Text style={[styles.itemText, {color: theme.textColor}]}>
-                {' '}
-                ({props.purchasedQouta})
-              </Text>
             </View>
-            <Text style={[styles.itemTextDetail, {color: theme.textColor}]}>
-              {props.networkDesc == '' || props.networkDesc == null
-                ? props.networkName
-                : props.networkDesc}
-            </Text>
-          </View>
-          {selectNetworkId == props.id ? (
-            <View
-              style={{
-                width: 14 + '%',
-                paddingTop: 17,
-                paddingLeft: 5,
-                zIndex: 902,
-              }}>
-              {selectSocialMediaNetwork == true ? (
-                <Image
-                  resizeMode="contain"
-                  source={checkedCheckbox}
-                  style={[
-                    styles.checkboxChecked_Unchecked,
-                    {tintColor: theme.buttonBackColor},
-                  ]}
-                />
-              ) : (
-                <Image
-                  resizeMode="contain"
-                  source={uncheckedCheckbox}
-                  style={[
-                    styles.checkboxChecked_Unchecked,
-                    {tintColor: theme.buttonBackColor},
-                  ]}
-                />
-              )}
-            </View>
-          ) : (
-            <View
-              style={{
-                width: 14 + '%',
-                paddingTop: 17,
-                paddingLeft: 5,
-                zIndex: 902,
-              }}>
-              {selectSocialMediaNetwork == false ? (
-                <Image
-                  resizeMode="contain"
-                  source={uncheckedCheckbox}
-                  style={[
-                    styles.checkboxChecked_Unchecked,
-                    {tintColor: theme.buttonBackColor},
-                  ]}
-                />
-              ) : (
-                <Image
-                  resizeMode="contain"
-                  source={checkedCheckbox}
-                  style={[
-                    styles.checkboxChecked_Unchecked,
-                    {tintColor: theme.buttonBackColor},
-                  ]}
-                />
-              )}
-            </View>
-          )}
-        </TouchableOpacity>
-      </View>
+            {selectNetworkId == props.id ? (
+              <View
+                style={{
+                  width: 14 + '%',
+                  paddingTop: 17,
+                  paddingLeft: 5,
+                  zIndex: 902,
+                }}>
+                {selectSocialMediaNetwork == true ? (
+                  <Image
+                    resizeMode="contain"
+                    source={checkedCheckbox}
+                    style={[
+                      styles.checkboxChecked_Unchecked,
+                      {tintColor: theme.buttonBackColor},
+                    ]}
+                  />
+                ) : (
+                  <Image
+                    resizeMode="contain"
+                    source={uncheckedCheckbox}
+                    style={[
+                      styles.checkboxChecked_Unchecked,
+                      {tintColor: theme.buttonBackColor},
+                    ]}
+                  />
+                )}
+              </View>
+            ) : (
+              <View
+                style={{
+                  width: 14 + '%',
+                  paddingTop: 17,
+                  paddingLeft: 5,
+                  zIndex: 902,
+                }}>
+                {selectSocialMediaNetwork == false ? (
+                  <Image
+                    resizeMode="contain"
+                    source={uncheckedCheckbox}
+                    style={[
+                      styles.checkboxChecked_Unchecked,
+                      {tintColor: theme.buttonBackColor},
+                    ]}
+                  />
+                ) : (
+                  <Image
+                    resizeMode="contain"
+                    source={checkedCheckbox}
+                    style={[
+                      styles.checkboxChecked_Unchecked,
+                      {tintColor: theme.buttonBackColor},
+                    ]}
+                  />
+                )}
+              </View>
+            )}
+          </TouchableOpacity>
+        </View>
+      )}
     </Fragment>
   );
 }

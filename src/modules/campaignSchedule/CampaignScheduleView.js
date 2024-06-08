@@ -60,6 +60,7 @@ export default function CampaignScheduleScreen(props) {
   const [selectIntervalTypeId, setSelectIntervalTypeId] = useState(0);
   const [Subject, setSubject] = useState('');
   const [scheduleData, setScheduleData] = useState('');
+  const [selectedId, setSelectedId] = useState(null);
   const [totalIndex, setTotalIndex] = useState('');
   const [addScheduleDataForSubmit, setAddScheduleDataForSubmit] = useState('');
   const [networkCount, setNetworkCount] = useState('');
@@ -873,6 +874,7 @@ export default function CampaignScheduleScreen(props) {
         'DataNetwork DataNetwork DataNetwork ',
         JSON.stringify(DataNetwork),
       );
+      setSelectedId(NetworkDetailList);
       var networkcount = NetworkDetailList;
 
       let counter = 0;
@@ -3364,6 +3366,8 @@ export default function CampaignScheduleScreen(props) {
               keyExtractor={(item, networkId) => networkId.toString()}
               renderItem={({item}) => (
                 <NetworksView
+                  item={item}
+                  selectedNetwork={selectedId}
                   networkData={networkData}
                   ActionNetworkDataClick={ActionNetworkDataClick}
                   ActionNetworkDataRemoveClick={ActionNetworkDataRemoveClick}

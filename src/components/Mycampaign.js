@@ -292,8 +292,9 @@ export default function Myvehicle(props) {
               <View
                 style={{
                   flex: 1,
-                  height: 70,
+                  // height: 70,
                   paddingVertical: 10,
+                  rowGap: 5,
                 }}>
                 <View
                   style={{
@@ -1079,11 +1080,11 @@ const styles = StyleSheet.create({
   },
   settingIconView: {},
   attachmentIcon: {
-    height: 29,
-    width: 29,
+    height: 25,
+    width: 25,
   },
   SettingIcon: {
-    fontSize: 29,
+    fontSize: 25,
     // color: theme.textColor,
   },
   SocialIcon: {
