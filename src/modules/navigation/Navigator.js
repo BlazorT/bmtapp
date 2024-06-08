@@ -4,7 +4,14 @@ import {
   createDrawerNavigator,
 } from '@react-navigation/drawer';
 import React, {useState} from 'react';
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Image,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import Toast from 'react-native-simple-toast';
 import AntdIcon from 'react-native-vector-icons/AntDesign';
 import userProfile from '../../../assets/images/User.png';
@@ -176,7 +183,7 @@ export default function App() {
       screenOptions={{
         drawerStyle: {
           backgroundColor: theme.backgroundColor,
-          opacity: 0.7,
+          opacity: Platform.OS === 'ios' ? 1 : 0.7,
         },
         headerShown: false,
       }}>
