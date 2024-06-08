@@ -48,6 +48,7 @@ import UpArrowIcon from '../../../assets/images/uparrow.png';
 import {useTheme} from '../../hooks/useTheme';
 import {useUser} from '../../hooks/useUser';
 import servicesettings from '../dataservices/servicesettings';
+import CampaignInfo from '../../components/campaignComponents/CampaignInfo';
 
 export default function CampaignScheduleScreen(props) {
   const theme = useTheme();
@@ -55,6 +56,17 @@ export default function CampaignScheduleScreen(props) {
   const lovs = useSelector(state => state.lovs).lovs;
 
   var defaultDateTime = new Date();
+  const [campaignInfo, setCampaignInfo] = useState({
+    subject: '',
+    hashtag: '',
+    template: '',
+    country: '',
+    state: '',
+    campaignStartDate: '',
+    campaignEndDate: '',
+    status: 0,
+    autoLead: 0,
+  });
 
   const [selectIntervalType, setSelectIntervalType] = useState(0);
   const [selectIntervalTypeId, setSelectIntervalTypeId] = useState(0);
@@ -2558,9 +2570,15 @@ export default function CampaignScheduleScreen(props) {
           selectedIndex={Index}
         />
       </TouchableOpacity>
-      <ScrollView>
+      <ScrollView
+        contentContainerStyle={{width: '100%'}}
+        style={{width: '100%'}}>
         {Index == 0 && (
           <>
+            <CampaignInfo
+              campaignInfo={campaignInfo}
+              setCampaignInfo={setCampaignInfo}
+            />
             <Alert
               massagetype={'warning'}
               hide={hidepermission}
@@ -2579,7 +2597,7 @@ export default function CampaignScheduleScreen(props) {
               Massage={'Do you want to discard ?'}></Alert>
             <View>
               <View style={styles.uploadmodelcontainer}>
-                <TextInput
+                {/* <TextInput
                   placeholderTextColor={theme.placeholderColor}
                   style={[
                     styles.sectionStyle,
@@ -2639,8 +2657,8 @@ export default function CampaignScheduleScreen(props) {
                   keyboardAppearance={'dark'}
                   KeyboardType={'default'}
                   maxLength={200}
-                />
-                {SelectAreaEnabled == false ? (
+                /> */}
+                {/* {SelectAreaEnabled == false ? (
                   <TouchableOpacity
                     style={{
                       width: 100 + '%',
@@ -2740,8 +2758,8 @@ export default function CampaignScheduleScreen(props) {
                       </View>
                     </View>
                   </View>
-                )}
-                {AttachmentsEnabled == false ? (
+                )} */}
+                {/* {AttachmentsEnabled == false ? (
                   <TouchableOpacity
                     style={{
                       width: 100 + '%',
@@ -2964,8 +2982,8 @@ export default function CampaignScheduleScreen(props) {
                       </View>
                     </View>
                   </View>
-                )}
-                <View style={styles.MainViewStartEndTime}>
+                )} */}
+                {/* <View style={styles.MainViewStartEndTime}>
                   <View style={styles.TimeView_Start_End}>
                     <View
                       style={[
@@ -3097,47 +3115,9 @@ export default function CampaignScheduleScreen(props) {
                       </View>
                     </View>
                   </View>
-                </View>
-                <View
-                  style={[
-                    styles.radiostyleView,
-                    {backgroundColor: theme.inputBackColor},
-                  ]}>
-                  <View style={styles.radiostyle}>
-                    <View
-                      style={{marginTop: 13, height: 45, flexDirection: 'row'}}>
-                      <RadioForm
-                        items={Statustype}
-                        value={selectStatus}
-                        setValue={v => {
-                          selectType(v);
-                          console.log({v});
-                        }}
-                        withLabels={true}
-                        buttonOuterColor={theme.selectedCheckBox}
-                        defaultButtonColor={theme.selectedCheckBox}
-                        buttonOuterSize={30}
-                        buttonInnerColor={theme.selectedCheckBox}
-                        buttonInnerSize={26}
-                        radioFormStyle={{
-                          flexDirection: 'row',
-                          flexWrap: 'wrap',
-                          justifyContent: 'space-between',
-                        }}
-                        radioButtonItemStyle={{
-                          // backgroundColor: '#d3d3d3',
-                          width: 110,
-                          marginBottom: 10,
-                        }}
-                        radioButtonLabelStyle={{
-                          fontSize: 16,
-                          color: theme.textColor,
-                        }}
-                      />
-                    </View>
-                  </View>
-                </View>
-                <View style={styles.termsView}>
+                </View> */}
+
+                {/* <View style={styles.termsView}>
                   <TouchableOpacity
                     onPress={() => selectAutoGenerateClick()}
                     style={{
@@ -3186,8 +3166,8 @@ export default function CampaignScheduleScreen(props) {
                       />
                     )}
                   </TouchableOpacity>
-                </View>
-                <View style={styles.ButtonViewNewCampaign}>
+                </View> */}
+                {/* <View style={styles.ButtonViewNewCampaign}>
                   <Button
                     style={[styles.btnCancel, {flexBasis: '46%'}]}
                     bgColor={theme.buttonBackColor}
@@ -3200,10 +3180,10 @@ export default function CampaignScheduleScreen(props) {
                     caption="Next"
                     onPress={() => checkTextInputRecord()}
                   />
-                </View>
+                </View> */}
               </View>
             </View>
-            <Modal
+            {/* <Modal
               animationType="fade"
               transparent={true}
               supportedOrientations={['portrait']}
@@ -3352,7 +3332,7 @@ export default function CampaignScheduleScreen(props) {
                   </View>
                 </View>
               </View>
-            </Modal>
+            </Modal> */}
           </>
         )}
         {Index == 1 && (
@@ -4160,7 +4140,10 @@ export default function CampaignScheduleScreen(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
     alignItems: 'center',
+    paddingHorizontal: 10,
   },
   containerView: {
     flex: 1,

@@ -214,7 +214,7 @@ export default function ForgotPasswordScreen(props) {
       Toast.LONG,
       Toast.CENTER,
     );
-    setVisibleOTP(false);
+    // setVisibleOTP(false);
     setdisablecode(false);
     setvesible(true);
   };

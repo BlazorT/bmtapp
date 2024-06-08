@@ -5,14 +5,15 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import {colors} from '../styles';
 import {useTheme} from '../hooks/useTheme';
 
-const RNSDropDown = ({
-  items,
-  onSelect,
-  style,
-  borderColor = colors.borderColor,
-  selectedIndex = '',
-  placeholder = 'Please Select...',
-}) => {
+const RNSDropDown = props => {
+  const {
+    items,
+    onSelect,
+    style,
+    borderColor = colors.borderColor,
+    selectedIndex = '',
+    placeholder = 'Please Select...',
+  } = props;
   const [isOpened, setIsOpened] = useState(false);
   const theme = useTheme();
   const openModal = () => {
@@ -25,7 +26,7 @@ const RNSDropDown = ({
 
   return (
     <ModalDropdown
-      selectedIndex={selectedIndex}
+      selectedIndex={''}
       options={items}
       onDropdownWillShow={openModal}
       onDropdownWillHide={closeModal}
@@ -61,21 +62,17 @@ const RNSDropDown = ({
       <View style={[styles.container, style && style, {borderColor}]}>
         <Text
           style={
-            selectedIndex == -1
+            selectedIndex !== ''
               ? {color: theme.placeholderColor}
               : {color: theme.textColor}
           }>
-          {selectedIndex > -1 && items[selectedIndex] != null
+          {selectedIndex !== '' && items[selectedIndex] != null
             ? items[selectedIndex].name
             : placeholder}
         </Text>
         <Icon
           name={isOpened ? 'angle-up' : 'angle-down'}
-          color={
-            selectedIndex == '' || selectedIndex == -1
-              ? 'gray'
-              : theme.tintColor
-          }
+          color={selectedIndex == '' ? 'gray' : theme.tintColor}
           size={20}
           style={styles.icon}
         />
