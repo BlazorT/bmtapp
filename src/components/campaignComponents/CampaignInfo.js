@@ -17,20 +17,26 @@ import RNSDropDown from '../Dropdown';
 import CampaignAttachment from './CampaignAttachment';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import moment from 'moment';
+import Alert from '../Alert';
+import Toast from 'react-native-simple-toast';
 
-const CampaignInfo = ({campaignInfo, setCampaignInfo}) => {
+import {useNavigation} from '@react-navigation/native';
+
+const CampaignInfo = ({campaignInfo, setCampaignInfo, setIndex}) => {
   const theme = useTheme();
+  const navigation = useNavigation();
   const lovs = useSelector(state => state.lovs).lovs;
 
   const [audienceShow, setAudienceShow] = useState(false);
   const [attachmentShow, setAttachmentShow] = useState(false);
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
+  const [showCancelAlert, setShowCancelAlert] = useState(false);
 
   const statusRadioBtns = [
-    {value: 0, label: 'Active'},
-    {value: 1, label: 'Paused'},
-    {value: 2, label: 'Cancelled'},
+    {value: 1, label: 'Active'},
+    {value: 2, label: 'Paused'},
+    {value: 3, label: 'Cancelled'},
   ];
 
   const handleCampaignInfo = (property, value) => {
@@ -40,8 +46,37 @@ const CampaignInfo = ({campaignInfo, setCampaignInfo}) => {
       [property]: value,
     }));
   };
+
+  const nextStep = () => {
+    if (campaignInfo.subject.trim() == '') {
+      Toast.show('Please enter campaign subject');
+      return;
+    }
+    if (campaignInfo.template.trim() == '') {
+      Toast.show('Please enter campaign template');
+      return;
+    }
+    if (campaignInfo.campaignStartDate == '') {
+      Toast.show('Please select valid campaign start date');
+      return;
+    }
+    if (campaignInfo.campaignEndDate == '') {
+      Toast.show('Please select valid campaign end date');
+      return;
+    }
+
+    setIndex(1);
+  };
   return (
     <View style={{width: '100%', marginTop: 10, rowGap: 10}}>
+      <Alert
+        massagetype={'warning'}
+        hide={() => setShowCancelAlert(false)}
+        confirm={() => navigation.goBack()}
+        Visible={showCancelAlert}
+        alerttype={'confirmation'}
+        Title={'Confirmation'}
+        Massage={'Do you want to discard ?'}></Alert>
       <TextInput
         placeholder="Subject"
         placeholderTextColor={theme.placeholderColor}
@@ -175,7 +210,12 @@ const CampaignInfo = ({campaignInfo, setCampaignInfo}) => {
           color={theme.tintColor}
         />
       </TouchableOpacity>
-      {attachmentShow && <CampaignAttachment />}
+      {attachmentShow && (
+        <CampaignAttachment
+          campaignInfo={campaignInfo}
+          handleCampaignInfo={handleCampaignInfo}
+        />
+      )}
       <View
         style={{
           flexDirection: 'row',
@@ -366,20 +406,20 @@ const CampaignInfo = ({campaignInfo, setCampaignInfo}) => {
       <View
         style={{
           flexDirection: 'row',
-          marginTop: 10,
           justifyContent: 'space-between',
+          marginVertical: 10,
         }}>
         <RNSButton
           style={{width: '46%'}}
           bgColor={theme.buttonBackColor}
           caption="Cancel"
-          // onPress={() => CancelClick()}
+          onPress={() => setShowCancelAlert(true)}
         />
         <RNSButton
           style={{width: '46%'}}
           bgColor={theme.buttonBackColor}
           caption="Next"
-          // onPress={() => checkTextInputRecord()}
+          onPress={nextStep}
         />
       </View>
     </View>

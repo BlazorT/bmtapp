@@ -9,7 +9,13 @@ import {
 import React from 'react';
 import {useTheme} from '../hooks/useTheme';
 
-const MediaPickerModal = ({isOpen, close}) => {
+const MediaPickerModal = ({
+  isOpen,
+  close,
+  isImage,
+  openCamera,
+  openGallery,
+}) => {
   const theme = useTheme();
   return (
     <Modal visible={isOpen} transparent={true} animationType="fade">
@@ -29,26 +35,34 @@ const MediaPickerModal = ({isOpen, close}) => {
             paddingVertical: 20,
             rowGap: 10,
           }}>
-          <TouchableOpacity>
-            <Text style={{color: theme.textColor, fontSize: 20}}>
-              Take Photo
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Text style={{color: theme.textColor, fontSize: 20}}>
-              Take Video
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Text style={{color: theme.textColor, fontSize: 20}}>
-              Choose Photo from gallery
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Text style={{color: theme.textColor, fontSize: 20}}>
-              Choose Video from gallery
-            </Text>
-          </TouchableOpacity>
+          {isImage && (
+            <>
+              <TouchableOpacity onPress={openCamera}>
+                <Text style={{color: theme.textColor, fontSize: 20}}>
+                  Take Photo
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={openGallery}>
+                <Text style={{color: theme.textColor, fontSize: 20}}>
+                  Choose Photo from gallery
+                </Text>
+              </TouchableOpacity>
+            </>
+          )}
+          {!isImage && (
+            <>
+              <TouchableOpacity onPress={openCamera}>
+                <Text style={{color: theme.textColor, fontSize: 20}}>
+                  Take Video
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={openGallery}>
+                <Text style={{color: theme.textColor, fontSize: 20}}>
+                  Choose Video from gallery
+                </Text>
+              </TouchableOpacity>
+            </>
+          )}
           <TouchableOpacity
             onPress={close}
             style={{
