@@ -20,6 +20,7 @@ const CampaignAttachment = ({handleCampaignInfo, campaignInfo}) => {
   const [isPermissions, setIsPermissions] = React.useState(false);
 
   React.useEffect(() => {
+    console.log('campaignInfo', campaignInfo.image);
     // Request camera and storage permissions on component mount
     requestPermissions();
   }, []);
@@ -39,10 +40,10 @@ const CampaignAttachment = ({handleCampaignInfo, campaignInfo}) => {
         readStorageStatus === RESULTS.GRANTED
       ) {
         setIsPermissions(true);
-        console.log('All permissions granted');
+        // console.log('All permissions granted');
       } else {
         setIsPermissions(false);
-        Alert.alert('Permissions not granted');
+        // Alert.alert('Permissions not granted');
       }
     } catch (error) {
       setIsPermissions(false);

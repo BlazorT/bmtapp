@@ -1,6 +1,6 @@
 import CheckBox from '@react-native-community/checkbox';
 import moment from 'moment';
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -45,6 +45,16 @@ const AddSchedule = ({
     {name: 'Sat'},
   ];
 
+  useEffect(() => {
+    calculateBudget();
+  }, [
+    scheduleList.startTime,
+    scheduleList.finishTime,
+    scheduleList.days,
+    scheduleList.intervalTypeId,
+    scheduleList.interval,
+  ]);
+
   const addSchedule = () => {
     if (scheduleList.CompaignNetworks.length == 0) {
       Toast.show('Please select atleast one network');
@@ -81,7 +91,7 @@ const AddSchedule = ({
   };
 
   const updateSchedule = () => {
-    console.log(scheduleList.CompaignNetworks.length);
+    console.log(scheduleList);
     if (scheduleList.CompaignNetworks.length == 0) {
       Toast.show('Please select atleast one network');
       return;
@@ -89,7 +99,8 @@ const AddSchedule = ({
     setCampaignInfo(prevState => {
       const updatedSchedules = prevState.schedules.map(schedule =>
         schedule.randomId == scheduleList.randomId
-          ? {...scheduleList}
+          ? //|| schedule.id == scheduleList.id
+            {...scheduleList}
           : schedule,
       );
 
@@ -102,6 +113,211 @@ const AddSchedule = ({
     setIsUpdate(false);
     // console.log(scheduleList);
   };
+  const calculateBudget = () => {
+    const {numberOfDays, daysOfWeek} = getDaysBetweenDates(
+      scheduleList.startTime,
+      scheduleList.finishTime,
+    );
+    console.log({numberOfDays}, {daysOfWeek});
+
+    let validDays = 0;
+    let totalValidDuration = 0;
+    const scheduleDays = scheduleList.days.map(day => days[day - 1].name);
+
+    // Calculate valid days based on the interval
+    const interval = scheduleList.intervalTypeId; // e.g., 'one time', 'daily', 'weekly', 'monthly', 'yearly'
+    console.log({interval});
+    if (interval == 0) {
+      // Check if any of the scheduled days fall within the date range
+      scheduleDays.forEach(day => {
+        if (daysOfWeek.includes(day)) {
+          validDays++;
+        }
+      });
+    } else if (interval == 1) {
+      // Iterate through each day in the date range and check if it matches any scheduled days
+      const startDate = new Date(scheduleList.startTime);
+      const endDate = new Date(scheduleList.finishTime);
+      let currentDate = new Date(startDate);
+
+      while (currentDate <= endDate) {
+        const currentDayName = [
+          'Sun',
+          'Mon',
+          'Tue',
+          'Wed',
+          'Thu',
+          'Fri',
+          'Sat',
+        ][currentDate.getDay()];
+        if (scheduleDays.includes(currentDayName)) {
+          validDays++;
+        }
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+    } else if (interval == 2) {
+      // Count how many weeks are within the range
+      const weeks = Math.floor(numberOfDays / 7);
+      const remainingDays = numberOfDays % 7;
+
+      scheduleDays.forEach(day => {
+        validDays += weeks; // Add full weeks
+        if (daysOfWeek.slice(0, remainingDays).includes(day)) {
+          validDays++; // Add remaining days
+        }
+      });
+    } else if (interval === 3) {
+      // Calculate valid days for each month
+      const startDate = new Date(scheduleList.startTime);
+      const endDate = new Date(scheduleList.finishTime);
+      let currentDate = new Date(startDate);
+      const endMonth = endDate.getMonth();
+      const endYear = endDate.getFullYear();
+
+      while (currentDate <= endDate) {
+        const currentMonth = currentDate.getMonth();
+        const currentYear = currentDate.getFullYear();
+
+        // Iterate through all days of the current month
+        while (
+          currentDate.getMonth() === currentMonth &&
+          currentDate <= endDate
+        ) {
+          const currentDayName = [
+            'Sun',
+            'Mon',
+            'Tue',
+            'Wed',
+            'Thu',
+            'Fri',
+            'Sat',
+          ][currentDate.getDay()];
+          if (scheduleDays.includes(currentDayName)) {
+            validDays++;
+          }
+          currentDate.setDate(currentDate.getDate() + 1);
+        }
+
+        // Move to the first day of the next month
+        if (currentMonth === 11) {
+          // December case
+          currentDate.setFullYear(currentYear + 1, 0, 1); // Next year January
+        } else {
+          currentDate.setMonth(currentMonth + 1, 1);
+        }
+      }
+    } else if (interval == 4) {
+      // Calculate valid days for each year
+      const startDate = new Date(scheduleList.startTime);
+      const endDate = new Date(scheduleList.finishTime);
+      let currentDate = new Date(startDate);
+
+      while (currentDate <= endDate) {
+        const currentYear = currentDate.getFullYear();
+
+        // Iterate through all days of the current year
+        while (
+          currentDate.getFullYear() === currentYear &&
+          currentDate <= endDate
+        ) {
+          const currentDayName = [
+            'Sun',
+            'Mon',
+            'Tue',
+            'Wed',
+            'Thu',
+            'Fri',
+            'Sat',
+          ][currentDate.getDay()];
+          if (scheduleDays.includes(currentDayName)) {
+            validDays++;
+          }
+          currentDate.setDate(currentDate.getDate() + 1);
+        }
+
+        // Move to the first day of the next year
+        currentDate.setFullYear(currentYear + 1, 0, 1);
+      }
+    } else if (interval == 5) {
+      // Calculate valid intervals for custom interval in minutes
+      const startDate = new Date(scheduleList.startTime);
+      const endDate = new Date(scheduleList.finishTime);
+      let currentDate = new Date(startDate);
+
+      while (currentDate <= endDate) {
+        const currentDayName = [
+          'Sun',
+          'Mon',
+          'Tue',
+          'Wed',
+          'Thu',
+          'Fri',
+          'Sat',
+        ][currentDate.getDay()];
+        if (scheduleDays.includes(currentDayName)) {
+          validDays++;
+        }
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+      validDays = validDays * calculateFractionOfDay(scheduleList.interval);
+      // console.log(calculateFractionOfDay(50));
+    }
+    setCampaignInfo(prevState => ({
+      ...prevState,
+      networks: prevState.networks.map(item => ({
+        ...item,
+        usedQuota: validDays,
+      })),
+    }));
+    setScheduleList(prevState => ({
+      ...prevState,
+      messageCount: validDays,
+      CompaignNetworks: scheduleList.CompaignNetworks.map(item => ({
+        ...item,
+        usedQuota: validDays,
+      })),
+      budget: scheduleList.CompaignNetworks.map(
+        item => item.unitPriceInclTax * validDays,
+      ).reduce((a, b) => a + b, 0),
+    }));
+    console.log({validDays});
+  };
+  const calculateFractionOfDay = durationInMinutes => {
+    // Total number of milliseconds in a day
+    const millisecondsPerDay = 24 * 60 * 60 * 1000;
+
+    // Convert the duration to milliseconds
+    const durationInMilliseconds = durationInMinutes * 60 * 1000;
+
+    // Calculate the fraction of the day
+    const fractionOfDay = durationInMilliseconds / millisecondsPerDay;
+
+    return fractionOfDay.toFixed(2);
+  };
+  function getDaysBetweenDates(startDateString, endDateString) {
+    const startDate = new Date(startDateString);
+    const endDate = new Date(endDateString);
+
+    // Calculate the number of days between the two dates
+    const millisecondsPerDay = 24 * 60 * 60 * 1000;
+    const daysBetween =
+      Math.floor((endDate - startDate) / millisecondsPerDay) + 1;
+
+    // Get the days of the week
+    const daysOfWeek = [];
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+    for (let i = 0; i < daysBetween; i++) {
+      const currentDate = new Date(startDate);
+      currentDate.setDate(currentDate.getDate() + i);
+      daysOfWeek.push(dayNames[currentDate.getDay()]);
+    }
+
+    return {
+      numberOfDays: daysBetween,
+      daysOfWeek: daysOfWeek,
+    };
+  }
   return (
     <View style={{marginTop: 10}}>
       <View
@@ -128,7 +344,8 @@ const AddSchedule = ({
             }}>
             <Text
               style={{color: theme.textColor, fontSize: 16, marginRight: 10}}>
-              {network.desc} ({network.purchasedQouta})
+              {network.desc || network.networkName} (
+              {network.purchasedQouta || network.compaignQouta})
             </Text>
             <CheckBox
               style={{
@@ -205,6 +422,7 @@ const AddSchedule = ({
               setScheduleList({
                 ...scheduleList,
                 intervalTypeId: value,
+                // IntervalTypeId: value,
               });
             }}
             style={{
@@ -226,7 +444,7 @@ const AddSchedule = ({
           <TextInput
             placeholder="Minute (1-60)"
             placeholderTextColor={theme.placeholderColor}
-            defaultValue={scheduleList.intervalTypeId == 5 ? '60' : '0'}
+            defaultValue={scheduleList.intervalTypeId == 5 ? '' : '0'}
             value={scheduleList.interval}
             editable={scheduleList.intervalTypeId == 5 ? true : false}
             onChangeText={value => {
@@ -297,10 +515,17 @@ const AddSchedule = ({
                   transform: [{scale: 1.4}],
                 }}
                 onValueChange={value => {
-                  setScheduleList({
-                    ...scheduleList,
-                    days: [...scheduleList.days, index + 1],
-                  });
+                  if (value) {
+                    setScheduleList({
+                      ...scheduleList,
+                      days: [...scheduleList.days, index + 1],
+                    });
+                  } else {
+                    setScheduleList({
+                      ...scheduleList,
+                      days: scheduleList.days.filter(item => item != index + 1),
+                    });
+                  }
                 }}
                 value={scheduleList.days.includes(index + 1)}
                 boxType={'square'}
@@ -479,8 +704,11 @@ const AddSchedule = ({
                   fontSize: 16,
                   color: theme.textColor,
                 }}>
-                {item.desc} : {item.purchasedQouta - item.usedQuota} /{' '}
-                {scheduleMessageCount}
+                {item.desc || item.networkName} :{' '}
+                {item.purchasedQouta ||
+                  item.compaignQouta - item.usedQuota ||
+                  0}{' '}
+                / {scheduleList.messageCount}
               </Text>
               <Text
                 style={{
@@ -489,7 +717,7 @@ const AddSchedule = ({
                   color: theme.textColor,
                 }}>
                 Budget:{' '}
-                {(scheduleMessageCount * item.unitPriceInclTax).toFixed(2)}{' '}
+                {(scheduleList.messageCount * item.unitPriceInclTax).toFixed(2)}{' '}
                 {lovs['orgs'][0].currencyName}
               </Text>
             </View>

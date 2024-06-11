@@ -18,6 +18,7 @@ import CampaignNetwork from '../../components/campaignComponents/CampaignNetwork
 import CampaignSchedule from '../../components/campaignComponents/CampaignSchedule';
 import {useTheme} from '../../hooks/useTheme';
 import {useUser} from '../../hooks/useUser';
+import servicesettings from '../dataservices/servicesettings';
 
 export default function CampaignScheduleScreen(props) {
   const theme = useTheme();
@@ -25,6 +26,7 @@ export default function CampaignScheduleScreen(props) {
   const lovs = useSelector(state => state.lovs).lovs;
 
   const [campaignInfo, setCampaignInfo] = useState({
+    id: 0,
     subject: '',
     hashtag: '',
     template: '',
@@ -39,6 +41,8 @@ export default function CampaignScheduleScreen(props) {
     pdf: '',
     networks: [],
     schedules: [],
+    totalBudget: 0,
+    discount: 0,
   });
   const [Index, setIndex] = useState(0);
   const [updateMessage, setUpdateMessage] = useState('');
@@ -58,24 +62,70 @@ export default function CampaignScheduleScreen(props) {
       }
     });
     loadInitialData();
+    console.log(props.route.params);
+    if (props.route.params) {
+      updateCampaignData(props.route.params.campaign);
+    }
   }, []);
   /**************************************** validation ************************************************/
   const loadInitialData = async () => {
     try {
       if (isAuthenticated) {
         const networks = await lovs['mybundlings'];
-        const bmtLovs = await lovs['bmtlovs'];
-        console.log({networks});
         setNetworks(networks);
-        if (global.UpdateCampaign == 1) {
-          // UpdateCampaignDetail(networks);
-        }
       } else {
         props.navigation.replace('Login');
       }
     } catch (error) {
       console.log(error);
     }
+  };
+  const updateCampaignData = data => {
+    const attachments =
+      data.attachments !== '' ? JSON.parse(data.attachments) : [];
+    const networks = JSON.parse(data.compaignsdetails);
+    // const datNetworks = lovs['mybundlings'].filter(item =>
+    //   networks.some(network => network.networkId === item.networkId),
+    // );
+    const schedule = JSON.parse(data.compaignschedules);
+    const scheduleList = [{...schedule[0], CompaignNetworks: networks}];
+    console.log(JSON.stringify(scheduleList));
+    const uris = attachments.map(item => ({
+      Id: item.Id,
+      uri: `${servicesettings.Imagebaseuri}${item.image}`,
+    }));
+    const imageUris = uris.filter(
+      uri =>
+        uri.uri.endsWith('.jpg') ||
+        uri.uri.endsWith('.jpeg') ||
+        uri.uri.endsWith('.png'),
+    )[0];
+    const videoUris = uris.filter(
+      uri =>
+        uri.uri.endsWith('.mp4') ||
+        uri.uri.endsWith('.avi') ||
+        uri.uri.endsWith('.mov'),
+    )[0];
+    const pdfUris = uris.filter(uri => uri.uri.endsWith('.pdf'))[0];
+    setCampaignInfo({
+      id: data.id,
+      subject: data.name,
+      hashtag: data.hashTags ? data.hashTags : '',
+      template: data.description,
+      country: '',
+      state: '',
+      campaignStartDate: new Date(data.startTime),
+      campaignEndDate: new Date(data.finishTime),
+      status: data.status,
+      autoLead: data.autoGenerateLeads ? true : false,
+      image: imageUris ? imageUris : '',
+      video: videoUris ? videoUris : '',
+      pdf: pdfUris ? pdfUris : '',
+      networks: networks.length > 0 ? networks : [],
+      schedules: schedule.length > 0 ? scheduleList : [],
+      totalBudget: data.budget ? data.budget : 0,
+      discount: data.discount ? data.discount : 0,
+    });
   };
 
   const checkValidation = () => {

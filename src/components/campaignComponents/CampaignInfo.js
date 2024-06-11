@@ -72,7 +72,28 @@ const CampaignInfo = ({campaignInfo, setCampaignInfo, setIndex}) => {
       <Alert
         massagetype={'warning'}
         hide={() => setShowCancelAlert(false)}
-        confirm={() => navigation.goBack()}
+        confirm={() => {
+          navigation.goBack();
+          setCampaignInfo({
+            id: 0,
+            subject: '',
+            hashtag: '',
+            template: '',
+            country: '',
+            state: '',
+            campaignStartDate: '',
+            campaignEndDate: '',
+            status: 1,
+            autoLead: false,
+            image: '',
+            video: '',
+            pdf: '',
+            networks: [],
+            schedules: [],
+            totalBudget: 0,
+            discount: 0,
+          });
+        }}
         Visible={showCancelAlert}
         alerttype={'confirmation'}
         Title={'Confirmation'}

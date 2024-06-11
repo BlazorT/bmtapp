@@ -96,7 +96,7 @@ export default function Myvehicle(props) {
   const UpdateCampaign = async props => {
     global.UpdateCampaign = 1;
     console.log('UpdateCampaign click ' + JSON.stringify(props));
-    props.OpenUpdateCampaign(props);
+    props.OpenUpdateCampaign(props.data);
   };
   const clickForDetail = async props => {
     global.Network_Detail = 1;

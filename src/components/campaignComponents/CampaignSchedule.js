@@ -47,6 +47,7 @@ const CampaignSchedule = ({
   });
 
   useEffect(() => {
+    console.log('campaignInfo: ' + JSON.stringify(campaignInfo.schedules));
     if (!isUpdate) {
       setScheduleList({
         CompaignNetworks: [],
@@ -63,7 +64,7 @@ const CampaignSchedule = ({
         finishTime: campaignInfo.campaignEndDate,
         interval: 0,
         status: 1,
-        intervalTypeId: 1,
+        intervalTypeId: 0,
         randomId: Math.floor(100000 + Math.random() * 900000),
       });
     }
@@ -87,9 +88,10 @@ const CampaignSchedule = ({
       finishTime: moment.utc(campaignInfo.campaignEndDate).format(),
       CompaignNetworks: campaignInfo.networks,
       compaignExecutionSchedules: campaignInfo.schedules,
-      totalBudget: 0,
+      totalBudget: campaignInfo.schedules.reduce((a, b) => a + b.budget, 0),
       discount: 0,
     };
+    console.log('campaignBody: ' + JSON.stringify(campaignBody));
     setUpdateMessage(`${campaignInfo.subject} has been created successfully.`);
     setspinner(true);
 
@@ -106,20 +108,105 @@ const CampaignSchedule = ({
       servicesettings.baseuri + 'createcompletecompaign',
       headerFetch,
     );
+    console.log('response', response);
     const res = await response.json();
     if (res.status == false || res.status == '408') {
       setspinner(false);
       Toast.show(res.message || 'Something went wrong, please try again');
     } else {
-      setspinner(false);
-      setModalVisible(true);
-      setTimeout(() => {
-        setModalVisible(false);
-        navigation.replace('My Campaigns');
-      }, 4000);
+      if (
+        campaignInfo.image !== '' ||
+        campaignInfo.video != '' ||
+        campaignInfo.pdf != ''
+      ) {
+        const data = new FormData();
+        console.log(
+          'campaignInfo.image',
+          campaignInfo.image,
+          campaignInfo.video,
+          campaignInfo.pdf,
+        );
+        if (campaignInfo.image != '') {
+          const fileTypeMake = campaignInfo.image.fileName;
+          const fileNameType = '.' + fileTypeMake.split('.')[1];
+          const imageName =
+            Math.floor(100 + Math.random() * 900).toString() + fileNameType;
+
+          data.append('files', {
+            name: imageName,
+            uri: campaignInfo.image.uri,
+            type: campaignInfo.image.type,
+          });
+        }
+        if (campaignInfo.video != '') {
+          const fileTypeMake = campaignInfo.video.fileName;
+          const fileNameType = '.' + fileTypeMake.split('.')[1];
+          const imageName =
+            Math.floor(100 + Math.random() * 900).toString() + fileNameType;
+
+          data.append('files', {
+            name: imageName,
+            uri: campaignInfo.video.uri,
+            type: campaignInfo.video.type,
+          });
+        }
+        if (campaignInfo.pdf != '') {
+          const fileTypeMake = campaignInfo.pdf.name;
+          const fileNameType = '.' + fileTypeMake.split('.')[1];
+          const imageName =
+            Math.floor(100 + Math.random() * 900).toString() + fileNameType;
+
+          data.append('files', {
+            name: imageName,
+            uri: campaignInfo.pdf.uri,
+            type: campaignInfo.pdf.type,
+          });
+        }
+
+        data.append('compaignid', res.data);
+        data.append('userid', user.id);
+        data.append('remarks', 'Remarks Text');
+        console.log('imgData: ', JSON.stringify(data));
+        const ImageheaderFetch = {
+          enctype: 'multipart/form-data',
+          processData: false,
+          contentType: false,
+          cache: false,
+          timeout: 6000,
+          method: 'post',
+          body: data,
+          headers: {
+            Authorization: servicesettings.AuthorizationKey,
+          },
+        };
+        const imageResponse = await fetch(
+          servicesettings.baseuri + 'uploadattachments',
+          ImageheaderFetch,
+        );
+        const attachmentRes = await imageResponse.json();
+        console.log('attachmentRes', attachmentRes);
+        if (attachmentRes.status == false || attachmentRes.status == '408') {
+          setspinner(false);
+          Toast.show(res.message || 'Something went wrong, please try again');
+        } else {
+          setspinner(false);
+          setModalVisible(true);
+          setTimeout(() => {
+            setModalVisible(false);
+            navigation.replace('My Campaigns');
+          }, 4000);
+        }
+      } else {
+        setspinner(false);
+        setModalVisible(true);
+        setTimeout(() => {
+          setModalVisible(false);
+          navigation.replace('My Campaigns');
+        }, 4000);
+      }
     }
-    console.log('res', res);
-    console.log(JSON.stringify(campaignBody));
+    // console.log('res', res);
+    // console.log(JSON.stringify(campaignBody));
   };
   return (
     <View style={{marginTop: 5}}>
@@ -174,11 +261,10 @@ const CampaignSchedule = ({
               fontWeight: 'bold',
               textAlign: 'center',
             }}>
-            Schedule (
+            Schedule
             {campaignInfo.schedules.length > 0
-              ? campaignInfo.schedules.length
+              ? '(' + campaignInfo.schedules.length + ')'
               : ''}
-            )
           </Text>
         </TouchableOpacity>
       </View>

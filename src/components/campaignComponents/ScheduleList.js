@@ -12,6 +12,7 @@ import moment from 'moment';
 import {useSelector} from 'react-redux';
 import GestureRecognizer from 'react-native-swipe-gestures';
 import RNSButton from '../Button';
+import {useUser} from '../../hooks/useUser';
 
 const ScheduleList = ({
   campaignInfo,
@@ -22,11 +23,12 @@ const ScheduleList = ({
 }) => {
   const theme = useTheme();
   const lovs = useSelector(state => state.lovs).lovs;
+  const {user} = useUser();
 
   const [showEditDelBtns, setShowEditDelBtns] = React.useState(false);
 
   const getIntervalName = id => {
-    // console.log(id);
+    console.log(campaignInfo.schedules);
     const intervals = lovs['bmtlovs'].intervals;
     // console.log(intervals);
     return intervals.filter(interval => interval.id == id + 1)[0].name;
@@ -71,7 +73,9 @@ const ScheduleList = ({
                   }}>
                   <Text style={{color: theme.textColor}}>Start Date</Text>
                   <Text style={{color: theme.textColor}}>
-                    {moment(schedule.startTime).format('DD-MM-YYYY')}
+                    {moment(schedule.startTime || schedule.StartTime).format(
+                      'DD-MM-YYYY',
+                    )}
                   </Text>
                 </View>
                 <View
@@ -82,7 +86,9 @@ const ScheduleList = ({
                   }}>
                   <Text style={{color: theme.textColor}}>Start Time</Text>
                   <Text style={{color: theme.textColor}}>
-                    {moment(schedule.startTime).format('HH:mm')}
+                    {moment(schedule.startTime || schedule.StartTime).format(
+                      'HH:mm',
+                    )}
                   </Text>
                 </View>
               </View>
@@ -109,7 +115,7 @@ const ScheduleList = ({
                   </Text>
 
                   <Text style={{color: theme.textColor}}>
-                    {schedule.budget} {lovs['orgs'][0].currencyName}
+                    {schedule.budget.toFixed(2)} {lovs['orgs'][0].currencyName}
                   </Text>
                 </View>
                 <View
@@ -121,7 +127,9 @@ const ScheduleList = ({
                   <Text style={{color: theme.textColor}}>Finish Date</Text>
 
                   <Text style={{color: theme.textColor}}>
-                    {moment(schedule.finishTime).format('DD-MM-YYYY')}
+                    {moment(schedule.finishTime || schedule.FinishTime).format(
+                      'DD-MM-YYYY',
+                    )}
                   </Text>
                 </View>
                 <View
@@ -132,7 +140,9 @@ const ScheduleList = ({
                   }}>
                   <Text style={{color: theme.textColor}}>Finish Time</Text>
                   <Text style={{color: theme.textColor}}>
-                    {moment(schedule.finishTime).format('HH:mm')}
+                    {moment(schedule.finishTime || schedule.FinishTime).format(
+                      'HH:mm',
+                    )}
                   </Text>
                 </View>
               </View>
@@ -163,6 +173,7 @@ const ScheduleList = ({
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => {
+                      console.log({schedule});
                       setScheduleList({
                         CompaignNetworks: schedule.CompaignNetworks,
                         id: schedule.id,
@@ -234,11 +245,17 @@ const ScheduleList = ({
         }}>
         <Text style={{color: theme.textColor, fontSize: 18, fontWeight: '600'}}>
           Campaign Messages: {'      '}
-          {2.0}
+          {campaignInfo.schedules
+            .map((s, i) => s.messageCount)
+            .reduce((a, b) => a + b, 0)}
         </Text>
         <Text style={{color: theme.textColor, fontSize: 18, fontWeight: '600'}}>
           Campaign Budget: {'            '}
-          {2.0}
+          {campaignInfo.schedules
+            .map((s, i) => s.budget)
+            .reduce((a, b) => a + b, 0)
+            .toFixed(2)}{' '}
+          {lovs['orgs'][0].currencyName}
         </Text>
       </View>
     </View>

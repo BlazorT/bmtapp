@@ -23,7 +23,10 @@ export default function MycampaignScheduleList(props) {
     const orgsData = lovs['orgs'][0];
     console.log({orgsData});
     setOrgCurrencyName(orgsData.currencyName);
-
+    const inter = lovs['bmtlovs'].intervals.find(
+      x => x.id == props.intervalTypeId + 1,
+    );
+    console.log({inter}, lovs['bmtlovs'].intervals);
     //console.log('network my data ' + JSON.stringify(props.compaignQouta));
     //console.log('network my data ' + JSON.stringify(props.networkName));
     if (props.networkId == 1) {
@@ -98,6 +101,7 @@ export default function MycampaignScheduleList(props) {
                 flex: 1,
                 flexDirection: 'row',
                 justifyContent: 'space-between',
+                flexWrap: 'wrap',
               }}>
               <Text
                 style={[
@@ -107,7 +111,10 @@ export default function MycampaignScheduleList(props) {
                     textAlign: 'left',
                   },
                 ]}>
-                {'Interval Type: ' + props.intervaltypename}
+                {'Interval Type: ' +
+                  lovs['bmtlovs'].intervals.find(
+                    x => x.id == props.intervalTypeId + 1,
+                  ).name}
               </Text>
               {props.days.length <= 10 && (
                 <Text
