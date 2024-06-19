@@ -4,6 +4,7 @@ import {
   FlatList,
   Image,
   Platform,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -48,7 +49,6 @@ export default function MyCampaignScreen(props) {
   const [img_Video, setImg_Video] = useState('');
   const [img_VideoType, setImg_VideoType] = useState('');
   const [searchBudget, setSearchBudget] = useState('');
-  const [selectedCampaingId, setSelectedCampaingId] = useState('');
   const [attachmentImageError, setAttachmentImageError] = useState(false);
   const [attachmentVideoError, setAttachmentVideoError] = useState(false);
   const [selectStatusId, setSelectStatusId] = useState('');
@@ -58,6 +58,7 @@ export default function MyCampaignScreen(props) {
   const [attachmentViewVisible, setAttachmentViewVisible] = useState(false);
   const [attachmentFullView, setAttachmentFullView] = useState(false);
   const [spinner, setspinner] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const ClickStatus = value => {
     setVisible(true);
     setChangeViewVisible(false);
@@ -108,8 +109,10 @@ export default function MyCampaignScreen(props) {
 
           if (responseJson.data != null) {
             setdata(responseJson.data);
+            setRefreshing(false);
             setspinner(false);
           } else {
+            setRefreshing(false);
             setspinner(false);
           }
         })
@@ -120,6 +123,7 @@ export default function MyCampaignScreen(props) {
             Toast.LONG,
             Toast.CENTER,
           );
+          setRefreshing(false);
           setspinner(false);
         });
     } else {
@@ -247,7 +251,6 @@ export default function MyCampaignScreen(props) {
     console.log({campaignStatus});
     // console.log(campaignStatus.id, campaignStatus.data.status);
     setSelectedCampaingStatus(campaignStatus.data.status);
-    setSelectedCampaingId(campaignStatus.id);
     if (changeViewVisible == true) {
       setChangeViewVisible(false);
     }
@@ -502,7 +505,13 @@ export default function MyCampaignScreen(props) {
       )}
       <FlatList
         data={data}
+        refreshing={true}
         keyExtractor={(item, id) => id.toString()}
+        refreshControl={<RefreshControl refreshing={refreshing} />}
+        onRefresh={() => {
+          setRefreshing(true);
+          Loaddata();
+        }}
         renderItem={({item}) => (
           <Mycampaign
             OpenUpdateCampaign={OpenUpdateCampaign}
