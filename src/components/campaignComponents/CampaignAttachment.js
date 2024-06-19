@@ -64,7 +64,16 @@ const CampaignAttachment = ({handleCampaignInfo, campaignInfo}) => {
         } else if (response.error) {
           console.log('ImagePicker Error: ', response.error);
         } else {
-          handleCampaignInfo(isImage ? 'image' : 'video', response.assets[0]);
+          handleCampaignInfo(isImage ? 'image' : 'video', {
+            ...response.assets[0],
+            id: isImage
+              ? campaignInfo.image !== ''
+                ? campaignInfo.image.Id
+                : 0
+              : campaignInfo.video !== ''
+                ? campaignInfo.video.Id
+                : 0,
+          });
           console.log('ImagePicker Response: ', response.assets[0]);
         }
       },
@@ -81,7 +90,18 @@ const CampaignAttachment = ({handleCampaignInfo, campaignInfo}) => {
         } else if (response.error) {
           console.log('ImagePicker Error: ', response.error);
         } else {
-          handleCampaignInfo(isImage ? 'image' : 'video', response.assets[0]);
+          console.log('response', campaignInfo.video);
+
+          handleCampaignInfo(isImage ? 'image' : 'video', {
+            ...response.assets[0],
+            id: isImage
+              ? campaignInfo.image !== ''
+                ? campaignInfo.image.Id
+                : 0
+              : campaignInfo.video !== ''
+                ? campaignInfo.video.Id
+                : 0,
+          });
           console.log('ImagePicker Response: ', response);
         }
       },
@@ -94,7 +114,10 @@ const CampaignAttachment = ({handleCampaignInfo, campaignInfo}) => {
       type: [DocumentPicker.types.pdf],
     });
     if (response !== undefined || response !== '') {
-      handleCampaignInfo('pdf', response[0]);
+      handleCampaignInfo('pdf', {
+        ...response[0],
+        id: campaignInfo.pdf !== '' ? campaignInfo.pdf.Id : 0,
+      });
     }
   };
   return (

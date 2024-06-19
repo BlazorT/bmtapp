@@ -7,7 +7,7 @@ let servicesettings = {
   filters: filters,
   datefrom: datefrom,
   baseuri: 'http://192.168.18.4:8081/api/bmt/',
-  Imagebaseuri: 'http://192.168.18.4:8081/',
+  Imagebaseuri: 'http://192.168.18.4:8081',
   //baseuri:'http://localhost:8093/api/bmt/',
   datefrom: dateto,
   AuthorizationKey: 'X77Ks0DVwkG3KyMZHkCDU0nF0bMZztX44dVlT3R35E0=',

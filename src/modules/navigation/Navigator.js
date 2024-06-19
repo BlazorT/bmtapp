@@ -91,6 +91,7 @@ function CustomDrawerContent(props) {
   const userProfileImage = !isAuthenticated
     ? ''
     : servicesettings.Imagebaseuri +
+      '/' +
       user.avatar.replace(/\\/g, '/').replace(',', '').replace(' //', '');
   return (
     <DrawerContentScrollView {...props} style={{padding: 0}}>

@@ -277,6 +277,7 @@ export default function Myvehicle(props) {
                     source={{
                       uri:
                         servicesettings.Imagebaseuri +
+                        '/' +
                         props.logoAvatar
                           .replace(/\\/g, '/')
                           .replace(',', '')

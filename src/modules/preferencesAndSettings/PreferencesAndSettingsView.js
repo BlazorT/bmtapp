@@ -14,7 +14,7 @@ export default function PreferencesAndSettingsScreen() {
     setSwitchValue(value);
   };
 
-  const userImage = `${servicesettings.Imagebaseuri}${user.avatar?.replace(/\\/g, '/').replace(',', '').replace(' //', '')}`;
+  const userImage = `${servicesettings.Imagebaseuri}/${user.avatar?.replace(/\\/g, '/').replace(',', '').replace(' //', '')}`;
   // console.log(
   //   'userImage',
   //   userImage,

@@ -19,10 +19,11 @@ import CampaignSchedule from '../../components/campaignComponents/CampaignSchedu
 import {useTheme} from '../../hooks/useTheme';
 import {useUser} from '../../hooks/useUser';
 import servicesettings from '../dataservices/servicesettings';
+import moment from 'moment';
 
 export default function CampaignScheduleScreen(props) {
   const theme = useTheme();
-  const {isAuthenticated} = useUser();
+  const {isAuthenticated, user} = useUser();
   const lovs = useSelector(state => state.lovs).lovs;
 
   const [campaignInfo, setCampaignInfo] = useState({
@@ -83,13 +84,60 @@ export default function CampaignScheduleScreen(props) {
   const updateCampaignData = data => {
     const attachments =
       data.attachments !== '' ? JSON.parse(data.attachments) : [];
-    const networks = JSON.parse(data.compaignsdetails);
+    const userNetworks = JSON.parse(data.compaignsdetails);
+    const networkData = lovs['mybundlings'];
+
+    const transformNetworks = userNetworks.map(item => {
+      const selectedNetwork = networkData.find(
+        network => item.networkId == network.networkId,
+      );
+      return {
+        networkId: item.networkId,
+        orgId: user.orgid,
+        rowVer: 0,
+        compaignId: 0,
+        id: item.id,
+        desc: item.networkName,
+        status: 1,
+        createdBy: user.id,
+        lastUpdatedBy: user.id,
+        createdAt: item.createdAt,
+        lastUpdatedAt: moment().utc().format(),
+        networkId: selectedNetwork.networkId,
+        purchasedQouta: selectedNetwork.purchasedQouta,
+        unitPriceInclTax: selectedNetwork.unitPriceInclTax,
+        usedQuota: selectedNetwork.usedQuota,
+      };
+    });
     // const datNetworks = lovs['mybundlings'].filter(item =>
     //   networks.some(network => network.networkId === item.networkId),
     // );
+    // console.log('transformNetworks', transformNetworks);
     const schedule = JSON.parse(data.compaignschedules);
-    const scheduleList = [{...schedule[0], CompaignNetworks: networks}];
-    console.log(JSON.stringify(scheduleList));
+    const scheduleList = schedule.map(item => {
+      const scheduleNetworks = transformNetworks.filter(
+        network => network.networkId == item.NetworkId,
+      );
+      return {
+        CompaignNetworks: scheduleNetworks,
+        id: item.id,
+        budget: item.budget,
+        rowVer: 0,
+        messageCount: item.MessageCount,
+        orgId: user.orgid,
+        days: item.days.split(',').map(item => Number(item.replace(/"/g, ''))),
+        networkId: item.NetworkId,
+        compaignDetailId: item.CompaignDetailId,
+        isFixedTime: 1,
+        startTime: item.StartTime,
+        finishTime: item.FinishTime,
+        interval: item.Interval,
+        status: 1,
+        intervalTypeId: item.IntervalTypeId,
+        randomId: item.id,
+      };
+    });
+    // console.log('scheduleList', JSON.stringify(schedule));
     const uris = attachments.map(item => ({
       Id: item.Id,
       uri: `${servicesettings.Imagebaseuri}${item.image}`,
@@ -107,6 +155,7 @@ export default function CampaignScheduleScreen(props) {
         uri.uri.endsWith('.mov'),
     )[0];
     const pdfUris = uris.filter(uri => uri.uri.endsWith('.pdf'))[0];
+    console.log({imageUris, videoUris, pdfUris});
     setCampaignInfo({
       id: data.id,
       subject: data.name,
@@ -121,7 +170,7 @@ export default function CampaignScheduleScreen(props) {
       image: imageUris ? imageUris : '',
       video: videoUris ? videoUris : '',
       pdf: pdfUris ? pdfUris : '',
-      networks: networks.length > 0 ? networks : [],
+      networks: transformNetworks.length > 0 ? transformNetworks : [],
       schedules: schedule.length > 0 ? scheduleList : [],
       totalBudget: data.budget ? data.budget : 0,
       discount: data.discount ? data.discount : 0,

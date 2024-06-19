@@ -269,17 +269,24 @@ const AddSchedule = ({
         usedQuota: validDays,
       })),
     }));
-    setScheduleList(prevState => ({
-      ...prevState,
-      messageCount: validDays,
-      CompaignNetworks: scheduleList.CompaignNetworks.map(item => ({
-        ...item,
-        usedQuota: validDays,
-      })),
-      budget: scheduleList.CompaignNetworks.map(
-        item => item.unitPriceInclTax * validDays,
-      ).reduce((a, b) => a + b, 0),
-    }));
+    setScheduleList(prevState => {
+      const totalBudget = prevState.CompaignNetworks.reduce(
+        (totalBudget, item) => totalBudget + item.unitPriceInclTax * validDays,
+        0,
+      );
+
+      const formattedBudget = Math.round(totalBudget * 100) / 100;
+      console.log({totalBudget, formattedBudget});
+      return {
+        ...prevState,
+        messageCount: validDays,
+        CompaignNetworks: prevState.CompaignNetworks.map(item => ({
+          ...item,
+          usedQuota: validDays,
+        })),
+        budget: formattedBudget,
+      };
+    });
     console.log({validDays});
   };
   const calculateFractionOfDay = durationInMinutes => {

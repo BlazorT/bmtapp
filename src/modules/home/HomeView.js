@@ -15,6 +15,11 @@ import {useTheme} from '../../hooks/useTheme';
 import {useUser} from '../../hooks/useUser';
 import {setLovs} from '../../redux/features/bmtLovs/lovsSlice';
 import {colors} from '../../styles';
+import PushNotification from 'react-native-push-notification';
+import messaging from '@react-native-firebase/messaging';
+import RemoteNotification from '../../components/RemoteNotifications';
+import usePushNotification from '../../hooks/usePushNotification';
+import {message} from 'danger';
 const NetworkFailed = require('../../../assets/images/BDMT.png');
 const mycampaignIcon = require('../../../assets/images/drawer/mycampaign.png');
 const compaign = require('../../../assets/images/drawer/compaign.png');
@@ -71,10 +76,9 @@ const apiConfigs = [
 ];
 export default function HomeScreen(props) {
   const theme = useTheme();
-  const {user, isAuthenticated} = useUser();
+  const {isAuthenticated} = useUser();
 
   const {data, loading, error} = useFetchData(apiConfigs);
-  const [Visible, setVisible] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -85,14 +89,6 @@ export default function HomeScreen(props) {
       dispatch(setLovs(data));
     }
   }, [loading, data]);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      setVisible(true);
-    } else {
-      setVisible(false);
-    }
-  }, [isAuthenticated]);
 
   const opensignup = async () => {
     global.SignUp_Login = 0;
@@ -106,9 +102,86 @@ export default function HomeScreen(props) {
     props.navigation.navigate('Campaign (+)');
     global.UpdateCampaign = 0;
   }
+
+  const localNotification = () => {
+    const key = Date.now().toString(); // Key must be unique everytime
+    PushNotification.createChannel(
+      {
+        channelId: key, // (required)
+        channelName: 'Local messasge', // (required)
+        channelDescription: 'Notification for Local message', // (optional) default: undefined.
+        importance: 4, // (optional) default: 4. Int value of the Android notification importance
+        vibrate: true, // (optional) default: true. Creates the default vibration patten if true.
+      },
+      created => console.log(`createChannel returned '${created}'`), // (optional) callback returns whether the channel was created, false means it already existed.
+    );
+    PushNotification.localNotification({
+      channelId: key, //this must be same with channelid in createchannel
+      title: 'Local Message',
+      message: 'Local message !!',
+    });
+  };
+  const sendnotification = async order => {
+    const currentDate = new Date();
+    const token = messaging().getToken();
+    messaging()
+      .sendMessage({
+        notification: {
+          title: 'FCM Message',
+          body: 'This is an FCM notification message!',
+        },
+        data: {
+          event: 'sent',
+          order: 'hi',
+        },
+        token: token,
+      })
+      .then(function (response) {
+        console.log('Message sent successfully:', response);
+      })
+      .catch(function (error) {
+        console.error('Error sending message:', error);
+      });
+
+    messaging()
+      .getToken()
+      .then(async fcmToken => {
+        const FIREBASE_API_KEY =
+          'ya29.a0AXooCgu9lAA7-R2vHlsh6rL-QcNdes9brjVQp431R1v50mD24UIJul_lMJL3b-DFSQECpikY4c6ozMf-0ml4yHTHE87WYObcvtNyPTo1f9PfdFPZfx8yG0460lwl5anrZFA-K9pO0AASvQH8mcY-mCRZPVIlcJCFWdjwaCgYKAfUSARESFQHGX2MictlgB80WUYXJtyX1hVQOYg0171';
+        const message = {
+          message: {
+            topic: 'news',
+            notification: {
+              title: 'Breaking News',
+              body: 'New news story available.',
+            },
+            data: {
+              story_id: 'story_12345',
+            },
+          },
+        };
+        let headers = new Headers({
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${FIREBASE_API_KEY}`,
+        });
+        const response = await fetch(
+          'https://fcm.googleapis.com/v1/projects/blazor-media-toolkit/messages:send',
+          {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(message),
+          },
+        ).catch(error => {
+          console.error('error', error);
+        });
+        const res = await response.json();
+        console.log({res});
+      });
+  };
   return (
     <View style={styles.container}>
       <Spinner visible={loading} textContent={'Loading...'} />
+
       {global.NetworkFailed == 1 ? (
         <View style={styles.networkfailed}>
           <Image
@@ -130,7 +203,7 @@ export default function HomeScreen(props) {
       )}
       <View
         style={[styles.Buttoncontainer, {backgroundColor: theme.navBarBack}]}>
-        {!Visible ? (
+        {!isAuthenticated ? (
           <View style={styles.Buttoncontainer2}>
             {global.NetworkFailed == 1 ? null : (
               <View>
@@ -156,7 +229,7 @@ export default function HomeScreen(props) {
         ) : (
           <View style={styles.Buttoncontainer2}>
             <TouchableOpacity
-              onPress={() => AddCampaignClick()}
+              onPress={() => localNotification()}
               style={[
                 styles.Buy_SellButton,
                 {backgroundColor: theme.buttonBackColor},

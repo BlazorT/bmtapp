@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
     <!-- Features -->
     <uses-feature android:name="android.hardware.camera" />
@@ -32,7 +33,7 @@
         <!-- Facebook Login -->
         <activity 
             android:name="com.facebook.FacebookActivity"
-           android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name" 
             android:exported="true"/>
         
@@ -67,13 +68,19 @@
         <!-- Meta-data -->
         <meta-data 
             android:name="com.dieam.reactnativepushnotification.notification_foreground"
-            android:value="false"/>
+            android:value="true"/>
         <meta-data 
             android:name="com.facebook.sdk.ApplicationId" 
             android:value="@string/facebook_app_id"/>
         <meta-data 
             android:name="com.facebook.sdk.ClientToken" 
             android:value="@string/facebook_client_token"/>
+        <meta-data 
+            android:name="com.dieam.reactnativepushnotification.channel_create_default"
+            android:value="true" />
+        <meta-data 
+            android:name="com.dieam.reactnativepushnotification.notification_color"
+            android:resource="@color/white" />
 
         <!-- Receivers -->
         <receiver android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationActions" />

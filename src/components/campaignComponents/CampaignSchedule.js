@@ -72,7 +72,7 @@ const CampaignSchedule = ({
 
   const addSchedule = async () => {
     let campaignBody = {
-      id: 0,
+      id: campaignInfo.id,
       selectCountryId: campaignInfo.country == '' ? 0 : Number(country),
       selectStateId: campaignInfo.state == '' ? 0 : Number(state),
       createdBy: Number(user.id),
@@ -108,16 +108,16 @@ const CampaignSchedule = ({
       servicesettings.baseuri + 'createcompletecompaign',
       headerFetch,
     );
-    console.log('response', response);
     const res = await response.json();
-    if (res.status == false || res.status == '408') {
+    console.log('response', res);
+    if (res.status == false || res.status == '408' || res.status == '400') {
       setspinner(false);
       Toast.show(res.message || 'Something went wrong, please try again');
     } else {
       if (
         campaignInfo.image !== '' ||
-        campaignInfo.video != '' ||
-        campaignInfo.pdf != ''
+        campaignInfo.video !== '' ||
+        campaignInfo.pdf !== ''
       ) {
         const data = new FormData();
         console.log(
@@ -126,37 +126,37 @@ const CampaignSchedule = ({
           campaignInfo.video,
           campaignInfo.pdf,
         );
-        if (campaignInfo.image != '') {
+        if (campaignInfo.image != '' && campaignInfo.image.fileName) {
           const fileTypeMake = campaignInfo.image.fileName;
           const fileNameType = '.' + fileTypeMake.split('.')[1];
-          const imageName =
-            Math.floor(100 + Math.random() * 900).toString() + fileNameType;
+          const imageName = '1' + fileNameType;
 
           data.append('files', {
+            id: campaignInfo.image.id,
             name: imageName,
             uri: campaignInfo.image.uri,
             type: campaignInfo.image.type,
           });
         }
-        if (campaignInfo.video != '') {
+        if (campaignInfo.video != '' && campaignInfo.video.fileName) {
           const fileTypeMake = campaignInfo.video.fileName;
           const fileNameType = '.' + fileTypeMake.split('.')[1];
-          const imageName =
-            Math.floor(100 + Math.random() * 900).toString() + fileNameType;
+          const imageName = '2' + fileNameType;
 
           data.append('files', {
+            id: campaignInfo.video.id,
             name: imageName,
             uri: campaignInfo.video.uri,
             type: campaignInfo.video.type,
           });
         }
-        if (campaignInfo.pdf != '') {
+        if (campaignInfo.pdf != '' && campaignInfo.pdf.name) {
           const fileTypeMake = campaignInfo.pdf.name;
           const fileNameType = '.' + fileTypeMake.split('.')[1];
-          const imageName =
-            Math.floor(100 + Math.random() * 900).toString() + fileNameType;
+          const imageName = +fileNameType;
 
           data.append('files', {
+            id: campaignInfo.pdf.id,
             name: imageName,
             uri: campaignInfo.pdf.uri,
             type: campaignInfo.pdf.type,
