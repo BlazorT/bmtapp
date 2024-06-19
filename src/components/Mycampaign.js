@@ -264,7 +264,10 @@ export default function Myvehicle(props) {
               style={
                 props.data.status != 1
                   ? styles.CampaignStatusInactive
-                  : styles.CampaignStatusActive
+                  : [
+                      styles.CampaignStatusActive,
+                      {borderColor: theme.textColor, borderWidth: 0.5},
+                    ]
               }
               onPress={() => clickForDetail(props)}>
               <View>
@@ -1051,13 +1054,12 @@ const styles = StyleSheet.create({
   CampaignStatusActive: {
     width: 100 + '%',
     height: 70,
-    borderColor: 'red',
-    borderWidth: 2,
+    // borderColor: 'red',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     borderColor: colors.PagePanelTab,
-    borderWidth: 1,
+    borderWidth: 0,
     borderRadius: 5,
   },
   CampaignStatusInactive: {
@@ -1066,7 +1068,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     borderColor: '#8B0000',
-    borderWidth: 0.5,
+    borderWidth: 1,
     borderRadius: 5,
   },
   NetworkCountView: {
@@ -1291,7 +1293,7 @@ const styles = StyleSheet.create({
     width: 96 + '%',
     backgroundColor: colors.PagePanelTab,
     // borderColor: colors.borderColor,
-    borderWidth: 1,
+    borderWidth: 0,
     borderRadius: 5,
   },
   CampaignDetailStyle: {

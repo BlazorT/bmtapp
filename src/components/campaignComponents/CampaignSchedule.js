@@ -157,7 +157,7 @@ const CampaignSchedule = ({
         if (campaignInfo.pdf != '' && campaignInfo.pdf.name != undefined) {
           const fileTypeMake = campaignInfo.pdf.name;
           const fileNameType = '.' + fileTypeMake.split('.')[1];
-          const imageName = +fileNameType;
+          const imageName = '3' + fileNameType;
 
           data.append('files', {
             id: campaignInfo.pdf.id,
