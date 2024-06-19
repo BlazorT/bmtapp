@@ -28,9 +28,7 @@ const ScheduleList = ({
   const [showEditDelBtns, setShowEditDelBtns] = React.useState(false);
 
   const getIntervalName = id => {
-    console.log(campaignInfo.schedules);
     const intervals = lovs['bmtlovs'].intervals;
-    // console.log(intervals);
     return intervals.filter(interval => interval.id == id + 1)[0].name;
   };
 
@@ -173,7 +171,6 @@ const ScheduleList = ({
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => {
-                      console.log({schedule});
                       setScheduleList({
                         CompaignNetworks: schedule.CompaignNetworks,
                         id: schedule.id,

@@ -47,7 +47,6 @@ const CampaignNetwork = ({
   };
 
   const nextStep = () => {
-    console.log(JSON.stringify(campaignInfo));
     setIndex(2);
   };
   return (
@@ -104,7 +103,6 @@ const CampaignNetwork = ({
                       : false
                   }
                   onValueChange={v => {
-                    console.log({v});
                     if (v) {
                       setCampaignInfo({
                         ...campaignInfo,

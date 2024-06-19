@@ -69,7 +69,6 @@ const AddSchedule = ({
       schedules: [...prevState.schedules, scheduleList],
     }));
     setScheduleTab(1);
-    console.log(scheduleList);
     setScheduleList({
       CompaignNetworks: [],
       id: 0,
@@ -91,7 +90,6 @@ const AddSchedule = ({
   };
 
   const updateSchedule = () => {
-    console.log(scheduleList);
     if (scheduleList.CompaignNetworks.length == 0) {
       Toast.show('Please select atleast one network');
       return;
@@ -111,14 +109,12 @@ const AddSchedule = ({
     });
     setScheduleTab(1);
     setIsUpdate(false);
-    // console.log(scheduleList);
   };
   const calculateBudget = () => {
     const {numberOfDays, daysOfWeek} = getDaysBetweenDates(
       scheduleList.startTime,
       scheduleList.finishTime,
     );
-    console.log({numberOfDays}, {daysOfWeek});
 
     let validDays = 0;
     let totalValidDuration = 0;
@@ -126,7 +122,6 @@ const AddSchedule = ({
 
     // Calculate valid days based on the interval
     const interval = scheduleList.intervalTypeId; // e.g., 'one time', 'daily', 'weekly', 'monthly', 'yearly'
-    console.log({interval});
     if (interval == 0) {
       // Check if any of the scheduled days fall within the date range
       scheduleDays.forEach(day => {
@@ -260,7 +255,6 @@ const AddSchedule = ({
         currentDate.setDate(currentDate.getDate() + 1);
       }
       validDays = validDays * calculateFractionOfDay(scheduleList.interval);
-      // console.log(calculateFractionOfDay(50));
     }
     setCampaignInfo(prevState => ({
       ...prevState,
@@ -276,7 +270,6 @@ const AddSchedule = ({
       );
 
       const formattedBudget = Math.round(totalBudget * 100) / 100;
-      console.log({totalBudget, formattedBudget});
       return {
         ...prevState,
         messageCount: validDays,
@@ -287,7 +280,6 @@ const AddSchedule = ({
         budget: formattedBudget,
       };
     });
-    console.log({validDays});
   };
   const calculateFractionOfDay = durationInMinutes => {
     // Total number of milliseconds in a day
@@ -425,7 +417,6 @@ const AddSchedule = ({
             items={lovs['bmtlovs'].intervals}
             selectedIndex={scheduleList.intervalTypeId}
             onSelect={value => {
-              console.log({value});
               setScheduleList({
                 ...scheduleList,
                 intervalTypeId: value,
@@ -605,7 +596,6 @@ const AddSchedule = ({
             backgroundColor: theme.cardBackColor,
           }}
           customCancelButtonIOS={e => {
-            console.log({e});
             return (
               <TouchableOpacity
                 onPress={() => setShowStartDatePicker(false)}
@@ -666,7 +656,6 @@ const AddSchedule = ({
               backgroundColor: theme.cardBackColor,
             }}
             customCancelButtonIOS={e => {
-              console.log({e});
               return (
                 <TouchableOpacity
                   onPress={() => setShowEndDatePicker(false)}

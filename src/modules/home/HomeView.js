@@ -229,7 +229,7 @@ export default function HomeScreen(props) {
         ) : (
           <View style={styles.Buttoncontainer2}>
             <TouchableOpacity
-              onPress={() => localNotification()}
+              onPress={() => AddCampaignClick()}
               style={[
                 styles.Buy_SellButton,
                 {backgroundColor: theme.buttonBackColor},

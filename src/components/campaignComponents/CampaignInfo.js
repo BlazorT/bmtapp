@@ -40,7 +40,6 @@ const CampaignInfo = ({campaignInfo, setCampaignInfo, setIndex}) => {
   ];
 
   const handleCampaignInfo = (property, value) => {
-    console.log(property, value);
     setCampaignInfo(prevState => ({
       ...prevState,
       [property]: value,
@@ -291,7 +290,6 @@ const CampaignInfo = ({campaignInfo, setCampaignInfo, setIndex}) => {
             backgroundColor: theme.cardBackColor,
           }}
           customCancelButtonIOS={e => {
-            console.log({e});
             return (
               <TouchableOpacity
                 onPress={() => setShowStartDatePicker(false)}
@@ -355,7 +353,6 @@ const CampaignInfo = ({campaignInfo, setCampaignInfo, setIndex}) => {
               backgroundColor: theme.cardBackColor,
             }}
             customCancelButtonIOS={e => {
-              console.log({e});
               return (
                 <TouchableOpacity
                   onPress={() => setShowEndDatePicker(false)}

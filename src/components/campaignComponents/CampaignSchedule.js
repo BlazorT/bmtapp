@@ -10,6 +10,7 @@ import {useSelector} from 'react-redux';
 import moment from 'moment';
 import servicesettings from '../../modules/dataservices/servicesettings';
 import {useNavigation} from '@react-navigation/native';
+import PushNotification from 'react-native-push-notification';
 
 const CampaignSchedule = ({
   campaignInfo,
@@ -115,18 +116,18 @@ const CampaignSchedule = ({
       Toast.show(res.message || 'Something went wrong, please try again');
     } else {
       if (
-        campaignInfo.image !== '' ||
-        campaignInfo.video !== '' ||
-        campaignInfo.pdf !== ''
+        (campaignInfo.image !== '' &&
+          campaignInfo.image.fileName !== undefined) ||
+        (campaignInfo.video !== '' &&
+          campaignInfo.video.fileName !== undefined) ||
+        (campaignInfo.pdf !== '' && campaignInfo.pdf.name !== undefined)
       ) {
         const data = new FormData();
-        console.log(
-          'campaignInfo.image',
-          campaignInfo.image,
-          campaignInfo.video,
-          campaignInfo.pdf,
-        );
-        if (campaignInfo.image != '' && campaignInfo.image.fileName) {
+
+        if (
+          campaignInfo.image != '' &&
+          campaignInfo.image.fileName != undefined
+        ) {
           const fileTypeMake = campaignInfo.image.fileName;
           const fileNameType = '.' + fileTypeMake.split('.')[1];
           const imageName = '1' + fileNameType;
@@ -138,7 +139,10 @@ const CampaignSchedule = ({
             type: campaignInfo.image.type,
           });
         }
-        if (campaignInfo.video != '' && campaignInfo.video.fileName) {
+        if (
+          campaignInfo.video != '' &&
+          campaignInfo.video.fileName != undefined
+        ) {
           const fileTypeMake = campaignInfo.video.fileName;
           const fileNameType = '.' + fileTypeMake.split('.')[1];
           const imageName = '2' + fileNameType;
@@ -150,7 +154,7 @@ const CampaignSchedule = ({
             type: campaignInfo.video.type,
           });
         }
-        if (campaignInfo.pdf != '' && campaignInfo.pdf.name) {
+        if (campaignInfo.pdf != '' && campaignInfo.pdf.name != undefined) {
           const fileTypeMake = campaignInfo.pdf.name;
           const fileNameType = '.' + fileTypeMake.split('.')[1];
           const imageName = +fileNameType;
@@ -189,6 +193,7 @@ const CampaignSchedule = ({
           setspinner(false);
           Toast.show(res.message || 'Something went wrong, please try again');
         } else {
+          localNotification('Campaign Created', campaignInfo.subject);
           setspinner(false);
           setModalVisible(true);
           setTimeout(() => {
@@ -197,6 +202,7 @@ const CampaignSchedule = ({
           }, 4000);
         }
       } else {
+        localNotification('Campaign Created', campaignInfo.subject);
         setspinner(false);
         setModalVisible(true);
         setTimeout(() => {
@@ -207,6 +213,24 @@ const CampaignSchedule = ({
     }
     // console.log('res', res);
     // console.log(JSON.stringify(campaignBody));
+  };
+  const localNotification = (title, message) => {
+    const key = Date.now().toString(); // Key must be unique everytime
+    PushNotification.createChannel(
+      {
+        channelId: key, // (required)
+        channelName: 'Local messasge', // (required)
+        channelDescription: 'Notification for Local message', // (optional) default: undefined.
+        importance: 4, // (optional) default: 4. Int value of the Android notification importance
+        vibrate: true, // (optional) default: true. Creates the default vibration patten if true.
+      },
+      created => console.log(`createChannel returned '${created}'`), // (optional) callback returns whether the channel was created, false means it already existed.
+    );
+    PushNotification.localNotification({
+      channelId: key, //this must be same with channelid in createchannel
+      title: title,
+      message: message,
+    });
   };
   return (
     <View style={{marginTop: 5}}>

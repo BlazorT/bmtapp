@@ -20,7 +20,6 @@ const CampaignAttachment = ({handleCampaignInfo, campaignInfo}) => {
   const [isPermissions, setIsPermissions] = React.useState(false);
 
   React.useEffect(() => {
-    console.log('campaignInfo', campaignInfo.image);
     // Request camera and storage permissions on component mount
     requestPermissions();
   }, []);
@@ -40,7 +39,6 @@ const CampaignAttachment = ({handleCampaignInfo, campaignInfo}) => {
         readStorageStatus === RESULTS.GRANTED
       ) {
         setIsPermissions(true);
-        // console.log('All permissions granted');
       } else {
         setIsPermissions(false);
         // Alert.alert('Permissions not granted');
@@ -74,7 +72,6 @@ const CampaignAttachment = ({handleCampaignInfo, campaignInfo}) => {
                 ? campaignInfo.video.Id
                 : 0,
           });
-          console.log('ImagePicker Response: ', response.assets[0]);
         }
       },
     );
@@ -90,8 +87,6 @@ const CampaignAttachment = ({handleCampaignInfo, campaignInfo}) => {
         } else if (response.error) {
           console.log('ImagePicker Error: ', response.error);
         } else {
-          console.log('response', campaignInfo.video);
-
           handleCampaignInfo(isImage ? 'image' : 'video', {
             ...response.assets[0],
             id: isImage
@@ -102,7 +97,6 @@ const CampaignAttachment = ({handleCampaignInfo, campaignInfo}) => {
                 ? campaignInfo.video.Id
                 : 0,
           });
-          console.log('ImagePicker Response: ', response);
         }
       },
     );

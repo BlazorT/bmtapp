@@ -369,7 +369,7 @@ export default function Myvehicle(props) {
                   </View>
                   <View style={styles.Itemdetail}>
                     <Text style={[styles.FinishTime, {color: theme.textColor}]}>
-                      {dateFormatter(props.startTime)}
+                      {dateFormatter(props.finishTime)}
                     </Text>
                     <View></View>
                   </View>
