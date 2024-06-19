@@ -1,6 +1,7 @@
 import React from 'react';
 import messaging from '@react-native-firebase/messaging';
 import {PermissionsAndroid, Platform} from 'react-native';
+import PushNotification from 'react-native-push-notification';
 
 const usePushNotification = () => {
   const requestUserPermission = async () => {
@@ -37,8 +38,30 @@ const usePushNotification = () => {
         'A new message arrived! (FOREGROUND)',
         JSON.stringify(remoteMessage),
       );
+      localNotification(
+        remoteMessage.notification.title,
+        remoteMessage.notification.body,
+      );
     });
     return unsubscribe;
+  };
+  const localNotification = (title, message) => {
+    const key = Date.now().toString(); // Key must be unique everytime
+    PushNotification.createChannel(
+      {
+        channelId: key, // (required)
+        channelName: 'Local messasge', // (required)
+        channelDescription: 'Notification for Local message', // (optional) default: undefined.
+        importance: 4, // (optional) default: 4. Int value of the Android notification importance
+        vibrate: true, // (optional) default: true. Creates the default vibration patten if true.
+      },
+      created => console.log(`createChannel returned '${created}'`), // (optional) callback returns whether the channel was created, false means it already existed.
+    );
+    PushNotification.localNotification({
+      channelId: key, //this must be same with channelid in createchannel
+      title: title,
+      message: message,
+    });
   };
 
   const listenToBackgroundNotifications = async () => {
@@ -47,6 +70,10 @@ const usePushNotification = () => {
         console.log(
           'A new message arrived! (BACKGROUND)',
           JSON.stringify(remoteMessage),
+        );
+        localNotification(
+          remoteMessage.notification.title,
+          remoteMessage.notification.body,
         );
       },
     );
@@ -59,6 +86,10 @@ const usePushNotification = () => {
         console.log(
           'App opened from BACKGROUND by tapping notification:',
           JSON.stringify(remoteMessage),
+        );
+        localNotification(
+          remoteMessage.notification.title,
+          remoteMessage.notification.body,
         );
       },
     );

@@ -211,8 +211,6 @@ const CampaignSchedule = ({
         }, 4000);
       }
     }
-    // console.log('res', res);
-    // console.log(JSON.stringify(campaignBody));
   };
   const localNotification = (title, message) => {
     const key = Date.now().toString(); // Key must be unique everytime
