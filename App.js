@@ -4,38 +4,12 @@ import {ActivityIndicator, StyleSheet, View} from 'react-native';
 import {Provider} from 'react-redux';
 import {persistStore} from 'redux-persist';
 import {PersistGate} from 'redux-persist/integration/react';
+import RemotePushNotification from './src/components/RemotePushNotification';
 import AppView from './src/modules/AppViewContainer';
 import store from './src/redux/store';
-import usePushNotification from './src/hooks/usePushNotification';
 
 export default function App() {
   let persistor = persistStore(store);
-
-  const {
-    requestUserPermission,
-    getFCMToken,
-    listenToBackgroundNotifications,
-    listenToForegroundNotifications,
-    onNotificationOpenedAppFromBackground,
-    onNotificationOpenedAppFromQuit,
-  } = usePushNotification();
-
-  React.useEffect(() => {
-    const listenToNotifications = () => {
-      try {
-        getFCMToken();
-        requestUserPermission();
-        onNotificationOpenedAppFromQuit();
-        listenToBackgroundNotifications();
-        listenToForegroundNotifications();
-        onNotificationOpenedAppFromBackground();
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    listenToNotifications();
-  }, []);
 
   return (
     <Provider store={store}>
@@ -47,6 +21,7 @@ export default function App() {
         }
         persistor={persistor}>
         <NavigationContainer>
+          <RemotePushNotification />
           <AppView />
         </NavigationContainer>
       </PersistGate>

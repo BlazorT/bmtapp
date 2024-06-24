@@ -1,4 +1,5 @@
-import React, {useEffect, useState} from 'react';
+import messaging from '@react-native-firebase/messaging';
+import React, {useEffect} from 'react';
 import {
   Dimensions,
   Image,
@@ -7,6 +8,7 @@ import {
   View,
 } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
+import PushNotification from 'react-native-push-notification';
 import Video from 'react-native-video';
 import {useDispatch} from 'react-redux';
 import {Text} from '../../components/StyledText';
@@ -15,11 +17,6 @@ import {useTheme} from '../../hooks/useTheme';
 import {useUser} from '../../hooks/useUser';
 import {setLovs} from '../../redux/features/bmtLovs/lovsSlice';
 import {colors} from '../../styles';
-import PushNotification from 'react-native-push-notification';
-import messaging from '@react-native-firebase/messaging';
-import RemoteNotification from '../../components/RemoteNotifications';
-import usePushNotification from '../../hooks/usePushNotification';
-import {message} from 'danger';
 const NetworkFailed = require('../../../assets/images/BDMT.png');
 const mycampaignIcon = require('../../../assets/images/drawer/mycampaign.png');
 const compaign = require('../../../assets/images/drawer/compaign.png');
@@ -121,63 +118,7 @@ export default function HomeScreen(props) {
       message: 'Local message !!',
     });
   };
-  const sendnotification = async order => {
-    const currentDate = new Date();
-    const token = messaging().getToken();
-    messaging()
-      .sendMessage({
-        notification: {
-          title: 'FCM Message',
-          body: 'This is an FCM notification message!',
-        },
-        data: {
-          event: 'sent',
-          order: 'hi',
-        },
-        token: token,
-      })
-      .then(function (response) {
-        console.log('Message sent successfully:', response);
-      })
-      .catch(function (error) {
-        console.error('Error sending message:', error);
-      });
 
-    messaging()
-      .getToken()
-      .then(async fcmToken => {
-        const FIREBASE_API_KEY =
-          'ya29.a0AXooCgu9lAA7-R2vHlsh6rL-QcNdes9brjVQp431R1v50mD24UIJul_lMJL3b-DFSQECpikY4c6ozMf-0ml4yHTHE87WYObcvtNyPTo1f9PfdFPZfx8yG0460lwl5anrZFA-K9pO0AASvQH8mcY-mCRZPVIlcJCFWdjwaCgYKAfUSARESFQHGX2MictlgB80WUYXJtyX1hVQOYg0171';
-        const message = {
-          message: {
-            topic: 'news',
-            notification: {
-              title: 'Breaking News',
-              body: 'New news story available.',
-            },
-            data: {
-              story_id: 'story_12345',
-            },
-          },
-        };
-        let headers = new Headers({
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${FIREBASE_API_KEY}`,
-        });
-        const response = await fetch(
-          'https://fcm.googleapis.com/v1/projects/blazor-media-toolkit/messages:send',
-          {
-            method: 'POST',
-            headers,
-            body: JSON.stringify(message),
-          },
-        ).catch(error => {
-          console.error('error', error);
-        });
-        const res = await response.json();
-        console.log({res});
-      });
-  };
   return (
     <View style={styles.container}>
       <Spinner visible={loading} textContent={'Loading...'} />
