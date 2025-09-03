@@ -1,7 +1,7 @@
 import CheckBox from '@react-native-community/checkbox';
 import NetInfo from '@react-native-community/netinfo';
 import Base64 from 'Base64';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Dimensions,
   Image,
@@ -12,24 +12,24 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {launchCamera} from 'react-native-image-picker';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import { launchCamera } from 'react-native-image-picker';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import Spinner from 'react-native-loading-spinner-overlay';
-import {PERMISSIONS, RESULTS, check, request} from 'react-native-permissions';
+import { PERMISSIONS, RESULTS, check, request } from 'react-native-permissions';
 import Toast from 'react-native-simple-toast';
-import {useSelector} from 'react-redux';
-import {Button, Dropdown, TextInput} from '../../components';
+import { useSelector } from 'react-redux';
+import { Button, Dropdown, TextInput } from '../../components';
 import Alert from '../../components/Alert';
 import TermsAndConditions from '../../components/Terms&Conditions';
-import {useTheme} from '../../hooks/useTheme';
-import {colors} from '../../styles';
+import { useTheme } from '../../hooks/useTheme';
+import { colors } from '../../styles';
 import servicesettings from '../dataservices/servicesettings';
-import {useUser} from '../../hooks/useUser';
+import { useUser } from '../../hooks/useUser';
 const profileIcon = require('../../../assets/images/defaultUser.png');
 //import messaging from '@react-native-firebase/messaging';
 export default function VehicalSallerScreen(props) {
   //console.log('props new ' + JSON.stringify(props));
-  const {loginUser} = useUser();
+  const { loginUser } = useUser();
   const lovs = useSelector(state => state.lovs).lovs;
   const theme = useTheme();
   const [spinner, setspinner] = useState(false);
@@ -91,11 +91,11 @@ export default function VehicalSallerScreen(props) {
     props.navigation.navigate('BMT');
   };
   const cities = [
-    {id: 1, name: 'Lahore'},
-    {id: 2, name: 'Islamabad'},
-    {id: 3, name: 'Karachi'},
-    {id: 4, name: 'Faisalabad'},
-    {id: 5, name: 'Bahawalpur'},
+    { id: 1, name: 'Lahore' },
+    { id: 2, name: 'Islamabad' },
+    { id: 3, name: 'Karachi' },
+    { id: 4, name: 'Faisalabad' },
+    { id: 5, name: 'Bahawalpur' },
   ];
   /***************************************** camera permission ****************************************/
   const requestCameraPermission = async () => {
@@ -127,7 +127,7 @@ export default function VehicalSallerScreen(props) {
         case RESULTS.DENIED:
           const requestResult = await request(permissionType);
           if (requestResult === 'granted') {
-            console.log({requestResult});
+            console.log({ requestResult });
             handleLaunchCamera();
           }
           break;
@@ -264,7 +264,7 @@ export default function VehicalSallerScreen(props) {
         Authorization: servicesettings.AuthorizationKey,
       },
     };
-    fetch(servicesettings.baseuri + 'addupdateorguser', ImageheaderFetch)
+    fetch(servicesettings.baseuri + 'BlazorApi/updateuser', ImageheaderFetch)
       .then(response => response.json())
       .then(responseJson => {
         if (responseJson.status == true) {
@@ -306,25 +306,26 @@ export default function VehicalSallerScreen(props) {
   /******************************************************************  views  *****************************************************/
   return (
     <KeyboardAwareScrollView
-      resetScrollToCoords={{x: 0, y: 0}}
+      resetScrollToCoords={{ x: 0, y: 0 }}
       contentContainerStyle={[
         styles.container,
-        {backgroundColor: theme.backgroundColor},
+        { backgroundColor: theme.backgroundColor },
       ]}
-      scrollEnabled={true}>
+      scrollEnabled={true}
+    >
       <View
-        Style={[styles.container, {backgroundColor: theme.backgroundColor}]}>
+        Style={[styles.container, { backgroundColor: theme.backgroundColor }]}
+      >
         <ScrollView>
           <Spinner
             visible={spinner}
             textContent={'Submitting...'}
-            textStyle={{color: '#FFF'}}
+            textStyle={{ color: '#FFF' }}
           />
           <TermsAndConditions
             modalVisible={modalVisible}
-            TermsAndConditionsClose={
-              TermsAndConditionsClose
-            }></TermsAndConditions>
+            TermsAndConditionsClose={TermsAndConditionsClose}
+          ></TermsAndConditions>
           <Alert
             massagetype={'warning'}
             hide={hidepermission}
@@ -332,7 +333,8 @@ export default function VehicalSallerScreen(props) {
             Visible={permissionVisible}
             alerttype={'confirmation'}
             Title={'Confirmation'}
-            Massage={'"BDMT" Would like to access camera ?'}></Alert>
+            Massage={'"BDMT" Would like to access camera ?'}
+          ></Alert>
           <Alert
             massagetype={'warning'}
             hide={hide}
@@ -340,30 +342,34 @@ export default function VehicalSallerScreen(props) {
             Visible={confirmationVisible}
             alerttype={'confirmation'}
             Title={'Confirmation'}
-            Massage={'Do you want to Discard ?'}></Alert>
+            Massage={'Do you want to Discard ?'}
+          ></Alert>
           <Alert
             massagetype={'warning'}
             OK={successhide}
             Visible={successVisible}
             alerttype={'error'}
             Title={'Submit'}
-            Massage={'User registered successfully'}></Alert>
+            Massage={'User registered successfully'}
+          ></Alert>
           <Alert
             massagetype={'error'}
             OK={OK}
             Visible={errorVisible}
             alerttype={'error'}
             Title={'Error'}
-            Massage={'Email already has been taken!'}></Alert>
+            Massage={'Email already has been taken!'}
+          ></Alert>
           <View style={styles.ProfileImgView}>
             <TouchableOpacity
               selectable={true}
-              onPress={() => requestCameraPermission()}>
+              onPress={() => requestCameraPermission()}
+            >
               <Image
                 source={
                   img == '' || img == undefined
                     ? profileIcon
-                    : {uri: 'data:image/png;base64,' + img[0].base64}
+                    : { uri: 'data:image/png;base64,' + img[0].base64 }
                 }
                 style={styles.ProfileStyle}
               />
@@ -373,7 +379,7 @@ export default function VehicalSallerScreen(props) {
             placeholderTextColor={theme.placeholderColor}
             style={[
               customestyleusername,
-              {backgroundColor: theme.inputBackColor, color: theme.textColor},
+              { backgroundColor: theme.inputBackColor, color: theme.textColor },
             ]}
             value={firstName}
             onChangeText={value => setFirstName(value)}
@@ -387,7 +393,7 @@ export default function VehicalSallerScreen(props) {
             placeholderTextColor={theme.placeholderColor}
             style={[
               customestyleusername,
-              {backgroundColor: theme.inputBackColor, color: theme.textColor},
+              { backgroundColor: theme.inputBackColor, color: theme.textColor },
             ]}
             value={lastName}
             onChangeText={value => setLastName(value)}
@@ -403,7 +409,7 @@ export default function VehicalSallerScreen(props) {
               customestyleusername,
               username == '' ? styles.mandatoryControl : null,
               ,
-              {backgroundColor: theme.inputBackColor, color: theme.textColor},
+              { backgroundColor: theme.inputBackColor, color: theme.textColor },
             ]}
             value={username}
             onChangeText={value => setusername(value)}
@@ -425,7 +431,7 @@ export default function VehicalSallerScreen(props) {
               customestyleEmail,
               Email == '' ? styles.mandatoryControl : null,
               ,
-              {backgroundColor: theme.inputBackColor, color: theme.textColor},
+              { backgroundColor: theme.inputBackColor, color: theme.textColor },
             ]}
             placeholder="Email"
             clearTextOnFocus={true}
@@ -438,7 +444,7 @@ export default function VehicalSallerScreen(props) {
               customestyleContact,
               Contact == '' ? styles.mandatoryControl : null,
 
-              {backgroundColor: theme.inputBackColor, color: theme.textColor},
+              { backgroundColor: theme.inputBackColor, color: theme.textColor },
             ]}
             value={Contact}
             onChangeText={value => setContact(value)}
@@ -456,7 +462,7 @@ export default function VehicalSallerScreen(props) {
             selectedIndex={orgindex}
             style={[
               styles.Pickerstyle,
-              {backgroundColor: theme.inputBackColor, color: theme.textColor},
+              { backgroundColor: theme.inputBackColor, color: theme.textColor },
             ]}
             items={orgdata}
             placeholder="Select organization..."
@@ -472,7 +478,7 @@ export default function VehicalSallerScreen(props) {
             style={[
               styles.Pickerstyle,
               styles.mandatoryControl,
-              {backgroundColor: theme.inputBackColor, color: theme.textColor},
+              { backgroundColor: theme.inputBackColor, color: theme.textColor },
             ]}
             items={cities.sort(function (obj1, obj2) {
               return obj1.id - obj2.id;
@@ -487,8 +493,9 @@ export default function VehicalSallerScreen(props) {
               customestylePassword,
               Password == '' ? styles.mandatoryControl : null,
               ,
-              {backgroundColor: theme.inputBackColor, color: theme.textColor},
-            ]}>
+              { backgroundColor: theme.inputBackColor, color: theme.textColor },
+            ]}
+          >
             <TextInput
               placeholderTextColor={theme.placeholderColor}
               value={Password}
@@ -498,7 +505,10 @@ export default function VehicalSallerScreen(props) {
               secureTextEntry={true}
               style={[
                 styles.FieldText,
-                {backgroundColor: theme.inputBackColor, color: theme.textColor},
+                {
+                  backgroundColor: theme.inputBackColor,
+                  color: theme.textColor,
+                },
               ]}
               placeholder="Password"
               clearTextOnFocus={true}
@@ -513,7 +523,7 @@ export default function VehicalSallerScreen(props) {
                 // height: 18,
                 // width: 18,
                 // margin: 5,
-                transform: [{scale: 1.2}],
+                transform: [{ scale: 1.2 }],
               }}
               onValueChange={value => setselectterms(value)}
               lineWidth={1.0}
@@ -530,13 +540,13 @@ export default function VehicalSallerScreen(props) {
           </View>
           <View style={styles.ButtonView}>
             <Button
-              style={[styles.btnCancel, {flexBasis: '47%'}]}
+              style={[styles.btnCancel, { flexBasis: '47%' }]}
               bgColor={theme.buttonBackColor}
               caption="Cancel"
               onPress={() => CancelClick()}
             />
             <Button
-              style={[styles.btnSubmit, {flexBasis: '47%'}]}
+              style={[styles.btnSubmit, { flexBasis: '47%' }]}
               bgColor={theme.buttonBackColor}
               caption="Submit"
               onPress={() => submit()}

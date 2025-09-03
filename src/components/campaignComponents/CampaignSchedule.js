@@ -1,16 +1,16 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useEffect} from 'react';
-import {useTheme} from '../../hooks/useTheme';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect } from 'react';
+import { useTheme } from '../../hooks/useTheme';
 import AddSchedule from './AddSchedule';
 import Toast from 'react-native-simple-toast';
 import ScheduleList from './ScheduleList';
 import RNSButton from '../Button';
-import {useUser} from '../../hooks/useUser';
-import {useSelector} from 'react-redux';
+import { useUser } from '../../hooks/useUser';
+import { useSelector } from 'react-redux';
 import moment from 'moment';
 import servicesettings from '../../modules/dataservices/servicesettings';
-import {useNavigation} from '@react-navigation/native';
-import notifee, {AndroidImportance} from '@notifee/react-native';
+import { useNavigation } from '@react-navigation/native';
+import notifee, { AndroidImportance } from '@notifee/react-native';
 
 const CampaignSchedule = ({
   campaignInfo,
@@ -22,7 +22,7 @@ const CampaignSchedule = ({
   setspinner,
 }) => {
   const theme = useTheme();
-  const {user} = useUser();
+  const { user } = useUser();
   const lovs = useSelector(state => state.lovs).lovs;
   const navigation = useNavigation();
 
@@ -109,10 +109,15 @@ const CampaignSchedule = ({
       servicesettings.baseuri + 'createcompletecompaign',
       headerFetch,
     );
+    setspinner(false);
+    console.log({ response });
+    if (!response.ok) {
+      Toast.show('Something went wrong, please try again');
+      return;
+    }
     const res = await response.json();
     console.log('response', res);
     if (res.status == false || res.status == '408' || res.status == '400') {
-      setspinner(false);
       Toast.show(res.message || 'Something went wrong, please try again');
     } else {
       if (
@@ -235,7 +240,7 @@ const CampaignSchedule = ({
   };
 
   return (
-    <View style={{marginTop: 5}}>
+    <View style={{ marginTop: 5 }}>
       <View
         style={{
           backgroundColor: theme.cardBackColor,
@@ -243,7 +248,8 @@ const CampaignSchedule = ({
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
-        }}>
+        }}
+      >
         <TouchableOpacity
           onPress={() => setScheduleTab(0)}
           style={{
@@ -253,14 +259,16 @@ const CampaignSchedule = ({
             justifyContent: 'center',
             borderBottomWidth: scheduleTab == 0 ? 2 : 0,
             borderBottomColor: theme.buttonBackColor,
-          }}>
+          }}
+        >
           <Text
             style={{
               fontSize: 16,
               color: theme.textColor,
               fontWeight: 'bold',
               textAlign: 'center',
-            }}>
+            }}
+          >
             Add Schedule
           </Text>
         </TouchableOpacity>
@@ -279,14 +287,16 @@ const CampaignSchedule = ({
             justifyContent: 'center',
             borderBottomWidth: scheduleTab == 1 ? 2 : 0,
             borderBottomColor: theme.buttonBackColor,
-          }}>
+          }}
+        >
           <Text
             style={{
               fontSize: 16,
               color: theme.textColor,
               fontWeight: 'bold',
               textAlign: 'center',
-            }}>
+            }}
+          >
             Schedule
             {campaignInfo.schedules.length > 0
               ? '(' + campaignInfo.schedules.length + ')'
@@ -316,7 +326,7 @@ const CampaignSchedule = ({
             setIsUpdate={setIsUpdate}
           />
           <RNSButton
-            style={{width: '100%', marginTop: 10}}
+            style={{ width: '100%', marginTop: 10 }}
             bgColor={theme.buttonBackColor}
             caption="Submit"
             onPress={addSchedule}

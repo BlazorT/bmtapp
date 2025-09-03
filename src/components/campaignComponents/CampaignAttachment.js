@@ -1,19 +1,19 @@
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
 import noImage from '../../../assets/images/picture.png';
-import {useTheme} from '../../hooks/useTheme';
+import { useTheme } from '../../hooks/useTheme';
 import pdfIcon from '../../../assets/images/pdficon.png';
 import minusIcon from '../../../assets/images/crossicon.png';
 import pdfViewIcon from '../../../assets/images/pdfview.png';
 
 import MediaPickerModal from '../MediaPickerModal';
-import {PERMISSIONS, RESULTS, request} from 'react-native-permissions';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import {pick, types} from '@react-native-documents/picker';
+import { PERMISSIONS, RESULTS, request } from 'react-native-permissions';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import { pick, types } from '@react-native-documents/picker';
 
 import Video from 'react-native-video';
 
-const CampaignAttachment = ({handleCampaignInfo, campaignInfo}) => {
+const CampaignAttachment = ({ handleCampaignInfo, campaignInfo }) => {
   const theme = useTheme();
 
   const [isMediaMdlOpen, setIsMediaMdlOpen] = React.useState(false);
@@ -81,7 +81,7 @@ const CampaignAttachment = ({handleCampaignInfo, campaignInfo}) => {
   const openGallery = () => {
     setIsMediaMdlOpen(false);
     launchImageLibrary(
-      {mediaType: isImage ? 'photo' : 'video', durationLimit: 180},
+      { mediaType: isImage ? 'photo' : 'video', durationLimit: 180 },
       response => {
         if (response.didCancel) {
           console.log('User cancelled image picker');
@@ -109,7 +109,7 @@ const CampaignAttachment = ({handleCampaignInfo, campaignInfo}) => {
       allowMultiSelection: false,
       type: [types.pdf],
     });
-    if (response !== undefined || response !== '') {
+    if (pickResults !== undefined || pickResults !== '') {
       handleCampaignInfo('pdf', {
         ...pickResults[0],
         id: campaignInfo.pdf !== '' ? campaignInfo.pdf.Id : 0,
@@ -122,7 +122,8 @@ const CampaignAttachment = ({handleCampaignInfo, campaignInfo}) => {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-evenly',
-      }}>
+      }}
+    >
       <View>
         <Text
           style={{
@@ -130,7 +131,8 @@ const CampaignAttachment = ({handleCampaignInfo, campaignInfo}) => {
             fontSize: 17,
             textAlign: 'center',
             marginBottom: 10,
-          }}>
+          }}
+        >
           Photo
         </Text>
         <TouchableOpacity
@@ -146,10 +148,13 @@ const CampaignAttachment = ({handleCampaignInfo, campaignInfo}) => {
             borderRadius: 50,
             alignItems: 'center',
             justifyContent: 'center',
-          }}>
+          }}
+        >
           <Image
             source={
-              campaignInfo.image == '' ? noImage : {uri: campaignInfo.image.uri}
+              campaignInfo.image == ''
+                ? noImage
+                : { uri: campaignInfo.image.uri }
             }
             style={{
               height: 70,
@@ -171,10 +176,11 @@ const CampaignAttachment = ({handleCampaignInfo, campaignInfo}) => {
               borderWidth: 1,
               borderColor: theme.textColor,
               borderRadius: 50,
-            }}>
+            }}
+          >
             <Image
               source={minusIcon}
-              style={{height: 22, width: 22, tintColor: theme.tintColor}}
+              style={{ height: 22, width: 22, tintColor: theme.tintColor }}
             />
           </TouchableOpacity>
         )}
@@ -186,7 +192,8 @@ const CampaignAttachment = ({handleCampaignInfo, campaignInfo}) => {
             fontSize: 17,
             textAlign: 'center',
             marginBottom: 10,
-          }}>
+          }}
+        >
           Video
         </Text>
         <TouchableOpacity
@@ -202,7 +209,8 @@ const CampaignAttachment = ({handleCampaignInfo, campaignInfo}) => {
             borderRadius: 50,
             alignItems: 'center',
             justifyContent: 'center',
-          }}>
+          }}
+        >
           {campaignInfo.video == '' ? (
             <Image
               source={noImage}
@@ -219,9 +227,10 @@ const CampaignAttachment = ({handleCampaignInfo, campaignInfo}) => {
               style={{
                 borderRadius: 100,
                 overflow: 'hidden',
-              }}>
+              }}
+            >
               <Video
-                source={{uri: campaignInfo.video.uri}}
+                source={{ uri: campaignInfo.video.uri }}
                 style={{
                   height: 70,
                   width: 70,
@@ -242,10 +251,11 @@ const CampaignAttachment = ({handleCampaignInfo, campaignInfo}) => {
               borderWidth: 1,
               borderColor: theme.textColor,
               borderRadius: 50,
-            }}>
+            }}
+          >
             <Image
               source={minusIcon}
-              style={{height: 22, width: 22, tintColor: theme.tintColor}}
+              style={{ height: 22, width: 22, tintColor: theme.tintColor }}
             />
           </TouchableOpacity>
         )}
@@ -257,7 +267,8 @@ const CampaignAttachment = ({handleCampaignInfo, campaignInfo}) => {
             fontSize: 17,
             textAlign: 'center',
             marginBottom: 10,
-          }}>
+          }}
+        >
           PDF
         </Text>
         <TouchableOpacity
@@ -270,7 +281,8 @@ const CampaignAttachment = ({handleCampaignInfo, campaignInfo}) => {
             borderRadius: 50,
             alignItems: 'center',
             justifyContent: 'center',
-          }}>
+          }}
+        >
           <Image
             source={campaignInfo.pdf === '' ? pdfIcon : pdfViewIcon}
             style={{
@@ -291,10 +303,11 @@ const CampaignAttachment = ({handleCampaignInfo, campaignInfo}) => {
               borderWidth: 1,
               borderColor: theme.textColor,
               borderRadius: 50,
-            }}>
+            }}
+          >
             <Image
               source={minusIcon}
-              style={{height: 22, width: 22, tintColor: theme.tintColor}}
+              style={{ height: 22, width: 22, tintColor: theme.tintColor }}
             />
           </TouchableOpacity>
         )}

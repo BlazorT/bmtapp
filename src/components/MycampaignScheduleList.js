@@ -1,10 +1,10 @@
 import moment from 'moment';
-import React, {Fragment, useEffect, useState} from 'react';
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {useSelector} from 'react-redux';
-import {useTheme} from '../hooks/useTheme';
-import {colors} from '../styles';
-import {dateFormatter} from '../helper/dateFormatter';
+import React, { Fragment, useEffect, useState } from 'react';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useSelector } from 'react-redux';
+import { useTheme } from '../hooks/useTheme';
+import { colors } from '../styles';
+import { dateFormatter } from '../helper/dateFormatter';
 const EMAIL = require('../../assets/images/Email.png');
 const INSTAGRAM = require('../../assets/images/instagram.png');
 const LINKEDIN = require('../../assets/images/linkedin.png');
@@ -21,12 +21,12 @@ export default function MycampaignScheduleList(props) {
   const [orgCurrencyName, setOrgCurrencyName] = useState('');
   useEffect(() => {
     const orgsData = lovs['orgs'][0];
-    console.log({orgsData});
+    console.log({ orgsData });
     setOrgCurrencyName(orgsData.currencyName);
-    const inter = lovs['bmtlovs'].intervals.find(
+    const inter = lovs['lovs'].intervals.find(
       x => x.id == props.intervalTypeId + 1,
     );
-    console.log({inter}, lovs['bmtlovs'].intervals);
+    console.log({ inter }, lovs['lovs'].intervals);
     //console.log('network my data ' + JSON.stringify(props.compaignQouta));
     //console.log('network my data ' + JSON.stringify(props.networkName));
     if (props.networkId == 1) {
@@ -59,7 +59,7 @@ export default function MycampaignScheduleList(props) {
   }, []);
 
   const calculateDays = dayNumberString => {
-    console.log({dayNumberString});
+    console.log({ dayNumberString });
     const dayMap = {
       1: 'Sun',
       2: 'Mon',
@@ -78,7 +78,8 @@ export default function MycampaignScheduleList(props) {
   return (
     <Fragment>
       <View
-        style={[styles.ModalMainView, {backgroundColor: theme.cardBackColor}]}>
+        style={[styles.ModalMainView, { backgroundColor: theme.cardBackColor }]}
+      >
         <TouchableOpacity
           style={{
             flexDirection: 'row',
@@ -87,7 +88,8 @@ export default function MycampaignScheduleList(props) {
             paddingHorizontal: 5,
             paddingVertical: 3,
             borderRadius: 3,
-          }}>
+          }}
+        >
           <View>
             <Image
               resizeMode="contain"
@@ -95,14 +97,15 @@ export default function MycampaignScheduleList(props) {
               style={styles.socialMediaIcon}
             />
           </View>
-          <View style={{flex: 1, marginLeft: 10, rowGap: 1}}>
+          <View style={{ flex: 1, marginLeft: 10, rowGap: 1 }}>
             <View
               style={{
                 flex: 1,
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 flexWrap: 'wrap',
-              }}>
+              }}
+            >
               <Text
                 style={[
                   styles.IntervalTitleStyle,
@@ -110,9 +113,10 @@ export default function MycampaignScheduleList(props) {
                     color: theme.textColor,
                     textAlign: 'left',
                   },
-                ]}>
+                ]}
+              >
                 {'Interval Type: ' +
-                  lovs['bmtlovs'].intervals.find(
+                  lovs['lovs'].intervals.find(
                     x => x.id == props.intervalTypeId + 1,
                   ).name}
               </Text>
@@ -124,7 +128,8 @@ export default function MycampaignScheduleList(props) {
                       color: theme.textColor,
                       textAlign: 'left',
                     },
-                  ]}>
+                  ]}
+                >
                   {'Days: ' + calculateDays(props.days)}
                 </Text>
               )}
@@ -136,12 +141,14 @@ export default function MycampaignScheduleList(props) {
                   flexDirection: 'row',
                   justifyContent: 'space-between',
                   flexWrap: 'wrap',
-                }}>
+                }}
+              >
                 <Text
                   style={[
                     styles.DaysStyle,
-                    {color: theme.textColor, textAlign: 'justify'},
-                  ]}>
+                    { color: theme.textColor, textAlign: 'justify' },
+                  ]}
+                >
                   {'Days: ' + calculateDays(props.days)}
                 </Text>
               </View>
@@ -151,11 +158,12 @@ export default function MycampaignScheduleList(props) {
                 flex: 1,
                 flexDirection: 'row',
                 justifyContent: 'space-between',
-              }}>
-              <Text style={[styles.BudgetStyle, {color: theme.textColor}]}>
+              }}
+            >
+              <Text style={[styles.BudgetStyle, { color: theme.textColor }]}>
                 {'Message Count: ' + props.messageCount}
               </Text>
-              <Text style={[styles.TitleStyle, {color: theme.textColor}]}>
+              <Text style={[styles.TitleStyle, { color: theme.textColor }]}>
                 {'Budget: ' + props.budget + ' ' + orgCurrencyName}
               </Text>
             </View>
@@ -164,19 +172,20 @@ export default function MycampaignScheduleList(props) {
                 flex: 1,
                 flexDirection: 'row',
                 justifyContent: 'space-between',
-              }}>
+              }}
+            >
               <View style={styles.Itemdetail}>
-                <Text style={[styles.StartTime, {color: theme.textColor}]}>
+                <Text style={[styles.StartTime, { color: theme.textColor }]}>
                   {dateFormatter(props.startTime)}
                 </Text>
               </View>
               <View style={styles.ItemdetailMiddle}>
-                <Text style={[styles.StartTime, {color: theme.textColor}]}>
+                <Text style={[styles.StartTime, { color: theme.textColor }]}>
                   {'~'}
                 </Text>
               </View>
               <View style={styles.ItemFinishdetail}>
-                <Text style={[styles.FinishTime, {color: theme.textColor}]}>
+                <Text style={[styles.FinishTime, { color: theme.textColor }]}>
                   {dateFormatter(props.finishTime)}
                 </Text>
               </View>

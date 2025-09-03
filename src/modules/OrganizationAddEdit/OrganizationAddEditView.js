@@ -240,10 +240,10 @@ export default function OrganizationAddEditScreen(props) {
     });
 
     loginInfoLoaded();
-    setCityNameDetail(lovs['bmtcities']);
-    setStateList(lovs['bmtlovs'].states);
-    setCurrencyItem(lovs['bmtlovs'].currencies);
-    setStatusItem(lovs['bmtlovs'].statuses);
+    setCityNameDetail(lovs['cities']);
+    setStateList(lovs['lovs'].states);
+    setCurrencyItem(lovs['lovs'].currencies);
+    setStatusItem(lovs['lovs'].statuses);
     EditClick();
   }, []);
 
@@ -339,9 +339,9 @@ export default function OrganizationAddEditScreen(props) {
   function loginInfoLoaded() {
     if (isAuthenticated) {
       setUserId(user.id);
-      console.log('user.orgid', user);
-      setOrganizationId(user.orgid);
-      global.ORGANIZATIONID = user.orgid;
+      console.log('user.orgId', user);
+      setOrganizationId(user.orgId);
+      global.ORGANIZATIONID = user.orgId;
     } else {
       props.navigation.replace('Login');
     }
@@ -443,7 +443,7 @@ export default function OrganizationAddEditScreen(props) {
       //  'Authorization': servicesettings.AuthorizationKey
       // }
     };
-    fetch(servicesettings.baseuri + 'addupdateorg', ImageheaderFetch)
+    fetch(servicesettings.baseuri + 'BlazorApi/adupdateorg', ImageheaderFetch)
       .then(response => response.json())
       .then(responseJson => {
         if (responseJson.status == true) {

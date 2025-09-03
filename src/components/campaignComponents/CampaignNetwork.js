@@ -1,6 +1,6 @@
 import CheckBox from '@react-native-community/checkbox';
 import React from 'react';
-import {Image, ScrollView, StyleSheet, Text, View} from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import emailIcon from '../../../assets/images/Email.png';
 import facebookIcon from '../../../assets/images/Facebook.png';
 import smsIcon from '../../../assets/images/SMS.png';
@@ -10,9 +10,9 @@ import instagramIcon from '../../../assets/images/instagram.png';
 import linkedinIcon from '../../../assets/images/linkedin.png';
 import snapchatIcon from '../../../assets/images/snapchat.png';
 import tiktokIcon from '../../../assets/images/tiktok.png';
-import {useTheme} from '../../hooks/useTheme';
+import { useTheme } from '../../hooks/useTheme';
 import RNSButton from '../Button';
-import {useUser} from '../../hooks/useUser';
+import { useUser } from '../../hooks/useUser';
 import moment from 'moment';
 
 const CampaignNetwork = ({
@@ -22,7 +22,7 @@ const CampaignNetwork = ({
   networks,
 }) => {
   const theme = useTheme();
-  const {user} = useUser();
+  const { user } = useUser();
 
   const getIcon = networkId => {
     if (networkId == 1) {
@@ -51,7 +51,7 @@ const CampaignNetwork = ({
   };
   return (
     <View>
-      <ScrollView contentContainerStyle={{rowGap: 10, marginTop: 10}}>
+      <ScrollView contentContainerStyle={{ rowGap: 10, marginTop: 10 }}>
         {networks.length > 0 &&
           networks.map((network, index) => (
             <View
@@ -65,16 +65,18 @@ const CampaignNetwork = ({
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-              }}>
+              }}
+            >
               <View
                 style={{
                   flexDirection: 'row',
                   //   alignItems: 'center',
                   justifyContent: 'center',
-                }}>
+                }}
+              >
                 <Image
                   source={getIcon(network.networkId)}
-                  style={{width: 50, height: 50, marginRight: 10}}
+                  style={{ width: 50, height: 50, marginRight: 10 }}
                 />
                 <View>
                   <Text
@@ -82,18 +84,20 @@ const CampaignNetwork = ({
                       color: theme.textColor,
                       fontSize: 18,
                       fontWeight: 'bold',
-                    }}>
-                    {network.networkName} ({network.purchasedQouta})
+                    }}
+                  >
+                    {network.networkName || network?.name} (
+                    {network.purchasedQouta})
                   </Text>
-                  <Text style={{color: theme.textColor, fontSize: 16}}>
-                    {network.networkName}
+                  <Text style={{ color: theme.textColor, fontSize: 16 }}>
+                    {network.networkName || network.name}
                   </Text>
                 </View>
               </View>
               <View>
                 <CheckBox
                   style={{
-                    transform: [{scaleX: 1.5}, {scaleY: 1.5}],
+                    transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }],
                   }}
                   value={
                     campaignInfo.networks.length > 0
@@ -112,12 +116,12 @@ const CampaignNetwork = ({
                             networkId: network.networkId,
                             orgId: user.orgid,
                             rowVer: 0,
-                            purchasedQouta: network.purchasedQouta,
-                            unitPriceInclTax: network.unitPriceInclTax,
-                            usedQuota: network.usedQuota,
+                            purchasedQouta: network.purchasedQouta ?? 0,
+                            unitPriceInclTax: network.unitPrice ?? 0,
+                            usedQuota: network.usedQuota ?? 0,
                             compaignId: 0,
                             id: 0,
-                            desc: network.networkDesc,
+                            desc: network.name,
                             status: 1,
                             createdBy: user.id,
                             lastUpdatedBy: user.id,
@@ -149,15 +153,16 @@ const CampaignNetwork = ({
             flexDirection: 'row',
             justifyContent: 'space-between',
             marginVertical: 10,
-          }}>
+          }}
+        >
           <RNSButton
-            style={{width: '46%'}}
+            style={{ width: '46%' }}
             bgColor={theme.buttonBackColor}
             caption="Back"
             onPress={() => setIndex(0)}
           />
           <RNSButton
-            style={{width: '46%'}}
+            style={{ width: '46%' }}
             bgColor={theme.buttonBackColor}
             caption="Next"
             onPress={nextStep}

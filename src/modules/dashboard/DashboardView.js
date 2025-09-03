@@ -10,6 +10,7 @@ import { useTheme } from '../../hooks/useTheme';
 import { useUser } from '../../hooks/useUser';
 import { colors } from '../../styles';
 import servicesettings from '../dataservices/servicesettings';
+import moment from 'moment';
 export default function DashboardScreen(props) {
   const theme = useTheme();
   const { user } = useUser();
@@ -56,10 +57,12 @@ export default function DashboardScreen(props) {
       const headerFetch = {
         method: 'POST',
         body: JSON.stringify({
-          orgId: user.orgid,
+          orgId: user.orgId,
           status: 1,
           id: 0,
           DataOfMonth: '',
+          // CreatedAt: moment.utc().subtract(100, 'year').format(),
+          RowVer: 1,
         }),
         headers: {
           Accept: 'application/json',
@@ -67,11 +70,20 @@ export default function DashboardScreen(props) {
           Authorization: servicesettings.AuthorizationKey,
         },
       };
+      console.log({ headerFetch });
       // /dashboard
       const response = await fetch(
         `${servicesettings.baseuri}Compaigns/GetDashboardData`,
         headerFetch,
       );
+      console.log({ response });
+      if (!response.ok) {
+        const error = new Error(
+          `HTTP error! Status: ${response.status}, Message: ${response.statusText}`,
+        );
+        error.status = response.status; // Attach status to the error object
+        throw error;
+      }
       const responseJson = await response.json();
       console.log(responseJson.data);
       if (responseJson.data) {

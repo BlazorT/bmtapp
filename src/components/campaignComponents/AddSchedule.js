@@ -1,6 +1,6 @@
 import CheckBox from '@react-native-community/checkbox';
 import moment from 'moment';
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -11,9 +11,9 @@ import {
 } from 'react-native';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import Toast from 'react-native-simple-toast';
-import {useSelector} from 'react-redux';
-import {useTheme} from '../../hooks/useTheme';
-import {useUser} from '../../hooks/useUser';
+import { useSelector } from 'react-redux';
+import { useTheme } from '../../hooks/useTheme';
+import { useUser } from '../../hooks/useUser';
 import RNSButton from '../Button';
 import RNSDropDown from '../Dropdown';
 import CampaignNetwork from './CampaignNetwork';
@@ -29,20 +29,20 @@ const AddSchedule = ({
   setIsUpdate,
 }) => {
   const theme = useTheme();
-  const {user} = useUser();
+  const { user } = useUser();
   const lovs = useSelector(state => state.lovs).lovs;
   const [showStartDatePicker, setShowStartDatePicker] = React.useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = React.useState(false);
   const [scheduleMessageCount, setScheduleMessageCount] = React.useState(0);
 
   const days = [
-    {name: 'Sun'},
-    {name: 'Mon'},
-    {name: 'Tue'},
-    {name: 'Wed'},
-    {name: 'Thu'},
-    {name: 'Fri'},
-    {name: 'Sat'},
+    { name: 'Sun' },
+    { name: 'Mon' },
+    { name: 'Tue' },
+    { name: 'Wed' },
+    { name: 'Thu' },
+    { name: 'Fri' },
+    { name: 'Sat' },
   ];
 
   useEffect(() => {
@@ -98,7 +98,7 @@ const AddSchedule = ({
       const updatedSchedules = prevState.schedules.map(schedule =>
         schedule.randomId == scheduleList.randomId
           ? //|| schedule.id == scheduleList.id
-            {...scheduleList}
+            { ...scheduleList }
           : schedule,
       );
 
@@ -111,7 +111,7 @@ const AddSchedule = ({
     setIsUpdate(false);
   };
   const calculateBudget = () => {
-    const {numberOfDays, daysOfWeek} = getDaysBetweenDates(
+    const { numberOfDays, daysOfWeek } = getDaysBetweenDates(
       scheduleList.startTime,
       scheduleList.finishTime,
     );
@@ -317,8 +317,9 @@ const AddSchedule = ({
       daysOfWeek: daysOfWeek,
     };
   }
+  // console.log(campaignInfo.networks);
   return (
-    <View style={{marginTop: 10}}>
+    <View style={{ marginTop: 10 }}>
       <View
         style={{
           flexDirection: 'row',
@@ -328,7 +329,8 @@ const AddSchedule = ({
           columnGap: 10,
           rowGap: 5,
           marginBottom: 10,
-        }}>
+        }}
+      >
         {campaignInfo.networks.map((network, index) => (
           <View
             key={index}
@@ -340,15 +342,17 @@ const AddSchedule = ({
               paddingHorizontal: 6,
               paddingVertical: 6,
               borderRadius: 6,
-            }}>
+            }}
+          >
             <Text
-              style={{color: theme.textColor, fontSize: 16, marginRight: 10}}>
-              {network.desc || network.networkName} (
+              style={{ color: theme.textColor, fontSize: 16, marginRight: 10 }}
+            >
+              {network.desc || network.networkName || network?.name} (
               {network.purchasedQouta || network.compaignQouta})
             </Text>
             <CheckBox
               style={{
-                transform: [{scale: 1.4}],
+                transform: [{ scale: 1.4 }],
               }}
               boxType={'square'}
               tintColors={{
@@ -411,10 +415,11 @@ const AddSchedule = ({
           justifyContent: 'flex-start',
           flex: 1,
           //   width: Dimensions.get('screen').width,
-        }}>
-        <View style={{width: '60%'}}>
+        }}
+      >
+        <View style={{ width: '60%' }}>
           <RNSDropDown
-            items={lovs['bmtlovs'].intervals}
+            items={lovs['lovs'].intervals}
             selectedIndex={scheduleList.intervalTypeId}
             onSelect={value => {
               setScheduleList({
@@ -438,7 +443,7 @@ const AddSchedule = ({
             keyboardAppearance={'dark'}
           />
         </View>
-        <View style={{width: '35%'}}>
+        <View style={{ width: '35%' }}>
           <TextInput
             placeholder="Minute (1-60)"
             placeholderTextColor={theme.placeholderColor}
@@ -483,7 +488,8 @@ const AddSchedule = ({
           columnGap: 10,
           rowGap: 10,
           borderRadius: 6,
-        }}>
+        }}
+      >
         <>
           <Text
             style={{
@@ -495,7 +501,8 @@ const AddSchedule = ({
               paddingHorizontal: 10,
               borderTopRightRadius: 6,
               borderTopLeftRadius: 6,
-            }}>
+            }}
+          >
             Days
           </Text>
           {days.map((day, index) => (
@@ -507,10 +514,11 @@ const AddSchedule = ({
                 justifyContent: 'center',
                 flexWrap: 'wrap',
                 height: 40,
-              }}>
+              }}
+            >
               <CheckBox
                 style={{
-                  transform: [{scale: 1.4}],
+                  transform: [{ scale: 1.4 }],
                 }}
                 onValueChange={value => {
                   if (value) {
@@ -537,7 +545,8 @@ const AddSchedule = ({
                   color: theme.textColor,
                   fontSize: 18,
                   textAlign: 'center',
-                }}>
+                }}
+              >
                 {day.name}
               </Text>
             </View>
@@ -550,7 +559,8 @@ const AddSchedule = ({
           alignItems: 'center',
           justifyContent: 'space-between',
           marginTop: 6,
-        }}>
+        }}
+      >
         <TouchableOpacity
           onPress={() => setShowStartDatePicker(true)}
           style={{
@@ -561,8 +571,9 @@ const AddSchedule = ({
             borderRadius: 6,
             alignItems: 'center',
             justifyContent: 'center',
-          }}>
-          <Text style={{color: theme.textColor, fontSize: 17}}>
+          }}
+        >
+          <Text style={{ color: theme.textColor, fontSize: 17 }}>
             {scheduleList.startTime
               ? moment(scheduleList.startTime).format('DD-MM-YYYY')
               : 'Campaign Start'}
@@ -583,7 +594,7 @@ const AddSchedule = ({
           }
           mode="datetime"
           onConfirm={date => {
-            setScheduleList({...scheduleList, startTime: date});
+            setScheduleList({ ...scheduleList, startTime: date });
             setShowStartDatePicker(false);
           }}
           onCancel={() => setShowStartDatePicker(false)}
@@ -604,13 +615,15 @@ const AddSchedule = ({
                   backgroundColor: theme.cardBackColor,
                   borderRadius: 10,
                   paddingVertical: 15,
-                }}>
+                }}
+              >
                 <Text
                   style={{
                     textAlign: 'center',
                     fontSize: 20,
                     color: theme.textColor,
-                  }}>
+                  }}
+                >
                   Cancel
                 </Text>
               </TouchableOpacity>
@@ -627,8 +640,9 @@ const AddSchedule = ({
             borderRadius: 6,
             alignItems: 'center',
             borderWidth: 1,
-          }}>
-          <Text style={{color: theme.textColor, fontSize: 17}}>
+          }}
+        >
+          <Text style={{ color: theme.textColor, fontSize: 17 }}>
             {scheduleList.finishTime
               ? moment(scheduleList.finishTime).format('DD-MM-YYYY')
               : 'Campaign End'}
@@ -643,7 +657,7 @@ const AddSchedule = ({
             //     : new Date(new Date().setMonth(new Date().getDay() + 2))
             // }
             onConfirm={date => {
-              setScheduleList({...scheduleList, finishTime: date});
+              setScheduleList({ ...scheduleList, finishTime: date });
               setShowEndDatePicker(false);
             }}
             onCancel={() => setShowEndDatePicker(false)}
@@ -664,13 +678,15 @@ const AddSchedule = ({
                     backgroundColor: theme.cardBackColor,
                     borderRadius: 10,
                     paddingVertical: 15,
-                  }}>
+                  }}
+                >
                   <Text
                     style={{
                       textAlign: 'center',
                       fontSize: 20,
                       color: theme.textColor,
-                    }}>
+                    }}
+                  >
                     Cancel
                   </Text>
                 </TouchableOpacity>
@@ -679,7 +695,7 @@ const AddSchedule = ({
           />
         </TouchableOpacity>
       </View>
-      <ScrollView contentContainerStyle={{marginTop: 10}}>
+      <ScrollView contentContainerStyle={{ marginTop: 10 }}>
         <View>
           {scheduleList.CompaignNetworks.map((item, index) => (
             <View
@@ -693,13 +709,15 @@ const AddSchedule = ({
                 justifyContent: 'space-around',
                 alignItems: 'center',
                 borderRadius: 6,
-              }}>
+              }}
+            >
               <Text
                 style={{
                   textAlign: 'center',
                   fontSize: 16,
                   color: theme.textColor,
-                }}>
+                }}
+              >
                 {item.desc || item.networkName} :{' '}
                 {item.purchasedQouta ||
                   item.compaignQouta - item.usedQuota ||
@@ -711,7 +729,8 @@ const AddSchedule = ({
                   textAlign: 'center',
                   fontSize: 16,
                   color: theme.textColor,
-                }}>
+                }}
+              >
                 Budget:{' '}
                 {(scheduleList.messageCount * item.unitPriceInclTax).toFixed(2)}{' '}
                 {lovs['orgs'][0].currencyName}
@@ -725,9 +744,10 @@ const AddSchedule = ({
           flexDirection: 'row',
           justifyContent: 'space-between',
           marginVertical: 10,
-        }}>
+        }}
+      >
         <RNSButton
-          style={{width: '46%'}}
+          style={{ width: '46%' }}
           bgColor={theme.buttonBackColor}
           caption={isUpdate ? 'Cancel' : 'Back'}
           onPress={() => {
@@ -757,7 +777,7 @@ const AddSchedule = ({
           }}
         />
         <RNSButton
-          style={{width: '46%'}}
+          style={{ width: '46%' }}
           bgColor={theme.buttonBackColor}
           caption={isUpdate ? 'Update' : '+ Schedule'}
           onPress={isUpdate ? updateSchedule : addSchedule}

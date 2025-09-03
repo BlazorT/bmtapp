@@ -150,7 +150,7 @@ export default function ForgotPasswordScreen(props) {
       headers: blazorHeader,
     };
     // headers: blazorHeader
-    fetch(servicesettings.baseuri + 'common/forgot', headerFetch)
+    fetch(servicesettings.baseuri + 'BlazorApi/forgot', headerFetch)
       .then(response => response.json())
       .then(responseJson => {
         console.log('responseJson', responseJson, {
@@ -258,7 +258,7 @@ export default function ForgotPasswordScreen(props) {
       }),
       headers: blazorHeader,
     };
-    fetch(servicesettings.baseuri + 'common/forgot', headerFetch)
+    fetch(servicesettings.baseuri + 'BlazorApi/forgot', headerFetch)
       .then(response => response.json())
       .then(responseJson => {
         console.log(responseJson, {

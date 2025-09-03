@@ -1,6 +1,6 @@
 import React from 'react';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {useTheme} from '../hooks/useTheme';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useTheme } from '../hooks/useTheme';
 
 var HEIGHT = 50;
 var BACKGROUND_COLOR = '#212121';
@@ -88,7 +88,7 @@ const AppBreadcrumb = ({
       borderRightColor: COLOR, // Match selected text color
       borderBottomColor: 'transparent', // Match selected text color
       borderLeftColor: COLOR, // Match selected text color
-      transform: [{rotate: '90deg'}],
+      transform: [{ rotate: '90deg' }],
       borderWidth: HEIGHT / 2,
     },
   });
@@ -106,7 +106,8 @@ const AppBreadcrumb = ({
             {
               marginRight: index === crumbs.length - 1 ? 0 : 12,
             },
-          ]}>
+          ]}
+        >
           {index === selectedIndex && index !== 0 && (
             <View style={styles.tailContainer}>
               <View style={[styles.arrow, styles.tail]} />
@@ -116,7 +117,8 @@ const AppBreadcrumb = ({
             style={[
               styles.breadcrumbText,
               index === selectedIndex && [styles.selectedCrumbText],
-            ]}>
+            ]}
+          >
             {crumb.text}
           </Text>
           {index === selectedIndex && index < crumbs.length - 1 && (

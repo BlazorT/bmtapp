@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Dimensions,
   ScrollView,
@@ -9,21 +9,21 @@ import AppBreadcrumb from '../../components/AppBreadcrumb';
 import Model from '../../components/Model';
 
 import NetInfo from '@react-native-community/netinfo';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Toast from 'react-native-simple-toast';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import CampaignInfo from '../../components/campaignComponents/CampaignInfo';
 import CampaignNetwork from '../../components/campaignComponents/CampaignNetwork';
 import CampaignSchedule from '../../components/campaignComponents/CampaignSchedule';
-import {useTheme} from '../../hooks/useTheme';
-import {useUser} from '../../hooks/useUser';
+import { useTheme } from '../../hooks/useTheme';
+import { useUser } from '../../hooks/useUser';
 import servicesettings from '../dataservices/servicesettings';
 import moment from 'moment';
 
 export default function CampaignScheduleScreen(props) {
   const theme = useTheme();
-  const {isAuthenticated, user} = useUser();
+  const { isAuthenticated, user } = useUser();
   const lovs = useSelector(state => state.lovs).lovs;
 
   const [campaignInfo, setCampaignInfo] = useState({
@@ -73,6 +73,7 @@ export default function CampaignScheduleScreen(props) {
     try {
       if (isAuthenticated) {
         const networks = await lovs['mybundlings'];
+        console.log({ networks });
         setNetworks(networks);
       } else {
         props.navigation.replace('Login');
@@ -155,7 +156,7 @@ export default function CampaignScheduleScreen(props) {
         uri.uri.endsWith('.mov'),
     )[0];
     const pdfUris = uris.filter(uri => uri.uri.endsWith('.pdf'))[0];
-    console.log({imageUris, videoUris, pdfUris});
+    console.log({ imageUris, videoUris, pdfUris });
     setCampaignInfo({
       id: data.id,
       subject: data.name,
@@ -225,12 +226,13 @@ export default function CampaignScheduleScreen(props) {
 
   return (
     <KeyboardAwareScrollView
-      resetScrollToCoords={{x: 0, y: 0}}
+      resetScrollToCoords={{ x: 0, y: 0 }}
       contentContainerStyle={[
         styles.container,
-        {backgroundColor: theme.backgroundColor},
+        { backgroundColor: theme.backgroundColor },
       ]}
-      scrollEnabled={false}>
+      scrollEnabled={false}
+    >
       <TouchableOpacity>
         <AppBreadcrumb
           crumbs={[
@@ -240,7 +242,7 @@ export default function CampaignScheduleScreen(props) {
             {
               text: `Networks ${campaignInfo.networks.length > 0 ? campaignInfo.networks.length : ''}`,
             },
-            {text: 'Schedule'},
+            { text: 'Schedule' },
           ]}
           onSelect={index => {
             handlePress(index);
@@ -249,8 +251,9 @@ export default function CampaignScheduleScreen(props) {
         />
       </TouchableOpacity>
       <ScrollView
-        contentContainerStyle={{width: '100%'}}
-        style={{width: '100%'}}>
+        contentContainerStyle={{ width: '100%' }}
+        style={{ width: '100%' }}
+      >
         {Index == 0 && (
           <CampaignInfo
             campaignInfo={campaignInfo}
@@ -279,7 +282,7 @@ export default function CampaignScheduleScreen(props) {
             <Spinner
               visible={spinner}
               textContent="Submitting..."
-              textStyle={{color: theme.textColor}}
+              textStyle={{ color: theme.textColor }}
               color={theme.textColor}
             />
             <Model modalVisible={modalVisible} message={updateMessage}></Model>

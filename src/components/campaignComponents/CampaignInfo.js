@@ -1,5 +1,5 @@
 import CheckBox from '@react-native-community/checkbox';
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -10,8 +10,8 @@ import {
 import RadioForm from 'react-native-simple-radio-buttons';
 import AntdIcon from 'react-native-vector-icons/AntDesign';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
-import {useSelector} from 'react-redux';
-import {useTheme} from '../../hooks/useTheme';
+import { useSelector } from 'react-redux';
+import { useTheme } from '../../hooks/useTheme';
 import RNSButton from '../Button';
 import RNSDropDown from '../Dropdown';
 import CampaignAttachment from './CampaignAttachment';
@@ -20,9 +20,9 @@ import moment from 'moment';
 import Alert from '../Alert';
 import Toast from 'react-native-simple-toast';
 
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
-const CampaignInfo = ({campaignInfo, setCampaignInfo, setIndex}) => {
+const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex }) => {
   const theme = useTheme();
   const navigation = useNavigation();
   const lovs = useSelector(state => state.lovs).lovs;
@@ -34,12 +34,13 @@ const CampaignInfo = ({campaignInfo, setCampaignInfo, setIndex}) => {
   const [showCancelAlert, setShowCancelAlert] = useState(false);
 
   const statusRadioBtns = [
-    {value: 1, label: 'Active'},
-    {value: 2, label: 'Paused'},
-    {value: 3, label: 'Cancelled'},
+    { value: 1, label: 'Active' },
+    { value: 2, label: 'Paused' },
+    { value: 3, label: 'Cancelled' },
   ];
 
   const handleCampaignInfo = (property, value) => {
+    console.log({ property, value });
     setCampaignInfo(prevState => ({
       ...prevState,
       [property]: value,
@@ -67,7 +68,7 @@ const CampaignInfo = ({campaignInfo, setCampaignInfo, setIndex}) => {
     setIndex(1);
   };
   return (
-    <View style={{width: '100%', marginTop: 10, rowGap: 10}}>
+    <View style={{ width: '100%', marginTop: 10, rowGap: 10 }}>
       <Alert
         massagetype={'warning'}
         hide={() => setShowCancelAlert(false)}
@@ -96,7 +97,8 @@ const CampaignInfo = ({campaignInfo, setCampaignInfo, setIndex}) => {
         Visible={showCancelAlert}
         alerttype={'confirmation'}
         Title={'Confirmation'}
-        Massage={'Do you want to discard ?'}></Alert>
+        Massage={'Do you want to discard ?'}
+      ></Alert>
       <TextInput
         placeholder="Subject"
         placeholderTextColor={theme.placeholderColor}
@@ -153,9 +155,11 @@ const CampaignInfo = ({campaignInfo, setCampaignInfo, setIndex}) => {
           alignItems: 'center',
           justifyContent: 'space-between',
         }}
-        onPress={() => setAudienceShow(prevState => !prevState)}>
+        onPress={() => setAudienceShow(prevState => !prevState)}
+      >
         <Text
-          style={{color: theme.textColor, fontSize: 18, fontWeight: 'bold'}}>
+          style={{ color: theme.textColor, fontSize: 18, fontWeight: 'bold' }}
+        >
           Campaign Audience
         </Text>
         <AntdIcon
@@ -167,7 +171,7 @@ const CampaignInfo = ({campaignInfo, setCampaignInfo, setIndex}) => {
       {audienceShow && (
         <>
           <RNSDropDown
-            items={lovs['bmtlovs'].countries}
+            items={lovs['lovs'].countries}
             selectedIndex={campaignInfo.country}
             onSelect={value => handleCampaignInfo('country', value)}
             style={{
@@ -185,7 +189,7 @@ const CampaignInfo = ({campaignInfo, setCampaignInfo, setIndex}) => {
             keyboardAppearance={'dark'}
           />
           <RNSDropDown
-            items={lovs['bmtlovs'].states}
+            items={lovs['lovs'].states}
             selectedIndex={campaignInfo.state}
             onSelect={value => handleCampaignInfo('state', value)}
             style={{
@@ -211,15 +215,17 @@ const CampaignInfo = ({campaignInfo, setCampaignInfo, setIndex}) => {
           justifyContent: 'space-between',
           marginTop: 6,
         }}
-        onPress={() => setAttachmentShow(prevState => !prevState)}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        onPress={() => setAttachmentShow(prevState => !prevState)}
+      >
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Text
             style={{
               color: theme.textColor,
               fontSize: 18,
               fontWeight: 'bold',
               marginRight: 10,
-            }}>
+            }}
+          >
             Attachments
           </Text>
           <EntypoIcon name={'attachment'} size={22} color={theme.tintColor} />
@@ -242,7 +248,8 @@ const CampaignInfo = ({campaignInfo, setCampaignInfo, setIndex}) => {
           alignItems: 'center',
           justifyContent: 'space-between',
           marginTop: 6,
-        }}>
+        }}
+      >
         <TouchableOpacity
           onPress={() => setShowStartDatePicker(true)}
           style={{
@@ -255,8 +262,9 @@ const CampaignInfo = ({campaignInfo, setCampaignInfo, setIndex}) => {
             justifyContent: 'center',
             borderColor: '#ff00003d',
             borderWidth: 1,
-          }}>
-          <Text style={{color: theme.textColor, fontSize: 17}}>
+          }}
+        >
+          <Text style={{ color: theme.textColor, fontSize: 17 }}>
             {campaignInfo.campaignStartDate
               ? moment(campaignInfo.campaignStartDate).format('DD-MM-YYYY')
               : 'Campaign Start'}
@@ -298,13 +306,15 @@ const CampaignInfo = ({campaignInfo, setCampaignInfo, setIndex}) => {
                   backgroundColor: theme.cardBackColor,
                   borderRadius: 10,
                   paddingVertical: 15,
-                }}>
+                }}
+              >
                 <Text
                   style={{
                     textAlign: 'center',
                     fontSize: 20,
                     color: theme.textColor,
-                  }}>
+                  }}
+                >
                   Cancel
                 </Text>
               </TouchableOpacity>
@@ -323,8 +333,9 @@ const CampaignInfo = ({campaignInfo, setCampaignInfo, setIndex}) => {
             justifyContent: 'center',
             borderColor: '#ff00003d',
             borderWidth: 1,
-          }}>
-          <Text style={{color: theme.textColor, fontSize: 17}}>
+          }}
+        >
+          <Text style={{ color: theme.textColor, fontSize: 17 }}>
             {campaignInfo.campaignEndDate
               ? moment(campaignInfo.campaignEndDate).format('DD-MM-YYYY')
               : 'Campaign End'}
@@ -361,13 +372,15 @@ const CampaignInfo = ({campaignInfo, setCampaignInfo, setIndex}) => {
                     backgroundColor: theme.cardBackColor,
                     borderRadius: 10,
                     paddingVertical: 15,
-                  }}>
+                  }}
+                >
                   <Text
                     style={{
                       textAlign: 'center',
                       fontSize: 20,
                       color: theme.textColor,
-                    }}>
+                    }}
+                  >
                     Cancel
                   </Text>
                 </TouchableOpacity>
@@ -381,7 +394,8 @@ const CampaignInfo = ({campaignInfo, setCampaignInfo, setIndex}) => {
           backgroundColor: theme.inputBackColor,
           borderRadius: 6,
           padding: 10,
-        }}>
+        }}
+      >
         <RadioForm
           items={statusRadioBtns}
           withLabels={true}
@@ -406,8 +420,8 @@ const CampaignInfo = ({campaignInfo, setCampaignInfo, setIndex}) => {
           }}
         />
       </View>
-      <TouchableOpacity style={{flexDirection: 'row', alignItems: 'center'}}>
-        <Text style={{color: theme.textColor, fontSize: 18, marginRight: 20}}>
+      <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Text style={{ color: theme.textColor, fontSize: 18, marginRight: 20 }}>
           Auto Generate Lead
         </Text>
         <CheckBox
@@ -416,7 +430,7 @@ const CampaignInfo = ({campaignInfo, setCampaignInfo, setIndex}) => {
             true: theme.selectedCheckBox,
             false: theme.buttonBackColor,
           }}
-          style={{transform: [{scale: 1.3}]}}
+          style={{ transform: [{ scale: 1.3 }] }}
           boxType={'square'}
           onValueChange={value => handleCampaignInfo('autoLead', value)}
         />
@@ -426,15 +440,16 @@ const CampaignInfo = ({campaignInfo, setCampaignInfo, setIndex}) => {
           flexDirection: 'row',
           justifyContent: 'space-between',
           marginVertical: 10,
-        }}>
+        }}
+      >
         <RNSButton
-          style={{width: '46%'}}
+          style={{ width: '46%' }}
           bgColor={theme.buttonBackColor}
           caption="Cancel"
           onPress={() => setShowCancelAlert(true)}
         />
         <RNSButton
-          style={{width: '46%'}}
+          style={{ width: '46%' }}
           bgColor={theme.buttonBackColor}
           caption="Next"
           onPress={nextStep}

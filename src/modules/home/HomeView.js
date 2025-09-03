@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Video from 'react-native-video';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Text } from '../../components/StyledText';
 import useFetchData from '../../hooks/useFetchData';
 import { useTheme } from '../../hooks/useTheme';
@@ -48,23 +48,23 @@ const apiConfigs = [
       status: 1,
     },
   },
-  // {
-  //   endpoint: 'Common/mybundlings',
-  //   method: 'POST',
-  //   body: {
-  //     orgId: 0,
-  //     email: '',
-  //     firstName: '',
-  //     lastName: '',
-  //     roleName: '',
-  //     address: '',
-  //     stateName: '',
-  //     userCode: '',
-  //     title: '',
-  //     traceId: 0,
-  //     status: 1,
-  //   },
-  // },
+  {
+    endpoint: 'admin/custombundlingdetails',
+    method: 'POST',
+    body: {
+      orgId: 0,
+      email: '',
+      firstName: '',
+      lastName: '',
+      roleName: '',
+      address: '',
+      stateName: '',
+      userCode: '',
+      title: '',
+      traceId: 0,
+      status: 1,
+    },
+  },
   {
     endpoint: 'Common/cities',
     method: 'POST',
@@ -73,16 +73,14 @@ const apiConfigs = [
 ];
 export default function HomeScreen(props) {
   const theme = useTheme();
-  const { isAuthenticated } = useUser();
-
+  const { isAuthenticated, logoutUser } = useUser();
+  // logoutUser();
   const { data, loading, error } = useFetchData(apiConfigs);
-
+  const lovs = useSelector(state => state.lovs);
   const dispatch = useDispatch();
-
   useEffect(() => {
     // console.log(user.orgid);
     if (!loading && !error) {
-      console.log(data);
       dispatch(setLovs(data));
     }
   }, [loading, data]);

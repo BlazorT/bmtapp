@@ -169,14 +169,14 @@ export default function LoginScreen(props) {
 
     setspinner(true);
     var headerFetch = {
-      method: 'POST',
-      body: JSON.stringify({
-        email: Email.trim(),
-        password: Base64.btoa(Password.trim()),
-        orgid: '1',
-        subscriptionPackageId: 0,
-        regsource: 0,
-      }),
+      method: 'GET',
+      // body: JSON.stringify({
+      //   email: Email.trim(),
+      //   password: Base64.btoa(Password.trim()),
+      //   orgid: '1',
+      //   subscriptionPackageId: 0,
+      //   regsource: 0,
+      // }),
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json; charset=utf-8',
@@ -186,12 +186,26 @@ export default function LoginScreen(props) {
 
     console.log('headerFetch from login', JSON.stringify(headerFetch.body));
     // authenticateorguser
-    fetch(servicesettings.baseuri + 'common/login', headerFetch)
+    fetch(
+      servicesettings.baseuri +
+        `common/login?email=${Email.trim()}&password=${Base64.btoa(Password.trim())}`,
+      headerFetch,
+    )
       .then(response => response.json())
       .then(responseJson => {
         setspinner(false);
         console.log('headerFetch from login', JSON.stringify(responseJson));
-        if (responseJson.status == false && responseJson.errorCode == '404') {
+        if (responseJson.status == false) {
+          {
+            responseJson.message != ''
+              ? Toast.show(' ' + responseJson.message + ' ')
+              : Toast.show('Data not found');
+          }
+          return;
+        } else if (
+          responseJson.status == false &&
+          responseJson.errorCode == '404'
+        ) {
           {
             responseJson.message != ''
               ? Toast.show(' ' + responseJson.message + ' ')
@@ -220,27 +234,25 @@ export default function LoginScreen(props) {
                 );
           }
           return;
-        } else if (responseJson.data.length == 0) {
+        } else if (!responseJson?.data) {
           Toast.show('Oops login failed incorrect username/password');
           return;
         } else {
           if (responseJson.Error) {
             Toast.show('Network request failed');
           }
-          AsyncStorage.setItem(
-            'LoginInformation',
-            JSON.stringify(responseJson.data),
-          );
-          loginUser(responseJson.data[0]);
-          global.Storeid = responseJson.data[0].storeid;
-          global.ROLEID = responseJson.data[0].roleid;
-          global.USERID = responseJson.data[0].id;
-          global.StoreName = responseJson.data[0].TradeName;
+          const userData = Array.isArray(responseJson?.data)
+            ? responseJson.data?.[0]
+            : responseJson.data;
+          AsyncStorage.setItem('LoginInformation', JSON.stringify(userData));
+          loginUser(userData);
+          global.Storeid = userData.storeid;
+          global.ROLEID = userData.roleid;
+          global.USERID = userData.id;
+          global.StoreName = userData.TradeName;
           //console.log("global.Storeid check " + global.Storeid)
 
-          Toast.show(
-            `${responseJson.data[0].firstname} ${responseJson.data[0].lastname} has been logged in successfully`,
-          );
+          Toast.show(`${userData?.fullName} has been logged in successfully`);
           setmodalVisible(true);
           setTimeout(() => {
             setmodalVisible(false);
@@ -262,207 +274,217 @@ export default function LoginScreen(props) {
   const ContinueWithSocialMedia = () => {
     setspinner(true);
     LoginManager.setLoginBehavior('web_only');
-    AsyncStorage.getItem('SignupWithGoogle_Facebook').then(function (res) {
-      //AsyncStorage.getItem('SignupWithGoogle').then(function (res) {
-      let Asyncdata = JSON.parse(res);
+    AsyncStorage.getItem('SignupWithGoogle_Facebook').then(
+      async function (res) {
+        //AsyncStorage.getItem('SignupWithGoogle').then(function (res) {
+        let Asyncdata = JSON.parse(res);
 
-      if (Asyncdata != null) {
-        setspinner(true);
-        var fcmToken = servicesettings.fcmToken;
-        var pictureUrl = Asyncdata.picture;
-        var UserName = Asyncdata.userName;
-        var Password = Asyncdata.userID;
-        var email = Asyncdata.email;
-        var authToken = Asyncdata.authtoken;
-        //
-        var FirstName = Asyncdata.firstName;
-        var LastName = Asyncdata.lastName;
-        let uniqueId = '';
-        //let uniqueId = DeviceInfo.getUniqueId();
-        let OS = 0;
-        setspinner(true);
-        if (Platform.OS === 'ios') {
-          // OS = 3;
-          var checkSignupSocialMedia = Asyncdata.facebookOS;
-          if (checkSignupSocialMedia == 4) {
-            OS = 6;
-          } else {
-            OS = 7;
-          }
-        }
-        if (Platform.OS === 'android') {
-          // OS = Asyncdata.facebookOS;
-          OS = 4;
-        }
-        const data = new FormData();
-        // console.log("imgdata check not equal null " + JSON.stringify(imgdata));
-        if (pictureUrl != '') {
-          var encodeUrl = Math.floor(Math.random() * 999999999999);
-          data.append('profiles', {
-            name: 'rn_image_picker_lib_temp_' + encodeUrl + '.jpg',
-            uri: pictureUrl,
-            type: 'image/jpeg',
-          });
-          console.log(
-            'pictureUrl check not equal pictureUrl data ' +
-              JSON.stringify(data),
-          );
-        }
-        data.append('fmctoken', fcmToken);
-        data.append('id', (0).toString());
-        data.append('orgid', (1).toString());
-        data.append('authtoken', authToken);
-        data.append('IMs', uniqueId);
-        data.append('regsource', OS.toString());
-        data.append('username', UserName.trim());
-        if (FirstName == null || FirstName == '' || FirstName == 'undefined') {
-          data.append('firstname', FirstName);
-        } else {
-          data.append('firstname', FirstName.trim());
-        }
-        if (LastName == null || LastName == '' || LastName == 'undefined') {
-          data.append('lastname', LastName);
-        } else {
-          data.append('lastname', LastName.trim());
-        }
-        if (email == null || email == '' || email == 'undefined') {
-          data.append('email', '');
-        } else {
-          data.append('email', email.trim());
-        }
-        if (Password == null || Password == '' || Password == 'undefined') {
-          data.append('password', Password);
-        } else {
-          data.append('password', Base64.btoa(Password.trim()));
-        }
-        data.append('roleid', (5).toString());
-        data.append('status', (1).toString());
-        // console.log('data ' + JSON.stringify(data));
-        var ImageheaderFetch = {
-          enctype: 'multipart/form-data',
-          processData: false,
-          contentType: false,
-          cache: false,
-          timeout: 600000,
-          method: 'post',
-          body: data,
-          headers: {
-            Authorization: servicesettings.AuthorizationKey,
-          },
-        };
-        //
-        console.log('useraccountwithlogin', DeviceInfo.getUniqueId());
-        console.log(
-          'ImageheaderFetch check image 532 ' +
-            JSON.stringify(ImageheaderFetch),
-        );
-        fetch(
-          servicesettings.baseuri + 'useraccountwithlogin',
-          ImageheaderFetch,
-        )
-          .then(response => response.json())
-          .then(responseJson => {
-            if (
-              responseJson.status == false &&
-              responseJson.errorCode == '404'
-            ) {
-              {
-                setspinner(false);
-                responseJson.message != ''
-                  ? Toast.show(' ' + responseJson.message + ' ')
-                  : Toast.show('Data not found');
-              }
-              return;
-            } else if (
-              responseJson.status == false &&
-              responseJson.errorCode == '202'
-            ) {
-              {
-                setspinner(false);
-                responseJson.message != ''
-                  ? Toast.show(' ' + responseJson.message + ' ')
-                  : Toast.show('Api validation failed');
-              }
-              return;
-            } else if (
-              responseJson.status == true &&
-              responseJson.errorCode == '407'
-            ) {
-              {
-                setspinner(false);
-                responseJson.message != ''
-                  ? Toast.show(' ' + responseJson.message + ' ')
-                  : Toast.show(
-                      'Too many requests, must be 40 Seconds interval between next request!',
-                    );
-              }
-              return;
-            } else if (responseJson.data.length == 0) {
-              setspinner(false);
-              Toast.show('Oops login failed incorrect username/password');
-              return;
-            }
-            if (responseJson.status == true && responseJson.errorCode == '0') {
-              var responseJsonAdd = responseJson.data[0];
-              var userId = responseJsonAdd.id;
-              var userRoleId = responseJsonAdd.roleId;
-              var userStatusId = responseJsonAdd.status;
-              var userOrgId = responseJsonAdd.orgId;
-              console.log(
-                'userOrgId > ',
-                userOrgId.toString(),
-                'userRoleId > ',
-                userRoleId.toString(),
-                'userStatusId > ',
-                userStatusId,
-                'userOrgId > ',
-                userOrgId,
-              );
-              var UserInfo = {
-                address: '',
-                avatar: responseJsonAdd.avatar,
-                email: responseJsonAdd.email,
-                firstname: responseJsonAdd.firstName,
-                id: userId.toString(),
-                lastname: responseJsonAdd.lastName,
-                orgid: userOrgId.toString(),
-                orgname: responseJsonAdd.orgName,
-                roleid: userRoleId.toString(),
-                status: userStatusId.toString(),
-                username: responseJsonAdd.userName,
-              };
-
-              console.log({ responseJsonAdd, UserInfo });
-              loginUser(UserInfo);
-
-              setspinner(false);
-              Toast.show('Save successfully');
-              setTimeout(() => {
-                setspinner(false);
-
-                props.navigation.replace('Dashboard');
-                //props.navigation.navigate('Home');
-              }, 2000);
+        if (Asyncdata != null) {
+          setspinner(true);
+          var fcmToken = servicesettings.fcmToken;
+          var pictureUrl = Asyncdata.picture;
+          var UserName = Asyncdata.userName;
+          var Password = Asyncdata.userID;
+          var email = Asyncdata.email;
+          var authToken = Asyncdata.authtoken;
+          //
+          var FirstName = Asyncdata.firstName;
+          var LastName = Asyncdata.lastName;
+          let uniqueId = '';
+          //let uniqueId = DeviceInfo.getUniqueId();
+          let OS = 0;
+          setspinner(true);
+          if (Platform.OS === 'ios') {
+            // OS = 3;
+            var checkSignupSocialMedia = Asyncdata.facebookOS;
+            if (checkSignupSocialMedia == 4) {
+              OS = 6;
             } else {
-              setspinner(false);
-              Toast.show(
-                'Your account already exists, please proceed for Sign In ',
-              );
+              OS = 7;
             }
-          })
-          .catch(error => {
-            setspinner(false);
-            //*********need to some disscuss*********/
-            console.error('uploadpicture error', error);
-            Toast.showWithGravity(
-              'Internet connection failed, try another time !!!',
-              Toast.LONG,
-              Toast.CENTER,
+          }
+          if (Platform.OS === 'android') {
+            // OS = Asyncdata.facebookOS;
+            OS = 4;
+          }
+          const data = new FormData();
+          // console.log("imgdata check not equal null " + JSON.stringify(imgdata));
+          if (pictureUrl != '') {
+            var encodeUrl = Math.floor(Math.random() * 999999999999);
+            data.append('profiles', {
+              name: 'rn_image_picker_lib_temp_' + encodeUrl + '.jpg',
+              uri: pictureUrl,
+              type: 'image/jpeg',
+            });
+            console.log(
+              'pictureUrl check not equal pictureUrl data ' +
+                JSON.stringify(data),
             );
-            return;
-          });
-      }
-    });
+          }
+          data.append('fmctoken', fcmToken);
+          data.append('id', (0).toString());
+          data.append('orgid', (1).toString());
+          data.append('authtoken', authToken);
+          data.append('IMs', uniqueId);
+          data.append('regsource', OS.toString());
+          data.append('username', UserName.trim());
+          if (
+            FirstName == null ||
+            FirstName == '' ||
+            FirstName == 'undefined'
+          ) {
+            data.append('firstname', FirstName);
+          } else {
+            data.append('firstname', FirstName.trim());
+          }
+          if (LastName == null || LastName == '' || LastName == 'undefined') {
+            data.append('lastname', LastName);
+          } else {
+            data.append('lastname', LastName.trim());
+          }
+          if (email == null || email == '' || email == 'undefined') {
+            data.append('email', '');
+          } else {
+            data.append('email', email.trim());
+          }
+          if (Password == null || Password == '' || Password == 'undefined') {
+            data.append('password', Password);
+          } else {
+            data.append('password', Base64.btoa(Password.trim()));
+          }
+          data.append('roleid', (5).toString());
+          data.append('status', (1).toString());
+          // console.log('data ' + JSON.stringify(data));
+          var ImageheaderFetch = {
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            cache: false,
+            timeout: 600000,
+            method: 'post',
+            body: data,
+            headers: {
+              Authorization: servicesettings.AuthorizationKey,
+            },
+          };
+          //
+          console.log('useraccountwithlogin', await DeviceInfo.getUniqueId());
+          console.log(
+            'ImageheaderFetch check image 532 ' +
+              JSON.stringify(ImageheaderFetch),
+          );
+          fetch(
+            servicesettings.baseuri + 'useraccountwithlogin',
+            ImageheaderFetch,
+          )
+            .then(response => response.json())
+            .then(responseJson => {
+              console.log({ responseJson });
+              if (
+                responseJson.status == false &&
+                responseJson.errorCode == '404'
+              ) {
+                {
+                  setspinner(false);
+                  responseJson.message != ''
+                    ? Toast.show(' ' + responseJson.message + ' ')
+                    : Toast.show('Data not found');
+                }
+                return;
+              } else if (
+                responseJson.status == false &&
+                responseJson.errorCode == '202'
+              ) {
+                {
+                  setspinner(false);
+                  responseJson.message != ''
+                    ? Toast.show(' ' + responseJson.message + ' ')
+                    : Toast.show('Api validation failed');
+                }
+                return;
+              } else if (
+                responseJson.status == true &&
+                responseJson.errorCode == '407'
+              ) {
+                {
+                  setspinner(false);
+                  responseJson.message != ''
+                    ? Toast.show(' ' + responseJson.message + ' ')
+                    : Toast.show(
+                        'Too many requests, must be 40 Seconds interval between next request!',
+                      );
+                }
+                return;
+              } else if (responseJson.data.length == 0) {
+                setspinner(false);
+                Toast.show('Oops login failed incorrect username/password');
+                return;
+              }
+              if (
+                responseJson.status == true &&
+                responseJson.errorCode == '0'
+              ) {
+                var responseJsonAdd = responseJson.data[0];
+                var userId = responseJsonAdd.id;
+                var userRoleId = responseJsonAdd.roleId;
+                var userStatusId = responseJsonAdd.status;
+                var userOrgId = responseJsonAdd.orgId;
+                console.log(
+                  'userOrgId > ',
+                  userOrgId.toString(),
+                  'userRoleId > ',
+                  userRoleId.toString(),
+                  'userStatusId > ',
+                  userStatusId,
+                  'userOrgId > ',
+                  userOrgId,
+                );
+                var UserInfo = {
+                  address: '',
+                  avatar: responseJsonAdd.avatar,
+                  email: responseJsonAdd.email,
+                  firstname: responseJsonAdd.firstName,
+                  id: userId.toString(),
+                  lastname: responseJsonAdd.lastName,
+                  orgid: userOrgId.toString(),
+                  orgname: responseJsonAdd.orgName,
+                  roleid: userRoleId.toString(),
+                  status: userStatusId.toString(),
+                  username: responseJsonAdd.userName,
+                };
+
+                console.log({ responseJsonAdd, UserInfo });
+                loginUser(UserInfo);
+
+                setspinner(false);
+                Toast.show('Save successfully');
+                setTimeout(() => {
+                  setspinner(false);
+
+                  props.navigation.replace('Dashboard');
+                  //props.navigation.navigate('Home');
+                }, 2000);
+              } else {
+                setspinner(false);
+                Toast.show(
+                  'Your account already exists, please proceed for Sign In ',
+                );
+              }
+            })
+            .catch(error => {
+              setspinner(false);
+              //*********need to some disscuss*********/
+              console.error('uploadpicture error', error);
+              Toast.showWithGravity(
+                'Internet connection failed, try another time !!!',
+                Toast.LONG,
+                Toast.CENTER,
+              );
+              return;
+            });
+        }
+      },
+    );
   };
 
   function PressSignUp() {

@@ -7,12 +7,12 @@ import {
   View,
 } from 'react-native';
 import React from 'react';
-import {useTheme} from '../../hooks/useTheme';
+import { useTheme } from '../../hooks/useTheme';
 import moment from 'moment';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import GestureRecognizer from 'react-native-swipe-gestures';
 import RNSButton from '../Button';
-import {useUser} from '../../hooks/useUser';
+import { useUser } from '../../hooks/useUser';
 
 const ScheduleList = ({
   campaignInfo,
@@ -23,24 +23,25 @@ const ScheduleList = ({
 }) => {
   const theme = useTheme();
   const lovs = useSelector(state => state.lovs).lovs;
-  const {user} = useUser();
+  const { user } = useUser();
 
   const [showEditDelBtns, setShowEditDelBtns] = React.useState(false);
 
   const getIntervalName = id => {
-    const intervals = lovs['bmtlovs'].intervals;
+    const intervals = lovs['lovs'].intervals;
     return intervals.filter(interval => interval.id == id + 1)[0].name;
   };
 
   return (
-    <View style={{marginTop: 5}}>
-      <ScrollView contentContainerStyle={{rowGap: 10}}>
+    <View style={{ marginTop: 5 }}>
+      <ScrollView contentContainerStyle={{ rowGap: 10 }}>
         {campaignInfo.schedules.map((schedule, index) => (
           <GestureRecognizer
             key={index}
             // config={{velocityThreshold: 0.3, directionalOffsetThreshold: 80}}
             onSwipeRight={() => setShowEditDelBtns(false)}
-            onSwipeLeft={() => setShowEditDelBtns(true)}>
+            onSwipeLeft={() => setShowEditDelBtns(true)}
+          >
             <TouchableOpacity
               style={{
                 flexDirection: 'row',
@@ -50,16 +51,18 @@ const ScheduleList = ({
                 paddingVertical: 10,
                 backgroundColor: theme.cardBackColor,
                 borderRadius: 6,
-              }}>
-              <View style={{width: '48%', rowGap: 5}}>
+              }}
+            >
+              <View style={{ width: '48%', rowGap: 5 }}>
                 <View
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                  }}>
-                  <Text style={{color: theme.textColor}}>Interval Type</Text>
-                  <Text style={{color: theme.textColor}}>
+                  }}
+                >
+                  <Text style={{ color: theme.textColor }}>Interval Type</Text>
+                  <Text style={{ color: theme.textColor }}>
                     {getIntervalName(schedule.intervalTypeId)}
                   </Text>
                 </View>
@@ -68,9 +71,10 @@ const ScheduleList = ({
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                  }}>
-                  <Text style={{color: theme.textColor}}>Start Date</Text>
-                  <Text style={{color: theme.textColor}}>
+                  }}
+                >
+                  <Text style={{ color: theme.textColor }}>Start Date</Text>
+                  <Text style={{ color: theme.textColor }}>
                     {moment(schedule.startTime || schedule.StartTime).format(
                       'DD-MM-YYYY',
                     )}
@@ -81,23 +85,25 @@ const ScheduleList = ({
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                  }}>
-                  <Text style={{color: theme.textColor}}>Start Time</Text>
-                  <Text style={{color: theme.textColor}}>
+                  }}
+                >
+                  <Text style={{ color: theme.textColor }}>Start Time</Text>
+                  <Text style={{ color: theme.textColor }}>
                     {moment(schedule.startTime || schedule.StartTime).format(
                       'HH:mm',
                     )}
                   </Text>
                 </View>
               </View>
-              <View style={{width: '48%', rowGap: 5}}>
+              <View style={{ width: '48%', rowGap: 5 }}>
                 <View
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                  }}>
-                  <Text style={{color: theme.textColor}}>Networks</Text>
+                  }}
+                >
+                  <Text style={{ color: theme.textColor }}>Networks</Text>
                   <Text
                     style={{
                       color: theme.textColor,
@@ -108,11 +114,12 @@ const ScheduleList = ({
                       textAlign: 'center',
                       borderRadius: 50,
                       backgroundColor: theme.buttonBackColor,
-                    }}>
+                    }}
+                  >
                     {schedule.CompaignNetworks.length}
                   </Text>
 
-                  <Text style={{color: theme.textColor}}>
+                  <Text style={{ color: theme.textColor }}>
                     {schedule.budget.toFixed(2)} {lovs['orgs'][0].currencyName}
                   </Text>
                 </View>
@@ -121,10 +128,11 @@ const ScheduleList = ({
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                  }}>
-                  <Text style={{color: theme.textColor}}>Finish Date</Text>
+                  }}
+                >
+                  <Text style={{ color: theme.textColor }}>Finish Date</Text>
 
-                  <Text style={{color: theme.textColor}}>
+                  <Text style={{ color: theme.textColor }}>
                     {moment(schedule.finishTime || schedule.FinishTime).format(
                       'DD-MM-YYYY',
                     )}
@@ -135,9 +143,10 @@ const ScheduleList = ({
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                  }}>
-                  <Text style={{color: theme.textColor}}>Finish Time</Text>
-                  <Text style={{color: theme.textColor}}>
+                  }}
+                >
+                  <Text style={{ color: theme.textColor }}>Finish Time</Text>
+                  <Text style={{ color: theme.textColor }}>
                     {moment(schedule.finishTime || schedule.FinishTime).format(
                       'HH:mm',
                     )}
@@ -155,7 +164,8 @@ const ScheduleList = ({
                     alignSelf: 'flex-end',
                     width: Dimensions.get('screen').width - 20,
                     opacity: 0.7,
-                  }}>
+                  }}
+                >
                   <TouchableOpacity
                     onPress={() => setShowEditDelBtns(false)}
                     style={{
@@ -166,8 +176,9 @@ const ScheduleList = ({
                       borderRadius: 6,
                       alignItems: 'center',
                       justifyContent: 'center',
-                    }}>
-                    <Text style={{color: theme.textColor}}>Cancel</Text>
+                    }}
+                  >
+                    <Text style={{ color: theme.textColor }}>Cancel</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => {
@@ -200,8 +211,9 @@ const ScheduleList = ({
                       borderRadius: 6,
                       alignItems: 'center',
                       justifyContent: 'center',
-                    }}>
-                    <Text style={{color: theme.textColor}}>Update</Text>
+                    }}
+                  >
+                    <Text style={{ color: theme.textColor }}>Update</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => {
@@ -222,8 +234,9 @@ const ScheduleList = ({
                       borderRadius: 6,
                       alignItems: 'center',
                       justifyContent: 'center',
-                    }}>
-                    <Text style={{color: theme.textColor}}>Delete</Text>
+                    }}
+                  >
+                    <Text style={{ color: theme.textColor }}>Delete</Text>
                   </TouchableOpacity>
                 </View>
               )}
@@ -239,14 +252,19 @@ const ScheduleList = ({
           columnGap: 10,
           paddingHorizontal: 10,
           paddingVertical: 5,
-        }}>
-        <Text style={{color: theme.textColor, fontSize: 18, fontWeight: '600'}}>
+        }}
+      >
+        <Text
+          style={{ color: theme.textColor, fontSize: 18, fontWeight: '600' }}
+        >
           Campaign Messages: {'      '}
           {campaignInfo.schedules
             .map((s, i) => s.messageCount)
             .reduce((a, b) => a + b, 0)}
         </Text>
-        <Text style={{color: theme.textColor, fontSize: 18, fontWeight: '600'}}>
+        <Text
+          style={{ color: theme.textColor, fontSize: 18, fontWeight: '600' }}
+        >
           Campaign Budget: {'            '}
           {campaignInfo.schedules
             .map((s, i) => s.budget)

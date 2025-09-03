@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Dimensions,
   Easing,
@@ -7,14 +7,14 @@ import {
   Text,
   View,
 } from 'react-native';
-import {BarChart} from 'react-native-chart-kit';
-import {AnimatedCircularProgress} from 'react-native-circular-progress';
+import { BarChart } from 'react-native-chart-kit';
+import { AnimatedCircularProgress } from 'react-native-circular-progress';
 
 import Spinner from 'react-native-loading-spinner-overlay';
 import Icona from 'react-native-vector-icons/EvilIcons';
-import {useTheme} from '../../hooks/useTheme';
-import {useUser} from '../../hooks/useUser';
-import {colors} from '../../styles';
+import { useTheme } from '../../hooks/useTheme';
+import { useUser } from '../../hooks/useUser';
+import { colors } from '../../styles';
 import servicesettings from '../dataservices/servicesettings';
 
 export default function CampaignStatisticsScreen() {
@@ -24,7 +24,7 @@ export default function CampaignStatisticsScreen() {
   const [percent, setPercent] = useState(0);
   const [spinner, setSpinner] = useState(false);
   const [dataList, setDataList] = useState({
-    datasets: [{data: []}],
+    datasets: [{ data: [] }],
     labels: [],
     currentVol: 0,
     currMonthSales: 0,
@@ -54,7 +54,7 @@ export default function CampaignStatisticsScreen() {
         },
       };
       const response = await fetch(
-        `${servicesettings.baseuri}mybundlings`,
+        `${servicesettings.baseuri}admin/custombundlingdetails`,
         headerFetch,
       );
       const responseJson = await response.json();
@@ -70,7 +70,7 @@ export default function CampaignStatisticsScreen() {
         const percentage = calculateOverallSalesPercentageChange(stats);
         setPercent(percentage);
         setDataList({
-          datasets: [{data: data}],
+          datasets: [{ data: data }],
           labels: labels,
           currentVol: totalVol,
           currMonthSales: currMontSale,
@@ -162,39 +162,49 @@ export default function CampaignStatisticsScreen() {
   //   //console.disableYellowBox = true;
   // }
   return (
-    <View style={[styles.container, {backgroundColor: theme.backgroundColor}]}>
+    <View
+      style={[styles.container, { backgroundColor: theme.backgroundColor }]}
+    >
       <Spinner visible={spinner} textContent={'Loading...'} />
       <View style={styles.graphview}>
         <View style={styles.CircleDetailview}>
           <View
-            style={[styles.DetailView, {backgroundColor: theme.cardBackColor}]}>
+            style={[
+              styles.DetailView,
+              { backgroundColor: theme.cardBackColor },
+            ]}
+          >
             <View style={styles.DetailViewTitle}>
-              <Text style={[styles.ViewTitle, {color: theme.textColor}]}>
+              <Text style={[styles.ViewTitle, { color: theme.textColor }]}>
                 {' Current Volume'}
               </Text>
               <Icona
                 name={'arrow-up'}
-                style={[styles.ViewTitleIcon, {color: theme.tintColor}]}
+                style={[styles.ViewTitleIcon, { color: theme.tintColor }]}
               />
             </View>
-            <Text style={[styles.availableLable, {color: theme.textColor}]}>
+            <Text style={[styles.availableLable, { color: theme.textColor }]}>
               {parseFloat(dataList.currentVol)
                 .toFixed(1)
                 .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}
             </Text>
           </View>
           <View
-            style={[styles.DetailView, {backgroundColor: theme.cardBackColor}]}>
+            style={[
+              styles.DetailView,
+              { backgroundColor: theme.cardBackColor },
+            ]}
+          >
             <View style={styles.DetailViewTitle}>
-              <Text style={[styles.ViewTitle, {color: theme.textColor}]}>
+              <Text style={[styles.ViewTitle, { color: theme.textColor }]}>
                 {' Sales of current month'}
               </Text>
               <Icona
                 name={'arrow-up'}
-                style={[styles.ViewTitleIcon, {color: theme.tintColor}]}
+                style={[styles.ViewTitleIcon, { color: theme.tintColor }]}
               />
             </View>
-            <Text style={[styles.availableLable, {color: theme.textColor}]}>
+            <Text style={[styles.availableLable, { color: theme.textColor }]}>
               {parseFloat(dataList.currMonthSales)
                 .toFixed(1)
                 .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}
@@ -202,7 +212,8 @@ export default function CampaignStatisticsScreen() {
           </View>
         </View>
         <View
-          style={[styles.circleview, {backgroundColor: theme.cardBackColor}]}>
+          style={[styles.circleview, { backgroundColor: theme.cardBackColor }]}
+        >
           <AnimatedCircularProgress
             size={120}
             width={15}
@@ -214,9 +225,10 @@ export default function CampaignStatisticsScreen() {
             easing={Easing.out(Easing.ease)}
             fill={percent}
             tintColor={theme.buttonBackColor}
-            backgroundColor={theme.backgroundColor}>
+            backgroundColor={theme.backgroundColor}
+          >
             {fill => (
-              <Text style={{fontSize: 30, color: theme.textColor}}>
+              <Text style={{ fontSize: 30, color: theme.textColor }}>
                 {fill.toFixed(0) + '%'}
               </Text>
             )}
@@ -281,7 +293,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     paddingLeft: -40,
     shadowColor: 'black',
-    shadowOffset: {width: 4, height: 6},
+    shadowOffset: { width: 4, height: 6 },
     shadowOpacity: 0.8,
   },
   graphview: {
@@ -303,7 +315,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.PagePanelTab,
     elevation: 5,
     shadowColor: 'black',
-    shadowOffset: {width: 4, height: 6},
+    shadowOffset: { width: 4, height: 6 },
     shadowOpacity: 0.8,
   },
   DetailView: {
@@ -315,7 +327,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.PagePanelTab,
     elevation: 5,
     shadowColor: 'black',
-    shadowOffset: {width: 4, height: 6},
+    shadowOffset: { width: 4, height: 6 },
     shadowOpacity: 0.8,
   },
   Volumelable: {

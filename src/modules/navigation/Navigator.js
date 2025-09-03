@@ -81,22 +81,24 @@ function CustomDrawerContent(props) {
     setVisible(false);
     logoutUser();
     Toast.showWithGravity('Logout successfully', Toast.LONG, Toast.CENTER);
-    props.navigation.navigate('Login');
+    navigate('Login');
     global.img = 'data:image/png;base64,' + servicesettings.Default_User_Image;
     global.Email = '';
     global.Name = '';
   };
 
   function ProfileEdit() {
-    props.navigation.navigate('Profile');
+    navigate('Profile');
   }
 
   //<View style={styles.divider} />
   const userProfileImage = !isAuthenticated
     ? ''
-    : servicesettings.Imagebaseuri +
-      '/' +
-      user.avatar.replace(/\\/g, '/').replace(',', '').replace(' //', '');
+    : user?.avatar
+      ? servicesettings.Imagebaseuri +
+        '/' +
+        user.avatar.replace(/\\/g, '/').replace(',', '').replace(' //', '')
+      : '';
   return (
     <DrawerContentScrollView {...props} style={{ padding: 0 }}>
       {isAuthenticated && (
@@ -113,8 +115,8 @@ function CustomDrawerContent(props) {
           <View style={{ paddingLeft: 6 }}>
             <View style={{ flexDirection: 'row' }}>
               <Text style={[styles.userName, { color: theme.textColor }]}>
-                {user.firstname ||
-                  user.firstName + ' ' + `${user.lastname || user.lastName}`}
+                {user?.fullName ||
+                  user?.firstName + ' ' + `${user?.lastname || user?.lastName}`}
               </Text>
               <TouchableOpacity
                 onPress={() => ProfileEdit()}

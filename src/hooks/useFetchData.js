@@ -20,7 +20,7 @@ const useFetchData = apiConfigs => {
             const headerFetch = {
               method: method || 'POST',
               body: JSON.stringify(
-                endpoint == 'mybundlings'
+                endpoint == 'admin/custombundlingdetails'
                   ? { ...body, id: isAuthenticated ? user.orgid : 0 }
                   : body || {},
               ),
@@ -45,19 +45,22 @@ const useFetchData = apiConfigs => {
               throw error;
             }
             const result = await response.json();
-            console.log('result', result);
-
-            return { [endpoint]: result.data };
+            // console.log('result', result);
+            // console.log(endpoint?.split('/'));
+            return {
+              [endpoint === 'admin/custombundlingdetails'
+                ? 'mybundlings'
+                : endpoint?.split?.('/')?.[1]]: result.data,
+            };
           }),
         );
-
         const mergedResults = results.reduce(
           (acc, result) => ({ ...acc, ...result }),
           {},
         );
         setData(mergedResults);
       } catch (err) {
-        // console.log(err);
+        console.log(err);
         setError(err.message);
       } finally {
         setLoading(false);
