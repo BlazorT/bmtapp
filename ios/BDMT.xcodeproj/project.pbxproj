@@ -3,39 +3,14 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		00E356F31AD99517003FC87E /* BDMTTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* BDMTTests.m */; };
 		0C80B921A6F3F58F76C31292 /* libPods-BDMT.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-BDMT.a */; };
-		0DEF2C3053D6464F89092418 /* Now-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = A3BB66B7044C48F2B8D06184 /* Now-Bold.otf */; };
-		12692EF347FB42B29CA01CF7 /* Now-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = 14205712C4F64ABFB5BC3E89 /* Now-Black.otf */; };
-		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		176AFA91C3C24DCBA712BCE8 /* fancypens.regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8C7B59AC29D647B99BCFBC50 /* fancypens.regular.ttf */; };
-		37C9965F61B7416B96DA0B49 /* Now-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 7B5C30C9D21B4B88ABB0730B /* Now-Medium.otf */; };
-		383C6EA42B6C404989F6FCEC /* Now-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = C12C576D35D1486B8901DE21 /* Now-Light.otf */; };
-		447848E937A6472BA5AC52C8 /* Lato-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 39DAB0F09F61479FB072BF8C /* Lato-Regular.ttf */; };
-		5442D984B40F4C99A02BFBD4 /* Lato-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8687CCAA630744DFAD178603 /* Lato-BoldItalic.ttf */; };
-		5707B22E03124581B70D7879 /* NowAlt-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = AC380D1576014CF8AA59B83C /* NowAlt-Light.otf */; };
-		583109186D784F5197BB03E2 /* Lato-Semibold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 74F12CBE4E5F4D5DBC4A51C7 /* Lato-Semibold.ttf */; };
-		6296FE5D65254E77B9613153 /* Lato-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 419AB2CB2F1F4B4B82C9DF81 /* Lato-Thin.ttf */; };
-		663131CA25EE4FBA9011D9C9 /* Now-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = B3F5B1D7388345BCB3E7A36D /* Now-Regular.otf */; };
-		7699B88040F8A987B510C191 /* libPods-BDMT-BDMTTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-BDMT-BDMTTests.a */; };
-		7A6F5263AC06445FB65AEB1E /* NowAlt-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = D9E140A7FE844FC78293D226 /* NowAlt-Regular.otf */; };
+		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		910B75A1F85B4DDE80CB4B85 /* NowAlt-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 3DB72D34B57F416287B12768 /* NowAlt-Bold.otf */; };
-		98A3DF429D8548CC8F8D45ED /* NowAlt-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = 1DAD0C7788A340BEB7E8995A /* NowAlt-Black.otf */; };
-		CA926AF6036C471AAADC77F9 /* Lato-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5813D4CFC4AD496D9748F5DA /* Lato-Italic.ttf */; };
-		CBD27C90D8C64A12B43B65B0 /* Lato-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3B2814EFBBE64485B0FCE780 /* Lato-Bold.ttf */; };
-		CDCBAA810260406E8305CA91 /* Lato-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7D0590616980439EBB9A1635 /* Lato-Light.ttf */; };
-		DFA15B3A107F4E8084B283A9 /* NowAlt-Thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = FA7051AAF08F4CDF9D1360DF /* NowAlt-Thin.otf */; };
-		E07952F0DDA6439EBF321CE7 /* Now-Thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = F83650B9BA474BF0AA51FA33 /* Now-Thin.otf */; };
-		E6FF40DC053243239EE5BDEB /* Lato-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B4DEC6C6904241B1917E1DE8 /* Lato-Medium.ttf */; };
-		E8920F8505A6417F94B73D18 /* Lato-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1FD7A8E2BBBE49098E6A6603 /* Lato-LightItalic.ttf */; };
-		FA78FCBAAF69441DACD1231E /* NowAlt-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9EAEA85026F74DA991AAB632 /* NowAlt-Medium.otf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,57 +24,20 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		00E356EE1AD99517003FC87E /* BDMTTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BDMTTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		00E356F21AD99517003FC87E /* BDMTTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BDMTTests.m; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* BDMT.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BDMT.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = BDMT/AppDelegate.h; sourceTree = "<group>"; };
-		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = BDMT/AppDelegate.mm; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = BDMT/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = BDMT/Info.plist; sourceTree = "<group>"; };
-		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = BDMT/main.m; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = BDMT/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		14205712C4F64ABFB5BC3E89 /* Now-Black.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Now-Black.otf"; path = "../assets/fonts/Now-Black.otf"; sourceTree = "<group>"; };
-		19F6CBCC0A4E27FBF8BF4A61 /* libPods-BDMT-BDMTTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BDMT-BDMTTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		1DAD0C7788A340BEB7E8995A /* NowAlt-Black.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NowAlt-Black.otf"; path = "../assets/fonts/NowAlt-Black.otf"; sourceTree = "<group>"; };
-		1FD7A8E2BBBE49098E6A6603 /* Lato-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-LightItalic.ttf"; path = "../assets/fonts/Lato-LightItalic.ttf"; sourceTree = "<group>"; };
-		39DAB0F09F61479FB072BF8C /* Lato-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Regular.ttf"; path = "../assets/fonts/Lato-Regular.ttf"; sourceTree = "<group>"; };
-		3B2814EFBBE64485B0FCE780 /* Lato-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Bold.ttf"; path = "../assets/fonts/Lato-Bold.ttf"; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-BDMT.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BDMT.debug.xcconfig"; path = "Target Support Files/Pods-BDMT/Pods-BDMT.debug.xcconfig"; sourceTree = "<group>"; };
-		3DB72D34B57F416287B12768 /* NowAlt-Bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NowAlt-Bold.otf"; path = "../assets/fonts/NowAlt-Bold.otf"; sourceTree = "<group>"; };
-		419AB2CB2F1F4B4B82C9DF81 /* Lato-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Thin.ttf"; path = "../assets/fonts/Lato-Thin.ttf"; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-BDMT.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BDMT.release.xcconfig"; path = "Target Support Files/Pods-BDMT/Pods-BDMT.release.xcconfig"; sourceTree = "<group>"; };
-		5813D4CFC4AD496D9748F5DA /* Lato-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Italic.ttf"; path = "../assets/fonts/Lato-Italic.ttf"; sourceTree = "<group>"; };
-		5B7EB9410499542E8C5724F5 /* Pods-BDMT-BDMTTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BDMT-BDMTTests.debug.xcconfig"; path = "Target Support Files/Pods-BDMT-BDMTTests/Pods-BDMT-BDMTTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-BDMT.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BDMT.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		74F12CBE4E5F4D5DBC4A51C7 /* Lato-Semibold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Semibold.ttf"; path = "../assets/fonts/Lato-Semibold.ttf"; sourceTree = "<group>"; };
-		7B5C30C9D21B4B88ABB0730B /* Now-Medium.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Now-Medium.otf"; path = "../assets/fonts/Now-Medium.otf"; sourceTree = "<group>"; };
-		7D0590616980439EBB9A1635 /* Lato-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Light.ttf"; path = "../assets/fonts/Lato-Light.ttf"; sourceTree = "<group>"; };
+		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = BDMT/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = BDMT/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		8687CCAA630744DFAD178603 /* Lato-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-BoldItalic.ttf"; path = "../assets/fonts/Lato-BoldItalic.ttf"; sourceTree = "<group>"; };
-		89C6BE57DB24E9ADA2F236DE /* Pods-BDMT-BDMTTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BDMT-BDMTTests.release.xcconfig"; path = "Target Support Files/Pods-BDMT-BDMTTests/Pods-BDMT-BDMTTests.release.xcconfig"; sourceTree = "<group>"; };
-		8C7B59AC29D647B99BCFBC50 /* fancypens.regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = fancypens.regular.ttf; path = ../assets/fonts/fancypens.regular.ttf; sourceTree = "<group>"; };
-		9EAEA85026F74DA991AAB632 /* NowAlt-Medium.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NowAlt-Medium.otf"; path = "../assets/fonts/NowAlt-Medium.otf"; sourceTree = "<group>"; };
-		A3BB66B7044C48F2B8D06184 /* Now-Bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Now-Bold.otf"; path = "../assets/fonts/Now-Bold.otf"; sourceTree = "<group>"; };
-		AC380D1576014CF8AA59B83C /* NowAlt-Light.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NowAlt-Light.otf"; path = "../assets/fonts/NowAlt-Light.otf"; sourceTree = "<group>"; };
-		B3F5B1D7388345BCB3E7A36D /* Now-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Now-Regular.otf"; path = "../assets/fonts/Now-Regular.otf"; sourceTree = "<group>"; };
-		B4DEC6C6904241B1917E1DE8 /* Lato-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Medium.ttf"; path = "../assets/fonts/Lato-Medium.ttf"; sourceTree = "<group>"; };
-		C12C576D35D1486B8901DE21 /* Now-Light.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Now-Light.otf"; path = "../assets/fonts/Now-Light.otf"; sourceTree = "<group>"; };
-		D9E140A7FE844FC78293D226 /* NowAlt-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NowAlt-Regular.otf"; path = "../assets/fonts/NowAlt-Regular.otf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		F83650B9BA474BF0AA51FA33 /* Now-Thin.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Now-Thin.otf"; path = "../assets/fonts/Now-Thin.otf"; sourceTree = "<group>"; };
-		FA7051AAF08F4CDF9D1360DF /* NowAlt-Thin.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NowAlt-Thin.otf"; path = "../assets/fonts/NowAlt-Thin.otf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		00E356EB1AD99517003FC87E /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				7699B88040F8A987B510C191 /* libPods-BDMT-BDMTTests.a in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		13B07F8C1A680F5B00A75B9A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -111,15 +49,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		00E356EF1AD99517003FC87E /* BDMTTests */ = {
-			isa = PBXGroup;
-			children = (
-				00E356F21AD99517003FC87E /* BDMTTests.m */,
-				00E356F01AD99517003FC87E /* Supporting Files */,
-			);
-			path = BDMTTests;
-			sourceTree = "<group>";
-		};
 		00E356F01AD99517003FC87E /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
@@ -131,12 +60,10 @@
 		13B07FAE1A68108700A75B9A /* BDMT */ = {
 			isa = PBXGroup;
 			children = (
-				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
-				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
+				761780EC2CA45674006654EE /* AppDelegate.swift */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
-				13B07FB71A68108700A75B9A /* main.m */,
 				13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */,
 			);
 			name = BDMT;
@@ -147,7 +74,6 @@
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				5DCACB8F33CDC322A6C60F78 /* libPods-BDMT.a */,
-				19F6CBCC0A4E27FBF8BF4A61 /* libPods-BDMT-BDMTTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -164,11 +90,9 @@
 			children = (
 				13B07FAE1A68108700A75B9A /* BDMT */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
-				00E356EF1AD99517003FC87E /* BDMTTests */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
-				CDBF9C1FE0634CF58DA7783F /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -179,7 +103,6 @@
 			isa = PBXGroup;
 			children = (
 				13B07F961A680F5B00A75B9A /* BDMT.app */,
-				00E356EE1AD99517003FC87E /* BDMTTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -189,65 +112,13 @@
 			children = (
 				3B4392A12AC88292D35C810B /* Pods-BDMT.debug.xcconfig */,
 				5709B34CF0A7D63546082F79 /* Pods-BDMT.release.xcconfig */,
-				5B7EB9410499542E8C5724F5 /* Pods-BDMT-BDMTTests.debug.xcconfig */,
-				89C6BE57DB24E9ADA2F236DE /* Pods-BDMT-BDMTTests.release.xcconfig */,
 			);
 			path = Pods;
-			sourceTree = "<group>";
-		};
-		CDBF9C1FE0634CF58DA7783F /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				14205712C4F64ABFB5BC3E89 /* Now-Black.otf */,
-				A3BB66B7044C48F2B8D06184 /* Now-Bold.otf */,
-				C12C576D35D1486B8901DE21 /* Now-Light.otf */,
-				7B5C30C9D21B4B88ABB0730B /* Now-Medium.otf */,
-				B3F5B1D7388345BCB3E7A36D /* Now-Regular.otf */,
-				F83650B9BA474BF0AA51FA33 /* Now-Thin.otf */,
-				1DAD0C7788A340BEB7E8995A /* NowAlt-Black.otf */,
-				3DB72D34B57F416287B12768 /* NowAlt-Bold.otf */,
-				AC380D1576014CF8AA59B83C /* NowAlt-Light.otf */,
-				9EAEA85026F74DA991AAB632 /* NowAlt-Medium.otf */,
-				D9E140A7FE844FC78293D226 /* NowAlt-Regular.otf */,
-				FA7051AAF08F4CDF9D1360DF /* NowAlt-Thin.otf */,
-				8C7B59AC29D647B99BCFBC50 /* fancypens.regular.ttf */,
-				3B2814EFBBE64485B0FCE780 /* Lato-Bold.ttf */,
-				8687CCAA630744DFAD178603 /* Lato-BoldItalic.ttf */,
-				5813D4CFC4AD496D9748F5DA /* Lato-Italic.ttf */,
-				7D0590616980439EBB9A1635 /* Lato-Light.ttf */,
-				1FD7A8E2BBBE49098E6A6603 /* Lato-LightItalic.ttf */,
-				B4DEC6C6904241B1917E1DE8 /* Lato-Medium.ttf */,
-				39DAB0F09F61479FB072BF8C /* Lato-Regular.ttf */,
-				74F12CBE4E5F4D5DBC4A51C7 /* Lato-Semibold.ttf */,
-				419AB2CB2F1F4B4B82C9DF81 /* Lato-Thin.ttf */,
-			);
-			name = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		00E356ED1AD99517003FC87E /* BDMTTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "BDMTTests" */;
-			buildPhases = (
-				A55EABD7B0C7F3A422A6CC61 /* [CP] Check Pods Manifest.lock */,
-				00E356EA1AD99517003FC87E /* Sources */,
-				00E356EB1AD99517003FC87E /* Frameworks */,
-				00E356EC1AD99517003FC87E /* Resources */,
-				C59DA0FBD6956966B86A3779 /* [CP] Embed Pods Frameworks */,
-				F6A41C54EA430FDDC6A6ED99 /* [CP] Copy Pods Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				00E356F51AD99517003FC87E /* PBXTargetDependency */,
-			);
-			name = BDMTTests;
-			productName = BDMTTests;
-			productReference = 00E356EE1AD99517003FC87E /* BDMTTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 		13B07F861A680F5B00A75B9A /* BDMT */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "BDMT" */;
@@ -277,17 +148,13 @@
 			attributes = {
 				LastUpgradeCheck = 1210;
 				TargetAttributes = {
-					00E356ED1AD99517003FC87E = {
-						CreatedOnToolsVersion = 6.2;
-						TestTargetID = 13B07F861A680F5B00A75B9A;
-					};
 					13B07F861A680F5B00A75B9A = {
 						LastSwiftMigration = 1120;
 					};
 				};
 			};
 			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "BDMT" */;
-			compatibilityVersion = "Xcode 14.0";
+			compatibilityVersion = "Xcode 12.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -300,7 +167,6 @@
 			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* BDMT */,
-				00E356ED1AD99517003FC87E /* BDMTTests */,
 			);
 		};
 /* End PBXProject section */
@@ -319,28 +185,6 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
-				12692EF347FB42B29CA01CF7 /* Now-Black.otf in Resources */,
-				0DEF2C3053D6464F89092418 /* Now-Bold.otf in Resources */,
-				383C6EA42B6C404989F6FCEC /* Now-Light.otf in Resources */,
-				37C9965F61B7416B96DA0B49 /* Now-Medium.otf in Resources */,
-				663131CA25EE4FBA9011D9C9 /* Now-Regular.otf in Resources */,
-				E07952F0DDA6439EBF321CE7 /* Now-Thin.otf in Resources */,
-				98A3DF429D8548CC8F8D45ED /* NowAlt-Black.otf in Resources */,
-				910B75A1F85B4DDE80CB4B85 /* NowAlt-Bold.otf in Resources */,
-				5707B22E03124581B70D7879 /* NowAlt-Light.otf in Resources */,
-				FA78FCBAAF69441DACD1231E /* NowAlt-Medium.otf in Resources */,
-				7A6F5263AC06445FB65AEB1E /* NowAlt-Regular.otf in Resources */,
-				DFA15B3A107F4E8084B283A9 /* NowAlt-Thin.otf in Resources */,
-				176AFA91C3C24DCBA712BCE8 /* fancypens.regular.ttf in Resources */,
-				CBD27C90D8C64A12B43B65B0 /* Lato-Bold.ttf in Resources */,
-				5442D984B40F4C99A02BFBD4 /* Lato-BoldItalic.ttf in Resources */,
-				CA926AF6036C471AAADC77F9 /* Lato-Italic.ttf in Resources */,
-				CDCBAA810260406E8305CA91 /* Lato-Light.ttf in Resources */,
-				E8920F8505A6417F94B73D18 /* Lato-LightItalic.ttf in Resources */,
-				E6FF40DC053243239EE5BDEB /* Lato-Medium.ttf in Resources */,
-				447848E937A6472BA5AC52C8 /* Lato-Regular.ttf in Resources */,
-				583109186D784F5197BB03E2 /* Lato-Semibold.ttf in Resources */,
-				6296FE5D65254E77B9613153 /* Lato-Thin.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -380,28 +224,6 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BDMT/Pods-BDMT-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		A55EABD7B0C7F3A422A6CC61 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-BDMT-BDMTTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
 		C38B50BA6285516D6DCD4F65 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -424,23 +246,6 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		C59DA0FBD6956966B86A3779 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-BDMT-BDMTTests/Pods-BDMT-BDMTTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-BDMT-BDMTTests/Pods-BDMT-BDMTTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BDMT-BDMTTests/Pods-BDMT-BDMTTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		E235C05ADACE081382539298 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -458,40 +263,14 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BDMT/Pods-BDMT-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		F6A41C54EA430FDDC6A6ED99 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-BDMT-BDMTTests/Pods-BDMT-BDMTTests-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-BDMT-BDMTTests/Pods-BDMT-BDMTTests-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BDMT-BDMTTests/Pods-BDMT-BDMTTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		00E356EA1AD99517003FC87E /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				00E356F31AD99517003FC87E /* BDMTTests.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		13B07F871A680F5B00A75B9A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
-				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				761780ED2CA45674006654EE /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -506,71 +285,16 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		00E356F61AD99517003FC87E /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5B7EB9410499542E8C5724F5 /* Pods-BDMT-BDMTTests.debug.xcconfig */;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = BDMTTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				OTHER_LDFLAGS = (
-					"-ObjC",
-					"-lc++",
-					"$(inherited)",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BDMT.app/BDMT";
-			};
-			name = Debug;
-		};
-		00E356F71AD99517003FC87E /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 89C6BE57DB24E9ADA2F236DE /* Pods-BDMT-BDMTTests.release.xcconfig */;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				COPY_PHASE_STRIP = NO;
-				INFOPLIST_FILE = BDMTTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				OTHER_LDFLAGS = (
-					"-ObjC",
-					"-lc++",
-					"$(inherited)",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BDMT.app/BDMT";
-			};
-			name = Release;
-		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3B4392A12AC88292D35C810B /* Pods-BDMT.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = SL4ZTU3VV2;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = BDMT/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = BDMT;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -581,9 +305,8 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.blazor.bdmt;
+				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = BDMT;
-				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -596,13 +319,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = SL4ZTU3VV2;
 				INFOPLIST_FILE = BDMT/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = BDMT;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -613,9 +332,8 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.blazor.bdmt;
+				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = BDMT;
-				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -654,7 +372,7 @@
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -670,7 +388,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",
@@ -682,7 +400,6 @@
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
@@ -691,13 +408,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
-				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
-				USE_HERMES = true;
 			};
 			name = Debug;
 		};
@@ -734,7 +445,7 @@
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -743,7 +454,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",
@@ -754,7 +465,6 @@
 					"\"$(inherited)\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
@@ -763,13 +473,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
-				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
-				USE_HERMES = true;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -777,15 +481,6 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "BDMTTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				00E356F61AD99517003FC87E /* Debug */,
-				00E356F71AD99517003FC87E /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "BDMT" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

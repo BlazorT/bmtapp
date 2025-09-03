@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {
   Dimensions,
   Image,
@@ -8,62 +8,74 @@ import {
   View,
 } from 'react-native';
 import VersionCheck from 'react-native-version-check';
-import {useTheme} from '../../hooks/useTheme';
-import {colors, fonts} from '../../styles';
+import { useTheme } from '../../hooks/useTheme';
+import { colors, fonts } from '../../styles';
+
+const { width, height } = Dimensions.get('window');
+
+const fontSize = height > 800 || width > 800 ? 16 : 13; // Adjust threshold and sizes as desired
+const isTablet = Math.min(width, height) >= 600;
+
 export default function AboutScreen(props) {
-  const [AppVersion, setAppVersion] = useState('');
   const theme = useTheme();
-  useEffect(() => {
-    const version = VersionCheck.getCurrentVersion();
-    setAppVersion(version);
-  }, []);
-  //***************************************************** View ********************************************************************//
+  const AppVersion = VersionCheck.getCurrentVersion();
   return (
-    <View style={[styles.container, {backgroundColor: theme.backgroundColor}]}>
+    <View
+      style={[styles.container, { backgroundColor: theme.backgroundColor }]}
+    >
       <View style={styles.componentsSection}>
         <Image
           style={styles.logo}
           source={require('../../../assets/images/BDMT.png')}
         />
       </View>
-      <View style={{paddingBottom: 5}}>
-        <Text style={[styles.headertitle, {color: theme.textColor}]}>
+      <View style={{ paddingBottom: 5 }}>
+        <Text style={[styles.headertitle, { color: theme.textColor }]}>
           Who We Are?
         </Text>
-        <Text style={[styles.header, {color: theme.textColor}]}>
+        <Text style={[styles.header, { color: theme.textColor }]}>
           BMT is advertisement app
         </Text>
       </View>
       <View style={styles.BottomView}>
-        <Text style={{color: theme.textColor, fontSize: 22}}>
+        <Text style={{ color: theme.textColor, fontSize: 22 }}>
           ✆{' '}
           <TouchableOpacity>
-            <Text style={[styles.ContactNo, {color: theme.textColor}]}>
+            <Text style={[styles.ContactNo, { color: theme.textColor }]}>
               +923337069742
             </Text>
           </TouchableOpacity>
         </Text>
-        <Text style={[styles.link, {color: theme.textColor}]}>
+        <Text style={[styles.link, { color: theme.textColor }]}>
           {' '}
           www.blazortech.com
         </Text>
       </View>
-      <View style={{paddingBottom: 5}}>
-        <Text style={{color: theme.textColor}}>
+      <View style={{ paddingBottom: 5 }}>
+        <Text style={{ color: theme.textColor }}>
           {'Version ' + (AppVersion == '' ? '2.5' : AppVersion)}
         </Text>
       </View>
-      <View style={{paddingBottom: 5}}>
+      <View style={{ paddingBottom: 5 }}>
         <Text
           ellipsizeMode="tail"
-          style={[styles.Paragraph, {color: theme.textColor}]}>
+          style={[
+            styles.Paragraph,
+            {
+              textAlign: isTablet ? 'auto' : 'justify',
+              lineHeight: fontSize * 1.7,
+              letterSpacing: 0.1,
+              fontSize, // Apply responsive font size
+              color: theme.textColor,
+            },
+          ]}
+        >
           Blazor Media Toolkit Campaign plays nice with others and integrates
-          with over 700 apps and services like
-          whatsapp,facebook,tweeter,messenger,youtube etc. Effective, seamless
-          and continued presence in global world to increase product rating and
-          sales. BMT can run media compaign on the following platforms,
-          whatsapp, sms, email, facebook, linkedIn, twitter, Instagram. Its
-          powered with integrable plugins.
+          with over 700 apps and services like whatsapp, facebook, tweeter,
+          messenger, youtube etc. Effective, seamless and continued presence in
+          global world to increase product rating and sales. BMT can run media
+          compaign on the following platforms, whatsapp, sms, email, facebook,
+          linkedIn, twitter, Instagram. Its powered with integrable plugins.
         </Text>
       </View>
     </View>

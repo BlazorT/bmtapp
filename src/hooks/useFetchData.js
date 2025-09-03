@@ -1,13 +1,13 @@
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import servicesettings from '../modules/dataservices/servicesettings';
-import {useSelector} from 'react-redux';
-import {useUser} from './useUser';
+import { useSelector } from 'react-redux';
+import { useUser } from './useUser';
 
 const useFetchData = apiConfigs => {
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const {user, isAuthenticated} = useUser();
+  const { user, isAuthenticated } = useUser();
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -15,13 +15,13 @@ const useFetchData = apiConfigs => {
         setError(null);
         const results = await Promise.all(
           apiConfigs.map(async config => {
-            const {endpoint, method, body} = config;
+            const { endpoint, method, body } = config;
 
             const headerFetch = {
               method: method || 'POST',
               body: JSON.stringify(
                 endpoint == 'mybundlings'
-                  ? {...body, id: isAuthenticated ? user.orgid : 0}
+                  ? { ...body, id: isAuthenticated ? user.orgid : 0 }
                   : body || {},
               ),
               headers: {
@@ -30,24 +30,34 @@ const useFetchData = apiConfigs => {
                 Authorization: servicesettings.AuthorizationKey,
               },
             };
-
+            // console.log('headerFetch', headerFetch);
             const response = await fetch(
               `${servicesettings.baseuri}${endpoint}`,
               headerFetch,
             );
-            const result = await response.json();
-            // console.log('result', result);
+            // console.log('response', response);
 
-            return {[endpoint]: result.data};
+            if (!response.ok) {
+              const error = new Error(
+                `HTTP error! Status: ${response.status}, Message: ${response.statusText}`,
+              );
+              error.status = response.status; // Attach status to the error object
+              throw error;
+            }
+            const result = await response.json();
+            console.log('result', result);
+
+            return { [endpoint]: result.data };
           }),
         );
 
         const mergedResults = results.reduce(
-          (acc, result) => ({...acc, ...result}),
+          (acc, result) => ({ ...acc, ...result }),
           {},
         );
         setData(mergedResults);
       } catch (err) {
+        // console.log(err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -56,7 +66,7 @@ const useFetchData = apiConfigs => {
     fetchData();
   }, [isAuthenticated]);
 
-  return {data, loading, error};
+  return { data, loading, error };
 };
 
 export default useFetchData;

@@ -10,7 +10,7 @@ import {useSelector} from 'react-redux';
 import moment from 'moment';
 import servicesettings from '../../modules/dataservices/servicesettings';
 import {useNavigation} from '@react-navigation/native';
-import PushNotification from 'react-native-push-notification';
+import notifee, {AndroidImportance} from '@notifee/react-native';
 
 const CampaignSchedule = ({
   campaignInfo,
@@ -212,24 +212,28 @@ const CampaignSchedule = ({
       }
     }
   };
-  const localNotification = (title, message) => {
-    const key = Date.now().toString(); // Key must be unique everytime
-    PushNotification.createChannel(
-      {
-        channelId: key, // (required)
-        channelName: 'Local messasge', // (required)
-        channelDescription: 'Notification for Local message', // (optional) default: undefined.
-        importance: 4, // (optional) default: 4. Int value of the Android notification importance
-        vibrate: true, // (optional) default: true. Creates the default vibration patten if true.
-      },
-      created => console.log(`createChannel returned '${created}'`), // (optional) callback returns whether the channel was created, false means it already existed.
-    );
-    PushNotification.localNotification({
-      channelId: key, //this must be same with channelid in createchannel
+  const localNotification = async (title, message) => {
+    const channelId = `channel_${Date.now().toString()}`; // Unique channel ID
+
+    // Create a channel (required for Android)
+    await notifee.createChannel({
+      id: channelId,
+      name: 'Local Message Channel',
+      description: 'Notification channel for local messages',
+      importance: AndroidImportance.HIGH, // Equivalent to importance: 4 in PushNotification
+      vibration: true,
+    });
+
+    // Display a notification
+    await notifee.displayNotification({
       title: title,
-      message: message,
+      body: message,
+      android: {
+        channelId: channelId, // Link to the created channel
+      },
     });
   };
+
   return (
     <View style={{marginTop: 5}}>
       <View

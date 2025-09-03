@@ -1,5 +1,5 @@
 import messaging from '@react-native-firebase/messaging';
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import {
   Dimensions,
   Image,
@@ -8,22 +8,22 @@ import {
   View,
 } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
-import PushNotification from 'react-native-push-notification';
 import Video from 'react-native-video';
-import {useDispatch} from 'react-redux';
-import {Text} from '../../components/StyledText';
+import { useDispatch } from 'react-redux';
+import { Text } from '../../components/StyledText';
 import useFetchData from '../../hooks/useFetchData';
-import {useTheme} from '../../hooks/useTheme';
-import {useUser} from '../../hooks/useUser';
-import {setLovs} from '../../redux/features/bmtLovs/lovsSlice';
-import {colors} from '../../styles';
+import { useTheme } from '../../hooks/useTheme';
+import { useUser } from '../../hooks/useUser';
+import { setLovs } from '../../redux/features/bmtLovs/lovsSlice';
+import { colors } from '../../styles';
+import { StatusBar } from 'react-native';
 const NetworkFailed = require('../../../assets/images/BDMT.png');
 const mycampaignIcon = require('../../../assets/images/drawer/mycampaign.png');
 const compaign = require('../../../assets/images/drawer/compaign.png');
 
 const apiConfigs = [
   {
-    endpoint: 'orgs',
+    endpoint: 'Blazorapi/orgs',
     method: 'POST',
     body: {
       Id: 0,
@@ -32,7 +32,7 @@ const apiConfigs = [
     },
   },
   {
-    endpoint: 'bmtlovs',
+    endpoint: 'Common/lovs',
     method: 'POST',
     body: {
       orgId: 0,
@@ -48,41 +48,41 @@ const apiConfigs = [
       status: 1,
     },
   },
+  // {
+  //   endpoint: 'Common/mybundlings',
+  //   method: 'POST',
+  //   body: {
+  //     orgId: 0,
+  //     email: '',
+  //     firstName: '',
+  //     lastName: '',
+  //     roleName: '',
+  //     address: '',
+  //     stateName: '',
+  //     userCode: '',
+  //     title: '',
+  //     traceId: 0,
+  //     status: 1,
+  //   },
+  // },
   {
-    endpoint: 'mybundlings',
-    method: 'POST',
-    body: {
-      orgId: 0,
-      email: '',
-      firstName: '',
-      lastName: '',
-      roleName: '',
-      address: '',
-      stateName: '',
-      userCode: '',
-      title: '',
-      traceId: 0,
-      status: 1,
-    },
-  },
-  {
-    endpoint: 'bmtcities',
+    endpoint: 'Common/cities',
     method: 'POST',
     body: {},
   },
 ];
 export default function HomeScreen(props) {
   const theme = useTheme();
-  const {isAuthenticated} = useUser();
+  const { isAuthenticated } = useUser();
 
-  const {data, loading, error} = useFetchData(apiConfigs);
+  const { data, loading, error } = useFetchData(apiConfigs);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
     // console.log(user.orgid);
     if (!loading && !error) {
-      // console.log(JSON.stringify(data));
+      console.log(data);
       dispatch(setLovs(data));
     }
   }, [loading, data]);
@@ -100,29 +100,9 @@ export default function HomeScreen(props) {
     global.UpdateCampaign = 0;
   }
 
-  const localNotification = () => {
-    const key = Date.now().toString(); // Key must be unique everytime
-    PushNotification.createChannel(
-      {
-        channelId: key, // (required)
-        channelName: 'Local messasge', // (required)
-        channelDescription: 'Notification for Local message', // (optional) default: undefined.
-        importance: 4, // (optional) default: 4. Int value of the Android notification importance
-        vibrate: true, // (optional) default: true. Creates the default vibration patten if true.
-      },
-      created => console.log(`createChannel returned '${created}'`), // (optional) callback returns whether the channel was created, false means it already existed.
-    );
-    PushNotification.localNotification({
-      channelId: key, //this must be same with channelid in createchannel
-      title: 'Local Message',
-      message: 'Local message !!',
-    });
-  };
-
   return (
     <View style={styles.container}>
       <Spinner visible={loading} textContent={'Loading...'} />
-
       {global.NetworkFailed == 1 ? (
         <View style={styles.networkfailed}>
           <Image
@@ -143,7 +123,8 @@ export default function HomeScreen(props) {
         />
       )}
       <View
-        style={[styles.Buttoncontainer, {backgroundColor: theme.navBarBack}]}>
+        style={[styles.Buttoncontainer, { backgroundColor: theme.navBarBack }]}
+      >
         {!isAuthenticated ? (
           <View style={styles.Buttoncontainer2}>
             {global.NetworkFailed == 1 ? null : (
@@ -152,16 +133,18 @@ export default function HomeScreen(props) {
                   onPress={() => LoginClick()}
                   style={[
                     styles.loginbutton,
-                    {backgroundColor: theme.buttonBackColor},
-                  ]}>
+                    { backgroundColor: theme.buttonBackColor },
+                  ]}
+                >
                   <Text style={styles.buttonText}>LOGIN</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => opensignup()}
                   style={[
                     styles.loginbutton,
-                    {backgroundColor: theme.buttonBackColor},
-                  ]}>
+                    { backgroundColor: theme.buttonBackColor },
+                  ]}
+                >
                   <Text style={styles.buttonText}>SIGNUP</Text>
                 </TouchableOpacity>
               </View>
@@ -173,8 +156,9 @@ export default function HomeScreen(props) {
               onPress={() => AddCampaignClick()}
               style={[
                 styles.Buy_SellButton,
-                {backgroundColor: theme.buttonBackColor},
-              ]}>
+                { backgroundColor: theme.buttonBackColor },
+              ]}
+            >
               <View style={styles.Buy_SellView1}>
                 <Image source={compaign} style={styles.BuyVehicleImg} />
               </View>
@@ -185,7 +169,8 @@ export default function HomeScreen(props) {
                     Platform.OS === 'ios'
                       ? styles.Buy_SellHeadDetailIOS
                       : styles.Buy_SellHeadDetail
-                  }>
+                  }
+                >
                   Settings & management of media campaigns
                 </Text>
               </View>
@@ -194,8 +179,9 @@ export default function HomeScreen(props) {
               onPress={() => props.navigation.navigate('Campaigns')}
               style={[
                 styles.Buy_SellButton,
-                {backgroundColor: theme.buttonBackColor},
-              ]}>
+                { backgroundColor: theme.buttonBackColor },
+              ]}
+            >
               <View style={styles.Buy_SellView}>
                 <Image
                   resizeMode="contain"
@@ -210,7 +196,8 @@ export default function HomeScreen(props) {
                     Platform.OS === 'ios'
                       ? styles.Buy_SellHeadDetailIOS
                       : styles.Buy_SellHeadDetail,
-                  ]}>
+                  ]}
+                >
                   My compaigns, see status of campaigns
                 </Text>
               </View>
@@ -225,11 +212,12 @@ export default function HomeScreen(props) {
             alignItems: 'center',
             width: 100 + '%',
             justifyContent: 'center',
-          }}>
-          <Text style={[styles.copyrirgttext, {color: theme.textColor}]}>
+          }}
+        >
+          <Text style={[styles.copyrirgttext, { color: theme.textColor }]}>
             {'\u00A9'} Blazor Technologies Inc,{' '}
           </Text>
-          <Text style={[styles.copyrirgttext, {color: theme.textColor}]}>
+          <Text style={[styles.copyrirgttext, { color: theme.textColor }]}>
             {new Date().getFullYear()}
           </Text>
         </View>
@@ -368,7 +356,7 @@ const styles = StyleSheet.create({
     height: 34 + '%',
     backgroundColor: colors.PagePanelTab,
     shadowColor: '#000',
-    shadowOffset: {width: 4, height: 6},
+    shadowOffset: { width: 4, height: 6 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
     borderTopLeftRadius: 8,

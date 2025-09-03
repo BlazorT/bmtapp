@@ -1,6 +1,6 @@
 import CheckBox from '@react-native-community/checkbox';
 import NetInfo from '@react-native-community/netinfo';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Dimensions,
   Image,
@@ -11,18 +11,18 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {launchCamera} from 'react-native-image-picker';
+import { launchCamera } from 'react-native-image-picker';
 import Spinner from 'react-native-loading-spinner-overlay';
-import {PERMISSIONS, RESULTS, check, request} from 'react-native-permissions';
+import { PERMISSIONS, RESULTS, check, request } from 'react-native-permissions';
 import SearchableDropdown from 'react-native-searchable-dropdown';
 import Toast from 'react-native-simple-toast';
-import {useSelector} from 'react-redux';
-import {Button, Dropdown, TextInput} from '../../components';
+import { useSelector } from 'react-redux';
+import { Button, Dropdown, TextInput } from '../../components';
 import Alert from '../../components/Alert';
 import TermsAndConditions from '../../components/Terms&Conditions';
-import {useTheme} from '../../hooks/useTheme';
-import {useUser} from '../../hooks/useUser';
-import {colors} from '../../styles';
+import { useTheme } from '../../hooks/useTheme';
+import { useUser } from '../../hooks/useUser';
+import { colors } from '../../styles';
 import servicesettings from '../dataservices/servicesettings';
 const DownArrowIcon = require('../../../assets/images/downarrow.png');
 const UpArrowIcon = require('../../../assets/images/uparrow.png');
@@ -31,7 +31,7 @@ const profileIcon = require('../../../assets/images/defaultUser.png');
 export default function OrganizationAddEditScreen(props) {
   //console.log('props new ' + JSON.stringify(props));
   const theme = useTheme();
-  const {user, isAuthenticated} = useUser();
+  const { user, isAuthenticated } = useUser();
   const lovs = useSelector(state => state.lovs).lovs;
   const [spinner, setspinner] = useState(false);
   const [img, setimg] = useState('');
@@ -129,7 +129,7 @@ export default function OrganizationAddEditScreen(props) {
     setsuccessVisible(false);
     EditClick();
   };
-  const containerStyle = {padding: 0, minHeight: 46, maxHeight: 200};
+  const containerStyle = { padding: 0, minHeight: 46, maxHeight: 200 };
   //const containerStyle={padding: 0,backgroundColor: colors.InputControlBackColor,color:'white', borderRadius:6, marginTop:12,}
   const textInputStyle = {
     fontSize: 14,
@@ -267,7 +267,7 @@ export default function OrganizationAddEditScreen(props) {
       },
     };
 
-    fetch(servicesettings.baseuri + 'orgs', headerFetch)
+    fetch(servicesettings.baseuri + 'Blazorapi/orgs', headerFetch)
       .then(response => response.json())
       .then(responseJson => {
         console.log('body orgs  =>', headerFetch.body);
@@ -545,19 +545,19 @@ export default function OrganizationAddEditScreen(props) {
     <View
       style={[
         styles.MainViewContainer,
-        {backgroundColor: theme.backgroundColor},
-      ]}>
+        { backgroundColor: theme.backgroundColor },
+      ]}
+    >
       <ScrollView>
         <Spinner
           visible={spinner}
           textContent={'Submitting...'}
-          textStyle={{color: '#FFF'}}
+          textStyle={{ color: '#FFF' }}
         />
         <TermsAndConditions
           modalVisible={modalVisible}
-          TermsAndConditionsClose={
-            TermsAndConditionsClose
-          }></TermsAndConditions>
+          TermsAndConditionsClose={TermsAndConditionsClose}
+        ></TermsAndConditions>
         <Alert
           massagetype={'warning'}
           hide={hidepermission}
@@ -565,7 +565,8 @@ export default function OrganizationAddEditScreen(props) {
           Visible={permissionVisible}
           alerttype={'confirmation'}
           Title={'Confirmation'}
-          Massage={'"BDMT" Would like to access camera ?'}></Alert>
+          Massage={'"BDMT" Would like to access camera ?'}
+        ></Alert>
         <Alert
           massagetype={'warning'}
           hide={hide}
@@ -573,7 +574,8 @@ export default function OrganizationAddEditScreen(props) {
           Visible={confirmationVisible}
           alerttype={'confirmation'}
           Title={'Confirmation'}
-          Massage={'Do you want to discard ?'}></Alert>
+          Massage={'Do you want to discard ?'}
+        ></Alert>
         <Alert
           massagetype={'warning'}
           hide={Edithide}
@@ -581,31 +583,35 @@ export default function OrganizationAddEditScreen(props) {
           Visible={EditconfirmationVisible}
           alerttype={'confirmation'}
           Title={'Confirmation'}
-          Massage={'Do you want to Edit ?'}></Alert>
+          Massage={'Do you want to Edit ?'}
+        ></Alert>
         <Alert
           massagetype={'warning'}
           OK={successhide}
           Visible={successVisible}
           alerttype={'error'}
           Title={'Submit'}
-          Massage={'Organization registered successfully'}></Alert>
+          Massage={'Organization registered successfully'}
+        ></Alert>
         <Alert
           massagetype={'error'}
           OK={OK}
           Visible={errorVisible}
           alerttype={'error'}
           Title={'Error'}
-          Massage={'Email already has been taken!'}></Alert>
+          Massage={'Email already has been taken!'}
+        ></Alert>
         <View style={styles.ProfileImgView}>
           <TouchableOpacity
             selectable={true}
-            onPress={() => requestCameraPermission()}>
+            onPress={() => requestCameraPermission()}
+          >
             {EditImgURI == '' ? (
               <Image
                 source={
                   img == '' || img == undefined
                     ? profileIcon
-                    : {uri: 'data:image/png;base64,' + img[0].base64}
+                    : { uri: 'data:image/png;base64,' + img[0].base64 }
                 }
                 style={styles.ProfileStyle}
               />
@@ -613,8 +619,8 @@ export default function OrganizationAddEditScreen(props) {
               <Image
                 source={
                   img == '' || img == undefined
-                    ? {uri: EditImgURI}
-                    : {uri: 'data:image/png;base64,' + img[0].base64}
+                    ? { uri: EditImgURI }
+                    : { uri: 'data:image/png;base64,' + img[0].base64 }
                 }
                 style={styles.ProfileStyle}
                 onError={() => {
@@ -656,7 +662,7 @@ export default function OrganizationAddEditScreen(props) {
           style={[
             customestyleEmail,
             Email == '' ? styles.mandatoryControl : null,
-            {backgroundColor: theme.inputBackColor, color: theme.textColor},
+            { backgroundColor: theme.inputBackColor, color: theme.textColor },
           ]}
           keyboardType="email-address"
           placeholder="Email"
@@ -669,7 +675,7 @@ export default function OrganizationAddEditScreen(props) {
           style={[
             customestyleContact,
             Contact == '' ? styles.mandatoryControl : null,
-            {backgroundColor: theme.inputBackColor, color: theme.textColor},
+            { backgroundColor: theme.inputBackColor, color: theme.textColor },
           ]}
           value={Contact}
           onChangeText={value => setContact(value)}
@@ -688,7 +694,7 @@ export default function OrganizationAddEditScreen(props) {
           style={[
             styles.sectionStyleTitle,
             orgAddress == '' ? styles.mandatoryControl : null,
-            {backgroundColor: theme.inputBackColor, color: theme.textColor},
+            { backgroundColor: theme.inputBackColor, color: theme.textColor },
           ]}
           value={orgAddress}
           onChangeText={value => setOrgAddress(value)}
@@ -705,8 +711,9 @@ export default function OrganizationAddEditScreen(props) {
             justifyContent: 'space-between',
             alignItems: 'center',
             // width: Dimensions.get('window').width - 30,
-          }}>
-          <View style={{width: 53 + '%'}}>
+          }}
+        >
+          <View style={{ width: 53 + '%' }}>
             <Dropdown
               placeholderTextColor={theme.placeholderColor}
               onSelect={value => SelectCurrencyClick(value)}
@@ -714,7 +721,10 @@ export default function OrganizationAddEditScreen(props) {
               style={[
                 styles.PickerstyleRow,
                 styles.mandatoryControl,
-                {backgroundColor: theme.inputBackColor, color: theme.textColor},
+                {
+                  backgroundColor: theme.inputBackColor,
+                  color: theme.textColor,
+                },
               ]}
               items={CurrencyItem}
               placeholder="Select Currency..."
@@ -723,12 +733,15 @@ export default function OrganizationAddEditScreen(props) {
               maxLength={5}
             />
           </View>
-          <View style={{width: 43 + '%'}}>
+          <View style={{ width: 43 + '%' }}>
             <TextInput
               placeholderTextColor={theme.placeholderColor}
               style={[
                 styles.StrengthView,
-                {backgroundColor: theme.inputBackColor, color: theme.textColor},
+                {
+                  backgroundColor: theme.inputBackColor,
+                  color: theme.textColor,
+                },
               ]}
               value={strength}
               onChangeText={value => setStrength(value)}
@@ -751,10 +764,12 @@ export default function OrganizationAddEditScreen(props) {
               textAlign: 'center',
               justifyContent: 'space-between',
             }}
-            onPress={() => functionCombined()}>
+            onPress={() => functionCombined()}
+          >
             <View>
               <Text
-                style={[styles.AttachmentHeading, {color: theme.textColor}]}>
+                style={[styles.AttachmentHeading, { color: theme.textColor }]}
+              >
                 {' '}
                 Campaign Audience
               </Text>
@@ -764,7 +779,7 @@ export default function OrganizationAddEditScreen(props) {
                 source={UpArrowIcon}
                 style={[
                   styles.AttachmentHeadingIcon,
-                  {tintColor: theme.tintColor},
+                  { tintColor: theme.tintColor },
                 ]}
               />
             </View>
@@ -778,10 +793,12 @@ export default function OrganizationAddEditScreen(props) {
                 marginTop: 10,
                 justifyContent: 'space-between',
               }}
-              onPress={() => functionCombined()}>
+              onPress={() => functionCombined()}
+            >
               <View>
                 <Text
-                  style={[styles.AttachmentHeading, {color: theme.textColor}]}>
+                  style={[styles.AttachmentHeading, { color: theme.textColor }]}
+                >
                   {' '}
                   Campaign Audience
                 </Text>
@@ -791,7 +808,7 @@ export default function OrganizationAddEditScreen(props) {
                   source={DownArrowIcon}
                   style={[
                     styles.AttachmentHeadingIcon,
-                    {tintColor: theme.tintColor},
+                    { tintColor: theme.tintColor },
                   ]}
                 />
               </View>
@@ -801,8 +818,9 @@ export default function OrganizationAddEditScreen(props) {
                 <View
                   style={[
                     styles.modalSearchView,
-                    {backgroundColor: theme.backgroundColor},
-                  ]}>
+                    { backgroundColor: theme.backgroundColor },
+                  ]}
+                >
                   <View style={styles.centeredfilterView}>
                     <View style={styles.sectionStylenew} marginTop={8}>
                       <Dropdown
@@ -826,8 +844,9 @@ export default function OrganizationAddEditScreen(props) {
                     <View
                       style={[
                         styles.textSearchabled,
-                        {backgroundColor: theme.inputBackColor},
-                      ]}>
+                        { backgroundColor: theme.inputBackColor },
+                      ]}
+                    >
                       <SearchableDropdown
                         onTextChange={text => textChangeClick(text)}
                         onItemSelect={item => SearchableClick(item)}
@@ -870,10 +889,12 @@ export default function OrganizationAddEditScreen(props) {
               textAlign: 'center',
               justifyContent: 'space-between',
             }}
-            onPress={() => SocialControlEnabledClick()}>
+            onPress={() => SocialControlEnabledClick()}
+          >
             <View>
               <Text
-                style={[styles.AttachmentHeading, {color: theme.textColor}]}>
+                style={[styles.AttachmentHeading, { color: theme.textColor }]}
+              >
                 {' '}
                 Social Control
               </Text>
@@ -883,7 +904,7 @@ export default function OrganizationAddEditScreen(props) {
                 source={UpArrowIcon}
                 style={[
                   styles.AttachmentHeadingIcon,
-                  {tintColor: theme.tintColor},
+                  { tintColor: theme.tintColor },
                 ]}
               />
             </View>
@@ -892,7 +913,8 @@ export default function OrganizationAddEditScreen(props) {
           <View
             style={{
               width: '100%',
-            }}>
+            }}
+          >
             <TouchableOpacity
               style={{
                 textAlign: 'center',
@@ -900,10 +922,12 @@ export default function OrganizationAddEditScreen(props) {
                 marginTop: 10,
                 justifyContent: 'space-between',
               }}
-              onPress={() => SocialControlEnabledClick()}>
+              onPress={() => SocialControlEnabledClick()}
+            >
               <View style={{}}>
                 <Text
-                  style={[styles.AttachmentHeading, {color: theme.textColor}]}>
+                  style={[styles.AttachmentHeading, { color: theme.textColor }]}
+                >
                   {' '}
                   Social Control
                 </Text>
@@ -913,7 +937,7 @@ export default function OrganizationAddEditScreen(props) {
                   source={DownArrowIcon}
                   style={[
                     styles.AttachmentHeadingIcon,
-                    {tintColor: theme.tintColor},
+                    { tintColor: theme.tintColor },
                   ]}
                 />
               </View>
@@ -999,7 +1023,7 @@ export default function OrganizationAddEditScreen(props) {
           selectedIndex={statusSelectedId}
           style={[
             styles.Pickerstyle,
-            {backgroundColor: theme.inputBackColor, color: theme.textColor},
+            { backgroundColor: theme.inputBackColor, color: theme.textColor },
           ]}
           items={statusItem}
           placeholder="Select Status..."
@@ -1011,32 +1035,36 @@ export default function OrganizationAddEditScreen(props) {
         <View style={styles.termsView}>
           <CheckBox
             value={selectterms}
-            style={{height: 18, width: 18, margin: 5}}
+            style={{ height: 18, width: 18, margin: 5 }}
             onValueChange={value => setselectterms(value)}
             lineWidth={1.0}
             boxType={'square'}
-            tintColors={{true: theme.selectedCheckBox}}
+            tintColors={{ true: theme.selectedCheckBox }}
           />
-          <Text style={[styles.lable, {color: theme.selectedCheckBox}]}>
+          <Text style={[styles.lable, { color: theme.selectedCheckBox }]}>
             Agree with,
           </Text>
           <TouchableOpacity onPress={() => setModalVisible(true)}>
-            <Text style={[styles.lable2, {color: theme.selectedCheckBox}]}>
+            <Text style={[styles.lable2, { color: theme.selectedCheckBox }]}>
               {' '}
               Terms & Conditions (EULA)
             </Text>
           </TouchableOpacity>
         </View>
         <View
-          style={[styles.ButtonView, {backgroundColor: theme.backgroundColor}]}>
+          style={[
+            styles.ButtonView,
+            { backgroundColor: theme.backgroundColor },
+          ]}
+        >
           <Button
-            style={[styles.btnCancel, {flexBasis: '47%'}]}
+            style={[styles.btnCancel, { flexBasis: '47%' }]}
             bgColor={theme.buttonBackColor}
             caption="Cancel"
             onPress={() => CancelClick()}
           />
           <Button
-            style={[styles.btnSubmit, {flexBasis: '47%'}]}
+            style={[styles.btnSubmit, { flexBasis: '47%' }]}
             bgColor={theme.buttonBackColor}
             caption="Submit"
             onPress={() => submit()}

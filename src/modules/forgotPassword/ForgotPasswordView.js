@@ -1,5 +1,5 @@
 import Base64 from 'Base64';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Dimensions,
@@ -11,18 +11,18 @@ import {
 } from 'react-native';
 import Toast from 'react-native-simple-toast';
 import Icon from 'react-native-vector-icons/Entypo';
-import {Button} from '../../components';
+import { Button } from '../../components';
 import Alert from '../../components/Alert';
 import Model from '../../components/Model';
-import {colors} from '../../styles';
+import { colors } from '../../styles';
 import servicesettings from '../dataservices/servicesettings';
-import {useTheme} from '../../hooks/useTheme';
-import {useUser} from '../../hooks/useUser';
+import { useTheme } from '../../hooks/useTheme';
+import { useUser } from '../../hooks/useUser';
 import Spinner from 'react-native-loading-spinner-overlay';
 const Password = require('../../../assets/images/icons/Password1.png');
 export default function ForgotPasswordScreen(props) {
   const theme = useTheme();
-  const {user, isAuthenticated} = useUser();
+  const { user, isAuthenticated } = useUser();
 
   const [Email, setEmail] = useState('');
   const [Emailfocus, setEmailFocus] = useState(false);
@@ -150,7 +150,7 @@ export default function ForgotPasswordScreen(props) {
       headers: blazorHeader,
     };
     // headers: blazorHeader
-    fetch(servicesettings.baseuri + 'forgot', headerFetch)
+    fetch(servicesettings.baseuri + 'common/forgot', headerFetch)
       .then(response => response.json())
       .then(responseJson => {
         console.log('responseJson', responseJson, {
@@ -201,7 +201,7 @@ export default function ForgotPasswordScreen(props) {
       return;
     }
     if (OTP.trim() != GenratedOTP) {
-      console.log({GenratedOTP, OTP});
+      console.log({ GenratedOTP, OTP });
       Toast.showWithGravity(
         'Security code invalid or expired',
         Toast.LONG,
@@ -258,7 +258,7 @@ export default function ForgotPasswordScreen(props) {
       }),
       headers: blazorHeader,
     };
-    fetch(servicesettings.baseuri + 'forgot', headerFetch)
+    fetch(servicesettings.baseuri + 'common/forgot', headerFetch)
       .then(response => response.json())
       .then(responseJson => {
         console.log(responseJson, {
@@ -299,11 +299,13 @@ export default function ForgotPasswordScreen(props) {
   };
 
   return (
-    <View style={[styles.container, {backgroundColor: theme.backgroundColor}]}>
+    <View
+      style={[styles.container, { backgroundColor: theme.backgroundColor }]}
+    >
       <Spinner
         visible={spinner}
         textContent={'Submitting...'}
-        textStyle={{color: theme.textColor}}
+        textStyle={{ color: theme.textColor }}
         color={theme.textColor}
       />
       <Alert
@@ -313,7 +315,8 @@ export default function ForgotPasswordScreen(props) {
         Visible={Visible}
         alerttype={'confirmation'}
         Title={'Confirmation'}
-        Massage={'Do you want to close ?'}></Alert>
+        Massage={'Do you want to close ?'}
+      ></Alert>
       <Alert
         massagetype={'warning'}
         hide={changehide}
@@ -321,11 +324,12 @@ export default function ForgotPasswordScreen(props) {
         Visible={Visiblechange}
         alerttype={'confirmation'}
         Title={'Confirmation'}
-        Massage={'Do you want to reset password ?'}></Alert>
+        Massage={'Do you want to reset password ?'}
+      ></Alert>
       <ScrollView>
         <View style={styles.textContainer}>
           <View style={styles.sectionStyleText}>
-            <Text style={[styles.lblOTP, {color: theme.textColor}]}>
+            <Text style={[styles.lblOTP, { color: theme.textColor }]}>
               Enter your email and we'll send you a security code to get back
               into your account.
             </Text>
@@ -335,15 +339,19 @@ export default function ForgotPasswordScreen(props) {
               disableemail == true
                 ? customestyleEmail
                 : customestyleEmaildisable,
-              {backgroundColor: theme.inputBackColor},
-            ]}>
+              { backgroundColor: theme.inputBackColor },
+            ]}
+          >
             <TextInput
               placeholderTextColor={theme.placeholderColor}
               style={[
                 disableemail == true
-                  ? [styles.Text, {color: theme.textColor}]
+                  ? [styles.Text, { color: theme.textColor }]
                   : styles.Textdisable,
-                {backgroundColor: theme.inputBackColor, color: theme.textColor},
+                {
+                  backgroundColor: theme.inputBackColor,
+                  color: theme.textColor,
+                },
               ]}
               editable={disableemail}
               placeholder="Registration email address"
@@ -357,7 +365,7 @@ export default function ForgotPasswordScreen(props) {
             />
           </View>
           <Button
-            style={[styles.btnverify, {flexBasis: '47%'}]}
+            style={[styles.btnverify, { flexBasis: '47%' }]}
             bgColor={theme.buttonBackColor}
             caption="Send Code"
             onPress={() => SendEmail()}
@@ -374,8 +382,9 @@ export default function ForgotPasswordScreen(props) {
                   disablecode == true
                     ? customestyleOTP
                     : customestyleOTPdisable,
-                  {backgroundColor: theme.inputBackColor},
-                ]}>
+                  { backgroundColor: theme.inputBackColor },
+                ]}
+              >
                 <TextInput
                   placeholderTextColor={theme.placeholderColor}
                   clearTextOnFocus={true}
@@ -384,7 +393,7 @@ export default function ForgotPasswordScreen(props) {
                     disablecode == true
                       ? styles.TextOTP
                       : styles.TextOTPdisable,
-                    {color: theme.textColor},
+                    { color: theme.textColor },
                   ]}
                   value={OTP}
                   onChangeText={value => setOTP(value)}
@@ -399,7 +408,7 @@ export default function ForgotPasswordScreen(props) {
                 />
               </View>
               <Button
-                style={[styles.btnverify, {flexBasis: '47%'}]}
+                style={[styles.btnverify, { flexBasis: '47%' }]}
                 bgColor={theme.buttonBackColor}
                 caption="Verify"
                 onPress={() => CheckVerify()}
@@ -411,15 +420,16 @@ export default function ForgotPasswordScreen(props) {
               <View
                 style={[
                   customestylePassword,
-                  {backgroundColor: theme.inputBackColor},
-                ]}>
+                  { backgroundColor: theme.inputBackColor },
+                ]}
+              >
                 <Icon
                   name="lock"
-                  style={[styles.imageStyle, {color: theme.buttonBackColor}]}
+                  style={[styles.imageStyle, { color: theme.buttonBackColor }]}
                 />
                 <TextInput
                   placeholderTextColor={theme.placeholderColor}
-                  style={[styles.Text, {color: theme.textColor}]}
+                  style={[styles.Text, { color: theme.textColor }]}
                   value={Password}
                   onEndEditing={() => setPasswordFocus(false)}
                   onFocus={() => setPasswordFocus(true)}
@@ -434,15 +444,16 @@ export default function ForgotPasswordScreen(props) {
               <View
                 style={[
                   customestyleConfirmPassword,
-                  {backgroundColor: theme.inputBackColor},
-                ]}>
+                  { backgroundColor: theme.inputBackColor },
+                ]}
+              >
                 <Icon
                   name="lock"
-                  style={[styles.imageStyle, {color: theme.buttonBackColor}]}
+                  style={[styles.imageStyle, { color: theme.buttonBackColor }]}
                 />
                 <TextInput
                   placeholderTextColor={theme.placeholderColor}
-                  style={[styles.Text, {color: theme.textColor}]}
+                  style={[styles.Text, { color: theme.textColor }]}
                   value={ConfirmPassword}
                   onEndEditing={() => setConfirmPasswordFocus(false)}
                   onFocus={() => setConfirmPasswordFocus(true)}
@@ -456,13 +467,13 @@ export default function ForgotPasswordScreen(props) {
               </View>
               <View style={styles.ButtonView}>
                 <Button
-                  style={[styles.btnCancel, {flexBasis: '47%'}]}
+                  style={[styles.btnCancel, { flexBasis: '47%' }]}
                   bgColor={theme.buttonBackColor}
                   caption="Cancel"
                   onPress={() => CancelClick()}
                 />
                 <Button
-                  style={[styles.btnSubmit, {flexBasis: '47%'}]}
+                  style={[styles.btnSubmit, { flexBasis: '47%' }]}
                   bgColor={theme.buttonBackColor}
                   caption="Submit"
                   onPress={() => changeCancelClick()}

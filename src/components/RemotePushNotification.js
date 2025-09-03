@@ -1,10 +1,9 @@
-import React, {useEffect} from 'react';
-import {PermissionsAndroid, Platform} from 'react-native';
+import notifee, {AndroidColor, AndroidImportance} from '@notifee/react-native';
 import messaging from '@react-native-firebase/messaging';
-import firebase from '@react-native-firebase/app';
-import PushNotification from 'react-native-push-notification';
+import {useEffect} from 'react';
+import {PermissionsAndroid, Platform} from 'react-native';
 import DeviceInfo from 'react-native-device-info';
-import moment from 'moment';
+import NotificationSounds from 'react-native-notification-sounds';
 
 const RemotePushNotification = () => {
   useEffect(() => {
@@ -128,12 +127,24 @@ const RemotePushNotification = () => {
     return messaging().onNotificationOpenedApp;
   };
 
-  const localNotification = remoteMessage => {
+  const localNotification = async remoteMessage => {
     const key = Date.now().toString(); // Key must be unique every time
     const {title, body} = remoteMessage.notification;
     const {image} = remoteMessage.data;
     const sentTime = remoteMessage.sentTime;
     console.log('title', title, 'message', body, 'sentTime', sentTime);
+    const soundsList =
+      await NotificationSounds.getNotifications('notification');
+    await notifee.createChannel({
+      channelId: remoteMessage.messageId,
+      name: 'Local message',
+      sound: soundsList[0]?.url, // Check if soundsList[2] exists
+      lights: true,
+      vibration: true,
+      importance: AndroidImportance.HIGH,
+      lightColor: AndroidColor.RED,
+    });
+
     PushNotification.createChannel(
       {
         channelId: remoteMessage.messageId,
@@ -144,15 +155,25 @@ const RemotePushNotification = () => {
       },
       created => console.log(`createChannel returned '${created}'`),
     );
-    PushNotification.localNotification({
-      channelId: remoteMessage.messageId,
+
+    await notifee.displayNotification({
       title: title,
       message: body,
-      color: 'black',
-      // bigText: body, // (optional) default: "message" prop
-      bigPictureUrl: image,
-      subText: moment(sentTime).fromNow(),
-      actions: [`${moment(sentTime).fromNow()}`],
+      android: {
+        channelId: remoteMessage.messageId,
+        importance: AndroidImportance.HIGH,
+        smallIcon: 'ic_notification',
+        showTimestamp: true,
+        timestamp: Date.now(),
+        color: AndroidColor.RED,
+        lights: [AndroidColor.RED, 200, 300],
+        ...(image && {
+          largeIcon: image ?? '',
+        }),
+        pressAction: {
+          id: 'default',
+        },
+      },
     });
   };
 

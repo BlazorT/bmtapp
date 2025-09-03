@@ -1,7 +1,7 @@
 //import React from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Base64 from 'Base64';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Dimensions,
   Image,
@@ -16,11 +16,11 @@ import {
 import DeviceInfo from 'react-native-device-info';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Toast from 'react-native-simple-toast';
-import {Button} from '../../components';
+import { Button } from '../../components';
 import ContinueWithFacebook from '../../components/ContinueWithFacebook';
 import Model from '../../components/Model';
 import SignupWithFacebook from '../../components/SignupWithFacebook';
-import {colors} from '../../styles';
+import { colors } from '../../styles';
 import servicesettings from '../dataservices/servicesettings';
 const googleIcon = require('../../../assets/images/icons/google.png');
 
@@ -29,15 +29,15 @@ import {
   statusCodes,
 } from '@react-native-google-signin/google-signin';
 
-import {LoginManager} from 'react-native-fbsdk-next';
+import { LoginManager } from 'react-native-fbsdk-next';
 import Icons from 'react-native-vector-icons/AntDesign';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {useTheme} from '../../hooks/useTheme';
-import {useUser} from '../../hooks/useUser';
+import { useTheme } from '../../hooks/useTheme';
+import { useUser } from '../../hooks/useUser';
 
 export default function LoginScreen(props) {
   const theme = useTheme();
-  const {loginUser} = useUser();
+  const { loginUser } = useUser();
   const [spinner, setspinner] = useState(false);
 
   const profilelogo = require('../../../assets/images/BDMT.png');
@@ -82,6 +82,7 @@ export default function LoginScreen(props) {
       setmodalVisiblecamera(true);
     }
   }, []);
+
   const Signup = async () => {
     global.SocialMedia = 1;
     try {
@@ -89,9 +90,9 @@ export default function LoginScreen(props) {
       await GoogleSignin.hasPlayServices({
         showPlayServicesUpdateDialog: true,
       });
-      const userInfo = await GoogleSignin.signIn();
-
-      console.log('User Info --> ', JSON.stringify(userInfo));
+      let userInfo = await GoogleSignin.signIn();
+      userInfo = userInfo.data;
+      console.log('User Info --> ', userInfo);
 
       var givenName = userInfo.user.givenName;
       var name = userInfo.user.name;
@@ -170,7 +171,7 @@ export default function LoginScreen(props) {
     var headerFetch = {
       method: 'POST',
       body: JSON.stringify({
-        username: Email.trim(),
+        email: Email.trim(),
         password: Base64.btoa(Password.trim()),
         orgid: '1',
         subscriptionPackageId: 0,
@@ -184,8 +185,8 @@ export default function LoginScreen(props) {
     };
 
     console.log('headerFetch from login', JSON.stringify(headerFetch.body));
-
-    fetch(servicesettings.baseuri + 'authenticateorguser', headerFetch)
+    // authenticateorguser
+    fetch(servicesettings.baseuri + 'common/login', headerFetch)
       .then(response => response.json())
       .then(responseJson => {
         setspinner(false);
@@ -349,6 +350,7 @@ export default function LoginScreen(props) {
             Authorization: servicesettings.AuthorizationKey,
           },
         };
+        //
         console.log('useraccountwithlogin', DeviceInfo.getUniqueId());
         console.log(
           'ImageheaderFetch check image 532 ' +
@@ -430,7 +432,7 @@ export default function LoginScreen(props) {
                 username: responseJsonAdd.userName,
               };
 
-              console.log({responseJsonAdd, UserInfo});
+              console.log({ responseJsonAdd, UserInfo });
               loginUser(UserInfo);
 
               setspinner(false);
@@ -491,20 +493,23 @@ export default function LoginScreen(props) {
     setmodalVisiblecamera(false);
   }
   return (
-    <View style={[styles.container, {backgroundColor: theme.backgroundColor}]}>
+    <View
+      style={[styles.container, { backgroundColor: theme.backgroundColor }]}
+    >
       <View
-        resetScrollToCoords={{x: 0, y: 0}}
+        resetScrollToCoords={{ x: 0, y: 0 }}
         scrollEnabled={true}
-        extraScrollHeight={0}>
+        extraScrollHeight={0}
+      >
         <View style={styles.iconimage}>
-          <Image source={profilelogo} style={{width: 300, height: 100}} />
+          <Image source={profilelogo} style={{ width: 300, height: 100 }} />
         </View>
         <View style={styles.field}>
           <TextInput
             placeholderTextColor={theme.placeholderColor}
             style={[
               customestyleEmail,
-              {backgroundColor: theme.inputBackColor, color: theme.textColor},
+              { backgroundColor: theme.inputBackColor, color: theme.textColor },
             ]}
             contextMenuHidden={true}
             placeholder="Email/Username"
@@ -519,13 +524,17 @@ export default function LoginScreen(props) {
           <View
             style={[
               customestylePassword,
-              {backgroundColor: theme.inputBackColor},
-            ]}>
+              { backgroundColor: theme.inputBackColor },
+            ]}
+          >
             <TextInput
               placeholderTextColor={theme.placeholderColor}
               style={[
                 styles.passwordText,
-                {backgroundColor: theme.inputBackColor, color: theme.textColor},
+                {
+                  backgroundColor: theme.inputBackColor,
+                  color: theme.textColor,
+                },
               ]}
               contextMenuHidden={true}
               placeholder="Password"
@@ -558,7 +567,11 @@ export default function LoginScreen(props) {
         />
         <View style={styles.DividerRow}>
           <View
-            style={{flex: 1, height: 1, backgroundColor: colors.borderColorOr}}
+            style={{
+              flex: 1,
+              height: 1,
+              backgroundColor: colors.borderColorOr,
+            }}
           />
           <View>
             <Text
@@ -568,12 +581,17 @@ export default function LoginScreen(props) {
                 textAlign: 'center',
                 marginTop: -4,
                 color: colors.borderColorOr,
-              }}>
+              }}
+            >
               or
             </Text>
           </View>
           <View
-            style={{flex: 1, height: 1, backgroundColor: colors.borderColorOr}}
+            style={{
+              flex: 1,
+              height: 1,
+              backgroundColor: colors.borderColorOr,
+            }}
           />
         </View>
         {Platform.OS === 'android' && (
@@ -581,9 +599,13 @@ export default function LoginScreen(props) {
             <TouchableOpacity
               onPress={() => LoginWithGoogle()}
               style={[
-                [styles.btnfacebook, {backgroundColor: theme.buttonBackColor}],
-                {backgroundColor: theme.buttonBackColor},
-              ]}>
+                [
+                  styles.btnfacebook,
+                  { backgroundColor: theme.buttonBackColor },
+                ],
+                { backgroundColor: theme.buttonBackColor },
+              ]}
+            >
               <View style={styles.googleIconView}>
                 <Image source={googleIcon} style={styles.googleIcon} />
               </View>
@@ -592,7 +614,8 @@ export default function LoginScreen(props) {
                   Platform.OS === 'ios'
                     ? styles.textfacebookIOS
                     : styles.textfacebook
-                }>
+                }
+              >
                 Sign In With Google
               </Text>
             </TouchableOpacity>
@@ -601,10 +624,15 @@ export default function LoginScreen(props) {
         <ContinueWithFacebook
           PressContinue={PressContinue}
           FacebookmodalVisible={FacebookmodalVisible}
-          theme={theme}></ContinueWithFacebook>
+          theme={theme}
+        ></ContinueWithFacebook>
         <View style={styles.DividerRow}>
           <View
-            style={{flex: 1, height: 1, backgroundColor: colors.borderColorOr}}
+            style={{
+              flex: 1,
+              height: 1,
+              backgroundColor: colors.borderColorOr,
+            }}
           />
           <View>
             <Text
@@ -614,18 +642,24 @@ export default function LoginScreen(props) {
                 textAlign: 'center',
                 marginTop: -4,
                 color: colors.borderColorOr,
-              }}>
+              }}
+            >
               or
             </Text>
           </View>
           <View
-            style={{flex: 1, height: 1, backgroundColor: colors.borderColorOr}}
+            style={{
+              flex: 1,
+              height: 1,
+              backgroundColor: colors.borderColorOr,
+            }}
           />
         </View>
         <View style={styles.fieldView}>
           <View style={styles.MainView}>
             <TouchableOpacity
-              onPress={() => props.navigation.navigate('Forgot Password')}>
+              onPress={() => props.navigation.navigate('Forgot Password')}
+            >
               <Text style={styles.simpletext}> Forgot password? </Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => UserCreate()}>
@@ -634,19 +668,21 @@ export default function LoginScreen(props) {
           </View>
         </View>
         <View style={styles.field}>
-          <View style={{flexDirection: 'row'}}>
+          <View style={{ flexDirection: 'row' }}>
             <Text
               style={[
-                [styles.copyrirgttext, {color: theme.textColor}],
-                {color: theme.textColor},
-              ]}>
+                [styles.copyrirgttext, { color: theme.textColor }],
+                { color: theme.textColor },
+              ]}
+            >
               Powerd By Blazor Technologies Inc,{' '}
             </Text>
             <Text
               style={[
-                [styles.copyrirgttext, {color: theme.textColor}],
-                {color: theme.textColor},
-              ]}>
+                [styles.copyrirgttext, { color: theme.textColor }],
+                { color: theme.textColor },
+              ]}
+            >
               {new Date().getFullYear()}
             </Text>
           </View>
@@ -656,28 +692,31 @@ export default function LoginScreen(props) {
         animationType="fade"
         transparent={true}
         supportedOrientations={['portrait']}
-        visible={modalVisiblecamera}>
+        visible={modalVisiblecamera}
+      >
         <View
           style={[
             styles.ModalMainView,
-            {backgroundColor: theme.backgroundColor},
-          ]}>
+            { backgroundColor: theme.backgroundColor },
+          ]}
+        >
           <TouchableOpacity style={{}} onPress={() => closeSocialMediaModal()}>
             <Icons name={'close'} style={styles.CrossIcon} />
           </TouchableOpacity>
-          <View style={{alignItems: 'center', marginBottom: 34}}>
+          <View style={{ alignItems: 'center', marginBottom: 34 }}>
             <Text
               style={{
                 fontSize: 22,
                 fontWeight: '900',
                 fontFamily: 'sans-serif-medium',
                 color: theme.textColor,
-              }}>
+              }}
+            >
               Sign Up To BMT
             </Text>
           </View>
           <View style={styles.iconimage}>
-            <Image source={profilelogo} style={{width: 300, height: 100}} />
+            <Image source={profilelogo} style={{ width: 300, height: 100 }} />
           </View>
           <View style={styles.centeredView}>
             <View style={styles.signupWithEmailView}>
@@ -685,15 +724,17 @@ export default function LoginScreen(props) {
                 onPress={() => CreateUser()}
                 style={[
                   styles.btnfacebook,
-                  {backgroundColor: theme.buttonBackColor},
-                ]}>
+                  { backgroundColor: theme.buttonBackColor },
+                ]}
+              >
                 <Icon name={'envelope'} style={styles.IconEmail} />
                 <Text
                   style={
                     Platform.OS === 'ios'
                       ? styles.textfacebookIOS
                       : styles.textfacebook
-                  }>
+                  }
+                >
                   Sign Up With Email
                 </Text>
               </TouchableOpacity>
@@ -704,8 +745,9 @@ export default function LoginScreen(props) {
                   onPress={() => SignupWithGoogle()}
                   style={[
                     styles.btnfacebook,
-                    {backgroundColor: theme.buttonBackColor},
-                  ]}>
+                    { backgroundColor: theme.buttonBackColor },
+                  ]}
+                >
                   <View style={styles.googleIconView}>
                     <Image source={googleIcon} style={styles.googleIcon} />
                   </View>
@@ -714,7 +756,8 @@ export default function LoginScreen(props) {
                       Platform.OS === 'ios'
                         ? styles.textfacebookIOS
                         : styles.textfacebook
-                    }>
+                    }
+                  >
                     Sign Up With Google
                   </Text>
                 </TouchableOpacity>
@@ -723,23 +766,25 @@ export default function LoginScreen(props) {
             <SignupWithFacebook
               PressSignUp={PressSignUp}
               FacebookmodalVisible={FacebookmodalVisible}
-              theme={theme}></SignupWithFacebook>
+              theme={theme}
+            ></SignupWithFacebook>
           </View>
           <View style={styles.Bottomfield}>
             <TouchableOpacity
               onPress={() => ClickTerms_Condition()}
-              style={styles.termOfUseView}>
+              style={styles.termOfUseView}
+            >
               <Text style={styles.termOfUse}>
                 Agree with Terms & Conditions{' '}
               </Text>
             </TouchableOpacity>
           </View>
           <View style={styles.Bottomfield}>
-            <View style={{flexDirection: 'row'}}>
-              <Text style={[styles.copyrirgttext, {color: theme.textColor}]}>
+            <View style={{ flexDirection: 'row' }}>
+              <Text style={[styles.copyrirgttext, { color: theme.textColor }]}>
                 Powerd By Blazor Technologies Inc,{' '}
               </Text>
-              <Text style={[styles.copyrirgttext, {color: theme.textColor}]}>
+              <Text style={[styles.copyrirgttext, { color: theme.textColor }]}>
                 {new Date().getFullYear()}
               </Text>
             </View>
@@ -750,7 +795,7 @@ export default function LoginScreen(props) {
       <Spinner
         visible={spinner}
         textContent={'Loading...'}
-        textStyle={{color: '#FFF'}}
+        textStyle={{ color: '#FFF' }}
       />
     </View>
   );

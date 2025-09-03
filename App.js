@@ -1,12 +1,13 @@
-import {NavigationContainer} from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
-import {ActivityIndicator, StyleSheet, View} from 'react-native';
-import {Provider} from 'react-redux';
-import {persistStore} from 'redux-persist';
-import {PersistGate} from 'redux-persist/integration/react';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { Provider } from 'react-redux';
+import { persistStore } from 'redux-persist';
+import { PersistGate } from 'redux-persist/integration/react';
 import RemotePushNotification from './src/components/RemotePushNotification';
 import AppView from './src/modules/AppViewContainer';
 import store from './src/redux/store';
+import { StatusBar } from 'react-native';
 
 export default function App() {
   let persistor = persistStore(store);
@@ -19,7 +20,8 @@ export default function App() {
             <ActivityIndicator />
           </View>
         }
-        persistor={persistor}>
+        persistor={persistor}
+      >
         <NavigationContainer>
           <RemotePushNotification />
           <AppView />

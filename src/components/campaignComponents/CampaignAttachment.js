@@ -9,7 +9,8 @@ import pdfViewIcon from '../../../assets/images/pdfview.png';
 import MediaPickerModal from '../MediaPickerModal';
 import {PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import DocumentPicker from 'react-native-document-picker';
+import {pick, types} from '@react-native-documents/picker';
+
 import Video from 'react-native-video';
 
 const CampaignAttachment = ({handleCampaignInfo, campaignInfo}) => {
@@ -104,12 +105,13 @@ const CampaignAttachment = ({handleCampaignInfo, campaignInfo}) => {
 
   const pdfPicker = async () => {
     setIsMediaMdlOpen(false);
-    const response = await DocumentPicker.pick({
-      type: [DocumentPicker.types.pdf],
+    const pickResults = await pick({
+      allowMultiSelection: false,
+      type: [types.pdf],
     });
     if (response !== undefined || response !== '') {
       handleCampaignInfo('pdf', {
-        ...response[0],
+        ...pickResults[0],
         id: campaignInfo.pdf !== '' ? campaignInfo.pdf.Id : 0,
       });
     }

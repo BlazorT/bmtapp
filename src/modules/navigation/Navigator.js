@@ -3,10 +3,11 @@ import {
   DrawerItem,
   createDrawerNavigator,
 } from '@react-navigation/drawer';
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   Image,
   Platform,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -22,16 +23,19 @@ import mycampaignIcon from '../../../assets/images/drawer/mycampaign.png';
 import iconAbout from '../../../assets/images/drawer/pencil.png';
 import Logout from '../../../assets/images/pages/Logout.png';
 import Alert from '../../components/Alert';
-import {useTheme} from '../../hooks/useTheme';
-import {useUser} from '../../hooks/useUser';
-import {colors} from '../../styles';
+import { useTheme } from '../../hooks/useTheme';
+import { useUser } from '../../hooks/useUser';
+import { colors } from '../../styles';
 import servicesettings from '../dataservices/servicesettings';
 import NavigatorView from './RootNavigation';
+import { useNavigation } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
 
 const Drawer = createDrawerNavigator();
 function CustomDrawerContent(props) {
   const theme = useTheme();
-  const {user, isAuthenticated, logoutUser} = useUser();
+  const { navigate } = useNavigation();
+  const { user, isAuthenticated, logoutUser } = useUser();
   // console.log('user', user);
   const [Visible, setVisible] = useState(false);
   const [isImageError, setIsImageError] = useState(false);
@@ -94,27 +98,28 @@ function CustomDrawerContent(props) {
       '/' +
       user.avatar.replace(/\\/g, '/').replace(',', '').replace(' //', '');
   return (
-    <DrawerContentScrollView {...props} style={{padding: 0}}>
+    <DrawerContentScrollView {...props} style={{ padding: 0 }}>
       {isAuthenticated && (
         <View style={styles.avatarContainer}>
           <Image
             source={
               userProfileImage == '' || isImageError
                 ? userProfile
-                : {uri: userProfileImage}
+                : { uri: userProfileImage }
             }
             style={styles.avatar}
             onError={() => setIsImageError(true)}
           />
-          <View style={{paddingLeft: 6}}>
-            <View style={{flexDirection: 'row'}}>
-              <Text style={[styles.userName, {color: theme.textColor}]}>
+          <View style={{ paddingLeft: 6 }}>
+            <View style={{ flexDirection: 'row' }}>
+              <Text style={[styles.userName, { color: theme.textColor }]}>
                 {user.firstname ||
                   user.firstName + ' ' + `${user.lastname || user.lastName}`}
               </Text>
               <TouchableOpacity
                 onPress={() => ProfileEdit()}
-                style={{position: 'absolute', right: -10}}>
+                style={{ position: 'absolute', right: -10 }}
+              >
                 <Image
                   style={styles.EditIcon}
                   source={iconAbout}
@@ -122,7 +127,7 @@ function CustomDrawerContent(props) {
                 />
               </TouchableOpacity>
             </View>
-            <Text style={{color: theme.textColor}}>{user.email}</Text>
+            <Text style={{ color: theme.textColor }}>{user.email}</Text>
           </View>
         </View>
       )}
@@ -133,7 +138,8 @@ function CustomDrawerContent(props) {
         Visible={Visible}
         alerttype={'confirmation'}
         Title={'Confirmation'}
-        Massage={'Are you sure want to logout?'}></Alert>
+        Massage={'Are you sure want to logout?'}
+      ></Alert>
       {drawerData.map(
         (item, idx) =>
           item.condition && (
@@ -143,8 +149,9 @@ function CustomDrawerContent(props) {
                 <View
                   style={[
                     styles.menuLabelFlex,
-                    {borderBottomColor: theme.textColor},
-                  ]}>
+                    { borderBottomColor: theme.textColor },
+                  ]}
+                >
                   {item.name == 'About' ? (
                     <AntdIcon
                       name="infocirlceo"
@@ -159,15 +166,13 @@ function CustomDrawerContent(props) {
                       tintColor={theme.tintColor}
                     />
                   )}
-                  <Text style={[styles.menuTitle, {color: theme.textColor}]}>
+                  <Text style={[styles.menuTitle, { color: theme.textColor }]}>
                     {item.name}
                   </Text>
                 </View>
               )}
               onPress={() =>
-                item.name == 'Log Out'
-                  ? CancelClick()
-                  : props.navigation.navigate(item.name)
+                item.name == 'Log Out' ? CancelClick() : navigate(item.name)
               }
             />
           ),
@@ -178,18 +183,26 @@ function CustomDrawerContent(props) {
 
 export default function App() {
   const theme = useTheme();
+  const themeMode = useSelector(state => state.theme.mode);
   return (
-    <Drawer.Navigator
-      drawerContent={props => <CustomDrawerContent {...props} />}
-      screenOptions={{
-        drawerStyle: {
-          backgroundColor: theme.backgroundColor,
-          opacity: Platform.OS === 'ios' ? 1 : 0.7,
-        },
-        headerShown: false,
-      }}>
-      <Drawer.Screen name="Splashs" component={NavigatorView} />
-    </Drawer.Navigator>
+    <>
+      <StatusBar
+        // backgroundColor="#1D6D91" // Set your desired color here
+        barStyle={themeMode === 'dark' ? 'light-content' : 'dark-content'} // Adjust text/icon color for visibility
+      />
+      <Drawer.Navigator
+        drawerContent={props => <CustomDrawerContent {...props} />}
+        screenOptions={{
+          drawerStyle: {
+            backgroundColor: theme.backgroundColor,
+            opacity: Platform.OS === 'ios' ? 1 : 0.7,
+          },
+          headerShown: false,
+        }}
+      >
+        <Drawer.Screen name="Splashs" component={NavigatorView} />
+      </Drawer.Navigator>
+    </>
   );
 }
 const styles = StyleSheet.create({

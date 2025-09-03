@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, {Fragment, PureComponent} from 'react';
+import React, { Fragment, PureComponent } from 'react';
 import {
   Dimensions,
   StyleSheet,
@@ -15,12 +15,12 @@ import {
   Profile,
 } from 'react-native-fbsdk-next';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {colors} from '../styles';
+import { colors } from '../styles';
 const Picture = [];
 export default class ContinueWithFacebook extends PureComponent {
   constructor(props) {
     super(props);
-    this.state = {text: ''};
+    this.state = { text: '' };
     this.state = {
       modalVisiblecamera: false,
       modalVisible: false,
@@ -28,7 +28,7 @@ export default class ContinueWithFacebook extends PureComponent {
   }
   logoutWithFacebook = () => {
     LoginManager.logOut();
-    this.setState({userInfo: {}});
+    this.setState({ userInfo: {} });
   };
   getInfoFromToken = token => {
     const PROFILE_REQUEST_PARAMS = {
@@ -38,12 +38,12 @@ export default class ContinueWithFacebook extends PureComponent {
     };
     const profileRequest = new GraphRequest(
       '/me',
-      {token, parameters: PROFILE_REQUEST_PARAMS},
+      { token, parameters: PROFILE_REQUEST_PARAMS },
       (error, user) => {
         if (error) {
         } else {
           AsyncStorage.removeItem('SignupWithFacebookEmail');
-          this.setState({userInfo: user});
+          this.setState({ userInfo: user });
           // );
           // );
           var email_Token = {
@@ -64,7 +64,7 @@ export default class ContinueWithFacebook extends PureComponent {
     new GraphRequestManager().addRequest(profileRequest).start();
   };
   loginWithFacebook = () => {
-    LoginManager.setLoginBehavior('web_only');
+    LoginManager.setLoginBehavior('native_with_fallback');
     //LoginManager.setLoginBehavior("web_only");
     //global.Signup_LoginWithGoogle == 2;
     global.SocialMedia = 2;
@@ -123,9 +123,9 @@ export default class ContinueWithFacebook extends PureComponent {
   SendBackPage = () => {
     this.props.PressContinue();
   };
-  state = {userInfo: {}};
+  state = { userInfo: {} };
   render() {
-    const {modalVisible} = this.state;
+    const { modalVisible } = this.state;
     const vehicleImages = [];
     return (
       <Fragment>
@@ -135,15 +135,17 @@ export default class ContinueWithFacebook extends PureComponent {
               onPress={() => this.loginWithFacebook()}
               style={[
                 styles.btnfacebook,
-                {backgroundColor: this.props.theme.buttonBackColor},
-              ]}>
+                { backgroundColor: this.props.theme.buttonBackColor },
+              ]}
+            >
               <Icon name={'facebook'} style={styles.Iconfacebook} />
               <Text
                 style={
                   Platform.OS === 'ios'
                     ? styles.textfacebookIOS
                     : styles.textfacebook
-                }>
+                }
+              >
                 Sign In With Facebook
               </Text>
             </TouchableOpacity>

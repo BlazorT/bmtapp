@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Dimensions,
   FlatList,
@@ -16,23 +16,23 @@ import Toast from 'react-native-simple-toast';
 import Icons from 'react-native-vector-icons/FontAwesome';
 import Video from 'react-native-video';
 import RNFetchBlob from 'rn-fetch-blob';
-import {TextInput} from '../../components';
+import { TextInput } from '../../components';
 import Alert from '../../components/Alert';
 import Mycampaign from '../../components/Mycampaign';
-import {colors} from '../../styles';
+import { colors } from '../../styles';
 import BDMT from '../../../assets/images/pepsilogo.png';
 const deleteicon = require('../../../assets/images/deleteicon.png');
 const crossIcon = require('../../../assets/images/cross.png');
 const pdfview = require('../../../assets/images/pdfdownload.png');
 
 import moment from 'moment';
-import {useIsFocused, useRoute} from '@react-navigation/native';
-import {useTheme} from '../../hooks/useTheme';
-import {useUser} from '../../hooks/useUser';
+import { useIsFocused, useRoute } from '@react-navigation/native';
+import { useTheme } from '../../hooks/useTheme';
+import { useUser } from '../../hooks/useUser';
 import servicesettings from '../dataservices/servicesettings';
 import Model from '../../components/Model';
 export default function MyCampaignScreen(props) {
-  const {user, isAuthenticated} = useUser();
+  const { user, isAuthenticated } = useUser();
   const theme = useTheme();
   const isFocused = useIsFocused();
   const route = useRoute();
@@ -68,7 +68,7 @@ export default function MyCampaignScreen(props) {
     setVisible(false);
   };
   const confirm = value => {
-    console.log({selectStatusId});
+    console.log({ selectStatusId });
     // setVisible(false);
     hide();
 
@@ -98,7 +98,11 @@ export default function MyCampaignScreen(props) {
           Authorization: servicesettings.AuthorizationKey,
         },
       };
-      fetch(servicesettings.baseuri + 'bmtcompaigns', headerFetch)
+      // bmtcompaigns
+      fetch(
+        servicesettings.baseuri + 'Compaigns/detailedcompaigns',
+        headerFetch,
+      )
         .then(response => response.json())
         .then(responseJson => {
           console.log('data response bmtcompaigns  =>', headerFetch.body);
@@ -128,7 +132,13 @@ export default function MyCampaignScreen(props) {
         });
     } else {
       global.SignUp_Login = 1;
-      props.navigation.replace('Login');
+      props.navigation.reset({
+        index: 1,
+        routes: [
+          { name: 'BMT' }, // Home is at index 0
+          { name: 'Login' }, // Login is at index 1 (active screen)
+        ],
+      });
     }
   }
   function searchDataClick() {
@@ -152,7 +162,7 @@ export default function MyCampaignScreen(props) {
         Authorization: servicesettings.AuthorizationKey,
       },
     };
-    fetch(servicesettings.baseuri + 'bmtcompaigns', headerFetch)
+    fetch(servicesettings.baseuri + 'Compaigns/detailedcompaigns', headerFetch)
       .then(response => response.json())
       .then(responseJson => {
         console.log(
@@ -212,7 +222,7 @@ export default function MyCampaignScreen(props) {
       },
     };
 
-    fetch(servicesettings.baseuri + 'compaignstatus', headerFetch)
+    fetch(servicesettings.baseuri + 'Compaigns/updatecompaign', headerFetch)
       .then(response => response.json())
       .then(responseJson => {
         console.log(
@@ -248,7 +258,7 @@ export default function MyCampaignScreen(props) {
   }
   function SettingClickForChangeFlatList(campaignData) {
     const campaignStatus = campaignData;
-    console.log({campaignStatus});
+    console.log({ campaignStatus });
     // console.log(campaignStatus.id, campaignStatus.data.status);
     setSelectedCampaingStatus(campaignStatus.data.status);
     if (changeViewVisible == true) {
@@ -309,11 +319,14 @@ export default function MyCampaignScreen(props) {
     }
   }
   function AddNewCampaignClick() {
-    (global.UpdateCampaign = 0), props.navigation.navigate('Campaign Schedule');
+    ((global.UpdateCampaign = 0),
+      props.navigation.navigate('Campaign Schedule'));
   }
   function OpenUpdateCampaign(campaignData) {
-    (global.UpdateCampaign = 1),
-      props.navigation.navigate('Campaign Schedule', {campaign: campaignData});
+    ((global.UpdateCampaign = 1),
+      props.navigation.navigate('Campaign Schedule', {
+        campaign: campaignData,
+      }));
   }
   function functionCombined() {
     setShouldShow(!shouldShow);
@@ -325,7 +338,7 @@ export default function MyCampaignScreen(props) {
   function PDFDownloadClick(image) {
     setspinner(true);
 
-    const {dirs} = RNFetchBlob.fs;
+    const { dirs } = RNFetchBlob.fs;
     const downloadDir =
       Platform.OS === 'ios' ? dirs.DocumentDir : dirs.DownloadDir;
     const pdfUrl =
@@ -355,10 +368,10 @@ export default function MyCampaignScreen(props) {
         console.error('Error downloading file:', error);
       });
   }
-  const Item = ({image, Id}) => {
-    console.log({image});
+  const Item = ({ image, Id }) => {
+    console.log({ image });
     return (
-      <View style={{textAlign: 'center', marginVertical: 8}}>
+      <View style={{ textAlign: 'center', marginVertical: 8 }}>
         <ScrollView>
           {image.split('.')[1] == 'mp4' &&
             (!attachmentVideoError ? (
@@ -377,7 +390,7 @@ export default function MyCampaignScreen(props) {
                         .replace(',', '')
                         .replace(' //', ''),
                   }}
-                  style={{height: 185, width: 100 + '%'}}
+                  style={{ height: 185, width: 100 + '%' }}
                   onError={() => {
                     setAttachmentVideoError(true);
                   }}
@@ -411,8 +424,9 @@ export default function MyCampaignScreen(props) {
             ))}
           {image.split('.')[1] == 'pdf' && (
             <TouchableOpacity
-              style={{marginBottom: 12}}
-              onPress={() => PDFDownloadClick(image)}>
+              style={{ marginBottom: 12 }}
+              onPress={() => PDFDownloadClick(image)}
+            >
               <Image
                 resizeMode="contain"
                 source={pdfview}
@@ -425,7 +439,9 @@ export default function MyCampaignScreen(props) {
     );
   };
   return (
-    <View style={[styles.container, {backgroundColor: theme.backgroundColor}]}>
+    <View
+      style={[styles.container, { backgroundColor: theme.backgroundColor }]}
+    >
       <Spinner
         visible={spinner}
         textContent={'Loading...'}
@@ -440,20 +456,23 @@ export default function MyCampaignScreen(props) {
         Title={'Confirmation'}
         Massage={
           'Are you sure you want to ' + global.StatusName + ' campaign ?'
-        }></Alert>
+        }
+      ></Alert>
       {shouldShow == false ? (
         <View
           style={[
             styles.AddNewCampaign,
-            {backgroundColor: theme.cardBackColor},
-          ]}>
+            { backgroundColor: theme.cardBackColor },
+          ]}
+        >
           <View style={styles.AddNewCampaignView}>
             <TouchableOpacity
               style={[
                 styles.btnDetail_Delete,
-                {backgroundColor: theme.buttonBackColor},
+                { backgroundColor: theme.buttonBackColor },
               ]}
-              onPress={() => AddNewCampaignClick()}>
+              onPress={() => AddNewCampaignClick()}
+            >
               <Text style={styles.Delete_Play_PauseTxt}>New Campaign</Text>
             </TouchableOpacity>
           </View>
@@ -465,13 +484,17 @@ export default function MyCampaignScreen(props) {
         </View>
       ) : (
         <View
-          style={[styles.searchStyle, {backgroundColor: theme.cardBackColor}]}>
+          style={[styles.searchStyle, { backgroundColor: theme.cardBackColor }]}
+        >
           <View style={styles.SectionView}>
             <TextInput
               placeholderTextColor={theme.placeholderColor}
               style={[
                 styles.searchFieldText,
-                {backgroundColor: theme.inputBackColor, color: theme.textColor},
+                {
+                  backgroundColor: theme.inputBackColor,
+                  color: theme.textColor,
+                },
               ]}
               value={Search}
               onChangeText={value => setSearch(value)}
@@ -485,7 +508,10 @@ export default function MyCampaignScreen(props) {
               placeholderTextColor={theme.placeholderColor}
               style={[
                 styles.searchFieldText,
-                {backgroundColor: theme.inputBackColor, color: theme.textColor},
+                {
+                  backgroundColor: theme.inputBackColor,
+                  color: theme.textColor,
+                },
               ]}
               value={searchBudget}
               onChangeText={value => setSearchBudget(value)}
@@ -512,7 +538,7 @@ export default function MyCampaignScreen(props) {
           setRefreshing(true);
           Loaddata();
         }}
-        renderItem={({item}) => (
+        renderItem={({ item }) => (
           <Mycampaign
             OpenUpdateCampaign={OpenUpdateCampaign}
             StatusChangeOnClick={StatusChangeOnClick}
@@ -537,7 +563,8 @@ export default function MyCampaignScreen(props) {
             title={item.title}
             autoGenerateLeads={item.autoGenerateLeads}
             //   discount={item.discount}
-            totalBudget={item.totalBudget}></Mycampaign>
+            totalBudget={item.totalBudget}
+          ></Mycampaign>
         )}
         numColumns={1}
         horizontal={false}
@@ -553,39 +580,43 @@ export default function MyCampaignScreen(props) {
           <View
             style={[
               styles.sidebarViewRight,
-              {backgroundColor: theme.backgroundColor},
-            ]}>
+              { backgroundColor: theme.backgroundColor },
+            ]}
+          >
             <TouchableOpacity
               style={styles.closeIconView}
-              onPress={() => setChangeViewVisible(false)}>
+              onPress={() => setChangeViewVisible(false)}
+            >
               <Icons
                 name="close"
-                style={[styles.closeIcon, {color: theme.tintColor}]}
+                style={[styles.closeIcon, { color: theme.tintColor }]}
               />
             </TouchableOpacity>
             {selectedCampaingStatus != 1 ? (
               <TouchableOpacity
                 style={[
                   styles.ChangeActionView,
-                  {backgroundColor: theme.cardBackColor},
+                  { backgroundColor: theme.cardBackColor },
                 ]}
                 value={1}
-                onPress={() => ClickStatus(1)}>
+                onPress={() => ClickStatus(1)}
+              >
                 <View style={styles.SidebarIconView}>
                   <Image
                     source={deleteicon}
                     style={[
                       styles.ribbonIcon,
-                      {tintColor: theme.buttonBackColor},
+                      { tintColor: theme.buttonBackColor },
                     ]}
                   />
                 </View>
                 <View style={styles.SidebarDetailView}>
-                  <Text style={[styles.IconText, {color: theme.textColor}]}>
+                  <Text style={[styles.IconText, { color: theme.textColor }]}>
                     Active
                   </Text>
                   <Text
-                    style={[styles.IconTextDetail, {color: theme.textColor}]}>
+                    style={[styles.IconTextDetail, { color: theme.textColor }]}
+                  >
                     Network all schedules will be activated
                   </Text>
                 </View>
@@ -594,25 +625,27 @@ export default function MyCampaignScreen(props) {
               <TouchableOpacity
                 style={[
                   styles.ChangeActionView,
-                  {backgroundColor: theme.cardBackColor},
+                  { backgroundColor: theme.cardBackColor },
                 ]}
                 value={5}
-                onPress={() => ClickStatus(5)}>
+                onPress={() => ClickStatus(5)}
+              >
                 <View style={styles.SidebarIconView}>
                   <Image
                     source={deleteicon}
                     style={[
                       styles.ribbonIcon,
-                      {tintColor: theme.buttonBackColor},
+                      { tintColor: theme.buttonBackColor },
                     ]}
                   />
                 </View>
                 <View style={styles.SidebarDetailView}>
-                  <Text style={[styles.IconText, {color: theme.textColor}]}>
+                  <Text style={[styles.IconText, { color: theme.textColor }]}>
                     Delete
                   </Text>
                   <Text
-                    style={[styles.IconTextDetail, {color: theme.textColor}]}>
+                    style={[styles.IconTextDetail, { color: theme.textColor }]}
+                  >
                     Your network all activity will be terminated
                   </Text>
                 </View>
@@ -629,14 +662,16 @@ export default function MyCampaignScreen(props) {
             <View
               style={[
                 styles.sidebarViewRight,
-                {backgroundColor: theme.backgroundColor},
-              ]}>
+                { backgroundColor: theme.backgroundColor },
+              ]}
+            >
               <TouchableOpacity
                 style={styles.closeIconView}
-                onPress={() => setAttachmentViewVisible(false)}>
+                onPress={() => setAttachmentViewVisible(false)}
+              >
                 <Icons
                   name="close"
-                  style={[styles.closeIcon, {color: theme.tintColor}]}
+                  style={[styles.closeIcon, { color: theme.tintColor }]}
                 />
               </TouchableOpacity>
               <View style={styles.ChangeActionPictureView}>
@@ -644,7 +679,7 @@ export default function MyCampaignScreen(props) {
                   nestedScrollEnabled={true}
                   scrollEnabled={false}
                   data={attachmentData}
-                  renderItem={({item}) => (
+                  renderItem={({ item }) => (
                     <Item image={item.image} Id={item.Id} />
                   )}
                   keyExtractor={item => item.Id}
@@ -660,7 +695,8 @@ export default function MyCampaignScreen(props) {
         <View style={styles.ChangeActionMainFullView}>
           <TouchableOpacity
             style={styles.closeIconFullView}
-            onPress={() => AttachmentFullViewClick()}>
+            onPress={() => AttachmentFullViewClick()}
+          >
             <Image
               resizeMode="stretch"
               source={crossIcon}
@@ -734,7 +770,7 @@ const styles = StyleSheet.create({
     paddingBottom: 9,
     elevation: 5,
     shadowColor: '#000',
-    shadowOffset: {width: 4, height: 6},
+    shadowOffset: { width: 4, height: 6 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
   },
