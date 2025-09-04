@@ -1,11 +1,12 @@
 import { useDispatch } from 'react-redux';
 import useFetchData from '../hooks/useFetchData';
 import { createContext, useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { setLovs } from '../redux/features/bmtLovs/lovsSlice';
 import { useTheme } from '../hooks/useTheme';
 import { Button } from '../components';
+const profilelogo = require('../../assets/images/BDMT.png');
 
 const apiConfigs = [
   {
@@ -99,12 +100,13 @@ export const LOVProvider = ({ children }) => {
       <View
         style={[styles.container, { backgroundColor: theme.backgroundColor }]}
       >
+        <Image source={profilelogo} style={{ width: 300, height: 100 }} />
         <Text style={styles.errorText}>
           Something went wrong fetching LOVs:{' '}
           {error?.message || JSON.stringify(error)}
         </Text>
         <Button
-          style={{ width: 'auto', marginTop: 10 }}
+          style={{ width: '50%', marginTop: 10 }}
           bgColor={theme.buttonBackColor}
           caption="Retry"
           onPress={fetchData}
