@@ -69,13 +69,14 @@ const AddSchedule = ({
       schedules: [...prevState.schedules, scheduleList],
     }));
     setScheduleTab(1);
+
     setScheduleList({
       CompaignNetworks: [],
       id: 0,
       budget: 0,
       rowVer: 0,
       messageCount: 0,
-      orgId: user.orgid,
+      orgId: user.orgId,
       days: [],
       networkId: 0,
       compaignDetailId: 0,
@@ -88,6 +89,7 @@ const AddSchedule = ({
       randomId: Math.floor(100000 + Math.random() * 900000),
     });
   };
+  console.log({ campaignInfo });
 
   const updateSchedule = () => {
     if (scheduleList.CompaignNetworks.length == 0) {
@@ -368,7 +370,7 @@ const AddSchedule = ({
                       ...scheduleList.CompaignNetworks,
                       {
                         networkId: network.networkId,
-                        orgId: user.orgid,
+                        orgId: user.orgId,
                         rowVer: 0,
                         purchasedQouta: network.purchasedQouta,
                         unitPriceInclTax: network.unitPriceInclTax,
@@ -758,7 +760,7 @@ const AddSchedule = ({
                 budget: 0,
                 rowVer: 0,
                 messageCount: 0,
-                orgId: user.orgid,
+                orgId: user.orgId,
                 days: [],
                 networkId: 0,
                 compaignDetailId: 0,

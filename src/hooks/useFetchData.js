@@ -21,7 +21,7 @@ const useFetchData = apiConfigs => {
             method: method || 'POST',
             body: JSON.stringify(
               endpoint == 'admin/custombundlingdetails'
-                ? { ...body, id: isAuthenticated ? user.orgid : 0 }
+                ? { ...body, id: isAuthenticated ? user.orgId : 0 }
                 : body || {},
             ),
             headers: {
@@ -46,9 +46,13 @@ const useFetchData = apiConfigs => {
           }
           const result = await response.json();
           // console.log('result', result);
+          if (!result?.status) {
+            const error = new Error(result?.message || 'server error');
+            throw error;
+          }
           // console.log(endpoint?.split('/'));
           return {
-            [endpoint === 'admin/custombundlingdetails'
+            [endpoint === 'Admin/custombundlingdetails'
               ? 'mybundlings'
               : endpoint?.split?.('/')?.[1]]: result.data,
           };

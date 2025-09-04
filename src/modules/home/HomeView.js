@@ -15,56 +15,6 @@ const NetworkFailed = require('../../../assets/images/BDMT.png');
 const mycampaignIcon = require('../../../assets/images/drawer/mycampaign.png');
 const compaign = require('../../../assets/images/drawer/compaign.png');
 
-const apiConfigs = [
-  {
-    endpoint: 'Blazorapi/orgs',
-    method: 'POST',
-    body: {
-      Id: 0,
-      Name: '',
-      Status: 0,
-    },
-  },
-  {
-    endpoint: 'Common/lovs',
-    method: 'POST',
-    body: {
-      orgId: 0,
-      email: '',
-      firstName: '',
-      lastName: '',
-      roleName: '',
-      address: '',
-      stateName: '',
-      userCode: '',
-      title: '',
-      traceId: 0,
-      status: 1,
-    },
-  },
-  {
-    endpoint: 'admin/custombundlingdetails',
-    method: 'POST',
-    body: {
-      orgId: 0,
-      email: '',
-      firstName: '',
-      lastName: '',
-      roleName: '',
-      address: '',
-      stateName: '',
-      userCode: '',
-      title: '',
-      traceId: 0,
-      status: 1,
-    },
-  },
-  {
-    endpoint: 'Common/cities',
-    method: 'POST',
-    body: {},
-  },
-];
 export default function HomeScreen(props) {
   const theme = useTheme();
   const { isAuthenticated } = useUser();

@@ -188,7 +188,7 @@ export default function LoginScreen(props) {
     // authenticateorguser
     fetch(
       servicesettings.baseuri +
-        `common/login?email=${Email.trim()}&password=${Base64.btoa(Password.trim())}`,
+        `Common/login?email=${Email.trim()}&password=${Base64.btoa(Password.trim())}`,
       headerFetch,
     )
       .then(response => response.json())

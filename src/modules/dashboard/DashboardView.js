@@ -60,8 +60,8 @@ export default function DashboardScreen(props) {
           orgId: user.orgId,
           status: 1,
           id: 0,
-          DataOfMonth: '',
-          // CreatedAt: moment.utc().subtract(100, 'year').format(),
+          // DataOfMonth: '',
+          CreatedAt: moment.utc().subtract(100, 'year').format(),
           RowVer: 1,
         }),
         headers: {

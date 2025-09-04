@@ -45,7 +45,7 @@ const CampaignNetwork = ({
       return snapchatIcon;
     }
   };
-
+  console.log({ networks });
   const nextStep = () => {
     setIndex(2);
   };
@@ -114,19 +114,21 @@ const CampaignNetwork = ({
                           ...campaignInfo.networks,
                           {
                             networkId: network.networkId,
-                            orgId: user.orgid,
+                            orgId: user.orgId,
                             rowVer: 0,
                             purchasedQouta: network.purchasedQouta ?? 0,
                             unitPriceInclTax: network.unitPrice ?? 0,
                             usedQuota: network.usedQuota ?? 0,
                             compaignId: 0,
+                            posttypejson: '',
+                            Code: '',
                             id: 0,
                             desc: network.name,
                             status: 1,
-                            createdBy: user.id,
-                            lastUpdatedBy: user.id,
-                            createdAt: moment().utc().format(),
-                            lastUpdatedAt: moment().utc().format(),
+                            // createdBy: user.id,
+                            // lastUpdatedBy: user.id,
+                            // createdAt: moment().utc().format(),
+                            // lastUpdatedAt: moment().utc().format(),
                           },
                         ],
                       });

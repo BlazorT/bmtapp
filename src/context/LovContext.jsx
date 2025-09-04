@@ -10,7 +10,7 @@ const profilelogo = require('../../assets/images/BDMT.png');
 
 const apiConfigs = [
   {
-    endpoint: 'Blazorapi/orgs',
+    endpoint: 'BlazorApi/orgs',
     method: 'POST',
     body: {
       Id: 0,
@@ -36,20 +36,11 @@ const apiConfigs = [
     },
   },
   {
-    endpoint: 'admin/custombundlingdetails',
+    endpoint: 'Admin/custombundlingdetails',
     method: 'POST',
     body: {
-      orgId: 0,
-      email: '',
-      firstName: '',
-      lastName: '',
-      roleName: '',
-      address: '',
-      stateName: '',
-      userCode: '',
-      title: '',
-      traceId: 0,
-      status: 1,
+      orgId: '0',
+      id: '0',
     },
   },
   {

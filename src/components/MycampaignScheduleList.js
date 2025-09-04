@@ -120,7 +120,7 @@ export default function MycampaignScheduleList(props) {
                     x => x.id == props.intervalTypeId + 1,
                   ).name}
               </Text>
-              {props.days.length <= 10 && (
+              {props?.days?.length <= 10 && (
                 <Text
                   style={[
                     styles.DaysStyle,
@@ -134,7 +134,7 @@ export default function MycampaignScheduleList(props) {
                 </Text>
               )}
             </View>
-            {props.days.length > 10 && (
+            {props?.days?.length > 10 && (
               <View
                 style={{
                   flex: 1,

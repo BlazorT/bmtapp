@@ -94,7 +94,7 @@ export default function CampaignScheduleScreen(props) {
       );
       return {
         networkId: item.networkId,
-        orgId: user.orgid,
+        orgId: user.orgId,
         rowVer: 0,
         compaignId: 0,
         id: item.id,
@@ -125,7 +125,7 @@ export default function CampaignScheduleScreen(props) {
         budget: item.budget,
         rowVer: 0,
         messageCount: item.MessageCount,
-        orgId: user.orgid,
+        orgId: user.orgId,
         days: item.days.split(',').map(item => Number(item.replace(/"/g, ''))),
         networkId: item.NetworkId,
         compaignDetailId: item.CompaignDetailId,

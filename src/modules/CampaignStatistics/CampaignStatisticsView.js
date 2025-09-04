@@ -19,7 +19,7 @@ import servicesettings from '../dataservices/servicesettings';
 
 export default function CampaignStatisticsScreen() {
   const theme = useTheme();
-  const user = useUser();
+  const { user } = useUser();
 
   const [percent, setPercent] = useState(0);
   const [spinner, setSpinner] = useState(false);
@@ -40,12 +40,8 @@ export default function CampaignStatisticsScreen() {
       let headerFetch = {
         method: 'POST',
         body: JSON.stringify({
-          orgId: user.orgid,
-          status: 1,
-          name: '',
-          networkId: 0,
-          id: user.ordid,
-          lastUpdatedBy: user.id,
+          orgId: user?.orgId?.toString(),
+          id: user?.orgId?.toString(),
         }),
         headers: {
           Accept: 'application/json',
@@ -53,21 +49,29 @@ export default function CampaignStatisticsScreen() {
           Authorization: servicesettings.AuthorizationKey,
         },
       };
+
       const response = await fetch(
-        `${servicesettings.baseuri}admin/custombundlingdetails`,
+        `${servicesettings.baseuri}Admin/custombundlingdetails`,
         headerFetch,
       );
       const responseJson = await response.json();
-      // console.log(responseJson);
+      console.log(responseJson);
       if (responseJson.status === true) {
         const stats = responseJson.data;
-        const labels = stats.map(item => item.networkName);
+        const labels = stats.map(item => item.name);
         const data = stats.map(item => item.purchasedQouta);
         const totalVol = stats
           .map(item => item.purchasedQouta)
           .reduce((acc, curr) => acc + curr, 0);
         const currMontSale = calculateCurrentMonthSales(stats);
         const percentage = calculateOverallSalesPercentageChange(stats);
+        // console.log({
+        //   datasets: [{ data: data }],
+        //   labels: labels,
+        //   currentVol: totalVol,
+        //   currMonthSales: currMontSale,
+        // });
+        console.log({ percentage });
         setPercent(percentage);
         setDataList({
           datasets: [{ data: data }],

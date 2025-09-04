@@ -81,11 +81,11 @@ export default function MyCampaignScreen(props) {
     setspinner(true);
     if (isAuthenticated) {
       setUserId(user.id);
-      setOrgId(user.orgid);
+      setOrgId(user.orgId);
       let headerFetch = {
         method: 'POST',
         body: JSON.stringify({
-          orgId: user.orgid,
+          orgId: user.orgId,
           status: 0,
           name: '',
           networkId: 0,

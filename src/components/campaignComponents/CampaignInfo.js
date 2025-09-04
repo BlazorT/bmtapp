@@ -67,6 +67,7 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex }) => {
 
     setIndex(1);
   };
+  // console.log({ campaignInfo: campaignInfo.campaignStartDate });
   return (
     <View style={{ width: '100%', marginTop: 10, rowGap: 10 }}>
       <Alert
