@@ -267,7 +267,7 @@ export default function OrganizationAddEditScreen(props) {
       },
     };
 
-    fetch(servicesettings.baseuri + 'Blazorapi/orgs', headerFetch)
+    fetch(servicesettings.baseuri + 'Blazorapi/orgsfulldata', headerFetch)
       .then(response => response.json())
       .then(responseJson => {
         console.log('body orgs  =>', headerFetch.body);

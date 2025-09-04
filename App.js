@@ -8,6 +8,7 @@ import RemotePushNotification from './src/components/RemotePushNotification';
 import AppView from './src/modules/AppViewContainer';
 import store from './src/redux/store';
 import { StatusBar } from 'react-native';
+import { LOVProvider } from './src/context/LovContext';
 
 export default function App() {
   let persistor = persistStore(store);
@@ -22,10 +23,12 @@ export default function App() {
         }
         persistor={persistor}
       >
-        <NavigationContainer>
-          <RemotePushNotification />
-          <AppView />
-        </NavigationContainer>
+        <LOVProvider>
+          <NavigationContainer>
+            <RemotePushNotification />
+            <AppView />
+          </NavigationContainer>
+        </LOVProvider>
       </PersistGate>
     </Provider>
   );

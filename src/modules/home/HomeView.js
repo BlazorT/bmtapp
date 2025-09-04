@@ -1,5 +1,4 @@
-import messaging from '@react-native-firebase/messaging';
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   Dimensions,
   Image,
@@ -7,16 +6,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import Spinner from 'react-native-loading-spinner-overlay';
 import Video from 'react-native-video';
-import { useDispatch, useSelector } from 'react-redux';
 import { Text } from '../../components/StyledText';
-import useFetchData from '../../hooks/useFetchData';
 import { useTheme } from '../../hooks/useTheme';
 import { useUser } from '../../hooks/useUser';
-import { setLovs } from '../../redux/features/bmtLovs/lovsSlice';
 import { colors } from '../../styles';
-import { StatusBar } from 'react-native';
 const NetworkFailed = require('../../../assets/images/BDMT.png');
 const mycampaignIcon = require('../../../assets/images/drawer/mycampaign.png');
 const compaign = require('../../../assets/images/drawer/compaign.png');
@@ -73,17 +67,7 @@ const apiConfigs = [
 ];
 export default function HomeScreen(props) {
   const theme = useTheme();
-  const { isAuthenticated, logoutUser } = useUser();
-  // logoutUser();
-  const { data, loading, error } = useFetchData(apiConfigs);
-  const lovs = useSelector(state => state.lovs);
-  const dispatch = useDispatch();
-  useEffect(() => {
-    // console.log(user.orgid);
-    if (!loading && !error) {
-      dispatch(setLovs(data));
-    }
-  }, [loading, data]);
+  const { isAuthenticated } = useUser();
 
   const opensignup = async () => {
     global.SignUp_Login = 0;
@@ -100,7 +84,6 @@ export default function HomeScreen(props) {
 
   return (
     <View style={styles.container}>
-      <Spinner visible={loading} textContent={'Loading...'} />
       {global.NetworkFailed == 1 ? (
         <View style={styles.networkfailed}>
           <Image

@@ -92,6 +92,7 @@ const CampaignSchedule = ({
       totalBudget: campaignInfo.schedules.reduce((a, b) => a + b.budget, 0),
       discount: 0,
     };
+    console.log({ campaignBody });
     console.log('campaignBody: ' + JSON.stringify(campaignBody));
     setUpdateMessage(`${campaignInfo.subject} has been created successfully.`);
     setspinner(true);
@@ -106,7 +107,8 @@ const CampaignSchedule = ({
       },
     };
     const response = await fetch(
-      servicesettings.baseuri + 'createcompletecompaign',
+      // createcompletecompaign
+      servicesettings.baseuri + 'Compaigns/submitmycompaign',
       headerFetch,
     );
     setspinner(false);
