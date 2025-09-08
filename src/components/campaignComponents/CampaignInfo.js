@@ -13,19 +13,25 @@ import EntypoIcon from 'react-native-vector-icons/Entypo';
 import { useSelector } from 'react-redux';
 import { useTheme } from '../../hooks/useTheme';
 import RNSButton from '../Button';
+import RNSRangeSlider from '../RangeSlider';
 import RNSDropDown from '../Dropdown';
 import CampaignAttachment from './CampaignAttachment';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import moment from 'moment';
 import Alert from '../Alert';
 import Toast from 'react-native-simple-toast';
-
 import { useNavigation } from '@react-navigation/native';
+import {
+  CAMPAIGN_INTERESTS,
+  GENDER_LIST,
+  MAX_AGE,
+  MIN_AGE,
+} from '../../constants';
+import CampaignAddress from './CampaignAdress';
 
 const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex }) => {
   const theme = useTheme();
   const navigation = useNavigation();
-  const lovs = useSelector(state => state.lovs).lovs;
 
   const [audienceShow, setAudienceShow] = useState(false);
   const [attachmentShow, setAttachmentShow] = useState(false);
@@ -67,7 +73,8 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex }) => {
 
     setIndex(1);
   };
-  // console.log({ campaignInfo: campaignInfo.campaignStartDate });
+
+  // console.log({ campaignInfo });
   return (
     <View style={{ width: '100%', marginTop: 10, rowGap: 10 }}>
       <Alert
@@ -171,10 +178,11 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex }) => {
       </TouchableOpacity>
       {audienceShow && (
         <>
+          <CampaignAddress label={'Location'} />
           <RNSDropDown
-            items={lovs['lovs'].countries}
-            selectedIndex={campaignInfo.country}
-            onSelect={value => handleCampaignInfo('country', value)}
+            items={GENDER_LIST}
+            selectedIndex={campaignInfo.genderId}
+            onSelect={value => handleCampaignInfo('genderId', value)}
             style={{
               width: '100%',
               backgroundColor: theme.inputBackColor,
@@ -185,14 +193,25 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex }) => {
               borderColor: '#ff00003d',
               borderWidth: 1,
             }}
-            placeholder="Select Country..."
+            placeholder="Select Gender..."
             clearTextOnFocus={true}
             keyboardAppearance={'dark'}
           />
           <RNSDropDown
-            items={lovs['lovs'].states}
-            selectedIndex={campaignInfo.state}
-            onSelect={value => handleCampaignInfo('state', value)}
+            items={CAMPAIGN_INTERESTS}
+            selectedIndex={campaignInfo.interests}
+            multipleSelect
+            onSelect={value => {
+              console.log({ value });
+
+              const current = campaignInfo.interests || [];
+              const exists = current.includes(value);
+
+              handleCampaignInfo(
+                'interests',
+                exists ? current.filter(v => v !== value) : [...current, value],
+              );
+            }}
             style={{
               width: '100%',
               backgroundColor: theme.inputBackColor,
@@ -203,9 +222,26 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex }) => {
               borderColor: '#ff00003d',
               borderWidth: 1,
             }}
-            placeholder="Select State..."
+            placeholder="Select Interests..."
             clearTextOnFocus={true}
             keyboardAppearance={'dark'}
+          />
+          <RNSRangeSlider
+            min={MIN_AGE}
+            max={MAX_AGE}
+            step={1}
+            minRange={5}
+            low={campaignInfo.minAge}
+            high={campaignInfo.maxAge}
+            onChange={(low, high) => {
+              setCampaignInfo(prev => {
+                if (prev.minAge === low && prev.maxAge === high) {
+                  return prev; // ✅ prevent unnecessary re-renders
+                }
+                return { ...prev, minAge: low, maxAge: high };
+              });
+            }}
+            label={'Age'}
           />
         </>
       )}
@@ -461,5 +497,28 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex }) => {
 };
 
 export default CampaignInfo;
-
-const styles = StyleSheet.create({});
+const THUMB_RADIUS = 10;
+const styles = StyleSheet.create({
+  slider: {
+    marginVertical: 20,
+  },
+  valueText: {
+    color: 'black',
+  },
+  thumb: {
+    width: THUMB_RADIUS * 2,
+    height: THUMB_RADIUS * 2,
+    borderRadius: THUMB_RADIUS,
+    borderWidth: 3,
+  },
+  rail: {
+    flex: 1,
+    height: 3,
+    borderRadius: 3,
+    backgroundColor: 'grey',
+  },
+  railSelected: {
+    height: 3,
+    backgroundColor: 'red',
+  },
+});

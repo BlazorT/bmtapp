@@ -1,7 +1,7 @@
 import React from 'react';
-import {Platform, StyleSheet, TextInput, View} from 'react-native';
+import { Platform, StyleSheet, TextInput, View } from 'react-native';
 
-import {colors, fonts} from '../styles';
+import { colors, fonts } from '../styles';
 
 const RNSTextInput = ({
   type,
@@ -18,7 +18,7 @@ const RNSTextInput = ({
   ];
 
   return (
-    <View style={{alignSelf: 'stretch', flexDirection: 'column'}}>
+    <View style={{ alignSelf: 'stretch', flexDirection: 'column' }}>
       <TextInput
         placeholderTextColor={placeholderTextColor || colors.white}
         //underlineColorAndroid="none"
@@ -26,7 +26,7 @@ const RNSTextInput = ({
         style={finalStyle}
       />
       {Platform.OS === 'ios' && (
-        <View style={{height: 0.5, backgroundColor: 'white'}} />
+        <View style={{ height: 0.5, backgroundColor: 'white' }} />
       )}
     </View>
   );

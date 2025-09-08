@@ -11,6 +11,7 @@ import moment from 'moment';
 import servicesettings from '../../modules/dataservices/servicesettings';
 import { useNavigation } from '@react-navigation/native';
 import notifee, { AndroidImportance } from '@notifee/react-native';
+import { CAMPAIGN_INTERESTS, GENDER_LIST } from '../../constants';
 
 const CampaignSchedule = ({
   campaignInfo,
@@ -76,6 +77,16 @@ const CampaignSchedule = ({
       id: campaignInfo.id,
       selectCountryId: campaignInfo.country == '' ? 0 : Number(country),
       selectStateId: campaignInfo.state == '' ? 0 : Number(state),
+      targetaudiance: JSON.stringify({
+        interests: campaignInfo.interests
+          .map(index => {
+            const found = CAMPAIGN_INTERESTS[index];
+            return found ? found.name : null;
+          })
+          .filter(Boolean), // removes nulls if index not found
+        genderId:
+          campaignInfo.genderId === '' ? 0 : GENDER_LIST[campaignInfo.genderId],
+      }),
       createdBy: Number(user.id),
       lastUpdatedBy: Number(user.id),
       status: campaignInfo.status,
@@ -94,7 +105,7 @@ const CampaignSchedule = ({
         Desc: n?.desc,
         Status: n?.status,
         Code: '',
-        posttypejson: '',
+        posttypejson: n?.posttypejson || [],
       })),
       compaignExecutionSchedules: campaignInfo.schedules?.map(s => ({
         Id: s?.id,
@@ -112,6 +123,7 @@ const CampaignSchedule = ({
         LastUpdatedBy: user?.id,
         Status: s?.status,
         RowVer: 0,
+        days: s?.days,
       })),
       totalBudget: campaignInfo.schedules.reduce((a, b) => a + b.budget, 0),
       discount: 0,
@@ -122,6 +134,7 @@ const CampaignSchedule = ({
 
     console.log({ campaignBody });
     console.log('campaignBody: ' + JSON.stringify(campaignBody));
+    return;
     setUpdateMessage(`${campaignInfo.subject} has been created successfully.`);
     setspinner(true);
 

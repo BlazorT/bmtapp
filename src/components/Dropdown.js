@@ -1,9 +1,9 @@
-import React, {useState} from 'react';
-import {Text, View} from 'react-native';
+import React, { useState } from 'react';
+import { Text, View } from 'react-native';
 import ModalDropdown from 'react-native-modal-dropdown';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {colors} from '../styles';
-import {useTheme} from '../hooks/useTheme';
+import { colors } from '../styles';
+import { useTheme } from '../hooks/useTheme';
 
 const RNSDropDown = props => {
   const {
@@ -13,6 +13,7 @@ const RNSDropDown = props => {
     borderColor = colors.borderColor,
     selectedIndex = '',
     placeholder = 'Please Select...',
+    multipleSelect,
   } = props;
   const [isOpened, setIsOpened] = useState(false);
   const theme = useTheme();
@@ -27,7 +28,9 @@ const RNSDropDown = props => {
   return (
     <ModalDropdown
       selectedIndex={''}
+      multipleSelect={multipleSelect}
       options={items}
+      // showSearch
       onDropdownWillShow={openModal}
       onDropdownWillHide={closeModal}
       dropdownStyle={{
@@ -47,32 +50,88 @@ const RNSDropDown = props => {
         params.right = 0;
         return params;
       }}
-      renderRow={(item, index, isSelected) => (
-        <View
-          style={[
-            {paddingHorizontal: 20, paddingVertical: 10},
-            isSelected && styles.selectedRow,
-          ]}>
-          <Text style={{color: theme.textColor}} nativeID={item.id.toString()}>
-            {item.name}
-          </Text>
-        </View>
-      )}
-      onSelect={onSelect}>
-      <View style={[styles.container, style && style, {borderColor}]}>
+      renderRow={(item, index) => {
+        const isMulti = multipleSelect;
+        const isSelected = isMulti
+          ? Array.isArray(selectedIndex) && selectedIndex.includes(index)
+          : selectedIndex === index;
+
+        return (
+          <View
+            style={[
+              {
+                flexDirection: 'row',
+                alignItems: 'center',
+                paddingHorizontal: 20,
+                paddingVertical: 10,
+              },
+              isSelected && styles.selectedRow,
+            ]}
+          >
+            {isMulti && (
+              <Icon
+                name={isSelected ? 'check-square-o' : 'square-o'}
+                size={18}
+                color={isSelected ? theme.tintColor : theme.placeholderColor}
+                style={{ marginRight: 8 }}
+              />
+            )}
+
+            <Text
+              style={{ color: theme.textColor }}
+              nativeID={item.id.toString()}
+            >
+              {item.name}
+            </Text>
+          </View>
+        );
+      }}
+      onSelect={onSelect}
+    >
+      <View
+        style={[
+          styles.container,
+          style && style,
+          {
+            borderColor,
+            height: multipleSelect ? 'auto' : 40,
+            minHeight: 40,
+          },
+        ]}
+      >
         <Text
           style={
-            selectedIndex !== ''
-              ? {color: theme.placeholderColor}
-              : {color: theme.textColor}
-          }>
-          {selectedIndex !== '' && items[selectedIndex] != null
-            ? items[selectedIndex].name
-            : placeholder}
+            (
+              multipleSelect
+                ? Array.isArray(selectedIndex) && selectedIndex.length > 0
+                : selectedIndex !== ''
+            )
+              ? { color: theme.placeholderColor, width: '80%' }
+              : { color: theme.textColor, width: '80%' }
+          }
+        >
+          {multipleSelect
+            ? Array.isArray(selectedIndex) && selectedIndex.length > 0
+              ? selectedIndex
+                  .map(i => (items[i] ? items[i].name : ''))
+                  .join(', ')
+              : placeholder
+            : selectedIndex !== '' && items[selectedIndex] != null
+              ? items[selectedIndex].name
+              : placeholder}
         </Text>
+
         <Icon
           name={isOpened ? 'angle-up' : 'angle-down'}
-          color={selectedIndex == '' ? 'gray' : theme.tintColor}
+          color={
+            multipleSelect
+              ? Array.isArray(selectedIndex) && selectedIndex.length > 0
+                ? theme.tintColor
+                : 'gray'
+              : selectedIndex == ''
+                ? 'gray'
+                : theme.tintColor
+          }
           size={20}
           style={styles.icon}
         />

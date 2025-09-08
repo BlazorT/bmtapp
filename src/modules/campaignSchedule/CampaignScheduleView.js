@@ -20,6 +20,7 @@ import { useTheme } from '../../hooks/useTheme';
 import { useUser } from '../../hooks/useUser';
 import servicesettings from '../dataservices/servicesettings';
 import moment from 'moment';
+import { MAX_AGE, MIN_AGE } from '../../constants';
 
 export default function CampaignScheduleScreen(props) {
   const theme = useTheme();
@@ -44,6 +45,11 @@ export default function CampaignScheduleScreen(props) {
     schedules: [],
     totalBudget: 0,
     discount: 0,
+    genderId: '',
+    locations: [],
+    interests: [],
+    minAge: MIN_AGE,
+    maxAge: MAX_AGE,
   });
   const [Index, setIndex] = useState(0);
   const [updateMessage, setUpdateMessage] = useState('');
