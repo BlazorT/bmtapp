@@ -6,6 +6,7 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import { setLovs } from '../redux/features/bmtLovs/lovsSlice';
 import { useTheme } from '../hooks/useTheme';
 import { Button } from '../components';
+import { GET_COUNTRY_INFO } from '../constants';
 const profilelogo = require('../../assets/images/BDMT.png');
 
 const apiConfigs = [
@@ -17,6 +18,7 @@ const apiConfigs = [
       Name: '',
       Status: 0,
     },
+    key: 'orgs',
   },
   {
     endpoint: 'Common/lovs',
@@ -34,6 +36,7 @@ const apiConfigs = [
       traceId: 0,
       status: 1,
     },
+    key: 'lovs',
   },
   {
     endpoint: 'Admin/custombundlingdetails',
@@ -42,11 +45,19 @@ const apiConfigs = [
       orgId: '0',
       id: '0',
     },
+    key: 'mybundlings',
   },
   {
     endpoint: 'Common/cities',
     method: 'POST',
     body: {},
+    key: 'cities',
+  },
+  {
+    endpoint: GET_COUNTRY_INFO,
+    method: 'GET',
+    body: {},
+    key: 'ipinfo',
   },
 ];
 

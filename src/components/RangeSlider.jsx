@@ -14,6 +14,7 @@ const RNSRangeSlider = ({
   high,
   onChange,
   label, // ✅ optional label
+  disableRange,
 }) => {
   const theme = useTheme();
 
@@ -70,6 +71,7 @@ const RNSRangeSlider = ({
       ) : null}
 
       <RangeSlider
+        disableRange={disableRange}
         style={styles.slider}
         min={min}
         max={max}
@@ -88,20 +90,21 @@ const RNSRangeSlider = ({
   );
 };
 
-export default memo(RNSRangeSlider);
+export default RNSRangeSlider;
 
 const styles = StyleSheet.create({
   wrapper: {
     marginVertical: 0,
+    flex: 1,
   },
   label: {
     fontSize: 16,
     fontWeight: '600',
-    marginBottom: 10,
+    marginBottom: 18,
   },
   slider: {
-    marginVertical: 10,
-    marginRight: 5,
+    marginVertical: 0,
+    marginRight: 0,
   },
   valueText: {
     fontSize: 12,

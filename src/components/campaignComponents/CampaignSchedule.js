@@ -86,6 +86,7 @@ const CampaignSchedule = ({
           .filter(Boolean), // removes nulls if index not found
         genderId:
           campaignInfo.genderId === '' ? 0 : GENDER_LIST[campaignInfo.genderId],
+        locations: campaignInfo?.locations,
       }),
       createdBy: Number(user.id),
       lastUpdatedBy: Number(user.id),
@@ -105,7 +106,7 @@ const CampaignSchedule = ({
         Desc: n?.desc,
         Status: n?.status,
         Code: '',
-        posttypejson: n?.posttypejson || [],
+        posttypejson: JSON.stringify(n?.postTypes || []),
       })),
       compaignExecutionSchedules: campaignInfo.schedules?.map(s => ({
         Id: s?.id,
@@ -123,7 +124,7 @@ const CampaignSchedule = ({
         LastUpdatedBy: user?.id,
         Status: s?.status,
         RowVer: 0,
-        days: s?.days,
+        days: JSON.stringify(s?.days || []),
       })),
       totalBudget: campaignInfo.schedules.reduce((a, b) => a + b.budget, 0),
       discount: 0,
@@ -134,7 +135,7 @@ const CampaignSchedule = ({
 
     console.log({ campaignBody });
     console.log('campaignBody: ' + JSON.stringify(campaignBody));
-    return;
+    // return;
     setUpdateMessage(`${campaignInfo.subject} has been created successfully.`);
     setspinner(true);
 

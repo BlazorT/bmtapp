@@ -15,24 +15,29 @@ const useFetchData = apiConfigs => {
       setError(null);
       const results = await Promise.all(
         apiConfigs.map(async config => {
-          const { endpoint, method, body } = config;
+          const { endpoint, method, body, key } = config;
 
           const headerFetch = {
             method: method || 'POST',
-            body: JSON.stringify(
-              endpoint == 'admin/custombundlingdetails'
-                ? { ...body, id: isAuthenticated ? user.orgId : 0 }
-                : body || {},
-            ),
             headers: {
               Accept: 'application/json',
               'Content-Type': 'application/json; charset=utf-8',
               Authorization: servicesettings.AuthorizationKey,
             },
+            ...(method === 'POST' && {
+              body: JSON.stringify(
+                endpoint === 'admin/custombundlingdetails'
+                  ? { ...body, id: isAuthenticated ? user.orgId : 0 }
+                  : body || {},
+              ),
+            }),
           };
+
           // console.log('headerFetch', headerFetch);
           const response = await fetch(
-            `${servicesettings.baseuri}${endpoint}`,
+            key === 'ipinfo'
+              ? endpoint
+              : `${servicesettings.baseuri}${endpoint}`,
             headerFetch,
           );
           // console.log('response', response);
@@ -46,22 +51,22 @@ const useFetchData = apiConfigs => {
           }
           const result = await response.json();
           // console.log('result', result);
-          if (!result?.status) {
+          if (key !== 'ipinfo' && !result?.status) {
             const error = new Error(result?.message || 'server error');
             throw error;
           }
           // console.log(endpoint?.split('/'));
           return {
-            [endpoint === 'Admin/custombundlingdetails'
-              ? 'mybundlings'
-              : endpoint?.split?.('/')?.[1]]: result.data,
+            [key]: key === 'ipinfo' ? result : result.data,
           };
         }),
       );
+      // console.log({ results });
       const mergedResults = results.reduce(
         (acc, result) => ({ ...acc, ...result }),
         {},
       );
+      // console.log({ mergedResults });
       setData(mergedResults);
     } catch (err) {
       setError(err.message);

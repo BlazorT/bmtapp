@@ -178,7 +178,54 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex }) => {
       </TouchableOpacity>
       {audienceShow && (
         <>
-          <CampaignAddress label={'Location'} />
+          <View
+            style={{
+              flexDirection: 'row',
+              flex: 1,
+              alignItems: 'center',
+              columnGap: 10,
+            }}
+          >
+            <RNSRangeSlider
+              disableRange={true}
+              min={1}
+              max={500}
+              step={1}
+              low={campaignInfo.radius}
+              high={500}
+              onChange={(low, high) => {
+                // console.log({ low, high });
+                setCampaignInfo(prev => {
+                  if (prev.radius === low) {
+                    return prev; // ✅ prevent unnecessary re-renders
+                  }
+                  return { ...prev, radius: low };
+                });
+              }}
+              label={'Radius (km)'}
+            />
+            <RNSRangeSlider
+              min={MIN_AGE}
+              max={MAX_AGE}
+              step={1}
+              minRange={5}
+              low={campaignInfo.minAge}
+              high={campaignInfo.maxAge}
+              onChange={(low, high) => {
+                setCampaignInfo(prev => {
+                  if (prev.minAge === low && prev.maxAge === high) {
+                    return prev; // ✅ prevent unnecessary re-renders
+                  }
+                  return { ...prev, minAge: low, maxAge: high };
+                });
+              }}
+              label={'Age'}
+            />
+          </View>
+          <CampaignAddress
+            campaignInfo={campaignInfo}
+            setCampaignInfo={setCampaignInfo}
+          />
           <RNSDropDown
             items={GENDER_LIST}
             selectedIndex={campaignInfo.genderId}
@@ -202,8 +249,6 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex }) => {
             selectedIndex={campaignInfo.interests}
             multipleSelect
             onSelect={value => {
-              console.log({ value });
-
               const current = campaignInfo.interests || [];
               const exists = current.includes(value);
 
@@ -225,23 +270,6 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex }) => {
             placeholder="Select Interests..."
             clearTextOnFocus={true}
             keyboardAppearance={'dark'}
-          />
-          <RNSRangeSlider
-            min={MIN_AGE}
-            max={MAX_AGE}
-            step={1}
-            minRange={5}
-            low={campaignInfo.minAge}
-            high={campaignInfo.maxAge}
-            onChange={(low, high) => {
-              setCampaignInfo(prev => {
-                if (prev.minAge === low && prev.maxAge === high) {
-                  return prev; // ✅ prevent unnecessary re-renders
-                }
-                return { ...prev, minAge: low, maxAge: high };
-              });
-            }}
-            label={'Age'}
           />
         </>
       )}

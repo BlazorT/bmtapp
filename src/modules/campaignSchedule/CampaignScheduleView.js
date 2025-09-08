@@ -46,6 +46,7 @@ export default function CampaignScheduleScreen(props) {
     totalBudget: 0,
     discount: 0,
     genderId: '',
+    radius: 10,
     locations: [],
     interests: [],
     minAge: MIN_AGE,
