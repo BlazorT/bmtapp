@@ -1,3 +1,5 @@
+import moment from 'moment';
+import React from 'react';
 import {
   Dimensions,
   ScrollView,
@@ -6,12 +8,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
-import { useTheme } from '../../hooks/useTheme';
-import moment from 'moment';
-import { useSelector } from 'react-redux';
 import GestureRecognizer from 'react-native-swipe-gestures';
-import RNSButton from '../Button';
+import { useSelector } from 'react-redux';
+import { useTheme } from '../../hooks/useTheme';
 import { useUser } from '../../hooks/useUser';
 
 const ScheduleList = ({
@@ -22,8 +21,8 @@ const ScheduleList = ({
   setIsUpdate,
 }) => {
   const theme = useTheme();
-  const lovs = useSelector(state => state.lovs).lovs;
   const { user } = useUser();
+  const lovs = useSelector(state => state.lovs).lovs;
 
   const [showEditDelBtns, setShowEditDelBtns] = React.useState(false);
 
@@ -31,6 +30,7 @@ const ScheduleList = ({
     const intervals = lovs['lovs'].intervals;
     return intervals.filter(interval => interval.id == id + 1)[0].name;
   };
+  const currencyId = lovs['orgs']?.find(c => c.id === user?.orgId)?.currencyId;
 
   return (
     <View style={{ marginTop: 5 }}>
@@ -116,11 +116,13 @@ const ScheduleList = ({
                       backgroundColor: theme.buttonBackColor,
                     }}
                   >
-                    {schedule.CompaignNetworks.length}
+                    {schedule?.CompaignNetworks?.length}
                   </Text>
 
                   <Text style={{ color: theme.textColor }}>
-                    {schedule.budget.toFixed(2)} {lovs['orgs'][0].currencyName}
+                    {schedule?.budget?.toFixed(2) || '0.00'}{' '}
+                    {lovs['lovs']?.currencies?.find(c => c.id === currencyId)
+                      ?.code || ''}
                   </Text>
                 </View>
                 <View
@@ -266,11 +268,11 @@ const ScheduleList = ({
           style={{ color: theme.textColor, fontSize: 18, fontWeight: '600' }}
         >
           Campaign Budget: {'            '}
-          {campaignInfo.schedules
-            .map((s, i) => s.budget)
+          {campaignInfo?.schedules
+            .map((s, i) => s?.budget || 0)
             .reduce((a, b) => a + b, 0)
             .toFixed(2)}{' '}
-          {lovs['orgs'][0].currencyName}
+          {lovs['lovs']?.currencies?.find(c => c.id === currencyId)?.code || ''}
         </Text>
       </View>
     </View>

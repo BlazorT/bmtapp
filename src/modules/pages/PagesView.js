@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   Dimensions,
   Image,
@@ -17,14 +17,15 @@ import dashboardIcon from '../../../assets/images/pages/blog.png';
 import loginIcon from '../../../assets/images/pages/login.png';
 import organizationIcon from '../../../assets/images/tabbar/organization.png';
 import Alert from '../../components/Alert';
-import {useTheme} from '../../hooks/useTheme';
-import {useUser} from '../../hooks/useUser';
-import {colors, fonts} from '../../styles';
+import { useTheme } from '../../hooks/useTheme';
+import { useUser } from '../../hooks/useUser';
+import { colors, fonts } from '../../styles';
 import servicesettings from '../dataservices/servicesettings';
+import { isAdminOrSuperAdmin } from '../home/HomeView';
 
 export default function PagesScreen(props) {
   const theme = useTheme();
-  const {isAuthenticated, user, logoutUser} = useUser();
+  const { isAuthenticated, user, logoutUser } = useUser();
   const [Visible, setVisible] = useState(false);
 
   const hide = () => {
@@ -62,8 +63,8 @@ export default function PagesScreen(props) {
     {
       source: compaign,
       text: 'New Campaign',
-      path: 'Campaign Schedule',
-      condition: true,
+      path: 'Campaign (+)',
+      condition: isAuthenticated && isAdminOrSuperAdmin(user?.roleId),
     },
     {
       source: organizationIcon,
@@ -74,7 +75,7 @@ export default function PagesScreen(props) {
     {
       source: mycampaignIcon,
       text: 'My Campaigns',
-      path: 'My Campaigns',
+      path: 'Campaigns',
       condition: true,
     },
     {
@@ -114,7 +115,9 @@ export default function PagesScreen(props) {
     setVisible(true);
   };
   return (
-    <View style={[styles.container, {backgroundColor: theme.backgroundColor}]}>
+    <View
+      style={[styles.container, { backgroundColor: theme.backgroundColor }]}
+    >
       <Alert
         massagetype={'warning'}
         hide={hide}
@@ -122,7 +125,8 @@ export default function PagesScreen(props) {
         Visible={Visible}
         alerttype={'confirmation'}
         Title={'Confirmation'}
-        Massage={'Are you sure want to logout?'}></Alert>
+        Massage={'Are you sure want to logout?'}
+      ></Alert>
 
       <View
         style={{
@@ -132,7 +136,8 @@ export default function PagesScreen(props) {
           alignItems: 'flex-start',
           rowGap: 10,
           columnGap: 10,
-        }}>
+        }}
+      >
         {items.map(
           (item, idx) =>
             item.condition && (
@@ -146,7 +151,8 @@ export default function PagesScreen(props) {
                   {
                     backgroundColor: theme.cardBackColor,
                   },
-                ]}>
+                ]}
+              >
                 {item.source ? (
                   <Image
                     resizeMode="contain"
@@ -157,7 +163,7 @@ export default function PagesScreen(props) {
                 ) : (
                   item.icon
                 )}
-                <Text style={[styles.itemText, {color: theme.textColor}]}>
+                <Text style={[styles.itemText, { color: theme.textColor }]}>
                   {item.text}
                 </Text>
               </TouchableOpacity>
@@ -192,7 +198,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     elevation: 5,
     shadowColor: '#000',
-    shadowOffset: {width: 4, height: 6},
+    shadowOffset: { width: 4, height: 6 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
   },

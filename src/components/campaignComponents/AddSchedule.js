@@ -64,9 +64,19 @@ const AddSchedule = ({
       Toast.show('Please select a day');
       return;
     }
+    // console.log({ scheduleList });
+    // return;
     setCampaignInfo(prevState => ({
       ...prevState,
-      schedules: [...prevState.schedules, scheduleList],
+      schedules: [
+        ...prevState.schedules,
+        ...(scheduleList.CompaignNetworks?.map(cn => ({
+          ...scheduleList,
+          networkId: cn.networkId,
+          CompaignNetworks: [cn],
+          randomId: Math.floor(100000 + Math.random() * 900000),
+        })) ?? []),
+      ],
     }));
     setScheduleTab(1);
 
@@ -89,7 +99,7 @@ const AddSchedule = ({
       randomId: Math.floor(100000 + Math.random() * 900000),
     });
   };
-  console.log({ campaignInfo });
+  // console.log({ campaignInfo });
 
   const updateSchedule = () => {
     if (scheduleList.CompaignNetworks.length == 0) {
@@ -319,7 +329,8 @@ const AddSchedule = ({
       daysOfWeek: daysOfWeek,
     };
   }
-  // console.log(campaignInfo.networks);
+  // console.log(lovs);
+  const currencyId = lovs['orgs']?.find(c => c.id === user?.orgId)?.currencyId;
   return (
     <View style={{ marginTop: 10 }}>
       <View
@@ -698,7 +709,7 @@ const AddSchedule = ({
         </TouchableOpacity>
       </View>
       <ScrollView contentContainerStyle={{ marginTop: 10 }}>
-        <View>
+        <View style={{ rowGap: 5 }}>
           {scheduleList.CompaignNetworks.map((item, index) => (
             <View
               key={index}
@@ -735,7 +746,8 @@ const AddSchedule = ({
               >
                 Budget:{' '}
                 {(scheduleList.messageCount * item.unitPriceInclTax).toFixed(2)}{' '}
-                {lovs['orgs'][0].currencyName}
+                {lovs['lovs']?.currencies?.find(c => c.id === currencyId)
+                  ?.code || ''}
               </Text>
             </View>
           ))}

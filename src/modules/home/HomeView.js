@@ -15,10 +15,13 @@ const NetworkFailed = require('../../../assets/images/BDMT.png');
 const mycampaignIcon = require('../../../assets/images/drawer/mycampaign.png');
 const compaign = require('../../../assets/images/drawer/compaign.png');
 
+export const isAdminOrSuperAdmin = roleId => {
+  return roleId === 1 || roleId === 2;
+};
 export default function HomeScreen(props) {
   const theme = useTheme();
-  const { isAuthenticated } = useUser();
-
+  const { isAuthenticated, user } = useUser();
+  console.log({ user });
   const opensignup = async () => {
     global.SignUp_Login = 0;
     props.navigation.navigate('Login');
@@ -83,29 +86,32 @@ export default function HomeScreen(props) {
           </View>
         ) : (
           <View style={styles.Buttoncontainer2}>
-            <TouchableOpacity
-              onPress={() => AddCampaignClick()}
-              style={[
-                styles.Buy_SellButton,
-                { backgroundColor: theme.buttonBackColor },
-              ]}
-            >
-              <View style={styles.Buy_SellView1}>
-                <Image source={compaign} style={styles.BuyVehicleImg} />
-              </View>
-              <View style={styles.Buy_SellDetail}>
-                <Text style={styles.Buy_SellHead}>Campaigns</Text>
-                <Text
-                  style={
-                    Platform.OS === 'ios'
-                      ? styles.Buy_SellHeadDetailIOS
-                      : styles.Buy_SellHeadDetail
-                  }
-                >
-                  Settings & management of media campaigns
-                </Text>
-              </View>
-            </TouchableOpacity>
+            {isAdminOrSuperAdmin(user?.roleId) && (
+              <TouchableOpacity
+                onPress={() => AddCampaignClick()}
+                style={[
+                  styles.Buy_SellButton,
+                  { backgroundColor: theme.buttonBackColor },
+                ]}
+              >
+                <View style={styles.Buy_SellView1}>
+                  <Image source={compaign} style={styles.BuyVehicleImg} />
+                </View>
+                <View style={styles.Buy_SellDetail}>
+                  <Text style={styles.Buy_SellHead}>Campaigns</Text>
+                  <Text
+                    style={
+                      Platform.OS === 'ios'
+                        ? styles.Buy_SellHeadDetailIOS
+                        : styles.Buy_SellHeadDetail
+                    }
+                  >
+                    Settings & management of media campaigns
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            )}
+
             <TouchableOpacity
               onPress={() => props.navigation.navigate('Campaigns')}
               style={[

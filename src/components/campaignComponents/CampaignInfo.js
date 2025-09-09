@@ -46,7 +46,7 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex }) => {
   ];
 
   const handleCampaignInfo = (property, value) => {
-    console.log({ property, value });
+    // console.log({ property, value });
     setCampaignInfo(prevState => ({
       ...prevState,
       [property]: value,

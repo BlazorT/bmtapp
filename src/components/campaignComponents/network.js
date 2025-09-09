@@ -53,7 +53,7 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
       ? campaignInfo.networks.some(item => item.networkId == network.networkId)
       : false;
 
-  //   console.log({ network });
+  // console.log({ network });
   return (
     <View
       style={[

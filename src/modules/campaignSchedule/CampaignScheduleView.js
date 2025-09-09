@@ -70,11 +70,11 @@ export default function CampaignScheduleScreen(props) {
       }
     });
     loadInitialData();
-    console.log(props.route.params);
+    console.log(props.route.params, 'props');
     if (props.route.params) {
       updateCampaignData(props.route.params.campaign);
     }
-  }, []);
+  }, [props.route.params]);
   /**************************************** validation ************************************************/
   const loadInitialData = async () => {
     try {

@@ -7,6 +7,7 @@ import { setLovs } from '../redux/features/bmtLovs/lovsSlice';
 import { useTheme } from '../hooks/useTheme';
 import { Button } from '../components';
 import { GET_COUNTRY_INFO } from '../constants';
+import { useUser } from '../hooks/useUser';
 const profilelogo = require('../../assets/images/BDMT.png');
 
 const apiConfigs = [
@@ -67,6 +68,7 @@ const LOVContext = createContext({
 
 export const LOVProvider = ({ children }) => {
   const theme = useTheme();
+  const { isAuthenticated } = useUser();
   const dispatch = useDispatch();
 
   const { data, loading, error, fetchData } = useFetchData(apiConfigs);
@@ -75,7 +77,7 @@ export const LOVProvider = ({ children }) => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     if (loading || error) return;

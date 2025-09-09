@@ -8,7 +8,6 @@ const useFetchData = apiConfigs => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { user, isAuthenticated } = useUser();
-
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -26,14 +25,17 @@ const useFetchData = apiConfigs => {
             },
             ...(method === 'POST' && {
               body: JSON.stringify(
-                endpoint === 'admin/custombundlingdetails'
-                  ? { ...body, id: isAuthenticated ? user.orgId : 0 }
+                endpoint === 'Admin/custombundlingdetails'
+                  ? {
+                      ...body,
+                      orgId: isAuthenticated ? user?.orgId?.toString() : '0',
+                    }
                   : body || {},
               ),
             }),
           };
 
-          // console.log('headerFetch', headerFetch);
+          // console.log('headerFetch', headerFetch.body, endpoint);
           const response = await fetch(
             key === 'ipinfo'
               ? endpoint

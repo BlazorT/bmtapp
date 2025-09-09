@@ -168,7 +168,7 @@ export default function VehicalSallerScreen(props) {
     setorgdata(lovs['orgs']);
   }
   /************************************************************* submit data **********************************************************/
-  function submit() {
+  async function submit() {
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
     let usernameRegex = /^[a-zA-Z0-9_@.]{3,25}$/;
     if (username.trim() == '') {
@@ -225,48 +225,88 @@ export default function VehicalSallerScreen(props) {
     //.then((fcmToken) => {
     //let uniqueId = DeviceInfo.getUniqueId();
     //
+    let imageUrlOrg = '';
     const data = new FormData();
     if (img != '') {
-      data.append('profiles', {
+      data.append('file', {
         name: img[0].fileName,
         uri: img[0].uri,
         type: img[0].type,
       });
-    } else {
-      data.append('profiles', null);
+      setspinner(true);
+
+      try {
+        const res = await fetch(
+          servicesettings.baseuri + 'BlazorApi/uploadsingleattachment',
+          {
+            method: 'post',
+            body: data,
+            headers: {
+              Authorization: servicesettings.AuthorizationKey,
+            },
+          },
+        );
+        console.log({ res });
+        if (!res.ok) {
+          const err = new Error(`Request failed with status : ${res.status}`);
+          throw err;
+        }
+        const response = await res?.json();
+        console.log({ response });
+        imageUrlOrg =
+          response?.data
+            ?.replace(/^\\\\?wwwroot[\\/]/, '')
+            .replace(/\\/g, '/') || '';
+      } catch (error) {
+        console.log({ error });
+        console.log(error);
+        Toast.showWithGravity(
+          error?.message || 'Internet connection failed, try another time !!!',
+          Toast.LONG,
+          Toast.CENTER,
+        );
+        return;
+      } finally {
+        setspinner(false);
+      }
     }
 
-    data.append('id', 0);
-    data.append('orgid', orgdata[orgindex].id);
-    data.append('firstname', firstName);
-    data.append('lastname', lastName);
-    data.append('username', username);
-    data.append('Contact', Contact);
-    data.append('email', Email);
-    data.append('CityId', cities[cityindex].id);
-    data.append('password', Base64.btoa(Password.trim()));
-    data.append('roleid', 5);
-    data.append('fmctoken', '');
-    data.append('IM', '');
-    data.append('regsource', '1');
-    data.append('SecurityToken', '');
-    data.append('status', 1);
-
+    const bodyUser = {
+      id: 0,
+      OrgId: orgdata[orgindex].id,
+      FirstName: firstName,
+      LastName: lastName,
+      UserName: username,
+      Contact: Contact,
+      Email: Email,
+      CityId: cities[cityindex].id,
+      Password: Base64.btoa(Password.trim()),
+      RoleId: 5,
+      Ims: '',
+      RegistrationSource: 1,
+      SecurityToken: '',
+      Status: 1,
+      Avatar: imageUrlOrg,
+      UserCode: '',
+    };
     var ImageheaderFetch = {
-      enctype: 'multipart/form-data',
-      processData: false,
-      contentType: false,
-      cache: false,
-      timeout: 600000,
       method: 'post',
-      body: data,
+      body: JSON.stringify(bodyUser),
       headers: {
         Authorization: servicesettings.AuthorizationKey,
+        'Content-Type': 'application/json',
       },
     };
+    console.log({ bodyUser });
     fetch(servicesettings.baseuri + 'BlazorApi/updateuser', ImageheaderFetch)
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Request failed with status : ${response.status}`);
+        }
+        return response.json();
+      })
       .then(responseJson => {
+        console.log({ responseJson });
         if (responseJson.status == true) {
           console.log('responseJson', responseJson, data);
           Toast.show(
@@ -277,10 +317,11 @@ export default function VehicalSallerScreen(props) {
             orgid: responseJson.data.orgId,
           };
           loginUser(userInfo);
-          props.navigation.replace('BMT');
+          props.navigation.replace('Home');
         } else {
           Toast.showWithGravity(
-            'Internet connection failed, try another time !!!',
+            responseJson?.message ||
+              'Internet connection failed, try another time !!!',
             Toast.LONG,
             Toast.CENTER,
           );
@@ -292,7 +333,7 @@ export default function VehicalSallerScreen(props) {
         console.error('error', error);
         setspinner(false);
         Toast.showWithGravity(
-          'Internet connection failed, try another time !!!',
+          error?.message || 'Internet connection failed, try another time !!!',
           Toast.LONG,
           Toast.CENTER,
         );

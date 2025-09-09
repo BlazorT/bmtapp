@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { useTheme } from '../hooks/useTheme';
 import { colors } from '../styles';
 import { dateFormatter } from '../helper/dateFormatter';
+import { useUser } from '../hooks/useUser';
 const EMAIL = require('../../assets/images/Email.png');
 const INSTAGRAM = require('../../assets/images/instagram.png');
 const LINKEDIN = require('../../assets/images/linkedin.png');
@@ -16,13 +17,16 @@ const SMS = require('../../assets/images/SMS.png');
 const FACEBOOK = require('../../assets/images/Facebook.png');
 export default function MycampaignScheduleList(props) {
   const theme = useTheme();
+  const { user } = useUser();
   const lovs = useSelector(state => state.lovs).lovs;
   const [networkIcon, setNetworkIcon] = useState(EMAIL);
-  const [orgCurrencyName, setOrgCurrencyName] = useState('');
+
+  const currencyId = lovs['orgs']?.find(c => c.id === user?.orgId)?.currencyId;
+  // console.log({ props });
   useEffect(() => {
     const orgsData = lovs['orgs'][0];
     console.log({ orgsData });
-    setOrgCurrencyName(orgsData.currencyName);
+
     const inter = lovs['lovs'].intervals.find(
       x => x.id == props.intervalTypeId + 1,
     );
@@ -164,7 +168,11 @@ export default function MycampaignScheduleList(props) {
                 {'Message Count: ' + props.messageCount}
               </Text>
               <Text style={[styles.TitleStyle, { color: theme.textColor }]}>
-                {'Budget: ' + props.budget + ' ' + orgCurrencyName}
+                {'Budget: ' +
+                  props.budget +
+                  ' ' +
+                  (lovs['lovs']?.currencies?.find(c => c.id === currencyId)
+                    ?.code || '')}
               </Text>
             </View>
             <View

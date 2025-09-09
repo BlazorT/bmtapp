@@ -11,7 +11,12 @@ import moment from 'moment';
 import servicesettings from '../../modules/dataservices/servicesettings';
 import { useNavigation } from '@react-navigation/native';
 import notifee, { AndroidImportance } from '@notifee/react-native';
-import { CAMPAIGN_INTERESTS, GENDER_LIST } from '../../constants';
+import {
+  CAMPAIGN_INTERESTS,
+  GENDER_LIST,
+  MAX_AGE,
+  MIN_AGE,
+} from '../../constants';
 
 const CampaignSchedule = ({
   campaignInfo,
@@ -73,10 +78,10 @@ const CampaignSchedule = ({
   }, [isUpdate]);
 
   const addSchedule = async () => {
+    console.log({ campaignInfo });
+    console.log({ campaignInfo: JSON.stringify(campaignInfo) });
     let campaignBody = {
       id: campaignInfo.id,
-      selectCountryId: campaignInfo.country == '' ? 0 : Number(country),
-      selectStateId: campaignInfo.state == '' ? 0 : Number(state),
       targetaudiance: JSON.stringify({
         interests: campaignInfo.interests
           .map(index => {
@@ -87,6 +92,8 @@ const CampaignSchedule = ({
         genderId:
           campaignInfo.genderId === '' ? 0 : GENDER_LIST[campaignInfo.genderId],
         locations: campaignInfo?.locations,
+        minAge: campaignInfo.minAge,
+        maxAge: campaignInfo.maxAge,
       }),
       createdBy: Number(user.id),
       lastUpdatedBy: Number(user.id),
@@ -125,17 +132,17 @@ const CampaignSchedule = ({
         Status: s?.status,
         RowVer: 0,
         days: JSON.stringify(s?.days || []),
+        Budget: s?.budget || 0,
       })),
-      totalBudget: campaignInfo.schedules.reduce((a, b) => a + b.budget, 0),
+      Budget: campaignInfo.schedules.reduce((a, b) => a + b.budget, 0),
       discount: 0,
       remarks: '',
       paymentStatus: 0,
       rowVer: 0,
     };
 
-    console.log({ campaignBody });
+    console.log({ campaignBody, campaignInfo });
     console.log('campaignBody: ' + JSON.stringify(campaignBody));
-    // return;
     setUpdateMessage(`${campaignInfo.subject} has been created successfully.`);
     setspinner(true);
 
@@ -233,7 +240,7 @@ const CampaignSchedule = ({
           },
         };
         const imageResponse = await fetch(
-          servicesettings.baseuri + 'uploadattachments',
+          servicesettings.baseuri + 'BlazorApi/uploadattachments',
           ImageheaderFetch,
         );
         const attachmentRes = await imageResponse.json();
@@ -247,7 +254,33 @@ const CampaignSchedule = ({
           setModalVisible(true);
           setTimeout(() => {
             setModalVisible(false);
-            navigation.replace('My Campaigns');
+            navigation.navigate('Campaigns');
+            setIndex(0);
+            setCampaignInfo({
+              id: 0,
+              subject: '',
+              hashtag: '',
+              template: '',
+              country: '',
+              state: '',
+              campaignStartDate: '',
+              campaignEndDate: '',
+              status: 1,
+              autoLead: false,
+              image: '',
+              video: '',
+              pdf: '',
+              networks: [],
+              schedules: [],
+              totalBudget: 0,
+              discount: 0,
+              genderId: '',
+              radius: 10,
+              locations: [],
+              interests: [],
+              minAge: MIN_AGE,
+              maxAge: MAX_AGE,
+            });
           }, 4000);
         }
       } else {
@@ -256,7 +289,33 @@ const CampaignSchedule = ({
         setModalVisible(true);
         setTimeout(() => {
           setModalVisible(false);
-          navigation.replace('My Campaigns');
+          navigation.navigate('Campaigns');
+          setIndex(0);
+          setCampaignInfo({
+            id: 0,
+            subject: '',
+            hashtag: '',
+            template: '',
+            country: '',
+            state: '',
+            campaignStartDate: '',
+            campaignEndDate: '',
+            status: 1,
+            autoLead: false,
+            image: '',
+            video: '',
+            pdf: '',
+            networks: [],
+            schedules: [],
+            totalBudget: 0,
+            discount: 0,
+            genderId: '',
+            radius: 10,
+            locations: [],
+            interests: [],
+            minAge: MIN_AGE,
+            maxAge: MAX_AGE,
+          });
         }, 4000);
       }
     }

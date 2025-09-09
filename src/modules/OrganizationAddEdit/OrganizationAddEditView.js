@@ -24,6 +24,8 @@ import { useTheme } from '../../hooks/useTheme';
 import { useUser } from '../../hooks/useUser';
 import { colors } from '../../styles';
 import servicesettings from '../dataservices/servicesettings';
+import moment from 'moment';
+import { useNavigation } from '@react-navigation/native';
 const DownArrowIcon = require('../../../assets/images/downarrow.png');
 const UpArrowIcon = require('../../../assets/images/uparrow.png');
 const profileIcon = require('../../../assets/images/defaultUser.png');
@@ -31,6 +33,7 @@ const profileIcon = require('../../../assets/images/defaultUser.png');
 export default function OrganizationAddEditScreen(props) {
   //console.log('props new ' + JSON.stringify(props));
   const theme = useTheme();
+  const { navigate, goBack } = useNavigation();
   const { user, isAuthenticated } = useUser();
   const lovs = useSelector(state => state.lovs).lovs;
   const [spinner, setspinner] = useState(false);
@@ -93,6 +96,8 @@ export default function OrganizationAddEditScreen(props) {
   const [SelectSocialAreaEnabled, setSelectSocialAreaEnabled] = useState(false);
   const [shouldShow, setShouldShow] = useState(false);
   const [selectterms, setselectterms] = useState(false);
+  const [imageUrl, setImageUrl] = useState('');
+  const [orgCreatedAt, setOrgCreatedAt] = useState(null);
   const CancelClick = () => {
     setconfirmationVisible(true);
   };
@@ -285,6 +290,7 @@ export default function OrganizationAddEditScreen(props) {
                   .replace('//', '')
               : servicesettings.Imagebaseuri + 'compaignImages/16271.jpg';
           setEditImgURI(EditImg);
+          setImageUrl(EditOrg.logoAvatar);
           //setimg(EditOrg.logoAvatar);
           setselectterms(true);
           setEditOrgId(EditOrg.id);
@@ -315,7 +321,10 @@ export default function OrganizationAddEditScreen(props) {
           setInstagramId(EditOrg.instagram);
           setIban(EditOrg.ibanorWireTransferId);
           //
-
+          setOrgCreatedAt({
+            createdBy: EditOrg?.createdBy,
+            createdAt: EditOrg?.createdAt,
+          });
           //
           //
           setspinner(false);
@@ -348,7 +357,7 @@ export default function OrganizationAddEditScreen(props) {
   }
 
   /************************************************************* submit data **********************************************************/
-  function submit() {
+  async function submit() {
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
     if (orgName.trim() == '') {
       Toast.showWithGravity(
@@ -384,7 +393,7 @@ export default function OrganizationAddEditScreen(props) {
       Toast.showWithGravity('Please select "Status"', Toast.LONG, Toast.CENTER);
       return;
     }
-
+    let imageUrlOrg = imageUrl;
     const data = new FormData();
     if (img != '') {
       data.append('files', {
@@ -392,50 +401,106 @@ export default function OrganizationAddEditScreen(props) {
         uri: img[0].uri,
         type: img[0].type,
       });
-    } else {
-      data.append('files', null);
+      setspinner(true);
+
+      try {
+        const res = await fetch(
+          servicesettings.baseuri + 'BlazorApi/uploadsingleattachment',
+          {
+            method: 'post',
+            body: data,
+            headers: {
+              Authorization: servicesettings.AuthorizationKey,
+            },
+          },
+        );
+        console.log({ res });
+        if (!res.ok) {
+          const err = new Error(`Request failed with status : ${res.status}`);
+          throw err;
+        }
+        const response = await res?.json();
+        console.log({ response });
+        imageUrlOrg =
+          response?.data
+            ?.replace(/^\\\\?wwwroot[\\/]/, '')
+            .replace(/\\/g, '/') || '';
+      } catch (error) {
+        console.log({ error });
+        console.log(error);
+        Toast.showWithGravity(
+          error?.message || 'Internet connection failed, try another time !!!',
+          Toast.LONG,
+          Toast.CENTER,
+        );
+        return;
+      } finally {
+        setspinner(false);
+      }
     }
     if (editOrgId == '') {
       var OrgIdSelect = 0;
     } else {
       var OrgIdSelect = editOrgId;
     }
-    data.append('id', OrgIdSelect);
-    //data.append('userid', userId);
-    data.append('userid', 0);
-    data.append('orgname', orgName);
-    data.append('contact', Contact);
-    data.append('address', orgAddress);
-    data.append('email', Email);
-    data.append('strength', strength);
-    data.append('whatsapp', whatsapp);
-    data.append('instagram', instagramId);
-    data.append('fb', facebookId);
-    data.append('ibanorwiretransferid', iban);
-    // data.append('packageid', (selectedPackageId ==''?1:selectedPackageId));
-    data.append('currencyid', selectedCurrencyId);
-    data.append('stateid', selectCountryId);
-    data.append('cityid', selectCityId);
-    if (selectCityId == '') {
-      data.append('cityname', cityNameAdd);
-    } else {
-      data.append('cityname', '');
-    }
-    //data.append('cityname',selectCityName);
-    //data.append('roleid',5);
-    data.append('status', selectedStatusId == '' ? 1 : selectedStatusId);
+    const orgUpdateBody = {
+      id: OrgIdSelect,
+      // userid: 0,
+      Name: orgName,
+      Contact: Contact,
+      Address: orgAddress,
+      Email: Email,
+      Strength: strength,
+      Instagram: instagramId,
+      WhatsApp: whatsapp,
+      Fb: facebookId,
+      IbanorWireTransferId: iban,
+      CurrencyId: selectedCurrencyId,
+      StateId: selectCountryId,
+      CityId: selectCityId,
+      CityName: cityNameAdd || '',
+      Status: selectedStatusId == '' ? 1 : selectedStatusId,
+      LastUpdatedAt: moment.utc().format(),
+      CreatedAt: orgCreatedAt?.createdAt || moment.utc().format(),
+      CreatedBy: orgCreatedAt?.createdBy || user?.id,
+      LastUpdatedBy: user?.id,
+      LogoAvatar: imageUrlOrg,
+      RowVer: 0,
+    };
+    // data.append('id', OrgIdSelect);
+    // //data.append('userid', userId);
+    // data.append('userid', 0);
+    // data.append('orgname', orgName);
+    // data.append('contact', Contact);
+    // data.append('address', orgAddress);
+    // data.append('email', Email);
+    // data.append('strength', strength);
+    // data.append('whatsapp', whatsapp);
+    // data.append('instagram', instagramId);
+    // data.append('fb', facebookId);
+    // data.append('ibanorwiretransferid', iban);
+    // // data.append('packageid', (selectedPackageId ==''?1:selectedPackageId));
+    // data.append('currencyid', selectedCurrencyId);
+    // data.append('stateid', selectCountryId);
+    // data.append('cityid', selectCityId);
+    // if (selectCityId == '') {
+    //   data.append('cityname', cityNameAdd);
+    // } else {
+    //   data.append('cityname', '');
+    // }
+    // //data.append('cityname',selectCityName);
+    // //data.append('roleid',5);
+    // data.append('status', selectedStatusId == '' ? 1 : selectedStatusId);
 
-    var ImageheaderFetch = {
-      enctype: 'multipart/form-data',
-      processData: false,
-      contentType: false,
-      cache: false,
+    const ImageheaderFetch = {
+      // enctype: 'multipart/form-data',
       timeout: 600000,
       method: 'POST',
-      body: data,
+      body: JSON.stringify(orgUpdateBody),
       // body: JSON.stringify({'id':0,'orgname':orgName,'contact':Contact,'address':orgAddress,'email':Email,'whatsapp':whatsapp,'instagram':instagramId,'facebook':facebookId,'iban':iban,'currencyId':selectedCurrencyId,'roleid':5,'status':selectedStatusId}),
       headers: {
         Authorization: servicesettings.AuthorizationKey,
+        'Content-Type': 'application/json',
       },
       //headers: {
       //   'Accept': 'application/json',
@@ -443,15 +508,26 @@ export default function OrganizationAddEditScreen(props) {
       //  'Authorization': servicesettings.AuthorizationKey
       // }
     };
+    console.log({ orgUpdateBody, ImageheaderFetch });
+    setspinner(true);
     fetch(servicesettings.baseuri + 'BlazorApi/adupdateorg', ImageheaderFetch)
-      .then(response => response.json())
+      .then(response => {
+        console.log({ response });
+        if (!response.ok) {
+          const error = new Error(
+            `Request failed with status code : ${response.status}`,
+          );
+          throw error;
+        }
+        return response.json();
+      })
       .then(responseJson => {
         if (responseJson.status == true) {
           //setSubmitmodalVisible(true);
           Toast.show('Save successfully');
           setspinner(false);
           setTimeout(() => {
-            props.navigation.navigate('Panel');
+            goBack();
           }, 1000);
         } else {
           Toast.showWithGravity(
@@ -467,14 +543,18 @@ export default function OrganizationAddEditScreen(props) {
         console.error('error', error);
         setspinner(false);
         Toast.showWithGravity(
-          'Internet connection failed, try another time !!!',
+          error?.message || 'Internet connection failed, try another time !!!',
           Toast.LONG,
           Toast.CENTER,
         );
         return;
+      })
+      .finally(() => {
+        setspinner(false);
       });
     // });
   }
+  // console.log({ lovs });
   const TermsAndConditionsClose = () => {
     setModalVisible(false);
   };

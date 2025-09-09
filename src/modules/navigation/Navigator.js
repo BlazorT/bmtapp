@@ -30,6 +30,7 @@ import servicesettings from '../dataservices/servicesettings';
 import NavigatorView from './RootNavigation';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
+import { isAdminOrSuperAdmin } from '../home/HomeView';
 
 const Drawer = createDrawerNavigator();
 function CustomDrawerContent(props) {
@@ -52,12 +53,12 @@ function CustomDrawerContent(props) {
       condition: true,
     },
     {
-      name: 'Campaign Schedule',
+      name: 'Campaign (+)',
       icon: compaign,
-      condition: true,
+      condition: isAuthenticated && isAdminOrSuperAdmin(user?.roleId),
     },
     {
-      name: 'My Campaigns',
+      name: 'Campaigns',
       icon: mycampaignIcon,
       condition: true,
     },

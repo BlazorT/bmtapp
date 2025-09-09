@@ -7,9 +7,10 @@ import { useUser } from '../../hooks/useUser';
 import { colors } from '../../styles';
 import tabNavigationData from './tabNavigationData';
 import { StatusBar } from 'react-native';
+import { isAdminOrSuperAdmin } from '../home/HomeView';
 const Tab = createBottomTabNavigator();
 export default function BottomTabs() {
-  const { isAuthenticated } = useUser();
+  const { isAuthenticated, user } = useUser();
   const theme = useTheme();
 
   return (
@@ -25,7 +26,8 @@ export default function BottomTabs() {
     >
       {tabNavigationData.map((item, idx) =>
         item.name == 'Campaign (+)' ? (
-          isAuthenticated && (
+          isAuthenticated &&
+          isAdminOrSuperAdmin(user?.roleId) && (
             <Tab.Screen
               key={`tab_item${idx + 1}`}
               name={item.name}

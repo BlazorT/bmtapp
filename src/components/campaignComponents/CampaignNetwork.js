@@ -24,14 +24,16 @@ const CampaignNetwork = ({
     <View>
       <ScrollView contentContainerStyle={{ rowGap: 10, marginTop: 10 }}>
         {networks.length > 0 &&
-          networks.map((network, index) => (
-            <Network
-              key={index}
-              campaignInfo={campaignInfo}
-              network={network}
-              setCampaignInfo={setCampaignInfo}
-            />
-          ))}
+          networks
+            .filter(n => n?.purchasedQouta !== 0)
+            .map((network, index) => (
+              <Network
+                key={index}
+                campaignInfo={campaignInfo}
+                network={network}
+                setCampaignInfo={setCampaignInfo}
+              />
+            ))}
         <View
           style={{
             flexDirection: 'row',

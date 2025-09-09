@@ -49,8 +49,8 @@ const CampaignMap = ({ isOpen, toggleOpen, campaignInfo, setCampaignInfo }) => {
   ).current;
 
   const [marker, setMarker] = useState({
-    latitude: region.latitude,
-    longitude: region.longitude,
+    latitude: parseFloat(ipinfo?.hoskes_locplugin_latitude || 37.78825),
+    longitude: parseFloat(ipinfo?.hoskes_locplugin_longitude || -122.4324),
   });
 
   const [address, setAddress] = useState('');
@@ -237,11 +237,11 @@ const CampaignMap = ({ isOpen, toggleOpen, campaignInfo, setCampaignInfo }) => {
           style={styles.map}
           userInterfaceStyle={themeMode}
           showsUserLocation
-          //   showsMyLocationButton={false}
+          showsMyLocationButton={false}
           showsCompass={false}
           mapType="standard"
           initialRegion={region}
-          customMapStyle={mapStyle}
+          // customMapStyle={mapStyle}
           onPoiClick={e => {
             const { latitude, longitude } = e.nativeEvent.coordinate;
             moveToLocation(latitude, longitude);
@@ -411,7 +411,7 @@ const CampaignMap = ({ isOpen, toggleOpen, campaignInfo, setCampaignInfo }) => {
                     <Text
                       ellipsizeMode="tail"
                       numberOfLines={1}
-                      style={{ color: theme.textColor, width: 120 }}
+                      style={{ color: theme.acytiveBreadcrumbText, width: 120 }}
                     >
                       {cl?.AreaName}
                     </Text>
@@ -469,12 +469,12 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width,
     justifyContent: 'flex-end',
     alignItems: 'center',
-    overflow: 'hidden',
+    // overflow: 'hidden',
     flex: 1,
   },
   map: {
     ...StyleSheet.absoluteFillObject,
-    overflow: 'hidden',
+    // overflow: 'hidden',
     marginBottom: 40,
   },
   bottomView: {
@@ -485,8 +485,8 @@ const styles = StyleSheet.create({
     padding: 10,
     rowGap: 10,
     position: 'absolute',
-    zIndex: 10, // 👈 force it above the map
-    elevation: 10,
+    // zIndex: 10, // 👈 force it above the map
+    // elevation: 10,
   },
   topView: {
     width: '95%',

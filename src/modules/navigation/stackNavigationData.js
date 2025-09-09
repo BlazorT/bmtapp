@@ -164,17 +164,17 @@ const StackNavigationData = [
   //     fontSize: 18,
   //   },
   // },
-  {
-    name: 'Campaign Schedule',
-    component: CampaignScheduleScreen,
-    headerLeft: headerLeftComponent,
-    headerBackground: { source: headerBackground },
-    headerTitleStyle: {
-      fontFamily: fonts.primaryRegular,
-      color: colors.NavbarTextColor,
-      fontSize: 18,
-    },
-  },
+  // {
+  //   name: 'Campaign Schedule',
+  //   component: CampaignScheduleScreen,
+  //   headerLeft: headerLeftComponent,
+  //   headerBackground: { source: headerBackground },
+  //   headerTitleStyle: {
+  //     fontFamily: fonts.primaryRegular,
+  //     color: colors.NavbarTextColor,
+  //     fontSize: 18,
+  //   },
+  // },
   // {
   //   name: 'Email',
   //   component: EmailScreen,
@@ -208,17 +208,17 @@ const StackNavigationData = [
       fontSize: 18,
     },
   },
-  {
-    name: 'My Campaigns',
-    component: MyCampaignScreen,
-    headerLeft: headerLeftComponent,
-    headerBackground: { source: headerBackground },
-    headerTitleStyle: {
-      fontFamily: fonts.primaryRegular,
-      color: colors.NavbarTextColor,
-      fontSize: 18,
-    },
-  },
+  // {
+  //   name: 'My Campaigns',
+  //   component: MyCampaignScreen,
+  //   headerLeft: headerLeftComponent,
+  //   headerBackground: { source: headerBackground },
+  //   headerTitleStyle: {
+  //     fontFamily: fonts.primaryRegular,
+  //     color: colors.NavbarTextColor,
+  //     fontSize: 18,
+  //   },
+  // },
   // {
   //   name: 'Organization',
   //   component: OrganizationScreen,

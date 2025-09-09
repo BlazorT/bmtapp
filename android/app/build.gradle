@@ -74,6 +74,15 @@ def enableProguardInReleaseBuilds = false
 def jscFlavor = 'io.github.react-native-community:jsc-android:2026004.+'
 
 android {
+    // splits {
+    //     abi {
+    //         enable true
+    //         reset()
+    //         universalApk false
+    //         include "arm64-v8a" // Only build for arm64 during development
+    //     }
+    // }
+
     ndkVersion rootProject.ext.ndkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion

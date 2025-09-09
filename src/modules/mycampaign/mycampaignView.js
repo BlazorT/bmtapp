@@ -31,6 +31,7 @@ import { useTheme } from '../../hooks/useTheme';
 import { useUser } from '../../hooks/useUser';
 import servicesettings from '../dataservices/servicesettings';
 import Model from '../../components/Model';
+import { isAdminOrSuperAdmin } from '../home/HomeView';
 export default function MyCampaignScreen(props) {
   const { user, isAuthenticated } = useUser();
   const theme = useTheme();
@@ -77,6 +78,7 @@ export default function MyCampaignScreen(props) {
   useEffect(() => {
     if (isFocused) Loaddata();
   }, [isFocused]);
+
   function Loaddata() {
     setspinner(true);
     if (isAuthenticated) {
@@ -106,10 +108,7 @@ export default function MyCampaignScreen(props) {
         .then(response => response.json())
         .then(responseJson => {
           console.log('data response bmtcompaigns  =>', headerFetch.body);
-          console.log(
-            'data response bmtcompaigns  =>',
-            JSON.stringify(responseJson.data.length),
-          );
+          console.log('data response bmtcompaigns  =>', responseJson.data);
 
           if (responseJson.data != null) {
             setdata(responseJson.data);
@@ -319,12 +318,11 @@ export default function MyCampaignScreen(props) {
     }
   }
   function AddNewCampaignClick() {
-    ((global.UpdateCampaign = 0),
-      props.navigation.navigate('Campaign Schedule'));
+    ((global.UpdateCampaign = 0), props.navigation.navigate('Campaign (+)'));
   }
   function OpenUpdateCampaign(campaignData) {
     ((global.UpdateCampaign = 1),
-      props.navigation.navigate('Campaign Schedule', {
+      props.navigation.navigate('Campaign (+)', {
         campaign: campaignData,
       }));
   }
@@ -438,6 +436,7 @@ export default function MyCampaignScreen(props) {
       </View>
     );
   };
+  console.log({ data });
   return (
     <View
       style={[styles.container, { backgroundColor: theme.backgroundColor }]}
@@ -465,17 +464,19 @@ export default function MyCampaignScreen(props) {
             { backgroundColor: theme.cardBackColor },
           ]}
         >
-          <View style={styles.AddNewCampaignView}>
-            <TouchableOpacity
-              style={[
-                styles.btnDetail_Delete,
-                { backgroundColor: theme.buttonBackColor },
-              ]}
-              onPress={() => AddNewCampaignClick()}
-            >
-              <Text style={styles.Delete_Play_PauseTxt}>New Campaign</Text>
-            </TouchableOpacity>
-          </View>
+          {isAuthenticated && isAdminOrSuperAdmin(user?.roleId) && (
+            <View style={styles.AddNewCampaignView}>
+              <TouchableOpacity
+                style={[
+                  styles.btnDetail_Delete,
+                  { backgroundColor: theme.buttonBackColor },
+                ]}
+                onPress={() => AddNewCampaignClick()}
+              >
+                <Text style={styles.Delete_Play_PauseTxt}>New Campaign</Text>
+              </TouchableOpacity>
+            </View>
+          )}
           <View style={styles.SearchButtonView}>
             <TouchableOpacity onPress={() => functionCombined()}>
               <Icons name={'search'} style={styles.cameraicon} />
