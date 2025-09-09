@@ -239,10 +239,14 @@ const CampaignSchedule = ({
             Authorization: servicesettings.AuthorizationKey,
           },
         };
+        setspinner(true);
+
         const imageResponse = await fetch(
           servicesettings.baseuri + 'BlazorApi/uploadattachments',
           ImageheaderFetch,
         );
+        setspinner(false);
+
         const attachmentRes = await imageResponse.json();
         console.log('attachmentRes', attachmentRes);
         if (attachmentRes.status == false || attachmentRes.status == '408') {

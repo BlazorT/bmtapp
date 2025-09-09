@@ -296,6 +296,7 @@ export default function MyCampaignScreen(props) {
       global.StatusName = 'Delete';
     }
   }
+  // console.log({ attachmentData });
   function AttachmentPreviewDetail(AttachmentPreview) {
     setAttachmentData(JSON.parse(AttachmentPreview));
     if (attachmentViewVisible == true) {
@@ -339,35 +340,34 @@ export default function MyCampaignScreen(props) {
     const { dirs } = RNFetchBlob.fs;
     const downloadDir =
       Platform.OS === 'ios' ? dirs.DocumentDir : dirs.DownloadDir;
+
     const pdfUrl =
       servicesettings.Imagebaseuri +
       image.replace(/\\/g, '/').replace(',', '').replace(' //', '');
+
     RNFetchBlob.config({
       fileCache: true,
-      addAndroidDownloads: {
-        useDownloadManager: true,
-        notification: true,
-        path: `${downloadDir}/Attachment.pdf`,
-        description: 'Downloading PDF file...',
-      },
+      path: `${downloadDir}/Attachment.pdf`, // directly save file
     })
       .fetch('GET', pdfUrl)
       .then(res => {
-        // Handle success
         console.log('File downloaded:', res.path());
-        setTimeout(() => {
-          setspinner(false);
-          Toast.show('File downloaded has been send successfully!');
-        }, 4000);
+        setspinner(false);
+        Toast.show('File downloaded successfully!');
       })
       .catch(error => {
-        // Handle error
         setspinner(false);
         console.error('Error downloading file:', error);
       });
   }
+
   const Item = ({ image, Id }) => {
     console.log({ image });
+    console.log({
+      url:
+        servicesettings.Imagebaseuri +
+        image.replace(/\\/g, '/').replace(',', '').replace(' //', ''),
+    });
     return (
       <View style={{ textAlign: 'center', marginVertical: 8 }}>
         <ScrollView>
@@ -415,6 +415,7 @@ export default function MyCampaignScreen(props) {
                   onError={() => {
                     setAttachmentImageError(true);
                   }}
+                  onLoad={() => setAttachmentImageError(false)}
                 />
               </TouchableOpacity>
             ) : (

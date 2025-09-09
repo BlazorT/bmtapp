@@ -77,6 +77,7 @@ export default function Myvehicle(props) {
 
   const clickForDetailother = async () => {
     var AttachmentCount = props.data.attachments.length;
+    // console.log({ AttachmentCount });
     setAttachmentDataList(AttachmentCount);
     //
     let itemCount;
