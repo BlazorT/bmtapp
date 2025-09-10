@@ -16,6 +16,7 @@ import AboutScreen from '../about/AboutViewContainer';
 import HomeScreen from '../home/HomeViewContainer';
 import ProfileScreen from '../profile/ProfileViewContainer';
 import TabNavigator from './MainTabNavigator';
+import CompaigndetailScreen from '../../modules/Compaigndetail/CompaigndetailView';
 const headerLeftComponent = props => {
   const theme = useTheme();
   return (
@@ -79,6 +80,17 @@ const StackNavigationData = [
   {
     name: 'Campaign',
     component: CreatcompainVersion,
+    headerLeft: headerLeftComponent,
+    headerBackground: { source: headerBackground },
+    headerTitleStyle: {
+      fontFamily: fonts.primaryRegular,
+      color: colors.NavbarTextColor,
+      fontSize: 18,
+    },
+  },
+  {
+    name: 'Campaign Details',
+    component: CompaigndetailScreen,
     headerLeft: headerLeftComponent,
     headerBackground: { source: headerBackground },
     headerTitleStyle: {

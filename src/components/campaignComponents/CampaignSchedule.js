@@ -90,7 +90,9 @@ const CampaignSchedule = ({
           })
           .filter(Boolean), // removes nulls if index not found
         genderId:
-          campaignInfo.genderId === '' ? 0 : GENDER_LIST[campaignInfo.genderId],
+          campaignInfo.genderId === ''
+            ? 0
+            : GENDER_LIST[campaignInfo.genderId]?.id,
         locations: campaignInfo?.locations,
         minAge: campaignInfo.minAge,
         maxAge: campaignInfo.maxAge,
@@ -258,7 +260,7 @@ const CampaignSchedule = ({
           setModalVisible(true);
           setTimeout(() => {
             setModalVisible(false);
-            navigation.navigate('Campaigns');
+            navigation.navigate('Campaigns', { isReload: true });
             setIndex(0);
             setCampaignInfo({
               id: 0,
@@ -293,7 +295,7 @@ const CampaignSchedule = ({
         setModalVisible(true);
         setTimeout(() => {
           setModalVisible(false);
-          navigation.navigate('Campaigns');
+          navigation.navigate('Campaigns', { isReload: true });
           setIndex(0);
           setCampaignInfo({
             id: 0,

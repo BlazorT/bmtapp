@@ -38,7 +38,8 @@ import deleteicon from '../../assets/images/deleteicon.png';
 import pauseicon from '../../assets/images/pauseicon.png';
 import BDMT from '../../assets/images/pepsilogo.png';
 import playicon from '../../assets/images/playicon.png';
-import { dateFormatter } from '../helper/dateFormatter';
+import { dateFormatter, safeJSONParse } from '../helper/dateFormatter';
+import { GENDER_LIST } from '../constants';
 
 export default function Myvehicle(props) {
   const theme = useTheme();
@@ -171,6 +172,7 @@ export default function Myvehicle(props) {
     props.SettingClickForChangeFlatList(data);
   }
   const ClickDeleteData = async props => {
+    console.log({ props });
     props.StatusChangeOnClick(props);
     setButtonsvisible(false);
   };
@@ -191,13 +193,20 @@ export default function Myvehicle(props) {
   function openShare() {
     Toast.show('coming soon!');
   }
-  const Item = ({ networkId, networkName }) => (
-    <View style={{ textAlign: 'right', marginLeft: 7 }}>
-      <TouchableOpacity>
-        <Text style={styles.NetworkNameTitle}>{networkName}</Text>
-      </TouchableOpacity>
-    </View>
-  );
+  const Item = ({ networkId, networkName }) => {
+    return (
+      <View style={{ textAlign: 'right', marginLeft: 7 }}>
+        <TouchableOpacity>
+          <Text style={[styles.NetworkNameTitle, { color: theme.textColor }]}>
+            {networkName}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  const targetaudiance = safeJSONParse(props?.data?.targetaudiance, null);
+
   return (
     <Fragment>
       <GestureRecognizer
@@ -910,6 +919,176 @@ export default function Myvehicle(props) {
                     {hashTags == '' || hashTags == null ? '--' : hashTags}
                   </Text>
                 </View>
+                {targetaudiance && (
+                  <View style={{ marginVertical: 5, marginHorizontal: 5 }}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <View
+                        style={{
+                          flex: 1,
+                          height: 1,
+                          backgroundColor: theme.textColor,
+                        }}
+                      />
+                      <Text
+                        style={{
+                          marginHorizontal: 8, // spacing between text and lines
+                          color: theme.textColor,
+                          fontSize: 16,
+                          fontWeight: 'bold',
+                        }}
+                      >
+                        Target Audiance
+                      </Text>
+                      <View
+                        style={{
+                          flex: 1,
+                          height: 1,
+                          backgroundColor: theme.textColor,
+                        }}
+                      />
+                    </View>
+                    {typeof targetaudiance?.genderId === 'number' &&
+                      targetaudiance.genderId > 0 && (
+                        <View style={styles.CampaignDetailStyle}>
+                          <Text
+                            style={[
+                              styles.titleHeading,
+                              { color: theme.textColor },
+                            ]}
+                          >
+                            Gender
+                          </Text>
+                          <Text
+                            style={[
+                              styles.titleDetail,
+                              { color: theme.textColor },
+                            ]}
+                          >
+                            {GENDER_LIST?.find(
+                              gl => gl.id === targetaudiance.genderId,
+                            )?.name || ''}
+                          </Text>
+                        </View>
+                      )}
+
+                    {targetaudiance?.interests &&
+                      targetaudiance?.interests?.length > 0 && (
+                        <View style={styles.CampaignDetailStyle}>
+                          <Text
+                            style={[
+                              styles.titleHeading,
+                              { color: theme.textColor },
+                            ]}
+                          >
+                            Interests
+                          </Text>
+                          <Text
+                            style={[
+                              styles.titleDetail,
+                              { color: theme.textColor },
+                            ]}
+                          >
+                            {targetaudiance?.interests?.map(i => i)?.join(', ')}
+                          </Text>
+                        </View>
+                      )}
+                    {targetaudiance?.minAge && (
+                      <View style={styles.CampaignDetailStyle}>
+                        <Text
+                          style={[
+                            styles.titleHeading,
+                            { color: theme.textColor },
+                          ]}
+                        >
+                          Min Age
+                        </Text>
+                        <Text
+                          style={[
+                            styles.titleDetail,
+                            { color: theme.textColor },
+                          ]}
+                        >
+                          {targetaudiance?.minAge}
+                        </Text>
+                      </View>
+                    )}
+                    {targetaudiance?.maxAge && (
+                      <View style={styles.CampaignDetailStyle}>
+                        <Text
+                          style={[
+                            styles.titleHeading,
+                            { color: theme.textColor },
+                          ]}
+                        >
+                          Max Age
+                        </Text>
+                        <Text
+                          style={[
+                            styles.titleDetail,
+                            { color: theme.textColor },
+                          ]}
+                        >
+                          {targetaudiance?.maxAge}
+                        </Text>
+                      </View>
+                    )}
+                    {targetaudiance?.locations &&
+                      targetaudiance?.locations?.length > 0 && (
+                        <View style={styles.CampaignDetailStyle}>
+                          <Text
+                            style={[
+                              styles.titleHeading,
+                              { color: theme.textColor },
+                            ]}
+                          >
+                            Locations
+                          </Text>
+                          <View
+                            style={[
+                              // styles.titleDetail,
+                              {
+                                flexDirection: 'row',
+                                columnGap: 5,
+                                rowGap: 5,
+                                alignItems: 'center',
+                                justifyContent: 'flex-end',
+                                flexWrap: 'wrap',
+                                width: '65%',
+                                // paddingRight: 5,
+                              },
+                            ]}
+                          >
+                            {targetaudiance?.locations?.map((cl, index) => (
+                              <View
+                                key={index}
+                                style={[
+                                  {
+                                    backgroundColor: theme.selectedCheckBox,
+                                    padding: 5,
+                                    borderRadius: 6,
+                                    flexDirection: 'row',
+                                  },
+                                ]}
+                              >
+                                <Text
+                                  ellipsizeMode="tail"
+                                  numberOfLines={1}
+                                  style={{ color: theme.textColor, width: 100 }}
+                                >
+                                  {cl?.AreaName}
+                                </Text>
+                              </View>
+                            ))}
+                          </View>
+                        </View>
+                      )}
+                  </View>
+                )}
                 <View
                   style={{
                     marginLeft: 5,

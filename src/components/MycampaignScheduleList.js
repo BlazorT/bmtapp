@@ -1,69 +1,39 @@
-import moment from 'moment';
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useTheme } from '../hooks/useTheme';
-import { colors } from '../styles';
 import { dateFormatter } from '../helper/dateFormatter';
 import { useUser } from '../hooks/useUser';
-const EMAIL = require('../../assets/images/Email.png');
-const INSTAGRAM = require('../../assets/images/instagram.png');
-const LINKEDIN = require('../../assets/images/linkedin.png');
-const SNAPCHAT = require('../../assets/images/snapchat.png');
-const TIKTOK = require('../../assets/images/tiktok.png');
-const WHATSAPP = require('../../assets/images/Whatsapp.png');
-const TWITTER = require('../../assets/images/Twitter.png');
-const SMS = require('../../assets/images/SMS.png');
-const FACEBOOK = require('../../assets/images/Facebook.png');
+
+// Social icons
+const ICONS = {
+  1: require('../../assets/images/SMS.png'),
+  2: require('../../assets/images/Whatsapp.png'),
+  3: require('../../assets/images/Email.png'),
+  4: require('../../assets/images/Twitter.png'),
+  5: require('../../assets/images/Facebook.png'),
+  6: require('../../assets/images/instagram.png'),
+  7: require('../../assets/images/linkedin.png'),
+  8: require('../../assets/images/tiktok.png'),
+  9: require('../../assets/images/snapchat.png'),
+};
+
 export default function MycampaignScheduleList(props) {
   const theme = useTheme();
   const { user } = useUser();
   const lovs = useSelector(state => state.lovs).lovs;
-  const [networkIcon, setNetworkIcon] = useState(EMAIL);
+
+  const [networkIcon, setNetworkIcon] = useState(ICONS[3]); // default email
 
   const currencyId = lovs['orgs']?.find(c => c.id === user?.orgId)?.currencyId;
-  // console.log({ props });
-  useEffect(() => {
-    const orgsData = lovs['orgs'][0];
-    console.log({ orgsData });
 
-    const inter = lovs['lovs'].intervals.find(
-      x => x.id == props.intervalTypeId + 1,
-    );
-    console.log({ inter }, lovs['lovs'].intervals);
-    //console.log('network my data ' + JSON.stringify(props.compaignQouta));
-    //console.log('network my data ' + JSON.stringify(props.networkName));
-    if (props.networkId == 1) {
-      setNetworkIcon(SMS);
+  useEffect(() => {
+    if (props.networkId && ICONS[props.networkId]) {
+      setNetworkIcon(ICONS[props.networkId]);
     }
-    if (props.networkId == 2) {
-      setNetworkIcon(WHATSAPP);
-    }
-    if (props.networkId == 3) {
-      setNetworkIcon(EMAIL);
-    }
-    if (props.networkId == 4) {
-      setNetworkIcon(TWITTER);
-    }
-    if (props.networkId == 5) {
-      setNetworkIcon(FACEBOOK);
-    }
-    if (props.networkId == 6) {
-      setNetworkIcon(INSTAGRAM);
-    }
-    if (props.networkId == 7) {
-      setNetworkIcon(LINKEDIN);
-    }
-    if (props.networkId == 8) {
-      setNetworkIcon(TIKTOK);
-    }
-    if (props.networkId == 9) {
-      setNetworkIcon(SNAPCHAT);
-    }
-  }, []);
+  }, [props.networkId]);
 
   const calculateDays = dayNumberString => {
-    console.log({ dayNumberString });
     const dayMap = {
       1: 'Sun',
       2: 'Mon',
@@ -74,215 +44,107 @@ export default function MycampaignScheduleList(props) {
       7: 'Sat',
     };
 
-    const dayNumbers = dayNumberString.split(',').map(Number);
-    const dayNames = dayNumbers.map(dayNumber => dayMap[dayNumber]);
-
-    return dayNames.join(', ');
+    return dayNumberString
+      .split(',')
+      .map(Number)
+      .map(day => dayMap[day])
+      .join(', ');
   };
+
+  const intervalName =
+    lovs['lovs']?.intervals?.find(x => x.id == props.intervalTypeId + 1)
+      ?.name || 'Unknown';
+
+  const currencyCode =
+    lovs['lovs']?.currencies?.find(c => c.id === currencyId)?.code || '';
+
   return (
-    <Fragment>
-      <View
-        style={[styles.ModalMainView, { backgroundColor: theme.cardBackColor }]}
-      >
-        <TouchableOpacity
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            paddingHorizontal: 5,
-            paddingVertical: 3,
-            borderRadius: 3,
-          }}
-        >
-          <View>
-            <Image
-              resizeMode="contain"
-              source={networkIcon}
-              style={styles.socialMediaIcon}
-            />
-          </View>
-          <View style={{ flex: 1, marginLeft: 10, rowGap: 1 }}>
-            <View
-              style={{
-                flex: 1,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-              }}
-            >
+    <View style={[styles.card, { backgroundColor: theme.cardBackColor }]}>
+      <TouchableOpacity style={styles.row}>
+        {/* Network Icon */}
+        <Image
+          resizeMode="contain"
+          source={networkIcon}
+          style={styles.socialMediaIcon}
+        />
+
+        {/* Details */}
+        <View style={styles.details}>
+          {/* Interval + Days */}
+          <View style={styles.rowSpace}>
+            <Text style={[styles.text, { color: theme.textColor }]}>
+              Interval Type: {intervalName}
+            </Text>
+            {props?.days?.length <= 10 ? (
+              <Text style={[styles.text, { color: theme.textColor }]}>
+                Days: {calculateDays(props.days)}
+              </Text>
+            ) : (
               <Text
                 style={[
-                  styles.IntervalTitleStyle,
-                  {
-                    color: theme.textColor,
-                    textAlign: 'left',
-                  },
+                  styles.text,
+                  { color: theme.textColor, textAlign: 'justify' },
                 ]}
               >
-                {'Interval Type: ' +
-                  lovs['lovs'].intervals.find(
-                    x => x.id == props.intervalTypeId + 1,
-                  ).name}
+                Days: {calculateDays(props.days)}
               </Text>
-              {props?.days?.length <= 10 && (
-                <Text
-                  style={[
-                    styles.DaysStyle,
-                    {
-                      color: theme.textColor,
-                      textAlign: 'left',
-                    },
-                  ]}
-                >
-                  {'Days: ' + calculateDays(props.days)}
-                </Text>
-              )}
-            </View>
-            {props?.days?.length > 10 && (
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  flexWrap: 'wrap',
-                }}
-              >
-                <Text
-                  style={[
-                    styles.DaysStyle,
-                    { color: theme.textColor, textAlign: 'justify' },
-                  ]}
-                >
-                  {'Days: ' + calculateDays(props.days)}
-                </Text>
-              </View>
             )}
-            <View
-              style={{
-                flex: 1,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-              }}
-            >
-              <Text style={[styles.BudgetStyle, { color: theme.textColor }]}>
-                {'Message Count: ' + props.messageCount}
-              </Text>
-              <Text style={[styles.TitleStyle, { color: theme.textColor }]}>
-                {'Budget: ' +
-                  props.budget +
-                  ' ' +
-                  (lovs['lovs']?.currencies?.find(c => c.id === currencyId)
-                    ?.code || '')}
-              </Text>
-            </View>
-            <View
-              style={{
-                flex: 1,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-              }}
-            >
-              <View style={styles.Itemdetail}>
-                <Text style={[styles.StartTime, { color: theme.textColor }]}>
-                  {dateFormatter(props.startTime)}
-                </Text>
-              </View>
-              <View style={styles.ItemdetailMiddle}>
-                <Text style={[styles.StartTime, { color: theme.textColor }]}>
-                  {'~'}
-                </Text>
-              </View>
-              <View style={styles.ItemFinishdetail}>
-                <Text style={[styles.FinishTime, { color: theme.textColor }]}>
-                  {dateFormatter(props.finishTime)}
-                </Text>
-              </View>
-            </View>
           </View>
-        </TouchableOpacity>
-      </View>
-    </Fragment>
+
+          {/* Message Count + Budget */}
+          <View style={styles.rowSpace}>
+            <Text style={[styles.text, { color: theme.textColor }]}>
+              Message Count: {props.messageCount}
+            </Text>
+            <Text style={[styles.text, { color: theme.textColor }]}>
+              Budget: {props.budget} {currencyCode}
+            </Text>
+          </View>
+
+          {/* Start - Finish Time */}
+          <View style={styles.rowSpace}>
+            <Text style={[styles.text, { color: theme.textColor }]}>
+              {dateFormatter(props.startTime)}
+            </Text>
+            <Text style={[styles.text, { color: theme.textColor }]}>~</Text>
+            <Text style={[styles.text, { color: theme.textColor }]}>
+              {dateFormatter(props.finishTime)}
+            </Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    </View>
   );
 }
+
 const styles = StyleSheet.create({
-  SettingIconView: {
-    width: 12 + '%',
+  card: {
+    marginHorizontal: 0,
+    marginTop: '3%',
+    borderRadius: 6,
+    paddingVertical: 6,
+    paddingHorizontal: 5,
+  },
+  row: {
+    flexDirection: 'row',
     alignItems: 'center',
   },
-  SettingIcon: {
-    fontSize: 25,
-    color: 'black',
+  rowSpace: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    marginBottom: 2,
   },
-  ModalMainView: {
-    marginHorizontal: 10,
-    paddingTop: 3,
-    marginTop: 3 + '%',
-    marginLeft: 2 + '%',
-    marginRight: 2 + '%',
-    width: 96 + '%',
-    zIndex: 1,
-    borderRadius: 6,
-    backgroundColor: colors.PagePanelTab,
-  },
-
   socialMediaIcon: {
-    height: 55,
-    width: 55,
+    height: 45,
+    width: 45,
   },
-  IconText: {
-    color: 'white',
-    fontSize: 16,
+  details: {
+    flex: 1,
+    marginLeft: 10,
+    rowGap: 3,
   },
-  TitleStyle: {
-    fontSize: 14,
-  },
-  IntervalTitleStyle: {
-    fontSize: 14,
-  },
-  DaysStyle: {
-    fontSize: 14,
-  },
-  BudgetStyle: {
-    fontSize: 14,
-  },
-  ActionButtonView: {
-    width: 35 + '%',
-    alignItems: 'flex-end',
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  NetworkCountView: {
-    marginTop: 1,
-    marginRight: 12,
-    paddingTop: 6,
-    backgroundColor: '#1da1f2',
-    width: 29,
-    height: 29,
-    color: 'white',
-    fontSize: 12,
-    borderRadius: 50,
-    textAlign: 'center',
-  },
-  ItemDetailViewsecond: {
-    marginLeft: 1 + '%',
-    flexDirection: 'row',
-    marginTop: 1.5 + '%',
-    width: 100 + '%',
-    marginBottom: 3 + '%',
-  },
-  Itemdetail: {
-    flexDirection: 'row',
-  },
-  ItemFinishdetail: {
-    flexDirection: 'row',
-  },
-  ItemdetailMiddle: {
-    flexDirection: 'row',
-  },
-  StartTime: {
-    fontSize: 14,
-  },
-  FinishTime: {
+  text: {
     fontSize: 14,
   },
 });

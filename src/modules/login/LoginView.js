@@ -377,7 +377,14 @@ export default function LoginScreen(props) {
             servicesettings.baseuri + 'useraccountwithlogin',
             ImageheaderFetch,
           )
-            .then(response => response.json())
+            .then(response => {
+              if (!response.ok) {
+                throw new Error(
+                  `Request failed with code : ${response.status}`,
+                );
+              }
+              return response.json();
+            })
             .then(responseJson => {
               console.log({ responseJson });
               if (
@@ -476,7 +483,8 @@ export default function LoginScreen(props) {
               //*********need to some disscuss*********/
               console.error('uploadpicture error', error);
               Toast.showWithGravity(
-                'Internet connection failed, try another time !!!',
+                error?.message ||
+                  'Internet connection failed, try another time !!!',
                 Toast.LONG,
                 Toast.CENTER,
               );

@@ -8,8 +8,8 @@ let servicesettings = {
   datefrom: datefrom,
   // baseuri: 'http://192.168.18.4:8091/',
   // Imagebaseuri: 'http://192.168.18.4:8091',
-  baseuri: 'http://192.168.18.50:4388/',
-  Imagebaseuri: 'http://192.168.18.50:4388/',
+  baseuri: 'http://192.168.18.163:4388/',
+  Imagebaseuri: 'http://192.168.18.163:4388/',
   datefrom: dateto,
   AuthorizationKey:
     'cVQ-h9G7QPCs3ErRdmsGNE:APA91bGlsWbE6ouc9jbIskdJOSF0SqwWq-9HXGGeewcs5ESpH-ryhoKYgcYIx19Iay_geMmufvWNb0M6woPo1jYNvIS0tiGZjXluSDuDbLeHyDeHJJ1ZGL_eq06EVb_0AyfsVeCjHND8',

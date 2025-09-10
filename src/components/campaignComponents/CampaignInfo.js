@@ -81,6 +81,7 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex }) => {
         massagetype={'warning'}
         hide={() => setShowCancelAlert(false)}
         confirm={() => {
+          setShowCancelAlert(false);
           navigation.goBack();
           setCampaignInfo({
             id: 0,
@@ -105,7 +106,7 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex }) => {
         Visible={showCancelAlert}
         alerttype={'confirmation'}
         Title={'Confirmation'}
-        Massage={'Do you want to discard ?'}
+        Massage={'Do you want to discard?'}
       ></Alert>
       <TextInput
         placeholder="Subject"

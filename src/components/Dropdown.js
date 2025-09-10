@@ -58,6 +58,7 @@ const RNSDropDown = props => {
 
         return (
           <View
+            key={index}
             style={[
               {
                 flexDirection: 'row',

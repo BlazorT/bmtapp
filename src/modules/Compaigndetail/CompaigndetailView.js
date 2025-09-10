@@ -1,102 +1,126 @@
-import {useRoute} from '@react-navigation/native';
-import React, {useEffect, useState} from 'react';
+import React, { useState } from 'react';
 import {
-  Dimensions,
-  FlatList,
+  Image,
+  ScrollView,
   StyleSheet,
+  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import AppBreadcrumb from '../../components/AppBreadcrumb';
-import Spinner from 'react-native-loading-spinner-overlay';
-import Compaigndetail from '../../components/Compaigndetail';
-import {colors} from '../../styles';
-const crumbsContainerStyle = {
-  backgroundColor: '#181e5c',
-  flexDirection: 'row',
-  borderWidth: 1,
-  borderColor: '#d6d6d6',
-  justifyContent: 'space-between',
-  width: Dimensions.get('window').width,
-};
-const crumbStyle = {
-  flexDirection: 'row',
-  justifyContent: 'center',
-  backgroundColor: 'transparent',
-};
-const activeCrumbStyle = {
-  backgroundColor: 'gray',
-  borderColor: '#010c1f',
-};
-const crumbTextStyle = {
-  color: 'white',
-  fontSize: 14,
-  fontWeight: 'bold',
-};
-const activeCrumbTextStyle = {
-  color: 'white',
-  fontSize: 15,
-  fontWeight: 'bold',
-};
-const wait = timeout => {
-  return new Promise(resolve => setTimeout(resolve, timeout));
-};
-var canceltime = 40;
+import { useTheme } from '../../hooks/useTheme';
+import BDMT from '../../../assets/images/pepsilogo.png';
+import servicesettings from '../dataservices/servicesettings';
+import CampaignDetail from '../../components/campaignComponents/CampaignDetail';
+import CampaignNetworks from '../../components/campaignComponents/CampaignNetworks';
+import CmpaignSchedules from '../../components/campaignComponents/CmpaignSchedules';
+
 export default function CompaigndetailScreen(props) {
-  const route = useRoute();
-  global.currentscreen = route.name;
-  const [Index, setIndex] = useState(0);
-  const [Visible, setVisible] = useState(false);
-  //const [data, setdata] = useState();
-  const [storeid, setstoreid] = useState(0);
-  const [status, setstatus] = useState(1);
-  const [ordertime, setordertime] = useState(null);
-  const [timeintervel, settimeintervel] = useState(null);
-  const [refreshing, setRefreshing] = React.useState(false);
-  const [spinner, setspinner] = useState(false);
-  const data = [{name: '1'}, {name: '1'}, {name: '1'}];
-  function handlePress(index) {
-    setIndex(index);
-  }
-  useEffect(() => {}, []);
+  const campaign = props.route.params.campaign;
+  const theme = useTheme();
+  const [imgErr, setImgErr] = useState(false);
+  const [activeTab, setActiveTab] = useState(0);
+
+  const imgUrl = servicesettings.Imagebaseuri + campaign?.logoAvatar;
+
   return (
-    <View style={styles.container}>
-      <Spinner
-        visible={spinner}
-        textContent={'Loading...'}
-        textStyle={styles.spinnerTextStyle}
-      />
-      <TouchableOpacity>
-        <AppBreadcrumb
-          crumbs={[
-            {
-              text: 'Success',
-            },
-            {text: 'In Progress'},
-            {text: 'Failed'},
-          ]}
-          onSelect={index => {
-            handlePress(index);
-          }}
-          selectedIndex={Index}
+    <View
+      style={[styles.container, { backgroundColor: theme.backgroundColor }]}
+    >
+      <View style={[styles.header, { borderBottomColor: theme.textColor }]}>
+        <Image
+          source={imgErr || !campaign?.logoAvatar ? BDMT : { uri: imgUrl }}
+          style={styles.img}
+          onError={() => setImgErr(true)}
         />
-      </TouchableOpacity>
-      <FlatList
-        data={data}
-        keyExtractor={(item, id) => id.toString()}
-        renderItem={({item}) => <Compaigndetail></Compaigndetail>}
-        numColumns={1}
-        horizontal={false}
-      />
+        <Text style={[styles.headerName, { color: theme.textColor }]}>
+          {campaign?.name || ''}
+        </Text>
+      </View>
+      <View style={styles.tabContainer}>
+        <TouchableOpacity
+          onPress={() => setActiveTab(0)}
+          style={[
+            styles.tab,
+            {
+              backgroundColor: theme.modalBackColor,
+              borderBottomColor: theme.textColor,
+              borderBottomWidth: activeTab === 0 ? 1 : 0,
+            },
+          ]}
+        >
+          <Text style={[styles.tabText, { color: theme.textColor }]}>
+            Campaign Detail
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => setActiveTab(1)}
+          style={[
+            styles.tab,
+            {
+              backgroundColor: theme.modalBackColor,
+              borderBottomColor: theme.textColor,
+              borderBottomWidth: activeTab === 1 ? 1 : 0,
+            },
+          ]}
+        >
+          <Text style={[styles.tabText, { color: theme.textColor }]}>
+            Networks
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => setActiveTab(2)}
+          style={[
+            styles.tab,
+            {
+              backgroundColor: theme.modalBackColor,
+              borderBottomColor: theme.textColor,
+              borderBottomWidth: activeTab === 2 ? 1 : 0,
+            },
+          ]}
+        >
+          <Text style={[styles.tabText, { color: theme.textColor }]}>
+            Schedules
+          </Text>
+        </TouchableOpacity>
+      </View>
+      <ScrollView>
+        {activeTab === 0 && <CampaignDetail campaign={campaign} />}
+        {activeTab === 1 && <CampaignNetworks campaign={campaign} />}
+        {activeTab === 2 && <CmpaignSchedules campaign={campaign} />}
+      </ScrollView>
     </View>
   );
 }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.BlazorBg,
+    paddingHorizontal: 15,
+    paddingVertical: 15,
+    rowGap: 10,
   },
-  spinnerTextStyle: {
-    color: '#FFF',
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    columnGap: 10,
+    borderBottomWidth: 1,
+    paddingBottom: 5,
   },
+  headerName: {
+    fontWeight: 'bold',
+    fontSize: 18,
+    flex: 1,
+  },
+  img: {
+    borderRadius: 40,
+    width: 70,
+    height: 70,
+    borderWidth: 1,
+    borderColor: 'white',
+  },
+  tabContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  tab: { flex: 1, padding: 10 },
+  tabText: { fontSize: 14, fontWeight: 'bold', textAlign: 'center' },
 });

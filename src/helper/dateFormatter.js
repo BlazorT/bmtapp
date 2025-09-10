@@ -8,3 +8,10 @@ import moment from 'moment';
 export const dateFormatter = date => {
   return moment(date).format('MM-DD-YY HH:mm');
 };
+export const safeJSONParse = (value, fallback = null) => {
+  try {
+    return value ? JSON.parse(value) : fallback;
+  } catch {
+    return fallback;
+  }
+};

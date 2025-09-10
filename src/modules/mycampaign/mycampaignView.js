@@ -2,10 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   Dimensions,
   FlatList,
-  Image,
-  Platform,
   RefreshControl,
-  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -14,70 +11,39 @@ import {
 import Spinner from 'react-native-loading-spinner-overlay';
 import Toast from 'react-native-simple-toast';
 import Icons from 'react-native-vector-icons/FontAwesome';
-import Video from 'react-native-video';
-import RNFetchBlob from 'rn-fetch-blob';
 import { TextInput } from '../../components';
-import Alert from '../../components/Alert';
-import Mycampaign from '../../components/Mycampaign';
 import { colors } from '../../styles';
-import BDMT from '../../../assets/images/pepsilogo.png';
-const deleteicon = require('../../../assets/images/deleteicon.png');
-const crossIcon = require('../../../assets/images/cross.png');
-const pdfview = require('../../../assets/images/pdfdownload.png');
 
-import moment from 'moment';
-import { useIsFocused, useRoute } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
+import CapaignItem from '../../components/CapaignItem';
 import { useTheme } from '../../hooks/useTheme';
 import { useUser } from '../../hooks/useUser';
 import servicesettings from '../dataservices/servicesettings';
-import Model from '../../components/Model';
 import { isAdminOrSuperAdmin } from '../home/HomeView';
+
 export default function MyCampaignScreen(props) {
   const { user, isAuthenticated } = useUser();
   const theme = useTheme();
-  const isFocused = useIsFocused();
   const route = useRoute();
   global.currentscreen = route.name;
-  const [Visible, setVisible] = useState(false);
+
   const [shouldShow, setShouldShow] = useState(false);
   const [data, setdata] = useState([]);
   const [userId, setUserId] = useState('');
   const [orgId, setOrgId] = useState('');
-  const [attachmentData, setAttachmentData] = useState('');
-  const [modalVisible, setmodalVisible] = useState(false);
-  const [updateMessage, setUpdateMessage] = useState('');
   const [Search, setSearch] = useState('');
-  const [img_Video, setImg_Video] = useState('');
-  const [img_VideoType, setImg_VideoType] = useState('');
   const [searchBudget, setSearchBudget] = useState('');
-  const [attachmentImageError, setAttachmentImageError] = useState(false);
-  const [attachmentVideoError, setAttachmentVideoError] = useState(false);
-  const [selectStatusId, setSelectStatusId] = useState('');
-  const [selectedCampaingStatus, setSelectedCampaingStatus] = useState('');
-  const [campaignId, setCampaignId] = useState(0);
-  const [changeViewVisible, setChangeViewVisible] = useState(false);
-  const [attachmentViewVisible, setAttachmentViewVisible] = useState(false);
-  const [attachmentFullView, setAttachmentFullView] = useState(false);
-  const [spinner, setspinner] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const ClickStatus = value => {
-    setVisible(true);
-    setChangeViewVisible(false);
-    ClickCampaignStatusName(value);
-  };
-  const hide = () => {
-    setVisible(false);
-  };
-  const confirm = value => {
-    console.log({ selectStatusId });
-    // setVisible(false);
-    hide();
+  const [spinner, setspinner] = useState(true);
+  const isReload = props?.route?.params?.isReload;
 
-    ClickCampaignStatusChange(value);
-  };
   useEffect(() => {
-    if (isFocused) Loaddata();
-  }, [isFocused]);
+    if (isReload) Loaddata();
+  }, [isReload]);
+
+  useEffect(() => {
+    if (!isReload) Loaddata();
+  }, [isReload]);
 
   function Loaddata() {
     setspinner(true);
@@ -140,11 +106,8 @@ export default function MyCampaignScreen(props) {
       });
     }
   }
+
   function searchDataClick() {
-    if (Search == null || Search == '') {
-      Toast.showWithGravity('Please enter Keyword', Toast.LONG, Toast.CENTER);
-      return;
-    }
     var headerFetch = {
       method: 'POST',
       body: JSON.stringify({
@@ -161,6 +124,8 @@ export default function MyCampaignScreen(props) {
         Authorization: servicesettings.AuthorizationKey,
       },
     };
+    setspinner(true);
+
     fetch(servicesettings.baseuri + 'Compaigns/detailedcompaigns', headerFetch)
       .then(response => response.json())
       .then(responseJson => {
@@ -189,255 +154,20 @@ export default function MyCampaignScreen(props) {
         );
         setspinner(false);
         functionCombined();
-      });
-  }
-  function ClickCompaignStatus(SelectStatusVal) {
-    var currentDate = new Date();
-    var headerFetch = {
-      method: 'POST',
-      body: JSON.stringify({
-        orgId: Number(orgId),
-        status: selectStatusId,
-        name: '',
-        networkId: 0,
-        id: SelectStatusVal,
-        lastUpdatedBy: Number(userId),
-        createdBy: Number(userId),
-        campaignStatus: selectStatusId,
-        hashTags: '',
-        description: '',
-        name: '',
-        title: '',
-        autoGenerateLeads: 0,
-        createdAt: moment.utc(currentDate).format(),
-        startTime: moment.utc(currentDate).format(),
-        finishTime: moment.utc(currentDate).format(),
-        totalBudget: 0,
-      }),
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json; charset=utf-8',
-        Authorization: servicesettings.AuthorizationKey,
-      },
-    };
-
-    fetch(servicesettings.baseuri + 'Compaigns/updatecompaign', headerFetch)
-      .then(response => response.json())
-      .then(responseJson => {
-        console.log(
-          'Status compaignstatus response  =>',
-          JSON.stringify(responseJson),
-        );
-        if (responseJson.status == true || responseJson.errorCode == '0') {
-          responseJson.message != ''
-            ? Toast.show(' ' + responseJson.message + ' ')
-            : Toast.show('Data updated successfully');
-
-          setmodalVisible(true);
-          setTimeout(() => {
-            setmodalVisible(false);
-            Loaddata();
-          }, 1000);
-        } else {
-          Toast.showWithGravity(
-            'Internet connection failed, try another time !!!',
-            Toast.LONG,
-            Toast.CENTER,
-          );
-        }
       })
-      .catch(error => {
-        console.error('service error', error);
-        Toast.showWithGravity(
-          'Internet connection failed, try another time !!!',
-          Toast.LONG,
-          Toast.CENTER,
-        );
+      .finally(() => {
+        setspinner(false);
       });
   }
-  function SettingClickForChangeFlatList(campaignData) {
-    const campaignStatus = campaignData;
-    console.log({ campaignStatus });
-    // console.log(campaignStatus.id, campaignStatus.data.status);
-    setSelectedCampaingStatus(campaignStatus.data.status);
-    if (changeViewVisible == true) {
-      setChangeViewVisible(false);
-    }
-    if (changeViewVisible == false) {
-      setChangeViewVisible(true);
-    }
-  }
-  function StatusChangeOnClick(props) {
-    var value = props.data.status;
 
-    if (value == '1') {
-      value = '5';
-      global.StatusName = 'Active';
-    } else {
-      value = '1';
-      global.StatusName = 'Delete';
-    }
-    console.log(props.title);
-    setSelectStatusId(value);
-    setCampaignId(props.id);
-    setUpdateMessage(
-      `${props.title} campaign has been ${value == 1 ? 'Activated' : 'Deleted'} successfully`,
-    );
-    ClickStatus(value);
-  }
-  function ClickCampaignStatusChange(value) {
-    ClickCompaignStatus(campaignId);
-  }
-  function ClickCampaignStatusName(value, id) {
-    setSelectStatusId(value);
-    if (value == '1') {
-      global.StatusName = 'Active';
-    } else {
-      global.StatusName = 'Delete';
-    }
-  }
-  // console.log({ attachmentData });
-  function AttachmentPreviewDetail(AttachmentPreview) {
-    setAttachmentData(JSON.parse(AttachmentPreview));
-    if (attachmentViewVisible == true) {
-      setAttachmentViewVisible(false);
-    }
-    if (attachmentViewVisible == false) {
-      setAttachmentViewVisible(true);
-    }
-  }
-  function AttachmentFullViewClick(image) {
-    setImg_Video(image);
-    setImg_VideoType(image);
-    if (attachmentFullView == true) {
-      setAttachmentFullView(false);
-      setAttachmentViewVisible(true);
-    }
-    if (attachmentFullView == false) {
-      setAttachmentFullView(true);
-      setAttachmentViewVisible(false);
-    }
-  }
   function AddNewCampaignClick() {
     ((global.UpdateCampaign = 0), props.navigation.navigate('Campaign (+)'));
   }
-  function OpenUpdateCampaign(campaignData) {
-    ((global.UpdateCampaign = 1),
-      props.navigation.navigate('Campaign (+)', {
-        campaign: campaignData,
-      }));
-  }
+
   function functionCombined() {
     setShouldShow(!shouldShow);
   }
-  function PreviewImageFullView(image) {
-    setImg_Video(image);
-  }
-  function PreviewVideoFullView(image) {}
-  function PDFDownloadClick(image) {
-    setspinner(true);
 
-    const { dirs } = RNFetchBlob.fs;
-    const downloadDir =
-      Platform.OS === 'ios' ? dirs.DocumentDir : dirs.DownloadDir;
-
-    const pdfUrl =
-      servicesettings.Imagebaseuri +
-      image.replace(/\\/g, '/').replace(',', '').replace(' //', '');
-
-    RNFetchBlob.config({
-      fileCache: true,
-      path: `${downloadDir}/Attachment.pdf`, // directly save file
-    })
-      .fetch('GET', pdfUrl)
-      .then(res => {
-        console.log('File downloaded:', res.path());
-        setspinner(false);
-        Toast.show('File downloaded successfully!');
-      })
-      .catch(error => {
-        setspinner(false);
-        console.error('Error downloading file:', error);
-      });
-  }
-
-  const Item = ({ image, Id }) => {
-    console.log({ image });
-    console.log({
-      url:
-        servicesettings.Imagebaseuri +
-        image.replace(/\\/g, '/').replace(',', '').replace(' //', ''),
-    });
-    return (
-      <View style={{ textAlign: 'center', marginVertical: 8 }}>
-        <ScrollView>
-          {image.split('.')[1] == 'mp4' &&
-            (!attachmentVideoError ? (
-              <TouchableOpacity onPress={() => AttachmentFullViewClick(image)}>
-                <Video
-                  resizeMode={'stretch'}
-                  rate={1.0}
-                  ignoreSilentSwitch={'obey'}
-                  paused={false}
-                  //     resizeMode="cover"
-                  source={{
-                    uri:
-                      servicesettings.Imagebaseuri +
-                      image
-                        .replace(/\\/g, '/')
-                        .replace(',', '')
-                        .replace(' //', ''),
-                  }}
-                  style={{ height: 185, width: 100 + '%' }}
-                  onError={() => {
-                    setAttachmentVideoError(true);
-                  }}
-                />
-              </TouchableOpacity>
-            ) : (
-              <Image source={BDMT} style={styles.AttachmentImage} />
-            ))}
-          {image.split('.')[1] != 'pdf' &&
-            image.split('.')[1] != 'mp4' &&
-            (!attachmentImageError ? (
-              <TouchableOpacity onPress={() => AttachmentFullViewClick(image)}>
-                <Image
-                  resizeMode="contain"
-                  source={{
-                    uri:
-                      servicesettings.Imagebaseuri +
-                      image
-                        .replace(/\\/g, '/')
-                        .replace(',', '')
-                        .replace(' //', ''),
-                  }}
-                  style={styles.AttachmentImage}
-                  onError={() => {
-                    setAttachmentImageError(true);
-                  }}
-                  onLoad={() => setAttachmentImageError(false)}
-                />
-              </TouchableOpacity>
-            ) : (
-              <Image source={BDMT} style={styles.AttachmentImage} />
-            ))}
-          {image.split('.')[1] == 'pdf' && (
-            <TouchableOpacity
-              style={{ marginBottom: 12 }}
-              onPress={() => PDFDownloadClick(image)}
-            >
-              <Image
-                resizeMode="contain"
-                source={pdfview}
-                style={styles.AttachmentPdf}
-              />
-            </TouchableOpacity>
-          )}
-        </ScrollView>
-      </View>
-    );
-  };
-  console.log({ data });
   return (
     <View
       style={[styles.container, { backgroundColor: theme.backgroundColor }]}
@@ -447,17 +177,7 @@ export default function MyCampaignScreen(props) {
         textContent={'Loading...'}
         textStyle={styles.spinnerTextStyle}
       />
-      <Alert
-        massagetype={'warning'}
-        hide={hide}
-        confirm={confirm}
-        Visible={Visible}
-        alerttype={'confirmation'}
-        Title={'Confirmation'}
-        Massage={
-          'Are you sure you want to ' + global.StatusName + ' campaign ?'
-        }
-      ></Alert>
+
       {shouldShow == false ? (
         <View
           style={[
@@ -531,43 +251,24 @@ export default function MyCampaignScreen(props) {
           </View>
         </View>
       )}
+
       <FlatList
         data={data}
-        refreshing={true}
+        refreshing={refreshing}
         keyExtractor={(item, id) => id.toString()}
         refreshControl={<RefreshControl refreshing={refreshing} />}
-        onRefresh={() => {
-          setRefreshing(true);
-          Loaddata();
-        }}
+        onRefresh={Loaddata}
         renderItem={({ item }) => (
-          <Mycampaign
-            OpenUpdateCampaign={OpenUpdateCampaign}
-            StatusChangeOnClick={StatusChangeOnClick}
-            SettingClickForChangeFlatList={SettingClickForChangeFlatList}
-            AttachmentPreviewDetail={AttachmentPreviewDetail}
-            data={item}
-            startTime={item.startTime}
-            name={item.name}
-            id={item.id}
-            networkName={item.networkName}
-            compaignNetworks={item.compaignNetworks}
-            networkId={item.networkId}
-            contact={item.contact}
-            finishTime={item.finishTime}
-            approvalTime={item.approvalTime}
-            budget={item.budget}
-            logoAvatar={item.logoAvatar}
-            description={item.description}
-            discount={item.discount}
-            hashTags={item.hashTags}
-            orgName={item.orgName}
-            title={item.title}
-            autoGenerateLeads={item.autoGenerateLeads}
-            //   discount={item.discount}
-            totalBudget={item.totalBudget}
-          ></Mycampaign>
+          <CapaignItem item={item} loadCampiagns={Loaddata} />
         )}
+        contentContainerStyle={{
+          paddingBottom: 3 + '%',
+          marginTop: 3 + '%',
+          marginLeft: 2 + '%',
+          marginRight: 2 + '%',
+          width: 96 + '%',
+          rowGap: 10,
+        }}
         numColumns={1}
         horizontal={false}
         initialNumToRender={10} // Render only a few initial items
@@ -576,172 +277,6 @@ export default function MyCampaignScreen(props) {
         onEndReachedThreshold={0.1} // Load more data when the user is within 10% of the end
         maxToRenderPerBatch={5} // Render a small batch at a time
       />
-      <Model modalVisible={modalVisible} message={updateMessage}></Model>
-      {changeViewVisible == true ? (
-        <View style={styles.ChangeActionMainView}>
-          <View
-            style={[
-              styles.sidebarViewRight,
-              { backgroundColor: theme.backgroundColor },
-            ]}
-          >
-            <TouchableOpacity
-              style={styles.closeIconView}
-              onPress={() => setChangeViewVisible(false)}
-            >
-              <Icons
-                name="close"
-                style={[styles.closeIcon, { color: theme.tintColor }]}
-              />
-            </TouchableOpacity>
-            {selectedCampaingStatus != 1 ? (
-              <TouchableOpacity
-                style={[
-                  styles.ChangeActionView,
-                  { backgroundColor: theme.cardBackColor },
-                ]}
-                value={1}
-                onPress={() => ClickStatus(1)}
-              >
-                <View style={styles.SidebarIconView}>
-                  <Image
-                    source={deleteicon}
-                    style={[
-                      styles.ribbonIcon,
-                      { tintColor: theme.buttonBackColor },
-                    ]}
-                  />
-                </View>
-                <View style={styles.SidebarDetailView}>
-                  <Text style={[styles.IconText, { color: theme.textColor }]}>
-                    Active
-                  </Text>
-                  <Text
-                    style={[styles.IconTextDetail, { color: theme.textColor }]}
-                  >
-                    Network all schedules will be activated
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity
-                style={[
-                  styles.ChangeActionView,
-                  { backgroundColor: theme.cardBackColor },
-                ]}
-                value={5}
-                onPress={() => ClickStatus(5)}
-              >
-                <View style={styles.SidebarIconView}>
-                  <Image
-                    source={deleteicon}
-                    style={[
-                      styles.ribbonIcon,
-                      { tintColor: theme.buttonBackColor },
-                    ]}
-                  />
-                </View>
-                <View style={styles.SidebarDetailView}>
-                  <Text style={[styles.IconText, { color: theme.textColor }]}>
-                    Delete
-                  </Text>
-                  <Text
-                    style={[styles.IconTextDetail, { color: theme.textColor }]}
-                  >
-                    Your network all activity will be terminated
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            )}
-          </View>
-        </View>
-      ) : (
-        <View></View>
-      )}
-      {attachmentViewVisible == true ? (
-        <View style={styles.ChangeActionMainView}>
-          <ScrollView>
-            <View
-              style={[
-                styles.sidebarViewRight,
-                { backgroundColor: theme.backgroundColor },
-              ]}
-            >
-              <TouchableOpacity
-                style={styles.closeIconView}
-                onPress={() => setAttachmentViewVisible(false)}
-              >
-                <Icons
-                  name="close"
-                  style={[styles.closeIcon, { color: theme.tintColor }]}
-                />
-              </TouchableOpacity>
-              <View style={styles.ChangeActionPictureView}>
-                <FlatList
-                  nestedScrollEnabled={true}
-                  scrollEnabled={false}
-                  data={attachmentData}
-                  renderItem={({ item }) => (
-                    <Item image={item.image} Id={item.Id} />
-                  )}
-                  keyExtractor={item => item.Id}
-                  //numColumns={1}
-                  horizontal={false}
-                />
-              </View>
-            </View>
-          </ScrollView>
-        </View>
-      ) : null}
-      {attachmentFullView == true ? (
-        <View style={styles.ChangeActionMainFullView}>
-          <TouchableOpacity
-            style={styles.closeIconFullView}
-            onPress={() => AttachmentFullViewClick()}
-          >
-            <Image
-              resizeMode="stretch"
-              source={crossIcon}
-              style={styles.closeIconFull}
-            />
-          </TouchableOpacity>
-          {img_VideoType.split('.')[1] == 'mp4' ? (
-            <Video
-              resizeMode="contain"
-              source={{
-                uri:
-                  servicesettings.Imagebaseuri +
-                  img_Video
-                    .replace(/\\/g, '/')
-                    .replace(',', '')
-                    .replace(' //', ''),
-              }}
-              style={{
-                backgroundColor: theme.backgroundColor,
-                width: Dimensions.get('window').width,
-                height: 90 + '%',
-              }}
-            />
-          ) : (
-            <Image
-              resizeMode="contain"
-              source={{
-                uri:
-                  servicesettings.Imagebaseuri +
-                  img_Video
-                    .replace(/\\/g, '/')
-                    .replace(',', '')
-                    .replace(' //', ''),
-              }}
-              style={{
-                backgroundColor: theme.backgroundColor,
-                width: Dimensions.get('window').width,
-                height: 90 + '%',
-              }}
-            />
-          )}
-        </View>
-      ) : null}
     </View>
   );
 }
@@ -753,111 +288,6 @@ const styles = StyleSheet.create({
   },
   spinnerTextStyle: {
     color: '#FFF',
-  },
-  ChangeActionMainView: {
-    marginTop: 10,
-    width: Dimensions.get('window').width - 40,
-    height: Dimensions.get('window').height,
-    marginHorizontal: 20,
-    position: 'absolute',
-    //height:100 + '%',
-    //right: 10,
-  },
-  sidebarViewRight: {
-    backgroundColor: 'white',
-    //backgroundColor: colors.PagePanelTab,
-    // backgroundColor: '#c0c0c05e',
-    borderRadius: 10,
-    alignItems: 'center',
-    paddingBottom: 9,
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 4, height: 6 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-  },
-  closeIconView: {
-    textAlign: 'right',
-    width: Dimensions.get('window').width - 60,
-    paddingTop: 12,
-  },
-  closeIcon: {
-    textAlign: 'right',
-    fontSize: 25,
-  },
-  ChangeActionView: {
-    marginVertical: 5,
-    paddingHorizontal: 7,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    width: Dimensions.get('window').width - 60,
-    marginHorizontal: 30,
-    borderRadius: 8,
-    backgroundColor: colors.PagePanelTab,
-    //backgroundColor:'#dfdfdf'
-  },
-  ChangeActionPictureView: {
-    marginVertical: 5,
-    paddingHorizontal: 7,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    width: Dimensions.get('window').width - 60,
-    //height: Dimensions.get('window').height,
-    marginHorizontal: 30,
-    borderRadius: 8,
-    // backgroundColor:colors.red,
-    //backgroundColor:'#dfdfdf'
-  },
-  closeIconFull: {
-    // textAlign: 'right',
-    //fontSize:25,
-    alignItems: 'flex-end',
-    zIndex: 12,
-    width: 45,
-    height: 45,
-  },
-  closeIconFullView: {
-    alignItems: 'flex-end',
-    position: 'absolute',
-    width: Dimensions.get('window').width - 20,
-    marginHorizontal: 10,
-    paddingTop: 8,
-    zIndex: 12,
-  },
-  sidebarViewRightFullView: {
-    backgroundColor: colors.PagePanelTab,
-    alignItems: 'center',
-    elevation: 5,
-    shadowColor: '#000',
-  },
-  ChangeActionMainFullView: {
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
-    // backgroundColor:'red',
-    position: 'absolute',
-    //  top:-23,
-    //   zIndex:5009,
-  },
-  SidebarIconView: {
-    marginVertical: 5,
-    //backgroundColor:'gray',
-    width: 15 + '%',
-    //height:55,
-  },
-  SidebarDetailView: {
-    marginVertical: 5,
-    //backgroundColor:'gray',
-    width: 84 + '%',
-    paddingLeft: 8,
-    //height:55,
-  },
-  ribbonIcon: {
-    height: 45,
-    width: 45,
-    //tintColor:'#1da1f2',
-    //marginTop:3
   },
   IconText: {
     color: 'black',
@@ -984,33 +414,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     fontWeight: 'bold',
     color: 'white',
-  },
-  AttachmentImage: {
-    marginRight: 5,
-    marginLeft: 5,
-    borderRadius: 1,
-    borderColor: colors.red,
-    //backgroundColor:colors.red,
-    borderWidth: 0.6,
-    borderRadius: 10,
-    height: 185,
-    //textAlign: 'center',
-    alignItems: 'center',
-  },
-  AttachmentPdf: {
-    // marginRight:5,
-    // marginLeft:5,
-    //borderRadius:1,
-    //borderColor:colors.red,
-    // borderRadius:6,
-    height: 62,
-    width: 100 + '%',
-  },
-  VideoPreviewView: {
-    //marginRight:5,
-    // marginLeft:5,
-    // backgroundColor:colors.red,
-    height: 140,
-    width: 200,
   },
 });

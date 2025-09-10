@@ -57,12 +57,13 @@ export default function DashboardScreen(props) {
       const headerFetch = {
         method: 'POST',
         body: JSON.stringify({
-          orgId: user.orgId,
-          status: 1,
-          id: 0,
-          // DataOfMonth: '',
-          CreatedAt: moment.utc().subtract(100, 'year').format(),
-          RowVer: 1,
+          OrganizationId: user.orgId,
+          DataOfMonth: '',
+          TotalCompaigns: 0,
+          MonthNumber: 0,
+          NewCompaigns: 0,
+          FundsAmount: 0,
+          PercentageIncrease: 0,
         }),
         headers: {
           Accept: 'application/json',
@@ -73,7 +74,7 @@ export default function DashboardScreen(props) {
       console.log({ headerFetch });
       // /dashboard
       const response = await fetch(
-        `${servicesettings.baseuri}Compaigns/GetDashboardData`,
+        `${servicesettings.baseuri}BlazorApi/dashboard`,
         headerFetch,
       );
       console.log({ response });
@@ -89,7 +90,7 @@ export default function DashboardScreen(props) {
       if (responseJson.data) {
         // Map total campaigns to months
         const DashboardData = responseJson.data;
-        const labels = DashboardData.map(item => item.dataOfMonth);
+        const labels = DashboardData.map(item => item.monthNumber);
         const totalCampaigns = DashboardData.map(item => item.totalCompaigns);
         const newCompaigns = DashboardData.map(item => item.newCompaigns);
         const totalNumberCampaigns = totalCampaigns.reduce(
@@ -101,14 +102,16 @@ export default function DashboardScreen(props) {
           (acc, curr) => acc + curr,
           0,
         );
-
-        const percentageIncrease = Math.round(
-          (DashboardData[0].percentageIncrease / 100) * 100,
+        const currentMonth = moment().format('M');
+        const findCurrMonthData = DashboardData?.find(
+          dd => dd?.monthNumber?.toString() === currentMonth,
         );
-        const currentMonthVol = DashboardData[0].newCompaigns;
-        const currentMonthSales = DashboardData[0].fundsAmount;
+        const percentageIncrease = findCurrMonthData
+          ? Math.round((findCurrMonthData?.percentageIncrease / 100) * 100)
+          : 0;
+        const currentMonthVol = findCurrMonthData?.newCompaigns || 0;
+        const currentMonthSales = findCurrMonthData?.fundsAmount || 0;
 
-        console.log({ percentageIncrease });
         // Update state with the mapped data
         setData({
           datasets: [{ data: totalCampaigns }],
