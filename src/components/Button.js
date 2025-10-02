@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {colors, fonts} from '../styles';
+import { colors, fonts } from '../styles';
 const borderRadius = 40;
 
 export default function RNSButton(props) {
@@ -88,14 +88,14 @@ export default function RNSButton(props) {
 
     content = (
       <LinearGradient
-        start={{x: 0.5, y: 1}}
-        end={{x: 1, y: 1}}
+        start={{ x: 0.5, y: 1 }}
+        end={{ x: 1, y: 1 }}
         colors={gradientArray}
         style={[
           styles.button,
           props.small && styles.buttonSmall,
           styles.primaryButton,
-          props.rounded && {borderRadius},
+          props.rounded && { borderRadius },
           props.action && styles.action,
         ]}
       >
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
   },
   buttonSmall: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 15,
   },
   border: {
     borderWidth: 1,

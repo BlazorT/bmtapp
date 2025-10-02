@@ -57,6 +57,7 @@
     "react-native-notification-sounds": "^0.5.8",
     "react-native-permissions": "^5.4.2",
     "react-native-reanimated": "4.1.0",
+    "react-native-render-html": "^6.3.4",
     "react-native-safe-area-context": "^5.6.1",
     "react-native-screens": "^4.15.4",
     "react-native-searchable-dropdown": "^1.1.3",

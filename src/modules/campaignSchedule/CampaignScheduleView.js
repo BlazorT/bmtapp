@@ -186,12 +186,8 @@ export default function CampaignScheduleScreen(props) {
   };
 
   const checkValidation = () => {
-    if (campaignInfo.subject.trim() == '') {
-      Toast.show('Please enter campaign subject');
-      return false;
-    }
     if (campaignInfo.template.trim() == '') {
-      Toast.show('Please enter campaign template');
+      Toast.show('Please enter campaign title');
       return false;
     }
     if (campaignInfo.startDate == '') {

@@ -595,7 +595,7 @@ export default function LoginScreen(props) {
           bgColor={theme.buttonBackColor}
           onPress={() => checkTextInput()}
         />
-        <View style={styles.DividerRow}>
+        {/* <View style={styles.DividerRow}>
           <View
             style={{
               flex: 1,
@@ -623,8 +623,8 @@ export default function LoginScreen(props) {
               backgroundColor: colors.borderColorOr,
             }}
           />
-        </View>
-        {Platform.OS === 'android' && (
+        </View> */}
+        {/* {Platform.OS === 'android' && (
           <View style={styles.signupView}>
             <TouchableOpacity
               onPress={() => LoginWithGoogle()}
@@ -650,12 +650,12 @@ export default function LoginScreen(props) {
               </Text>
             </TouchableOpacity>
           </View>
-        )}
-        <ContinueWithFacebook
+        )} */}
+        {/* <ContinueWithFacebook
           PressContinue={PressContinue}
           FacebookmodalVisible={FacebookmodalVisible}
           theme={theme}
-        ></ContinueWithFacebook>
+        ></ContinueWithFacebook> */}
         <View style={styles.DividerRow}>
           <View
             style={{
@@ -769,7 +769,7 @@ export default function LoginScreen(props) {
                 </Text>
               </TouchableOpacity>
             </View>
-            {Platform.OS === 'android' && (
+            {/* {Platform.OS === 'android' && (
               <View style={styles.signupView}>
                 <TouchableOpacity
                   onPress={() => SignupWithGoogle()}
@@ -797,7 +797,7 @@ export default function LoginScreen(props) {
               PressSignUp={PressSignUp}
               FacebookmodalVisible={FacebookmodalVisible}
               theme={theme}
-            ></SignupWithFacebook>
+            ></SignupWithFacebook> */}
           </View>
           <View style={styles.Bottomfield}>
             <TouchableOpacity

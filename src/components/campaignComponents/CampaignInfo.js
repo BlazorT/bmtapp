@@ -54,12 +54,8 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex }) => {
   };
 
   const nextStep = () => {
-    if (campaignInfo.subject.trim() == '') {
-      Toast.show('Please enter campaign subject');
-      return;
-    }
     if (campaignInfo.template.trim() == '') {
-      Toast.show('Please enter campaign template');
+      Toast.show('Please enter campaign title');
       return;
     }
     if (campaignInfo.campaignStartDate == '') {
@@ -108,7 +104,7 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex }) => {
         Title={'Confirmation'}
         Massage={'Do you want to discard?'}
       ></Alert>
-      <TextInput
+      {/* <TextInput
         placeholder="Subject"
         placeholderTextColor={theme.placeholderColor}
         value={campaignInfo.subject}
@@ -123,6 +119,24 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex }) => {
           borderColor: '#ff00003d',
           borderWidth: 1,
         }}
+      /> */}
+      <TextInput
+        placeholder="Title / short description..."
+        placeholderTextColor={theme.placeholderColor}
+        value={campaignInfo.template}
+        onChangeText={value => handleCampaignInfo('template', value)}
+        style={{
+          width: '100%',
+          backgroundColor: theme.inputBackColor,
+          color: theme.textColor,
+          borderRadius: 6,
+          paddingHorizontal: 10,
+          fontSize: 16,
+          borderColor: '#ff00003d',
+          borderWidth: 1,
+          height: 100,
+        }}
+        textAlignVertical="top"
       />
       <TextInput
         placeholder="Hashtag"
@@ -139,24 +153,6 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex }) => {
           borderColor: '#ff00003d',
           borderWidth: 1,
         }}
-      />
-      <TextInput
-        placeholder="Template..."
-        placeholderTextColor={theme.placeholderColor}
-        value={campaignInfo.template}
-        onChangeText={value => handleCampaignInfo('template', value)}
-        style={{
-          width: '100%',
-          backgroundColor: theme.inputBackColor,
-          color: theme.textColor,
-          borderRadius: 6,
-          paddingHorizontal: 10,
-          fontSize: 16,
-          borderColor: '#ff00003d',
-          borderWidth: 1,
-          height: 100,
-        }}
-        textAlignVertical="top"
       />
       <TouchableOpacity
         style={{

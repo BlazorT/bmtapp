@@ -329,7 +329,7 @@ const AddSchedule = ({
       daysOfWeek: daysOfWeek,
     };
   }
-  // console.log(lovs);
+  // console.log({ lovs: lovs['lovs'].intervals });
   const currencyId = lovs['orgs']?.find(c => c.id === user?.orgId)?.currencyId;
   return (
     <View style={{ marginTop: 10 }}>
@@ -458,16 +458,12 @@ const AddSchedule = ({
         </View>
         <View style={{ width: '35%' }}>
           <TextInput
-            placeholder="Minute (1-60)"
+            placeholder="Seconds"
             placeholderTextColor={theme.placeholderColor}
             defaultValue={scheduleList.intervalTypeId == 5 ? '' : '0'}
             value={scheduleList.interval}
             editable={scheduleList.intervalTypeId == 5 ? true : false}
             onChangeText={value => {
-              if (value > 60) {
-                Toast.show('Interval should be less than 60');
-                return;
-              }
               setScheduleList({
                 ...scheduleList,
                 interval: value,
@@ -484,7 +480,7 @@ const AddSchedule = ({
               height: 45,
             }}
             keyboardType="number-pad"
-            maxLength={2}
+            maxLength={4}
           />
         </View>
       </View>

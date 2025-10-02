@@ -102,9 +102,9 @@ const CampaignSchedule = ({
       status: campaignInfo.status,
       orgId: Number(user.orgId),
       hashTags: campaignInfo.hashtag,
-      description: campaignInfo.template,
-      name: campaignInfo.subject,
-      title: campaignInfo.subject,
+      description: campaignInfo?.template,
+      name: campaignInfo?.template,
+      title: campaignInfo?.template,
       autoGenerateLeads: campaignInfo.autoLead ? 1 : 0,
       createdAt: moment.utc().format(),
       startTime: moment.utc(campaignInfo.campaignStartDate).format(),
@@ -116,15 +116,22 @@ const CampaignSchedule = ({
         Status: n?.status,
         Code: '',
         posttypejson: JSON.stringify(n?.postTypes || []),
+        Template: n?.Template
+          ? JSON.stringify({
+              template: n?.Template?.template,
+              subject: n?.Template?.subject,
+              title: n?.Template?.title,
+            })
+          : '',
       })),
       compaignExecutionSchedules: campaignInfo.schedules?.map(s => ({
         Id: s?.id,
         NetworkId: s?.networkId,
         CompaignDetailId: s?.compaignDetailId,
         Budget: s?.budget,
-        Interval: s?.interval,
-        IntervalTypeId: s?.intervalTypeId,
-        MessageCount: s?.messageCount,
+        Intervalval: s?.interval ? parseInt(s?.interval) : 0,
+        IntervalTypeId: s?.intervalTypeId + 1,
+        MessageCount: parseInt(s?.messageCount),
         FinishTime: s?.finishTime,
         StartTime: s?.startTime,
         LastUpdatedAt: moment.utc().format(),
@@ -143,9 +150,12 @@ const CampaignSchedule = ({
       rowVer: 0,
     };
 
-    console.log({ campaignBody, campaignInfo });
+    console.log({ campaignBody });
+    // return;
     console.log('campaignBody: ' + JSON.stringify(campaignBody));
-    setUpdateMessage(`${campaignInfo.subject} has been created successfully.`);
+    setUpdateMessage(
+      `${campaignInfo?.template} has been created successfully.`,
+    );
     setspinner(true);
 
     let headerFetch = {
