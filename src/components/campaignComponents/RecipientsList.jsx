@@ -27,7 +27,7 @@ const RecipientsList = ({ isOpen, onClose }) => {
   const [recipients, setRecipients] = useState([]);
   const [filteredRecipients, setFilteredRecipients] = useState([]);
   const [searchText, setSearchText] = useState('');
-  const [filterNetworkId, setFilterNetworkId] = useState(0);
+  const [filterNetworkId, setFilterNetworkId] = useState([]);
 
   const fetchRecipients = async () => {
     setLoading(true);
@@ -80,11 +80,10 @@ const RecipientsList = ({ isOpen, onClose }) => {
         recipient.contentId?.toLowerCase().includes(searchText.toLowerCase()),
       );
     }
-
     // Apply network filter
-    if (filterNetworkId > 0) {
-      filtered = filtered.filter(
-        recipient => recipient.networkId === filterNetworkId,
+    if (Array.isArray(filterNetworkId) && filterNetworkId.length > 0) {
+      filtered = filtered.filter(recipient =>
+        filterNetworkId?.map(fn => fn + 1).includes(recipient?.networkId),
       );
     }
 
@@ -220,10 +219,20 @@ const RecipientsList = ({ isOpen, onClose }) => {
             />
 
             <RNSDropDown
-              items={[{ id: 0, name: 'All Networks' }, ...(networks || [])]}
+              items={networks || []}
               selectedIndex={filterNetworkId}
               disabled={loading}
-              onSelect={value => setFilterNetworkId(value)}
+              multipleSelect
+              onSelect={value => {
+                const current = filterNetworkId || [];
+                const exists = current.includes(value);
+
+                setFilterNetworkId(
+                  exists
+                    ? current.filter(v => v !== value)
+                    : [...current, value],
+                );
+              }}
               borderColor={theme.containerBorderColor}
               style={[
                 styles.networkDropdown,

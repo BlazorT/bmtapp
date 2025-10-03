@@ -144,7 +144,7 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
       <View style={styles.flexBW}>
         <CheckBox
           style={{
-            transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }],
+            transform: [{ scaleX: 1.6 }, { scaleY: 1.6 }],
           }}
           value={isNetworkSelected}
           onValueChange={v => {
@@ -227,7 +227,7 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
         />
       </View>
       {isNetworkSelected && network_postype?.length > 1 && (
-        <View style={{ flexDirection: 'row' }}>
+        <View style={{ flexDirection: 'row', marginTop: 5 }}>
           {network_postype?.map(np => {
             const selectedNetwork = campaignInfo.networks.find(
               item => item.networkId === network.networkId,
@@ -244,7 +244,7 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
               >
                 <CheckBox
                   style={{
-                    transform: [{ scaleX: 1 }, { scaleY: 1 }],
+                    transform: [{ scaleX: 1.2 }, { scaleY: 1.2 }],
                   }}
                   value={selectedNetwork?.postTypes?.includes(np) ?? false}
                   onValueChange={v => {
@@ -531,7 +531,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     flex: 1,
   },
-  networkIcon: { width: 50, height: 50, marginRight: 10 },
+  networkIcon: { width: 40, height: 40, marginRight: 10 },
   networkName: {
     fontSize: 14,
     fontWeight: 'bold',
