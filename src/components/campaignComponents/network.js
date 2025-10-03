@@ -533,7 +533,7 @@ const styles = StyleSheet.create({
   },
   networkIcon: { width: 50, height: 50, marginRight: 10 },
   networkName: {
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: 'bold',
   },
 });
