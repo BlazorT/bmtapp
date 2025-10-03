@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useTheme } from '../hooks/useTheme';
-import { dateFormatter } from '../helper/dateFormatter';
+import { dateFormatter, safeJSONParse } from '../helper/dateFormatter';
 import { useUser } from '../hooks/useUser';
+import TemplateViewer from './campaignComponents/TemplateViewer';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 // Social icons
 const ICONS = {
@@ -27,6 +29,17 @@ export default function MycampaignScheduleList(props) {
 
   const currencyId = lovs['orgs']?.find(c => c.id === user?.orgId)?.currencyId;
 
+  const template = props.template;
+  const [showTemplate, setShowTemplate] = useState(false);
+
+  const openTemplate = () => {
+    setShowTemplate(true);
+  };
+
+  const closeTemplate = () => {
+    setShowTemplate(false);
+  };
+
   useEffect(() => {
     if (props.networkId && ICONS[props.networkId]) {
       setNetworkIcon(ICONS[props.networkId]);
@@ -44,10 +57,22 @@ export default function MycampaignScheduleList(props) {
       7: 'Sat',
     };
 
-    return dayNumberString
+    if (!dayNumberString) return '';
+
+    let cleaned = dayNumberString;
+
+    // Handle cases like '[5,6]'
+    if (cleaned.startsWith('[') && cleaned.endsWith(']')) {
+      cleaned = cleaned.slice(1, -1);
+    }
+
+    return cleaned
       .split(',')
+      .map(d => d.trim())
+      .filter(Boolean)
       .map(Number)
-      .map(day => dayMap[day])
+      .map(day => dayMap[day] || '')
+      .filter(Boolean)
       .join(', ');
   };
 
@@ -57,9 +82,14 @@ export default function MycampaignScheduleList(props) {
 
   const currencyCode =
     lovs['lovs']?.currencies?.find(c => c.id === currencyId)?.code || '';
-
+  // console.log({ days: props?.days });
   return (
     <View style={[styles.card, { backgroundColor: theme.cardBackColor }]}>
+      <TemplateViewer
+        isOpen={showTemplate}
+        onClose={closeTemplate}
+        template={{ ...template, networkId: props.networkId }}
+      />
       <TouchableOpacity style={styles.row}>
         {/* Network Icon */}
         <Image
@@ -72,9 +102,20 @@ export default function MycampaignScheduleList(props) {
         <View style={styles.details}>
           {/* Interval + Days */}
           <View style={styles.rowSpace}>
-            <Text style={[styles.text, { color: theme.textColor }]}>
-              Interval Type: {intervalName}
-            </Text>
+            <View style={{ flexDirection: 'row', gap: 10 }}>
+              <Text style={[styles.text, { color: theme.textColor }]}>
+                Interval Type: {intervalName}
+              </Text>
+              {template ? (
+                <TouchableOpacity onPress={openTemplate}>
+                  <FontAwesome
+                    name={'external-link'}
+                    size={18}
+                    color={theme.tintColor}
+                  />
+                </TouchableOpacity>
+              ) : null}
+            </View>
             {props?.days?.length <= 10 ? (
               <Text style={[styles.text, { color: theme.textColor }]}>
                 Days: {calculateDays(props.days)}

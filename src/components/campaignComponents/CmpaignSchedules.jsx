@@ -5,6 +5,7 @@ import MycampaignScheduleList from '../MycampaignScheduleList';
 
 const CmpaignSchedules = ({ campaign }) => {
   const compaignschedules = safeJSONParse(campaign?.compaignschedules, []);
+  const compaignsdetails = safeJSONParse(campaign?.compaignsdetails, []);
   return (
     <FlatList
       data={compaignschedules}
@@ -25,6 +26,11 @@ const CmpaignSchedules = ({ campaign }) => {
           startTime={item.StartTime}
           finishTime={item.FinishTime}
           days={item.days}
+          template={safeJSONParse(
+            compaignsdetails?.find(cd => cd?.networkId === item?.NetworkId)
+              ?.template,
+            null,
+          )}
         ></MycampaignScheduleList>
       )}
       numColumns={1}

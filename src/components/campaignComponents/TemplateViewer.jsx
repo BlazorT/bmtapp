@@ -40,12 +40,16 @@ const TemplateViewer = ({ isOpen, onClose, template }) => {
           </View>
 
           <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
-            <Text style={[styles.label, { color: theme.textColor }]}>
-              Subject
-            </Text>
-            <Text style={[styles.value, { color: theme.textColor }]}>
-              {template.subject}
-            </Text>
+            {template?.subject ? (
+              <>
+                <Text style={[styles.label, { color: theme.textColor }]}>
+                  Subject
+                </Text>
+                <Text style={[styles.value, { color: theme.textColor }]}>
+                  {template?.subject}
+                </Text>
+              </>
+            ) : null}
 
             {template.networkId === 3 ? (
               <RenderHtml

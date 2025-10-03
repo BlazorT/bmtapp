@@ -34,7 +34,7 @@ export default function AboutScreen(props) {
           Who We Are?
         </Text>
         <Text style={[styles.header, { color: theme.textColor }]}>
-          BMT is advertisement app
+          BMT is an advertisement app
         </Text>
       </View>
       <View style={styles.BottomView}>

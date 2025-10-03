@@ -188,24 +188,27 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
           }}
         />
         <View style={styles.flexC}>
-          <Image
-            source={getIcon(network.networkId)}
-            style={styles.networkIcon}
-          />
-          <View>
-            <Text
-              style={[
-                styles.networkName,
-                {
-                  color: theme.textColor,
-                },
-              ]}
-            >
-              {network.networkName || network?.name} ({network.purchasedQouta})
-            </Text>
-            <Text style={{ color: theme.textColor, fontSize: 14 }}>
-              {network.networkName || network.name}
-            </Text>
+          <View style={{ flexDirection: 'row' }}>
+            <Image
+              source={getIcon(network.networkId)}
+              style={styles.networkIcon}
+            />
+            <View>
+              <Text
+                style={[
+                  styles.networkName,
+                  {
+                    color: theme.textColor,
+                  },
+                ]}
+              >
+                {network.networkName || network?.name} ({network.purchasedQouta}
+                )
+              </Text>
+              <Text style={{ color: theme.textColor, fontSize: 14 }}>
+                {network.networkName || network.name}
+              </Text>
+            </View>
           </View>
         </View>
 
@@ -290,10 +293,13 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
         </View>
       )}
       {selectedNetwork?.Template && isNetworkSelected ? (
-        <View
+        <TouchableOpacity
+          onPress={() => {
+            openTemplate(selectedNetwork?.Template);
+          }}
           style={[
             styles.card,
-            { backgroundColor: theme.buttonBackColor, rowGap: 5 },
+            { backgroundColor: theme.buttonBackColor, rowGap: 5, marginTop: 6 },
           ]}
         >
           <Text
@@ -304,7 +310,7 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
               textAlign: 'center',
             }}
           >
-            Select Template
+            Selected Template
           </Text>
           <Text
             style={{
@@ -314,7 +320,7 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
           >
             {truncateText(selectedNetwork?.Template?.template, 50)}
           </Text>
-        </View>
+        </TouchableOpacity>
       ) : null}
       {isNetworkSelected && showTemplateList && templates?.length > 0 ? (
         <View
@@ -517,12 +523,13 @@ const styles = StyleSheet.create({
   },
   flexBW: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    gap: 6,
   },
   flexC: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    flex: 1,
   },
   networkIcon: { width: 50, height: 50, marginRight: 10 },
   networkName: {

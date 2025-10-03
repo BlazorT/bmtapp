@@ -77,7 +77,6 @@ export default function DashboardScreen(props) {
         `${servicesettings.baseuri}BlazorApi/dashboard`,
         headerFetch,
       );
-      console.log({ response });
       if (!response.ok) {
         const error = new Error(
           `HTTP error! Status: ${response.status}, Message: ${response.statusText}`,
@@ -86,7 +85,7 @@ export default function DashboardScreen(props) {
         throw error;
       }
       const responseJson = await response.json();
-      console.log(responseJson.data);
+      console.log(responseJson);
       if (responseJson.data) {
         // Map total campaigns to months
         const DashboardData = responseJson.data;
@@ -128,8 +127,9 @@ export default function DashboardScreen(props) {
       }
     } catch (error) {
       console.error(error);
-      setspinner(false);
       Toast.show('error occured, try another time !!!', Toast.LONG);
+    } finally {
+      setspinner(false);
     }
   };
 

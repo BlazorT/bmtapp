@@ -13,12 +13,18 @@ import servicesettings from '../dataservices/servicesettings';
 import CampaignDetail from '../../components/campaignComponents/CampaignDetail';
 import CampaignNetworks from '../../components/campaignComponents/CampaignNetworks';
 import CmpaignSchedules from '../../components/campaignComponents/CmpaignSchedules';
+import RecipientsList from '../../components/campaignComponents/RecipientsList';
+import RNSButton from '../../components/Button';
 
 export default function CompaigndetailScreen(props) {
   const campaign = props.route.params.campaign;
   const theme = useTheme();
   const [imgErr, setImgErr] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
+
+  const [isShowRecipients, setIsShowRecipients] = useState(false);
+
+  const toggleRecipients = () => setIsShowRecipients(prev => !prev);
 
   const imgUrl = servicesettings.Imagebaseuri + campaign?.logoAvatar;
 
@@ -35,6 +41,14 @@ export default function CompaigndetailScreen(props) {
         <Text style={[styles.headerName, { color: theme.textColor }]}>
           {campaign?.name || ''}
         </Text>
+        <RNSButton
+          small
+          caption="Recipients"
+          onPress={toggleRecipients}
+          bgColor={theme.buttonBackColor}
+          style={{ marginTop: 5 }}
+        />
+        <RecipientsList isOpen={isShowRecipients} onClose={toggleRecipients} />
       </View>
       <View style={styles.tabContainer}>
         <TouchableOpacity

@@ -27,58 +27,121 @@ import deleteicon from '../../assets/images/deleteicon.png';
 import playicon from '../../assets/images/playicon.png';
 import pauseicon from '../../assets/images/pauseicon.png';
 
-const NetworkMycampaign = ({ networkId, compaignQouta = 0, freeQouta = 0 }) => {
+const NetworkMycampaign = ({
+  networkName,
+  sent,
+  status,
+  delivered,
+  failed,
+  commentsCount,
+  clicksCount,
+  sharesCount,
+  likesCount,
+  readCount,
+}) => {
   const theme = useTheme();
   const [sidebarVisible, setSidebarVisible] = useState(false);
 
   // Map network IDs to icons
   const networkIcons = useMemo(
     () => ({
-      1: SMS,
-      2: WHATSAPP,
-      3: EMAIL,
-      4: TWITTER,
-      5: FACEBOOK,
-      6: INSTAGRAM,
-      7: LINKEDIN,
-      8: TIKTOK,
-      9: SNAPCHAT,
+      SMS: SMS,
+      WHATSAPP: WHATSAPP,
+      EMAIL: EMAIL,
+      TWITTER: TWITTER,
+      FACEBOOK: FACEBOOK,
+      INSTAGRAM: INSTAGRAM,
+      LINKEDIN: LINKEDIN,
+      TIKTOK: TIKTOK,
+      SNAPCHAT: SNAPCHAT,
     }),
     [],
   );
 
-  const networkIcon = networkIcons[networkId] || SMS;
-
-  const remaining = Math.max(compaignQouta - freeQouta, 0);
+  const networkIcon = networkIcons[networkName] || SMS;
 
   const toggleSidebar = () => {
     setSidebarVisible(!sidebarVisible);
   };
 
+  const columnWidths = [100, 60, 70, 70, 70, 70, 70, 70, 70];
+  const totalWidth = columnWidths.reduce((a, b) => a + b, 0);
+
   return (
     <View style={styles.ModalMainView}>
       <View style={[styles.card, { backgroundColor: theme.cardBackColor }]}>
-        <View style={styles.row}>
-          {/* Network icon */}
-          <Image
-            resizeMode="contain"
-            source={networkIcon}
-            style={styles.socialMediaIcon}
-          />
+        <View style={[styles.rowContainer, { width: totalWidth }]}>
+          {/* Network icon and name */}
+          <View style={[styles.cell, { width: columnWidths[0] }]}>
+            <Image
+              resizeMode="contain"
+              source={networkIcon}
+              style={styles.socialMediaIcon}
+            />
+            <Text style={[styles.networkName, { color: theme.textColor }]}>
+              {networkName}
+            </Text>
+          </View>
 
           {/* Quotas */}
-          <Text style={[styles.text, { color: theme.textColor, width: '25%' }]}>
-            {compaignQouta}
-          </Text>
-          <Text style={[styles.text, { color: theme.textColor, width: '25%' }]}>
-            {freeQouta}
-          </Text>
-          <Text style={[styles.text, { color: theme.textColor, width: '25%' }]}>
-            {remaining}
-          </Text>
+          <View
+            style={[
+              styles.cell,
+              {
+                width: columnWidths[1],
+                backgroundColor: theme.buttonBackColor,
+                borderRadius: 50,
+                paddingVertical: 8,
+              },
+            ]}
+          >
+            <Text style={[styles.text, { color: theme.white, fontSize: 10 }]}>
+              {status}
+            </Text>
+          </View>
+          <View style={[styles.cell, { width: columnWidths[1] }]}>
+            <Text style={[styles.text, { color: theme.textColor }]}>
+              {sent}
+            </Text>
+          </View>
+          <View style={[styles.cell, { width: columnWidths[2] }]}>
+            <Text style={[styles.text, { color: theme.textColor }]}>
+              {failed}
+            </Text>
+          </View>
+          <View style={[styles.cell, { width: columnWidths[3] }]}>
+            <Text style={[styles.text, { color: theme.textColor }]}>
+              {delivered}
+            </Text>
+          </View>
+          <View style={[styles.cell, { width: columnWidths[4] }]}>
+            <Text style={[styles.text, { color: theme.textColor }]}>
+              {readCount}
+            </Text>
+          </View>
+          <View style={[styles.cell, { width: columnWidths[5] }]}>
+            <Text style={[styles.text, { color: theme.textColor }]}>
+              {commentsCount}
+            </Text>
+          </View>
+          <View style={[styles.cell, { width: columnWidths[6] }]}>
+            <Text style={[styles.text, { color: theme.textColor }]}>
+              {clicksCount}
+            </Text>
+          </View>
+          <View style={[styles.cell, { width: columnWidths[7] }]}>
+            <Text style={[styles.text, { color: theme.textColor }]}>
+              {sharesCount}
+            </Text>
+          </View>
+          <View style={[styles.cell, { width: columnWidths[8] }]}>
+            <Text style={[styles.text, { color: theme.textColor }]}>
+              {likesCount}
+            </Text>
+          </View>
 
           {/* Settings button */}
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.settingIconView}
             onPress={toggleSidebar}
           >
@@ -86,23 +149,21 @@ const NetworkMycampaign = ({ networkId, compaignQouta = 0, freeQouta = 0 }) => {
               style={[styles.settingIcon, { color: theme.tintColor }]}
               name="setting"
             />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
 
       {/* Sidebar Modal */}
-      <Modal
+      {/* <Modal
         visible={sidebarVisible}
         animationType="fade"
         transparent
         onRequestClose={() => setSidebarVisible(false)}
       >
-        {/* Backdrop */}
         <TouchableWithoutFeedback onPress={() => setSidebarVisible(false)}>
           <View style={styles.backdrop} />
         </TouchableWithoutFeedback>
 
-        {/* Modal content wrapper */}
         <View style={styles.centeredContainer}>
           <View
             style={[
@@ -110,7 +171,6 @@ const NetworkMycampaign = ({ networkId, compaignQouta = 0, freeQouta = 0 }) => {
               { backgroundColor: theme.backgroundColor },
             ]}
           >
-            {/* Close button */}
             <TouchableOpacity
               style={styles.closeIconView}
               onPress={() => setSidebarVisible(false)}
@@ -121,7 +181,6 @@ const NetworkMycampaign = ({ networkId, compaignQouta = 0, freeQouta = 0 }) => {
               />
             </TouchableOpacity>
 
-            {/* Action buttons */}
             {[
               {
                 icon: deleteicon,
@@ -172,32 +231,42 @@ const NetworkMycampaign = ({ networkId, compaignQouta = 0, freeQouta = 0 }) => {
             ))}
           </View>
         </View>
-      </Modal>
+      </Modal> */}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   ModalMainView: {
-    marginHorizontal: 10,
+    marginHorizontal: 0,
     paddingTop: 9,
   },
   card: {
     paddingVertical: 12,
-    paddingHorizontal: 12,
+    paddingHorizontal: 0,
     borderRadius: 8,
   },
-  row: {
+  rowContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    height: 60,
+  },
+  cell: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 8,
   },
   socialMediaIcon: {
     height: 29,
     width: 29,
   },
+  networkName: {
+    fontSize: 12,
+    marginTop: 2,
+    textAlign: 'center',
+  },
   text: {
-    fontSize: 16,
-    marginTop: 3,
+    fontSize: 14,
     textAlign: 'center',
   },
   settingIconView: {

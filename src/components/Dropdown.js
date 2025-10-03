@@ -14,6 +14,7 @@ const RNSDropDown = props => {
     selectedIndex = '',
     placeholder = 'Please Select...',
     multipleSelect,
+    disabled,
   } = props;
   const [isOpened, setIsOpened] = useState(false);
   const theme = useTheme();
@@ -31,6 +32,7 @@ const RNSDropDown = props => {
       multipleSelect={multipleSelect}
       options={items}
       // showSearch
+      disabled={disabled}
       onDropdownWillShow={openModal}
       onDropdownWillHide={closeModal}
       dropdownStyle={{
@@ -66,7 +68,10 @@ const RNSDropDown = props => {
                 paddingHorizontal: 20,
                 paddingVertical: 10,
               },
-              isSelected && styles.selectedRow,
+              isSelected && [
+                styles.selectedRow,
+                { backgroundColor: theme.buttonBackColor },
+              ],
             ]}
           >
             {isMulti && (

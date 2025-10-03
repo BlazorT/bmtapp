@@ -135,22 +135,24 @@ const CampaignDetail = ({ campaign }) => {
       <RowView label="Discount" value={campaign?.discount} />
       <RowView label="Budget" value={campaign?.totalBudget} />
       <RowView label="Remarks" value={campaign?.description} />
-      <TouchableOpacity
-        style={styles.collapseHeader}
-        onPress={() => setShowAttachments(prev => !prev)}
-      >
-        <View style={styles.collapseLabel}>
-          <Icon name="attachment" size={20} color={theme.textColor} />
-          <Text style={[styles.collapseText, { color: theme.textColor }]}>
-            Attachments
-          </Text>
-        </View>
-        <Icon
-          name={showAttachments ? 'chevron-up' : 'chevron-down'}
-          size={20}
-          color={theme.textColor}
-        />
-      </TouchableOpacity>
+      {attachments?.length > 0 ? (
+        <TouchableOpacity
+          style={styles.collapseHeader}
+          onPress={() => setShowAttachments(prev => !prev)}
+        >
+          <View style={styles.collapseLabel}>
+            <Icon name="attachment" size={20} color={theme.textColor} />
+            <Text style={[styles.collapseText, { color: theme.textColor }]}>
+              Attachments
+            </Text>
+          </View>
+          <Icon
+            name={showAttachments ? 'chevron-up' : 'chevron-down'}
+            size={20}
+            color={theme.textColor}
+          />
+        </TouchableOpacity>
+      ) : null}
       {showAttachments && (
         <ScrollView
           horizontal
