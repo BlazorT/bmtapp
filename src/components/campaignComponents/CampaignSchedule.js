@@ -1,5 +1,5 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTheme } from '../../hooks/useTheme';
 import AddSchedule from './AddSchedule';
 import Toast from 'react-native-simple-toast';
@@ -22,10 +22,11 @@ const CampaignSchedule = ({
   campaignInfo,
   setCampaignInfo,
   setIndex,
-
+  priceData,
   setModalVisible,
   setUpdateMessage,
   setspinner,
+  recipients,
 }) => {
   const theme = useTheme();
   const { user } = useUser();
@@ -54,7 +55,7 @@ const CampaignSchedule = ({
   });
 
   useEffect(() => {
-    console.log('campaignInfo: ' + JSON.stringify(campaignInfo.schedules));
+    // console.log('campaignInfo: ' + JSON.stringify(campaignInfo.schedules));
     if (!isUpdate) {
       setScheduleList({
         CompaignNetworks: [],
@@ -143,6 +144,7 @@ const CampaignSchedule = ({
         days: JSON.stringify(s?.days || []),
         Budget: s?.budget || 0,
       })),
+      totalBudget: campaignInfo.schedules.reduce((a, b) => a + b.budget, 0),
       Budget: campaignInfo.schedules.reduce((a, b) => a + b.budget, 0),
       discount: 0,
       remarks: '',
@@ -357,7 +359,7 @@ const CampaignSchedule = ({
       },
     });
   };
-
+  // console.log({ user });
   return (
     <View style={{ marginTop: 5 }}>
       <View
@@ -432,7 +434,9 @@ const CampaignSchedule = ({
           scheduleList={scheduleList}
           setScheduleList={setScheduleList}
           isUpdate={isUpdate}
+          priceData={priceData}
           setIsUpdate={setIsUpdate}
+          recipients={recipients}
         />
       )}
       {scheduleTab == 1 && (

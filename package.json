@@ -10,7 +10,7 @@
     "test:update": "jest -u",
     "test:coverage": "jest --coverage",
     "ios": "react-native run-ios",
-    "android": "react-native run-android",
+    "android": "react-native run-android --active-arch-only",
     "lint:fix": "./node_modules/eslint/bin/eslint.js src --fix",
     "flow": "./node_modules/flow-bin/cli.js",
     "e2e:build": "detox build --configuration ios.sim.debug",

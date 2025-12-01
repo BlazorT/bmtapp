@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 import {
   Dimensions,
   Image,
+  KeyboardAvoidingView,
   Linking,
   ScrollView,
   StyleSheet,
@@ -346,269 +347,264 @@ export default function VehicalSallerScreen(props) {
   };
   /******************************************************************  views  *****************************************************/
   return (
-    <KeyboardAwareScrollView
-      resetScrollToCoords={{ x: 0, y: 0 }}
-      contentContainerStyle={[
-        styles.container,
-        { backgroundColor: theme.backgroundColor },
-      ]}
-      scrollEnabled={true}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <View
-        Style={[styles.container, { backgroundColor: theme.backgroundColor }]}
+      <ScrollView
+        contentContainerStyle={[
+          styles.container,
+          { backgroundColor: theme.backgroundColor },
+        ]}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
-        <ScrollView>
-          <Spinner
-            visible={spinner}
-            textContent={'Submitting...'}
-            textStyle={{ color: '#FFF' }}
-          />
-          <TermsAndConditions
-            modalVisible={modalVisible}
-            TermsAndConditionsClose={TermsAndConditionsClose}
-          ></TermsAndConditions>
-          <Alert
-            massagetype={'warning'}
-            hide={hidepermission}
-            confirm={confirmpermission}
-            Visible={permissionVisible}
-            alerttype={'confirmation'}
-            Title={'Confirmation'}
-            Massage={'"BDMT" Would like to access camera ?'}
-          ></Alert>
-          <Alert
-            massagetype={'warning'}
-            hide={hide}
-            confirm={confirm}
-            Visible={confirmationVisible}
-            alerttype={'confirmation'}
-            Title={'Confirmation'}
-            Massage={'Do you want to Discard ?'}
-          ></Alert>
-          <Alert
-            massagetype={'warning'}
-            OK={successhide}
-            Visible={successVisible}
-            alerttype={'error'}
-            Title={'Submit'}
-            Massage={'User registered successfully'}
-          ></Alert>
-          <Alert
-            massagetype={'error'}
-            OK={OK}
-            Visible={errorVisible}
-            alerttype={'error'}
-            Title={'Error'}
-            Massage={'Email already has been taken!'}
-          ></Alert>
-          <View style={styles.ProfileImgView}>
-            <TouchableOpacity
-              selectable={true}
-              onPress={() => requestCameraPermission()}
-            >
-              <Image
-                source={
-                  img == '' || img == undefined
-                    ? profileIcon
-                    : { uri: 'data:image/png;base64,' + img[0].base64 }
-                }
-                style={styles.ProfileStyle}
-              />
-            </TouchableOpacity>
-          </View>
+        <Spinner
+          visible={spinner}
+          textContent={'Submitting...'}
+          textStyle={{ color: '#FFF' }}
+        />
+        <TermsAndConditions
+          modalVisible={modalVisible}
+          TermsAndConditionsClose={TermsAndConditionsClose}
+        ></TermsAndConditions>
+        <Alert
+          massagetype={'warning'}
+          hide={hidepermission}
+          confirm={confirmpermission}
+          Visible={permissionVisible}
+          alerttype={'confirmation'}
+          Title={'Confirmation'}
+          Massage={'"BDMT" Would like to access camera ?'}
+        ></Alert>
+        <Alert
+          massagetype={'warning'}
+          hide={hide}
+          confirm={confirm}
+          Visible={confirmationVisible}
+          alerttype={'confirmation'}
+          Title={'Confirmation'}
+          Massage={'Do you want to Discard ?'}
+        ></Alert>
+        <Alert
+          massagetype={'warning'}
+          OK={successhide}
+          Visible={successVisible}
+          alerttype={'error'}
+          Title={'Submit'}
+          Massage={'User registered successfully'}
+        ></Alert>
+        <Alert
+          massagetype={'error'}
+          OK={OK}
+          Visible={errorVisible}
+          alerttype={'error'}
+          Title={'Error'}
+          Massage={'Email already has been taken!'}
+        ></Alert>
+        <View style={styles.ProfileImgView}>
+          <TouchableOpacity
+            selectable={true}
+            onPress={() => requestCameraPermission()}
+          >
+            <Image
+              source={
+                img == '' || img == undefined
+                  ? profileIcon
+                  : { uri: 'data:image/png;base64,' + img[0].base64 }
+              }
+              style={styles.ProfileStyle}
+            />
+          </TouchableOpacity>
+        </View>
+        <TextInput
+          placeholderTextColor={theme.placeholderColor}
+          style={[
+            customestyleusername,
+            { backgroundColor: theme.inputBackColor, color: theme.textColor },
+          ]}
+          value={firstName}
+          onChangeText={value => setFirstName(value)}
+          placeholder="First name"
+          clearTextOnFocus={true}
+          keyboardAppearance={'dark'}
+          KeyboardType={'name'}
+          maxLength={50}
+        />
+        <TextInput
+          placeholderTextColor={theme.placeholderColor}
+          style={[
+            customestyleusername,
+            { backgroundColor: theme.inputBackColor, color: theme.textColor },
+          ]}
+          value={lastName}
+          onChangeText={value => setLastName(value)}
+          placeholder="Last name"
+          clearTextOnFocus={true}
+          keyboardAppearance={'dark'}
+          KeyboardType={'name'}
+          maxLength={50}
+        />
+        <TextInput
+          placeholderTextColor={theme.placeholderColor}
+          style={[
+            customestyleusername,
+            username == '' ? styles.mandatoryControl : null,
+            ,
+            { backgroundColor: theme.inputBackColor, color: theme.textColor },
+          ]}
+          value={username}
+          onChangeText={value => setusername(value)}
+          onEndEditing={() => setusernameFocus(false)}
+          onFocus={() => setusernameFocus(true)}
+          placeholder="User name"
+          clearTextOnFocus={true}
+          keyboardAppearance={'dark'}
+          KeyboardType={'name'}
+          maxLength={50}
+        />
+        <TextInput
+          placeholderTextColor={theme.placeholderColor}
+          value={Email}
+          onChangeText={value => setEmail(value)}
+          onEndEditing={() => setEmailFocus(false)}
+          onFocus={() => setEmailFocus(true)}
+          style={[
+            customestyleEmail,
+            Email == '' ? styles.mandatoryControl : null,
+            ,
+            { backgroundColor: theme.inputBackColor, color: theme.textColor },
+          ]}
+          placeholder="Email"
+          clearTextOnFocus={true}
+          keyboardAppearance={'dark'}
+          maxLength={40}
+        />
+        <TextInput
+          placeholderTextColor={theme.placeholderColor}
+          style={[
+            customestyleContact,
+            Contact == '' ? styles.mandatoryControl : null,
+
+            { backgroundColor: theme.inputBackColor, color: theme.textColor },
+          ]}
+          value={Contact}
+          onChangeText={value => setContact(value)}
+          onEndEditing={() => setContactFocus(false)}
+          onFocus={() => setContactFocus(true)}
+          placeholder="Contact"
+          clearTextOnFocus={false}
+          keyboardAppearance={'dark'}
+          KeyboardType={'phone-pad'}
+          maxLength={50}
+        />
+        <Dropdown
+          placeholderTextColor={theme.placeholderColor}
+          onSelect={value => setorgindex(value)}
+          selectedIndex={orgindex}
+          style={[
+            styles.Pickerstyle,
+            { backgroundColor: theme.inputBackColor, color: theme.textColor },
+          ]}
+          items={orgdata}
+          placeholder="Select organization..."
+          selectedItemViewStyle={colors.red}
+          clearTextOnFocus={true}
+          keyboardAppearance={'dark'}
+          maxLength={5}
+        />
+        <Dropdown
+          placeholderTextColor={theme.placeholderColor}
+          onSelect={value => setcityindex(value)}
+          selectedIndex={cityindex}
+          style={[
+            styles.Pickerstyle,
+            styles.mandatoryControl,
+            { backgroundColor: theme.inputBackColor, color: theme.textColor },
+          ]}
+          items={cities.sort(function (obj1, obj2) {
+            return obj1.id - obj2.id;
+          })}
+          placeholder="Select City..."
+          clearTextOnFocus={true}
+          keyboardAppearance={'dark'}
+          maxLength={5}
+        />
+        <View
+          style={[
+            customestylePassword,
+            Password == '' ? styles.mandatoryControl : null,
+            ,
+            { backgroundColor: theme.inputBackColor, color: theme.textColor },
+          ]}
+        >
           <TextInput
             placeholderTextColor={theme.placeholderColor}
+            value={Password}
+            onChangeText={value => setPassword(value)}
+            onEndEditing={() => setPasswordFocus(false)}
+            onFocus={() => setPasswordFocus(true)}
+            secureTextEntry={true}
             style={[
-              customestyleusername,
-              { backgroundColor: theme.inputBackColor, color: theme.textColor },
+              styles.FieldText,
+              {
+                backgroundColor: theme.inputBackColor,
+                color: theme.textColor,
+              },
             ]}
-            value={firstName}
-            onChangeText={value => setFirstName(value)}
-            placeholder="First name"
-            clearTextOnFocus={true}
-            keyboardAppearance={'dark'}
-            KeyboardType={'name'}
-            maxLength={50}
-          />
-          <TextInput
-            placeholderTextColor={theme.placeholderColor}
-            style={[
-              customestyleusername,
-              { backgroundColor: theme.inputBackColor, color: theme.textColor },
-            ]}
-            value={lastName}
-            onChangeText={value => setLastName(value)}
-            placeholder="Last name"
-            clearTextOnFocus={true}
-            keyboardAppearance={'dark'}
-            KeyboardType={'name'}
-            maxLength={50}
-          />
-          <TextInput
-            placeholderTextColor={theme.placeholderColor}
-            style={[
-              customestyleusername,
-              username == '' ? styles.mandatoryControl : null,
-              ,
-              { backgroundColor: theme.inputBackColor, color: theme.textColor },
-            ]}
-            value={username}
-            onChangeText={value => setusername(value)}
-            onEndEditing={() => setusernameFocus(false)}
-            onFocus={() => setusernameFocus(true)}
-            placeholder="User name"
-            clearTextOnFocus={true}
-            keyboardAppearance={'dark'}
-            KeyboardType={'name'}
-            maxLength={50}
-          />
-          <TextInput
-            placeholderTextColor={theme.placeholderColor}
-            value={Email}
-            onChangeText={value => setEmail(value)}
-            onEndEditing={() => setEmailFocus(false)}
-            onFocus={() => setEmailFocus(true)}
-            style={[
-              customestyleEmail,
-              Email == '' ? styles.mandatoryControl : null,
-              ,
-              { backgroundColor: theme.inputBackColor, color: theme.textColor },
-            ]}
-            placeholder="Email"
+            placeholder="Password"
             clearTextOnFocus={true}
             keyboardAppearance={'dark'}
             maxLength={40}
           />
-          <TextInput
-            placeholderTextColor={theme.placeholderColor}
-            style={[
-              customestyleContact,
-              Contact == '' ? styles.mandatoryControl : null,
-
-              { backgroundColor: theme.inputBackColor, color: theme.textColor },
-            ]}
-            value={Contact}
-            onChangeText={value => setContact(value)}
-            onEndEditing={() => setContactFocus(false)}
-            onFocus={() => setContactFocus(true)}
-            placeholder="Contact"
-            clearTextOnFocus={false}
-            keyboardAppearance={'dark'}
-            KeyboardType={'phone-pad'}
-            maxLength={50}
+        </View>
+        <View style={styles.termsView}>
+          <CheckBox
+            value={selectterms}
+            style={{
+              // height: 18,
+              // width: 18,
+              // margin: 5,
+              transform: [{ scale: 1.2 }],
+            }}
+            onValueChange={value => setselectterms(value)}
+            lineWidth={1.0}
+            boxType={'square'}
+            tintColors={{
+              true: theme.selectedCheckBox,
+              false: theme.buttonBackColor,
+            }}
           />
-          <Dropdown
-            placeholderTextColor={theme.placeholderColor}
-            onSelect={value => setorgindex(value)}
-            selectedIndex={orgindex}
-            style={[
-              styles.Pickerstyle,
-              { backgroundColor: theme.inputBackColor, color: theme.textColor },
-            ]}
-            items={orgdata}
-            placeholder="Select organization..."
-            selectedItemViewStyle={colors.red}
-            clearTextOnFocus={true}
-            keyboardAppearance={'dark'}
-            maxLength={5}
+          <Text style={styles.lable}>Agree with,</Text>
+          <TouchableOpacity onPress={() => setModalVisible(true)}>
+            <Text style={styles.lable2}> Terms & Conditions (EULA)</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.ButtonView}>
+          <Button
+            style={[styles.btnCancel, { flexBasis: '47%' }]}
+            bgColor={theme.buttonBackColor}
+            caption="Cancel"
+            onPress={() => CancelClick()}
           />
-          <Dropdown
-            placeholderTextColor={theme.placeholderColor}
-            onSelect={value => setcityindex(value)}
-            selectedIndex={cityindex}
-            style={[
-              styles.Pickerstyle,
-              styles.mandatoryControl,
-              { backgroundColor: theme.inputBackColor, color: theme.textColor },
-            ]}
-            items={cities.sort(function (obj1, obj2) {
-              return obj1.id - obj2.id;
-            })}
-            placeholder="Select City..."
-            clearTextOnFocus={true}
-            keyboardAppearance={'dark'}
-            maxLength={5}
+          <Button
+            style={[styles.btnSubmit, { flexBasis: '47%' }]}
+            bgColor={theme.buttonBackColor}
+            caption="Submit"
+            onPress={() => submit()}
           />
-          <View
-            style={[
-              customestylePassword,
-              Password == '' ? styles.mandatoryControl : null,
-              ,
-              { backgroundColor: theme.inputBackColor, color: theme.textColor },
-            ]}
-          >
-            <TextInput
-              placeholderTextColor={theme.placeholderColor}
-              value={Password}
-              onChangeText={value => setPassword(value)}
-              onEndEditing={() => setPasswordFocus(false)}
-              onFocus={() => setPasswordFocus(true)}
-              secureTextEntry={true}
-              style={[
-                styles.FieldText,
-                {
-                  backgroundColor: theme.inputBackColor,
-                  color: theme.textColor,
-                },
-              ]}
-              placeholder="Password"
-              clearTextOnFocus={true}
-              keyboardAppearance={'dark'}
-              maxLength={40}
-            />
-          </View>
-          <View style={styles.termsView}>
-            <CheckBox
-              value={selectterms}
-              style={{
-                // height: 18,
-                // width: 18,
-                // margin: 5,
-                transform: [{ scale: 1.2 }],
-              }}
-              onValueChange={value => setselectterms(value)}
-              lineWidth={1.0}
-              boxType={'square'}
-              tintColors={{
-                true: theme.selectedCheckBox,
-                false: theme.buttonBackColor,
-              }}
-            />
-            <Text style={styles.lable}>Agree with,</Text>
-            <TouchableOpacity onPress={() => setModalVisible(true)}>
-              <Text style={styles.lable2}> Terms & Conditions (EULA)</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.ButtonView}>
-            <Button
-              style={[styles.btnCancel, { flexBasis: '47%' }]}
-              bgColor={theme.buttonBackColor}
-              caption="Cancel"
-              onPress={() => CancelClick()}
-            />
-            <Button
-              style={[styles.btnSubmit, { flexBasis: '47%' }]}
-              bgColor={theme.buttonBackColor}
-              caption="Submit"
-              onPress={() => submit()}
-            />
-          </View>
-        </ScrollView>
-      </View>
-    </KeyboardAwareScrollView>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 /******************************************************** styles *************************************************/
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'white',
-    //backgroundColor: colors.BlazorBg,
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
-    flex: 1,
     alignItems: 'center',
-    // justifyContent: 'space-around',
-    justifyContent: 'center',
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    flexGrow: 1,
   },
   ProfileImgView: {
     alignItems: 'center',
@@ -660,7 +656,7 @@ const styles = StyleSheet.create({
     height: 46,
     fontSize: 16,
     color: colors.TextBoxColor,
-    width: Dimensions.get('window').width - 50,
+    width: '100%',
     borderWidth: 1,
     backgroundColor: colors.TextBoxContainer,
     borderColor: colors.borderColor,
@@ -703,11 +699,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   Pickerstyle: {
+    paddingHorizontal: 15,
     backgroundColor: colors.TextBoxContainer,
     borderColor: colors.borderColor,
     borderWidth: 1,
     borderRadius: 4,
-    width: Dimensions.get('window').width - 50,
+    width: '100%',
     height: 46,
     color: '#ffffff',
     fontSize: 15,

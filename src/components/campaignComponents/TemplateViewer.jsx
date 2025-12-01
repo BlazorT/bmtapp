@@ -28,12 +28,18 @@ const TemplateViewer = ({ isOpen, onClose, template }) => {
           style={[styles.modalView, { backgroundColor: theme.modalBackColor }]}
         >
           {/* Header */}
-          <View style={styles.header}>
+          <View style={[styles.header, { borderBottomColor: theme.textColor }]}>
             <Text style={[styles.title, { color: theme.textColor }]}>
               {template.title}
             </Text>
             <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-              <Text style={{ color: theme.textColor, fontWeight: 'bold' }}>
+              <Text
+                style={{
+                  color: theme.textColor,
+                  fontWeight: 'bold',
+                  fontSize: 20,
+                }}
+              >
                 ✕
               </Text>
             </TouchableOpacity>
@@ -80,7 +86,8 @@ const styles = StyleSheet.create({
     width: '90%',
     maxHeight: '85%',
     borderRadius: 12,
-    padding: 20,
+    paddingHorizontal: 10,
+    paddingTop: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
@@ -91,6 +98,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    borderBottomWidth: 0.5,
+    marginBottom: 5,
   },
   closeBtn: {
     padding: 6,

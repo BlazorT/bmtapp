@@ -5,8 +5,10 @@ import React, { useEffect, useState } from 'react';
 import {
   Dimensions,
   Image,
+  KeyboardAvoidingView,
   Modal,
   Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -523,79 +525,87 @@ export default function LoginScreen(props) {
     setmodalVisiblecamera(false);
   }
   return (
-    <View
-      style={[styles.container, { backgroundColor: theme.backgroundColor }]}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <View
-        resetScrollToCoords={{ x: 0, y: 0 }}
-        scrollEnabled={true}
-        extraScrollHeight={0}
+      <ScrollView
+        contentContainerStyle={[
+          styles.container,
+          { backgroundColor: theme.backgroundColor },
+        ]}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
-        <View style={styles.iconimage}>
-          <Image source={profilelogo} style={{ width: 300, height: 100 }} />
-        </View>
-        <View style={styles.field}>
-          <TextInput
-            placeholderTextColor={theme.placeholderColor}
-            style={[
-              customestyleEmail,
-              { backgroundColor: theme.inputBackColor, color: theme.textColor },
-            ]}
-            contextMenuHidden={true}
-            placeholder="Email/Username"
-            value={Email}
-            onChangeText={value => setEmail(value)}
-            onEndEditing={() => setemailFocus(false)}
-            onFocus={() => setemailFocus(true)}
-            clearTextOnFocus={true}
-            keyboardAppearance={'dark'}
-            maxLength={40}
-          />
-          <View
-            style={[
-              customestylePassword,
-              { backgroundColor: theme.inputBackColor },
-            ]}
-          >
+        <View>
+          <View style={styles.iconimage}>
+            <Image source={profilelogo} style={{ width: 300, height: 100 }} />
+          </View>
+          <View style={styles.field}>
             <TextInput
               placeholderTextColor={theme.placeholderColor}
               style={[
-                styles.passwordText,
+                customestyleEmail,
                 {
                   backgroundColor: theme.inputBackColor,
                   color: theme.textColor,
                 },
               ]}
               contextMenuHidden={true}
-              placeholder="Password"
-              value={Password}
-              onEndEditing={() => setPasswordFocus(false)}
-              onFocus={() => setPasswordFocus(true)}
-              onChangeText={value => setPassword(value)}
-              secureTextEntry={show}
+              placeholder="Email/Username"
+              value={Email}
+              onChangeText={value => setEmail(value)}
+              onEndEditing={() => setemailFocus(false)}
+              onFocus={() => setemailFocus(true)}
               clearTextOnFocus={true}
               keyboardAppearance={'dark'}
-              maxLength={10}
+              maxLength={40}
             />
-            {Password != '' ? (
-              <TouchableOpacity onPress={() => showhidepassword()}>
-                <Icon
-                  name={show == false ? 'eye-slash' : 'eye'}
-                  style={styles.imageStyleshowhide}
-                />
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity></TouchableOpacity>
-            )}
+            <View
+              style={[
+                customestylePassword,
+                { backgroundColor: theme.inputBackColor },
+              ]}
+            >
+              <TextInput
+                placeholderTextColor={theme.placeholderColor}
+                style={[
+                  styles.passwordText,
+                  {
+                    backgroundColor: theme.inputBackColor,
+                    color: theme.textColor,
+                  },
+                ]}
+                contextMenuHidden={true}
+                placeholder="Password"
+                value={Password}
+                onEndEditing={() => setPasswordFocus(false)}
+                onFocus={() => setPasswordFocus(true)}
+                onChangeText={value => setPassword(value)}
+                secureTextEntry={show}
+                clearTextOnFocus={true}
+                keyboardAppearance={'dark'}
+                maxLength={10}
+              />
+              {Password != '' ? (
+                <TouchableOpacity onPress={() => showhidepassword()}>
+                  <Icon
+                    name={show == false ? 'eye-slash' : 'eye'}
+                    style={styles.imageStyleshowhide}
+                  />
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity></TouchableOpacity>
+              )}
+            </View>
           </View>
-        </View>
-        <Button
-          style={styles.btnlogin}
-          caption="LOG IN"
-          bgColor={theme.buttonBackColor}
-          onPress={() => checkTextInput()}
-        />
-        {/* <View style={styles.DividerRow}>
+          <Button
+            style={styles.btnlogin}
+            caption="LOG IN"
+            bgColor={theme.buttonBackColor}
+            onPress={() => checkTextInput()}
+          />
+          {/* <View style={styles.DividerRow}>
           <View
             style={{
               flex: 1,
@@ -624,7 +634,7 @@ export default function LoginScreen(props) {
             }}
           />
         </View> */}
-        {/* {Platform.OS === 'android' && (
+          {/* {Platform.OS === 'android' && (
           <View style={styles.signupView}>
             <TouchableOpacity
               onPress={() => LoginWithGoogle()}
@@ -651,125 +661,128 @@ export default function LoginScreen(props) {
             </TouchableOpacity>
           </View>
         )} */}
-        {/* <ContinueWithFacebook
+          {/* <ContinueWithFacebook
           PressContinue={PressContinue}
           FacebookmodalVisible={FacebookmodalVisible}
           theme={theme}
         ></ContinueWithFacebook> */}
-        <View style={styles.DividerRow}>
-          <View
-            style={{
-              flex: 1,
-              height: 1,
-              backgroundColor: colors.borderColorOr,
-            }}
-          />
-          <View>
-            <Text
+          <View style={styles.DividerRow}>
+            <View
               style={{
-                width: 30,
-                fontSize: 19,
-                textAlign: 'center',
-                marginTop: -4,
-                color: colors.borderColorOr,
+                flex: 1,
+                height: 1,
+                backgroundColor: colors.borderColorOr,
               }}
-            >
-              or
-            </Text>
-          </View>
-          <View
-            style={{
-              flex: 1,
-              height: 1,
-              backgroundColor: colors.borderColorOr,
-            }}
-          />
-        </View>
-        <View style={styles.fieldView}>
-          <View style={styles.MainView}>
-            <TouchableOpacity
-              onPress={() => props.navigation.navigate('Forgot Password')}
-            >
-              <Text style={styles.simpletext}> Forgot password? </Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => UserCreate()}>
-              <Text style={styles.simpletext}>Sign Up </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-        <View style={styles.field}>
-          <View style={{ flexDirection: 'row' }}>
-            <Text
-              style={[
-                [styles.copyrirgttext, { color: theme.textColor }],
-                { color: theme.textColor },
-              ]}
-            >
-              Powerd By Blazor Technologies Inc,{' '}
-            </Text>
-            <Text
-              style={[
-                [styles.copyrirgttext, { color: theme.textColor }],
-                { color: theme.textColor },
-              ]}
-            >
-              {new Date().getFullYear()}
-            </Text>
-          </View>
-        </View>
-      </View>
-      <Modal
-        animationType="fade"
-        transparent={true}
-        supportedOrientations={['portrait']}
-        visible={modalVisiblecamera}
-      >
-        <View
-          style={[
-            styles.ModalMainView,
-            { backgroundColor: theme.backgroundColor },
-          ]}
-        >
-          <TouchableOpacity style={{}} onPress={() => closeSocialMediaModal()}>
-            <Icons name={'close'} style={styles.CrossIcon} />
-          </TouchableOpacity>
-          <View style={{ alignItems: 'center', marginBottom: 34 }}>
-            <Text
-              style={{
-                fontSize: 22,
-                fontWeight: '900',
-                fontFamily: 'sans-serif-medium',
-                color: theme.textColor,
-              }}
-            >
-              Sign Up To BMT
-            </Text>
-          </View>
-          <View style={styles.iconimage}>
-            <Image source={profilelogo} style={{ width: 300, height: 100 }} />
-          </View>
-          <View style={styles.centeredView}>
-            <View style={styles.signupWithEmailView}>
-              <TouchableOpacity
-                onPress={() => CreateUser()}
-                style={[
-                  styles.btnfacebook,
-                  { backgroundColor: theme.buttonBackColor },
-                ]}
+            />
+            <View>
+              <Text
+                style={{
+                  width: 30,
+                  fontSize: 19,
+                  textAlign: 'center',
+                  marginTop: -4,
+                  color: colors.borderColorOr,
+                }}
               >
-                <Icon name={'envelope'} style={styles.IconEmail} />
-                <Text
-                  style={
-                    Platform.OS === 'ios'
-                      ? styles.textfacebookIOS
-                      : styles.textfacebook
-                  }
-                >
-                  Sign Up With Email
-                </Text>
+                or
+              </Text>
+            </View>
+            <View
+              style={{
+                flex: 1,
+                height: 1,
+                backgroundColor: colors.borderColorOr,
+              }}
+            />
+          </View>
+          <View style={styles.fieldView}>
+            <View style={styles.MainView}>
+              <TouchableOpacity
+                onPress={() => props.navigation.navigate('Forgot Password')}
+              >
+                <Text style={styles.simpletext}> Forgot password? </Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => UserCreate()}>
+                <Text style={styles.simpletext}>Sign Up </Text>
               </TouchableOpacity>
             </View>
-            {/* {Platform.OS === 'android' && (
+          </View>
+          <View style={styles.field}>
+            <View style={{ flexDirection: 'row' }}>
+              <Text
+                style={[
+                  [styles.copyrirgttext, { color: theme.textColor }],
+                  { color: theme.textColor },
+                ]}
+              >
+                Powerd By Blazor Technologies Inc,{' '}
+              </Text>
+              <Text
+                style={[
+                  [styles.copyrirgttext, { color: theme.textColor }],
+                  { color: theme.textColor },
+                ]}
+              >
+                {new Date().getFullYear()}
+              </Text>
+            </View>
+          </View>
+        </View>
+        <Modal
+          animationType="fade"
+          transparent={true}
+          supportedOrientations={['portrait']}
+          visible={modalVisiblecamera}
+        >
+          <View
+            style={[
+              styles.ModalMainView,
+              { backgroundColor: theme.backgroundColor },
+            ]}
+          >
+            <TouchableOpacity
+              style={{}}
+              onPress={() => closeSocialMediaModal()}
+            >
+              <Icons name={'close'} style={styles.CrossIcon} />
+            </TouchableOpacity>
+            <View style={{ alignItems: 'center', marginBottom: 34 }}>
+              <Text
+                style={{
+                  fontSize: 22,
+                  fontWeight: '900',
+                  fontFamily: 'sans-serif-medium',
+                  color: theme.textColor,
+                }}
+              >
+                Sign Up To BMT
+              </Text>
+            </View>
+            <View style={styles.iconimage}>
+              <Image source={profilelogo} style={{ width: 300, height: 100 }} />
+            </View>
+            <View style={styles.centeredView}>
+              <View style={styles.signupWithEmailView}>
+                <TouchableOpacity
+                  onPress={() => CreateUser()}
+                  style={[
+                    styles.btnfacebook,
+                    { backgroundColor: theme.buttonBackColor },
+                  ]}
+                >
+                  <Icon name={'envelope'} style={styles.IconEmail} />
+                  <Text
+                    style={
+                      Platform.OS === 'ios'
+                        ? styles.textfacebookIOS
+                        : styles.textfacebook
+                    }
+                  >
+                    Sign Up With Email
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              {/* {Platform.OS === 'android' && (
               <View style={styles.signupView}>
                 <TouchableOpacity
                   onPress={() => SignupWithGoogle()}
@@ -798,45 +811,49 @@ export default function LoginScreen(props) {
               FacebookmodalVisible={FacebookmodalVisible}
               theme={theme}
             ></SignupWithFacebook> */}
-          </View>
-          <View style={styles.Bottomfield}>
-            <TouchableOpacity
-              onPress={() => ClickTerms_Condition()}
-              style={styles.termOfUseView}
-            >
-              <Text style={styles.termOfUse}>
-                Agree with Terms & Conditions{' '}
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.Bottomfield}>
-            <View style={{ flexDirection: 'row' }}>
-              <Text style={[styles.copyrirgttext, { color: theme.textColor }]}>
-                Powerd By Blazor Technologies Inc,{' '}
-              </Text>
-              <Text style={[styles.copyrirgttext, { color: theme.textColor }]}>
-                {new Date().getFullYear()}
-              </Text>
+            </View>
+            <View style={styles.Bottomfield}>
+              <TouchableOpacity
+                onPress={() => ClickTerms_Condition()}
+                style={styles.termOfUseView}
+              >
+                <Text style={styles.termOfUse}>
+                  Agree with Terms & Conditions{' '}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.Bottomfield}>
+              <View style={{ flexDirection: 'row' }}>
+                <Text
+                  style={[styles.copyrirgttext, { color: theme.textColor }]}
+                >
+                  Powerd By Blazor Technologies Inc,{' '}
+                </Text>
+                <Text
+                  style={[styles.copyrirgttext, { color: theme.textColor }]}
+                >
+                  {new Date().getFullYear()}
+                </Text>
+              </View>
             </View>
           </View>
-        </View>
-      </Modal>
-      <Model modalVisible={modalVisible}></Model>
-      <Spinner
-        visible={spinner}
-        textContent={'Loading...'}
-        textStyle={{ color: '#FFF' }}
-      />
-    </View>
+        </Modal>
+        <Model modalVisible={modalVisible}></Model>
+        <Spinner
+          visible={spinner}
+          textContent={'Loading...'}
+          textStyle={{ color: '#FFF' }}
+        />
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 const styles = StyleSheet.create({
   container: {
-    color: colors.white,
-    backgroundColor: colors.white,
-    flex: 1,
     alignItems: 'center',
-    justifyContent: 'space-around',
+    paddingVertical: 20,
+    flex: 1,
+    // justifyContent: 'center',
   },
   field: {
     alignItems: 'center',

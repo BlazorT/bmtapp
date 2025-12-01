@@ -27,6 +27,8 @@ const AddSchedule = ({
   setScheduleList,
   isUpdate,
   setIsUpdate,
+  priceData,
+  recipients,
 }) => {
   const theme = useTheme();
   const { user } = useUser();
@@ -34,7 +36,6 @@ const AddSchedule = ({
   const [showStartDatePicker, setShowStartDatePicker] = React.useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = React.useState(false);
   const [scheduleMessageCount, setScheduleMessageCount] = React.useState(0);
-
   const days = [
     { name: 'Sun' },
     { name: 'Mon' },
@@ -53,6 +54,7 @@ const AddSchedule = ({
     scheduleList.days,
     scheduleList.intervalTypeId,
     scheduleList.interval,
+    scheduleList?.CompaignNetworks?.length,
   ]);
 
   const addSchedule = () => {
@@ -64,14 +66,14 @@ const AddSchedule = ({
       Toast.show('Please select a day');
       return;
     }
-    // console.log({ scheduleList });
-    // return;
+
     setCampaignInfo(prevState => ({
       ...prevState,
       schedules: [
         ...prevState.schedules,
         ...(scheduleList.CompaignNetworks?.map(cn => ({
           ...scheduleList,
+          ...cn,
           networkId: cn.networkId,
           CompaignNetworks: [cn],
           randomId: Math.floor(100000 + Math.random() * 900000),
@@ -123,6 +125,7 @@ const AddSchedule = ({
     setIsUpdate(false);
   };
   const calculateBudget = () => {
+    // console.log({ days: scheduleList.days });
     const { numberOfDays, daysOfWeek } = getDaysBetweenDates(
       scheduleList.startTime,
       scheduleList.finishTime,
@@ -268,6 +271,7 @@ const AddSchedule = ({
       }
       validDays = validDays * calculateFractionOfDay(scheduleList.interval);
     }
+    // console.log({ validDays });
     setCampaignInfo(prevState => ({
       ...prevState,
       networks: prevState.networks.map(item => ({
@@ -275,20 +279,48 @@ const AddSchedule = ({
         usedQuota: validDays,
       })),
     }));
+
     setScheduleList(prevState => {
-      const totalBudget = prevState.CompaignNetworks.reduce(
-        (totalBudget, item) => totalBudget + item.unitPriceInclTax * validDays,
-        0,
-      );
+      let totalBudget = 0;
+      let messageCount = 0;
+      const updatedNetworks = prevState.CompaignNetworks.map(item => {
+        // unit price for this network
+        const matchedPrice =
+          priceData?.find(pd => pd.networkId === item.networkId)?.unitPrice ||
+          0;
+        // check if this specific network is special
+        const isSpecial = [1, 2, 3].includes(item.networkId);
+
+        // recipients for this network
+        let recipientsForNetwork =
+          recipients?.filter(r => r.networkId === item.networkId) || [];
+
+        // if NOT special → force length = 1
+        if (!isSpecial) {
+          recipientsForNetwork = [1];
+        }
+
+        // used quota for this network
+        const usedQuota = validDays * (recipientsForNetwork.length || 1);
+
+        // accumulate budget
+        totalBudget += matchedPrice * usedQuota;
+        messageCount += validDays * (recipientsForNetwork.length || 1);
+
+        return {
+          ...item,
+          usedQuota,
+          budget: matchedPrice * usedQuota,
+          messageCount: validDays * (recipientsForNetwork.length || 1), // this is global, unchanged
+        };
+      });
 
       const formattedBudget = Math.round(totalBudget * 100) / 100;
+      // console.log({ updatedNetworks });
       return {
         ...prevState,
-        messageCount: validDays,
-        CompaignNetworks: prevState.CompaignNetworks.map(item => ({
-          ...item,
-          usedQuota: validDays,
-        })),
+        messageCount: messageCount, // this is global, unchanged
+        CompaignNetworks: updatedNetworks,
         budget: formattedBudget,
       };
     });
@@ -329,6 +361,7 @@ const AddSchedule = ({
       daysOfWeek: daysOfWeek,
     };
   }
+  // console.log({ scheduleList }, { campaignInfo });
   // console.log({ lovs: lovs['lovs'].intervals });
   const currencyId = lovs['orgs']?.find(c => c.id === user?.orgId)?.currencyId;
   return (
@@ -731,7 +764,7 @@ const AddSchedule = ({
                 {item.purchasedQouta ||
                   item.compaignQouta - item.usedQuota ||
                   0}{' '}
-                / {scheduleList.messageCount}
+                / {item.messageCount}
               </Text>
               <Text
                 style={{
@@ -740,8 +773,7 @@ const AddSchedule = ({
                   color: theme.textColor,
                 }}
               >
-                Budget:{' '}
-                {(scheduleList.messageCount * item.unitPriceInclTax).toFixed(2)}{' '}
+                Budget: {(item?.budget || 0).toFixed(2)}{' '}
                 {lovs['lovs']?.currencies?.find(c => c.id === currencyId)
                   ?.code || ''}
               </Text>

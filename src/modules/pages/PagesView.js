@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import Spinner from 'react-native-loading-spinner-overlay';
 import Toast from 'react-native-simple-toast';
 import AntdIcon from 'react-native-vector-icons/AntDesign';
 import signup from '../../../assets/images/drawer/SignUp.png';
@@ -22,11 +23,21 @@ import { useUser } from '../../hooks/useUser';
 import { colors, fonts } from '../../styles';
 import servicesettings from '../dataservices/servicesettings';
 import { isAdminOrSuperAdmin } from '../home/HomeView';
+import moment from 'moment';
+import { useNavigation } from '@react-navigation/native';
 
 export default function PagesScreen(props) {
   const theme = useTheme();
+  const { navigate } = useNavigation();
+
   const { isAuthenticated, user, logoutUser } = useUser();
   const [Visible, setVisible] = useState(false);
+  const [unsubscribeAlertVisible, setUnsubscribeAlertVisible] = useState(false);
+  const [spinner, setSpinner] = useState(false);
+
+  const hideUnsubscribeAlert = () => setUnsubscribeAlertVisible(false);
+  const toggleUnsubscribeAlert = () =>
+    setUnsubscribeAlertVisible(prev => !prev);
 
   const hide = () => {
     setVisible(false);
@@ -39,6 +50,63 @@ export default function PagesScreen(props) {
     global.img = 'data:image/png;base64,' + servicesettings.Default_User_Image;
     global.Email = '';
     global.Name = '';
+  };
+
+  const onUnsubscribe = async () => {
+    console.log({ user });
+    toggleUnsubscribeAlert();
+    const body = {
+      id: user?.id,
+      email: user?.email,
+      roleId: user?.roleId,
+      firstName: user?.firstName || user?.fullName?.split(' ')[0] || '',
+      lastName: user?.lastName || user?.fullName?.split(' ')[1] || '',
+      status: 2,
+      rowVer: user?.rowVer, // MUST match DB rowVer
+      lastUpdatedBy: user?.id,
+      UserCode: '',
+      GenderId: 0,
+      CreatedAt: moment().utc().format(),
+    };
+
+    let headerFetch = {
+      method: 'POST',
+      body: JSON.stringify(body),
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: servicesettings.AuthorizationKey,
+      },
+    };
+    try {
+      setSpinner(true);
+      const response = await fetch(
+        `${servicesettings.baseuri}BlazorApi/updateuserstatus`,
+        headerFetch,
+      );
+      if (!response.ok) {
+        throw new Error(`Request failed with status : ${response.status}`);
+      }
+      const res = await response.json();
+      if (res?.status) {
+        logoutUser();
+        Toast.showWithGravity(
+          'Unsubscrive successfully',
+          Toast.LONG,
+          Toast.CENTER,
+        );
+        navigate('Login');
+        global.img =
+          'data:image/png;base64,' + servicesettings.Default_User_Image;
+        global.Email = '';
+        global.Name = '';
+      } else {
+        Toast.show(res?.message || 'Something went wrong, please try again');
+      }
+    } catch (error) {
+      Toast.show(error?.message || 'Something went wrong, please try again');
+    } finally {
+      setSpinner(false);
+    }
   };
 
   const items = [
@@ -91,6 +159,12 @@ export default function PagesScreen(props) {
       condition: true,
     },
     {
+      icon: <AntdIcon name="user" size={45} color={theme.tintColor} />,
+      text: 'Unsubscribe',
+      path: 'Unsubscribe',
+      condition: isAuthenticated,
+    },
+    {
       icon: <AntdIcon name="infocirlceo" size={45} color={theme.tintColor} />,
       text: 'About',
       path: 'About',
@@ -104,7 +178,7 @@ export default function PagesScreen(props) {
     // },
   ];
   const onCardPress = path => {
-    if (isAuthenticated) {
+    if (isAuthenticated || path === 'About') {
       props.navigation.navigate(path);
     } else {
       Toast.show('Please login first');
@@ -118,6 +192,12 @@ export default function PagesScreen(props) {
     <View
       style={[styles.container, { backgroundColor: theme.backgroundColor }]}
     >
+      <Spinner
+        visible={spinner}
+        textContent="Submitting..."
+        textStyle={{ color: theme.textColor }}
+        color={theme.textColor}
+      />
       <Alert
         massagetype={'warning'}
         hide={hide}
@@ -127,7 +207,15 @@ export default function PagesScreen(props) {
         Title={'Confirmation'}
         Massage={'Are you sure want to logout?'}
       ></Alert>
-
+      <Alert
+        massagetype={'warning'}
+        hide={hideUnsubscribeAlert}
+        confirm={onUnsubscribe}
+        Visible={unsubscribeAlertVisible}
+        alerttype={'confirmation'}
+        Title={'Confirmation'}
+        Massage={'Are you sure want to unsubscribe from bmt?'}
+      ></Alert>
       <View
         style={{
           flexDirection: 'row',
@@ -144,7 +232,11 @@ export default function PagesScreen(props) {
               <TouchableOpacity
                 key={idx}
                 onPress={() =>
-                  item.text == 'Logout' ? onLogout() : onCardPress(item.path)
+                  item.text == 'Unsubscribe'
+                    ? toggleUnsubscribeAlert()
+                    : item.text == 'Logout'
+                      ? onLogout()
+                      : onCardPress(item.path)
                 }
                 style={[
                   styles.item,

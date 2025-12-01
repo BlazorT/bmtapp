@@ -31,15 +31,79 @@ import NavigatorView from './RootNavigation';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { isAdminOrSuperAdmin } from '../home/HomeView';
+import moment from 'moment';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 const Drawer = createDrawerNavigator();
 function CustomDrawerContent(props) {
   const theme = useTheme();
   const { navigate } = useNavigation();
   const { user, isAuthenticated, logoutUser } = useUser();
-  // console.log('user', user);
   const [Visible, setVisible] = useState(false);
+  const [unsubscribeAlertVisible, setUnsubscribeAlertVisible] = useState(false);
   const [isImageError, setIsImageError] = useState(false);
+  const [spinner, setSpinner] = useState(false);
+  const hideUnsubscribeAlert = () => setUnsubscribeAlertVisible(false);
+  const toggleUnsubscribeAlert = () =>
+    setUnsubscribeAlertVisible(prev => !prev);
+
+  const onUnsubscribe = async () => {
+    console.log({ user });
+    toggleUnsubscribeAlert();
+    const body = {
+      id: user?.id,
+      email: user?.email,
+      roleId: user?.roleId,
+      firstName: user?.firstName || user?.fullName?.split(' ')[0] || '',
+      lastName: user?.lastName || user?.fullName?.split(' ')[1] || '',
+      status: 2,
+      rowVer: user?.rowVer, // MUST match DB rowVer
+      lastUpdatedBy: user?.id,
+      UserCode: '',
+      GenderId: 0,
+      CreatedAt: moment().utc().format(),
+    };
+    console.log({ body });
+    let headerFetch = {
+      method: 'POST',
+      body: JSON.stringify(body),
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+        Accept: 'application/json',
+        Authorization: servicesettings.AuthorizationKey,
+      },
+    };
+    setSpinner(true);
+    const response = await fetch(
+      // createcompletecompaign
+      servicesettings.baseuri + 'BlazorApi/updateuserstatus',
+      headerFetch,
+    );
+    setSpinner(false);
+    console.log({ response });
+    if (!response.ok) {
+      Toast.show('Something went wrong, please try again');
+      return;
+    }
+    const res = await response.json();
+    console.log({ res });
+    if (res?.status) {
+      logoutUser();
+      Toast.showWithGravity(
+        'Unsubscrive successfully',
+        Toast.LONG,
+        Toast.CENTER,
+      );
+      navigate('Login');
+      global.img =
+        'data:image/png;base64,' + servicesettings.Default_User_Image;
+      global.Email = '';
+      global.Name = '';
+    } else {
+      Toast.show(res?.message || 'Something went wrong, please try again');
+    }
+  };
+
   const CancelClick = () => {
     setVisible(true);
   };
@@ -73,6 +137,11 @@ function CustomDrawerContent(props) {
       condition: true,
     },
     {
+      name: 'Unsubscribe',
+      icon: 'user-delete',
+      condition: isAuthenticated,
+    },
+    {
       name: 'Log Out',
       icon: Logout,
       condition: isAuthenticated,
@@ -101,86 +170,111 @@ function CustomDrawerContent(props) {
         user.avatar.replace(/\\/g, '/').replace(',', '').replace(' //', '')
       : '';
   return (
-    <DrawerContentScrollView {...props} style={{ padding: 0 }}>
-      {isAuthenticated && (
-        <View style={styles.avatarContainer}>
-          <Image
-            source={
-              userProfileImage == '' || isImageError
-                ? userProfile
-                : { uri: userProfileImage }
-            }
-            style={styles.avatar}
-            onError={() => setIsImageError(true)}
-          />
-          <View style={{ paddingLeft: 6 }}>
-            <View style={{ flexDirection: 'row' }}>
-              <Text style={[styles.userName, { color: theme.textColor }]}>
-                {user?.fullName ||
-                  user?.firstName + ' ' + `${user?.lastname || user?.lastName}`}
-              </Text>
-              <TouchableOpacity
-                onPress={() => ProfileEdit()}
-                style={{ position: 'absolute', right: -10 }}
-              >
-                <Image
-                  style={styles.EditIcon}
-                  source={iconAbout}
-                  tintColor={theme.tintColor}
-                />
-              </TouchableOpacity>
-            </View>
-            <Text style={{ color: theme.textColor }}>{user.email}</Text>
-          </View>
-        </View>
-      )}
-      <Alert
-        massagetype={'warning'}
-        hide={hide}
-        confirm={confirm}
-        Visible={Visible}
-        alerttype={'confirmation'}
-        Title={'Confirmation'}
-        Massage={'Are you sure want to logout?'}
-      ></Alert>
-      {drawerData.map(
-        (item, idx) =>
-          item.condition && (
-            <DrawerItem
-              key={`drawer_item-${idx + 1}`}
-              label={() => (
-                <View
-                  style={[
-                    styles.menuLabelFlex,
-                    { borderBottomColor: theme.textColor },
-                  ]}
-                >
-                  {item.name == 'About' ? (
-                    <AntdIcon
-                      name="infocirlceo"
-                      size={25}
-                      style={styles.imgStyle}
-                      color={theme.tintColor}
-                    />
-                  ) : (
-                    <Image
-                      style={styles.imgStyle}
-                      source={item.icon}
-                      tintColor={theme.tintColor}
-                    />
-                  )}
-                  <Text style={[styles.menuTitle, { color: theme.textColor }]}>
-                    {item.name}
-                  </Text>
-                </View>
-              )}
-              onPress={() =>
-                item.name == 'Log Out' ? CancelClick() : navigate(item.name)
+    <>
+      <Spinner
+        visible={spinner}
+        textContent="Submitting..."
+        textStyle={{ color: theme.textColor }}
+        color={theme.textColor}
+      />
+      <DrawerContentScrollView {...props} style={{ padding: 0 }}>
+        {isAuthenticated && (
+          <View style={styles.avatarContainer}>
+            <Image
+              source={
+                userProfileImage == '' || isImageError
+                  ? userProfile
+                  : { uri: userProfileImage }
               }
+              style={styles.avatar}
+              onError={() => setIsImageError(true)}
             />
-          ),
-      )}
-    </DrawerContentScrollView>
+            <View style={{ paddingLeft: 6 }}>
+              <View style={{ flexDirection: 'row' }}>
+                <Text style={[styles.userName, { color: theme.textColor }]}>
+                  {user?.fullName ||
+                    user?.firstName +
+                      ' ' +
+                      `${user?.lastname || user?.lastName}`}
+                </Text>
+                <TouchableOpacity
+                  onPress={() => ProfileEdit()}
+                  style={{ position: 'absolute', right: -10 }}
+                >
+                  <Image
+                    style={styles.EditIcon}
+                    source={iconAbout}
+                    tintColor={theme.tintColor}
+                  />
+                </TouchableOpacity>
+              </View>
+              <Text style={{ color: theme.textColor }}>{user.email}</Text>
+            </View>
+          </View>
+        )}
+        <Alert
+          massagetype={'warning'}
+          hide={hide}
+          confirm={confirm}
+          Visible={Visible}
+          alerttype={'confirmation'}
+          Title={'Confirmation'}
+          Massage={'Are you sure want to logout?'}
+        ></Alert>
+        <Alert
+          massagetype={'warning'}
+          hide={hideUnsubscribeAlert}
+          confirm={onUnsubscribe}
+          Visible={unsubscribeAlertVisible}
+          alerttype={'confirmation'}
+          Title={'Confirmation'}
+          Massage={'Are you sure want to unsubscribe from bmt?'}
+        ></Alert>
+        {drawerData.map(
+          (item, idx) =>
+            item.condition && (
+              <DrawerItem
+                key={`drawer_item-${idx + 1}`}
+                label={() => (
+                  <View
+                    style={[
+                      styles.menuLabelFlex,
+                      { borderBottomColor: theme.textColor },
+                    ]}
+                  >
+                    {item.name == 'About' || item.name == 'Unsubscribe' ? (
+                      <AntdIcon
+                        name={item.name == 'About' ? 'infocirlceo' : 'user'}
+                        size={25}
+                        style={styles.imgStyle}
+                        color={theme.tintColor}
+                      />
+                    ) : (
+                      <Image
+                        style={styles.imgStyle}
+                        source={item.icon}
+                        tintColor={theme.tintColor}
+                      />
+                    )}
+                    <Text
+                      style={[styles.menuTitle, { color: theme.textColor }]}
+                    >
+                      {item.name}
+                    </Text>
+                  </View>
+                )}
+                onPress={() =>
+                  item.name === 'Unsubscribe'
+                    ? toggleUnsubscribeAlert()
+                    : item.name == 'Log Out'
+                      ? CancelClick()
+                      : navigate(item.name)
+                }
+              />
+            ),
+        )}
+      </DrawerContentScrollView>
+    </>
   );
 }
 

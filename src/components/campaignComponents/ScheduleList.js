@@ -31,10 +31,13 @@ const ScheduleList = ({
     return intervals.filter(interval => interval.id == id + 1)[0].name;
   };
   const currencyId = lovs['orgs']?.find(c => c.id === user?.orgId)?.currencyId;
-
+  // console.log({ campaignInfo });
   return (
     <View style={{ marginTop: 5 }}>
-      <ScrollView contentContainerStyle={{ rowGap: 10 }}>
+      <ScrollView
+        contentContainerStyle={{ rowGap: 10 }}
+        style={{ maxHeight: 500 }}
+      >
         {campaignInfo.schedules.map((schedule, index) => (
           <GestureRecognizer
             key={index}

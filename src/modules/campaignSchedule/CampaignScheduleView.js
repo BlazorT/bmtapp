@@ -57,6 +57,8 @@ export default function CampaignScheduleScreen(props) {
   const [modalVisible, setModalVisible] = useState(false);
   const [spinner, setspinner] = useState(false);
   const [networkData, setNetworks] = useState('');
+  const [priceData, setPriceData] = useState([]);
+  const [recipients, setRecipients] = useState([]);
 
   useEffect(() => {
     NetInfo.fetch().then(state => {
@@ -70,7 +72,8 @@ export default function CampaignScheduleScreen(props) {
       }
     });
     loadInitialData();
-    console.log(props.route.params, 'props');
+    fetchRecipients();
+    loadNetworkPricing();
     if (props.route.params) {
       updateCampaignData(props.route.params.campaign);
     }
@@ -79,14 +82,128 @@ export default function CampaignScheduleScreen(props) {
   const loadInitialData = async () => {
     try {
       if (isAuthenticated) {
-        const networks = await lovs['mybundlings'];
-        console.log({ networks });
-        setNetworks(networks);
+        try {
+          setspinner(true);
+          let headerFetch = {
+            method: 'POST',
+            body: JSON.stringify({
+              orgId: String(user.orgId), // ✅ convert to string
+              userId: String(user.id), // ✅ convert to string
+              roleId: String(user.roleId), // ✅ convert to string    datefrom: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // same as C#: DateTime.Now.AddDays(-1)
+              dateto: new Date().toISOString(), // s
+            }),
+            headers: {
+              'Content-Type': 'application/json; charset=utf-8',
+              Accept: 'application/json',
+              Authorization: servicesettings.AuthorizationKey,
+            },
+          };
+          const response = await fetch(
+            servicesettings.baseuri + 'Admin/custombundlingdetails',
+            headerFetch,
+          );
+
+          if (!response.ok) {
+            Toast.show('Something went wrong, please try again');
+            return;
+          }
+
+          const res = await response.json();
+          // console.log({ recipeints: res });
+          const filtered = (res.data || []).filter(n => n.purchasedQouta > 0);
+
+          setNetworks(filtered || []);
+        } catch (error) {
+          console.error('Error fetching networks:', error);
+          Toast.show('Something went wrong, please try again');
+        } finally {
+          setspinner(false);
+        }
+        // const networks = await lovs['mybundlings'];
+        // console.log({ networks });
       } else {
         props.navigation.replace('Login');
       }
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const fetchRecipients = async () => {
+    setspinner(true);
+    try {
+      let headerFetch = {
+        method: 'POST',
+        body: JSON.stringify({
+          id: 0,
+          orgId: user?.orgId,
+          rowVer: 1,
+          networkId: 0,
+          contentId: '',
+          status: 1,
+          createdAt: moment().utc().subtract(10, 'year').format('YYYY-MM-DD'),
+          lastUpdatedAt: moment().utc().format('YYYY-MM-DD'),
+        }),
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          Accept: 'application/json',
+          Authorization: servicesettings.AuthorizationKey,
+        },
+      };
+      const response = await fetch(
+        servicesettings.baseuri + 'BlazorApi/campaignrecipients',
+        headerFetch,
+      );
+
+      if (!response.ok) {
+        Toast.show('Something went wrong, please try again');
+        return;
+      }
+
+      const res = await response.json();
+      // console.log({ recipeints: res });
+      setRecipients(res?.data || []);
+    } catch (error) {
+      console.error('Error fetching recipients:', error);
+      Toast.show('Something went wrong, please try again');
+    } finally {
+      setspinner(false);
+    }
+  };
+
+  const loadNetworkPricing = async () => {
+    const body = {
+      orgId: '0',
+    };
+    // console.log({ body });
+    let headerFetch = {
+      method: 'POST',
+      body: JSON.stringify(body),
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: servicesettings.AuthorizationKey,
+      },
+    };
+    // console.log({ headerFetch });
+    setspinner(true);
+    const response = await fetch(
+      // createcompletecompaign
+      servicesettings.baseuri + 'Admin/bundlingdetails',
+      headerFetch,
+    );
+    setspinner(false);
+
+    // console.log({ response });
+    if (!response.ok) {
+      Toast.show('Something went wrong, please try again');
+      return;
+    }
+    const res = await response.json();
+    // console.log({ res });
+    if (res?.status) {
+      setPriceData(res?.data || []);
+    } else {
+      Toast.show(res?.message || 'Something went wrong, please try again');
     }
   };
   const updateCampaignData = data => {
@@ -226,6 +343,7 @@ export default function CampaignScheduleScreen(props) {
     }
     setIndex(index);
   }
+  // console.log({ priceData, networkData });
 
   return (
     <KeyboardAwareScrollView
@@ -236,6 +354,12 @@ export default function CampaignScheduleScreen(props) {
       ]}
       scrollEnabled={false}
     >
+      <Spinner
+        visible={spinner}
+        textContent="Loading..."
+        textStyle={{ color: theme.textColor }}
+        color={theme.textColor}
+      />
       <TouchableOpacity>
         <AppBreadcrumb
           crumbs={[
@@ -281,6 +405,8 @@ export default function CampaignScheduleScreen(props) {
               setModalVisible={setModalVisible}
               setUpdateMessage={setUpdateMessage}
               setspinner={setspinner}
+              priceData={priceData}
+              recipients={recipients}
             />
             <Spinner
               visible={spinner}

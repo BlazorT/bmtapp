@@ -138,7 +138,7 @@ export default function MycampaignScheduleList(props) {
               Message Count: {props.messageCount}
             </Text>
             <Text style={[styles.text, { color: theme.textColor }]}>
-              Budget: {props.budget} {currencyCode}
+              Budget: {props?.budget?.toFixed(2) || 0} {currencyCode}
             </Text>
           </View>
 
