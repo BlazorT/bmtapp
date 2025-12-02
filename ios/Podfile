@@ -57,6 +57,7 @@ if linkage != nil
 end
 
 target 'BDMT' do
+  pod 'react-native-contacts', :path => '../node_modules/react-native-contacts' <-- add me
   config = use_native_modules!
 
   use_react_native!(

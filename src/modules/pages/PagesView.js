@@ -159,6 +159,12 @@ export default function PagesScreen(props) {
       condition: true,
     },
     {
+      icon: <AntdIcon name="contacts" size={45} color={theme.tintColor} />,
+      text: 'Recipients',
+      path: 'Recipients',
+      condition: isAuthenticated,
+    },
+    {
       icon: <AntdIcon name="user" size={45} color={theme.tintColor} />,
       text: 'Unsubscribe',
       path: 'Unsubscribe',

@@ -37,6 +37,10 @@
 	<string>This app requires access for date time selection</string>
 	<key>NSCameraUsageDescription</key>
 	<string>This app requires access to the camera for video recording</string>
+	<key>NSContactsUsageDescription</key>
+	<string>This app would like to access your contacts to import recipients.</string>
+	<key>Privacy - Contacts Usage Description</key>
+	<string>This app would like to access your contacts to import recipients.</string>
 	<!-- <key>NSLocationAlwaysUsageDescription</key> -->
 	<!-- <string>This app require access to the location for device location access</string> -->
 	<!-- <key>NSLocationWhenInUseUsageDescription</key> -->

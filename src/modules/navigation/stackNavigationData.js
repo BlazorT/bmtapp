@@ -17,6 +17,7 @@ import HomeScreen from '../home/HomeViewContainer';
 import ProfileScreen from '../profile/ProfileViewContainer';
 import TabNavigator from './MainTabNavigator';
 import CompaigndetailScreen from '../../modules/Compaigndetail/CompaigndetailView';
+import RecipeitnsView from '../recipients/RecipeitnsViewContainer';
 const headerLeftComponent = props => {
   const theme = useTheme();
   return (
@@ -256,6 +257,17 @@ const StackNavigationData = [
   {
     name: 'Profile',
     component: Preference_Settings,
+    headerLeft: headerLeftComponent,
+    headerBackground: { source: headerBackground },
+    headerTitleStyle: {
+      fontFamily: fonts.primaryRegular,
+      color: colors.NavbarTextColor,
+      fontSize: 18,
+    },
+  },
+  {
+    name: 'Recipients',
+    component: RecipeitnsView,
     headerLeft: headerLeftComponent,
     headerBackground: { source: headerBackground },
     headerTitleStyle: {

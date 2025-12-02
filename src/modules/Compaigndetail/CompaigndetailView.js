@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import {
   Image,
@@ -7,24 +8,22 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useTheme } from '../../hooks/useTheme';
 import BDMT from '../../../assets/images/pepsilogo.png';
-import servicesettings from '../dataservices/servicesettings';
+import RNSButton from '../../components/Button';
 import CampaignDetail from '../../components/campaignComponents/CampaignDetail';
 import CampaignNetworks from '../../components/campaignComponents/CampaignNetworks';
 import CmpaignSchedules from '../../components/campaignComponents/CmpaignSchedules';
-import RecipientsList from '../../components/campaignComponents/RecipientsList';
-import RNSButton from '../../components/Button';
+import { useTheme } from '../../hooks/useTheme';
+import servicesettings from '../dataservices/servicesettings';
 
 export default function CompaigndetailScreen(props) {
   const campaign = props.route.params.campaign;
   const theme = useTheme();
+  const navigate = useNavigation();
   const [imgErr, setImgErr] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
 
-  const [isShowRecipients, setIsShowRecipients] = useState(false);
-
-  const toggleRecipients = () => setIsShowRecipients(prev => !prev);
+  const toRecipients = () => navigate.navigate('Recipients');
 
   const imgUrl = servicesettings.Imagebaseuri + campaign?.logoAvatar;
 
@@ -44,11 +43,10 @@ export default function CompaigndetailScreen(props) {
         <RNSButton
           small
           caption="Recipients"
-          onPress={toggleRecipients}
+          onPress={toRecipients}
           bgColor={theme.buttonBackColor}
           style={{ marginTop: 5 }}
         />
-        <RecipientsList isOpen={isShowRecipients} onClose={toggleRecipients} />
       </View>
       <View style={styles.tabContainer}>
         <TouchableOpacity

@@ -8,6 +8,8 @@ import {
   Text,
   TouchableOpacity,
   View,
+  SafeAreaView,
+  RefreshControl,
 } from 'react-native';
 import { useTheme } from '../../hooks/useTheme';
 import { useUser } from '../../hooks/useUser';
@@ -16,18 +18,28 @@ import Toast from 'react-native-simple-toast';
 import { useSelector } from 'react-redux';
 import RNSDropDown from '../Dropdown';
 import RNSTextInput from '../TextInput';
+import RNSButton from '../Button';
+import AntdIcon from 'react-native-vector-icons/AntDesign';
+import ContactsModal from '../ContactsModal';
 
-const RecipientsList = ({ isOpen, onClose }) => {
+const RecipientsList = () => {
   const { user } = useUser();
   const theme = useTheme();
   const lovs = useSelector(state => state.lovs).lovs;
   const networks = lovs?.lovs?.networks;
 
   const [loading, setLoading] = useState(false);
+  const [isContactsOpen, setIsContactsOpen] = useState(false);
   const [recipients, setRecipients] = useState([]);
   const [filteredRecipients, setFilteredRecipients] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [filterNetworkId, setFilterNetworkId] = useState([]);
+
+  const toggleContactsOpen = () => setIsContactsOpen(prev => !prev);
+
+  const onImport = data => {
+    console.log({ data });
+  };
 
   const fetchRecipients = async () => {
     setLoading(true);
@@ -95,199 +107,195 @@ const RecipientsList = ({ isOpen, onClose }) => {
     return network?.name || 'Unknown Network';
   };
 
-  const getStatusText = status => {
-    return status === 1 ? 'Active' : 'Inactive';
-  };
-
   useEffect(() => {
-    if (isOpen) {
-      fetchRecipients();
-    }
-  }, [isOpen]);
+    fetchRecipients();
+  }, []);
 
   useEffect(() => {
     applyFilters();
   }, [searchText, filterNetworkId, recipients]);
 
-  const renderRecipientItem = ({ item }) => (
-    <View
-      style={[styles.recipientCard, { backgroundColor: theme.backgroundColor }]}
-    >
-      <View style={styles.recipientHeader}>
-        <Text style={[styles.contentId, { color: theme.textColor }]}>
-          {item.contentId}
-        </Text>
-        <View
-          style={[
-            styles.statusBadge,
-            {
-              backgroundColor:
-                item.status === 1 ? theme.green + '30' : theme.darkGray + '30',
-            },
-          ]}
-        >
-          <Text
-            style={[
-              styles.statusText,
-              { color: item.status === 1 ? theme.green : theme.darkGray },
-            ]}
-          >
-            {getNetworkName(item.networkId)}
-          </Text>
-        </View>
-      </View>
+  // The main content (everything inside the modal)
 
-      {/* <View style={styles.recipientDetails}>
-        <View style={styles.detailRow}>
-          <Text style={[styles.detailLabel, { color: theme.focusText }]}>
-            Network:
-          </Text>
-          <Text style={[styles.detailValue, { color: theme.textColor }]}>
-            {getNetworkName(item.networkId)}
-          </Text>
-        </View>
-
-        <View style={styles.detailRow}>
-          <Text style={[styles.detailLabel, { color: theme.focusText }]}>
-            Added:
-          </Text>
-          <Text style={[styles.detailValue, { color: theme.textColor }]}>
-            {moment(item.createdAt).format('MMM DD, YYYY')}
-          </Text>
-        </View>
-      </View> */}
-    </View>
-  );
-
-  const renderEmptyState = () => (
-    <View style={styles.emptyState}>
-      <Text style={[styles.emptyText, { color: theme.focusText }]}>
-        No recipients found
-      </Text>
-      <Text style={[styles.emptySubText, { color: theme.placeholderColor }]}>
-        {searchText || filterNetworkId > 0
-          ? 'Try adjusting your filters'
-          : 'Add recipients to get started'}
-      </Text>
-    </View>
-  );
-
+  // Non-modal mode: render directly (e.g. full screen)
   return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={isOpen}
-      onRequestClose={onClose}
-    >
-      <View style={styles.centeredView}>
-        <View
-          style={[styles.modalView, { backgroundColor: theme.modalBackColor }]}
-        >
-          {/* Header */}
-          <View style={styles.header}>
-            <Text style={[styles.title, { color: theme.textColor }]}>
-              Recipients
-            </Text>
-            <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-              <Text
-                style={{
-                  color: theme.textColor,
-                  fontWeight: 'bold',
-                  fontSize: 20,
-                }}
-              >
-                ✕
-              </Text>
-            </TouchableOpacity>
-          </View>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.backgroundColor }}>
+      <View
+        style={[
+          styles.fullScreenContainer, // full screen when not modal
+          {
+            backgroundColor: theme.backgroundColor,
+          },
+        ]}
+      >
+        <ContactsModal
+          isOpen={isContactsOpen}
+          onClose={toggleContactsOpen}
+          onImportComplete={onImport}
+          recipients={recipients}
+          fetchRecipients={fetchRecipients}
+        />
+        {/* Close button only shown in modal */}
 
-          {/* Filters */}
-          <View style={styles.filtersContainer}>
+        {/* Non-modal header (optional - if you want a back button or title when full screen) */}
+
+        {/* Filters */}
+        <View style={styles.filtersContainer}>
+          <View style={[styles.row]}>
             <RNSTextInput
               placeholder="Search by number or email..."
               placeholderTextColor={theme.placeholderColor}
               value={searchText}
               onChangeText={setSearchText}
+              keyboardShouldPersistTaps="handled"
               style={[
                 styles.searchInput,
                 {
+                  width: 245,
                   backgroundColor: theme.inputBackColor,
                   color: theme.textColor,
                   borderColor: theme.containerBorderColor,
                 },
               ]}
             />
-
-            <RNSDropDown
-              items={networks || []}
-              selectedIndex={filterNetworkId}
-              disabled={loading}
-              multipleSelect
-              onSelect={value => {
-                const current = filterNetworkId || [];
-                const exists = current.includes(value);
-
-                setFilterNetworkId(
-                  exists
-                    ? current.filter(v => v !== value)
-                    : [...current, value],
-                );
-              }}
-              borderColor={theme.containerBorderColor}
-              style={[
-                styles.networkDropdown,
-                {
-                  backgroundColor: theme.inputBackColor,
-                  color: theme.textColor,
-                  borderRadius: 6,
-                  paddingHorizontal: 10,
-                  fontSize: 16,
-                },
-              ]}
-              placeholder="Filter by Network..."
-              clearTextOnFocus={true}
-              keyboardAppearance={'dark'}
+            <RNSButton
+              style={{ width: 'auto' }}
+              bgColor={theme.buttonBackColor}
+              caption="Contacts"
+              onPress={toggleContactsOpen}
+              small
+              nIcon={
+                <AntdIcon name="contacts" size={22} color={theme.tintColor} />
+              }
             />
           </View>
 
-          {/* Results Count */}
-          {!loading && (
-            <Text style={[styles.resultsCount, { color: theme.textColor }]}>
-              {filteredRecipients.length} recipient
-              {filteredRecipients.length !== 1 ? 's' : ''} found
-            </Text>
-          )}
+          <RNSDropDown
+            items={networks || []}
+            selectedIndex={filterNetworkId}
+            disabled={loading}
+            multipleSelect
+            onSelect={value => {
+              const current = filterNetworkId || [];
+              const exists = current.includes(value);
+              setFilterNetworkId(
+                exists ? current.filter(v => v !== value) : [...current, value],
+              );
+            }}
+            borderColor={theme.containerBorderColor}
+            style={[
+              styles.networkDropdown,
+              {
+                backgroundColor: theme.inputBackColor,
+                color: theme.textColor,
+                borderRadius: 6,
+                paddingHorizontal: 10,
+                fontSize: 16,
+              },
+            ]}
+            placeholder="Filter by Network..."
+          />
+        </View>
 
-          {/* Recipients List */}
-          <View style={styles.listContainer}>
-            {loading ? (
-              <View style={styles.loadingContainer}>
-                <ActivityIndicator
-                  color={theme.buttonBackColor}
-                  size={'large'}
+        {!loading && (
+          <Text style={[styles.resultsCount, { color: theme.textColor }]}>
+            {filteredRecipients.length} recipient
+            {filteredRecipients.length !== 1 ? 's' : ''} found
+          </Text>
+        )}
+
+        <View style={styles.listContainer}>
+          {loading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator color={theme.buttonBackColor} size="large" />
+              <Text style={[styles.loadingText, { color: theme.textColor }]}>
+                Loading recipients...
+              </Text>
+            </View>
+          ) : (
+            <FlatList
+              keyboardShouldPersistTaps="handled"
+              blurOnSubmit={false}
+              data={filteredRecipients}
+              refreshControl={
+                <RefreshControl
+                  refreshing={loading}
+                  onRefresh={fetchRecipients}
+                  colors={[theme.textColor, theme.modalBackColor]}
+                  progressBackgroundColor={theme.buttonBackColor}
                 />
-                <Text style={[styles.loadingText, { color: theme.textColor }]}>
-                  Loading recipients...
-                </Text>
-              </View>
-            ) : (
-              <FlatList
-                data={filteredRecipients}
-                renderItem={renderRecipientItem}
-                keyExtractor={item => item.id.toString()}
-                style={{ maxHeight: 400 }}
-                contentContainerStyle={styles.listContent}
-                ListEmptyComponent={renderEmptyState}
-                showsVerticalScrollIndicator={false}
-              />
-            )}
-          </View>
+              }
+              renderItem={({ item }) => (
+                <View
+                  style={[
+                    styles.recipientCard,
+                    {
+                      backgroundColor: theme.modalBackColor,
+                    },
+                  ]}
+                >
+                  <View style={styles.recipientHeader}>
+                    <Text
+                      style={[styles.contentId, { color: theme.textColor }]}
+                    >
+                      {item.contentId}
+                    </Text>
+                    <View
+                      style={[
+                        styles.statusBadge,
+                        {
+                          backgroundColor:
+                            item.status === 1
+                              ? theme.green + '30'
+                              : theme.darkGray + '30',
+                        },
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.statusText,
+                          {
+                            color:
+                              item.status === 1 ? theme.green : theme.darkGray,
+                          },
+                        ]}
+                      >
+                        {getNetworkName(item.networkId)}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              )}
+              keyExtractor={item => item.id.toString()}
+              contentContainerStyle={styles.listContent}
+              style={{ maxHeight: '90%' }}
+              ListEmptyComponent={() => (
+                <View style={styles.emptyState}>
+                  <Text style={[styles.emptyText, { color: theme.focusText }]}>
+                    No recipients found
+                  </Text>
+                  <Text
+                    style={[
+                      styles.emptySubText,
+                      { color: theme.placeholderColor },
+                    ]}
+                  >
+                    {searchText || filterNetworkId.length > 0
+                      ? 'Try adjusting your filters'
+                      : 'Add recipients to get started'}
+                  </Text>
+                </View>
+              )}
+              showsVerticalScrollIndicator={false}
+            />
+          )}
         </View>
       </View>
-    </Modal>
+    </SafeAreaView>
   );
 };
 
+// Updated styles
 const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
@@ -295,7 +303,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  modalView: {
+  container: {
     width: '90%',
     maxHeight: '85%',
     borderRadius: 12,
@@ -305,7 +313,18 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 6,
+    alignSelf: 'center',
+    marginTop: 50, // space for status bar in modal
   },
+  fullScreenContainer: {
+    flex: 1,
+    width: '100%',
+    marginTop: 0,
+    borderRadius: 0,
+    elevation: 0,
+    shadowOpacity: 0,
+  },
+  // ... rest of your styles remain the same ...
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -325,12 +344,16 @@ const styles = StyleSheet.create({
     gap: 10,
     marginBottom: 12,
   },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
   searchInput: {
-    width: '100%',
     borderRadius: 8,
     paddingHorizontal: 12,
     fontSize: 15,
-    height: 44,
+    height: 40,
     borderWidth: 1,
   },
   networkDropdown: {
