@@ -1,7 +1,10 @@
-import notifee, {AndroidColor, AndroidImportance} from '@notifee/react-native';
+import notifee, {
+  AndroidColor,
+  AndroidImportance,
+} from '@notifee/react-native';
 import messaging from '@react-native-firebase/messaging';
-import {useEffect} from 'react';
-import {PermissionsAndroid, Platform} from 'react-native';
+import { useEffect } from 'react';
+import { PermissionsAndroid, Platform } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import NotificationSounds from 'react-native-notification-sounds';
 
@@ -20,31 +23,9 @@ const RemotePushNotification = () => {
 
   const requestUserPermission = async () => {
     const apiLevel = await DeviceInfo.getApiLevel();
-    console.log({apiLevel});
+    console.log({ apiLevel });
 
     if (Platform.OS === 'ios') {
-      // const firebaseConfig = {
-      //   apiKey: "AIzaSyBxXucmx1kC8qwiZdPk17GyAtZej1qYil8",
-      //   authDomain: "cardealzpoint.firebaseapp.com",
-      //   projectId: "cardealzpoint",
-      //   storageBucket: "cardealzpoint.appspot.com",
-      //   databaseURL: "https://cardealzpoint-default-rtdb.firebaseio.com",
-      //   messagingSenderId: "508057505431",
-      //   appId:
-      //     "508057505431-5j209dro4aprg8lp96rsljh8u8tsjbtn.apps.googleusercontent.com",
-      // };
-
-      // let app;
-      // if (firebase.apps.length === 0) {
-      //   app = firebase.initializeApp(firebaseConfig);
-      // } else {
-      //   app = firebase.app();
-      // }
-
-      // // const db = firebase.firestore();
-      // const auth = firebase.auth();
-      // console.log({ auth, app });
-      // Request iOS permission
       const authStatus = await messaging().requestPermission();
       const enabled =
         authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
@@ -129,8 +110,8 @@ const RemotePushNotification = () => {
 
   const localNotification = async remoteMessage => {
     const key = Date.now().toString(); // Key must be unique every time
-    const {title, body} = remoteMessage.notification;
-    const {image} = remoteMessage.data;
+    const { title, body } = remoteMessage.notification;
+    const { image } = remoteMessage.data;
     const sentTime = remoteMessage.sentTime;
     console.log('title', title, 'message', body, 'sentTime', sentTime);
     const soundsList =

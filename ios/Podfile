@@ -22,13 +22,13 @@ setup_permissions([
   'Calendars',
   # 'CalendarsWriteOnly',
   'Camera',
-  # 'Contacts',
+  'Contacts',
   # 'FaceID',
   # 'LocationAccuracy',
   # 'LocationAlways',
-  # 'LocationWhenInUse',
+  'LocationWhenInUse',
   'MediaLibrary',
-  # 'Microphone',
+  'Microphone',
   # 'Motion',
   # 'Notifications',
   'PhotoLibrary',
@@ -57,8 +57,12 @@ if linkage != nil
 end
 
 target 'BDMT' do
-  pod 'react-native-contacts', :path => '../node_modules/react-native-contacts' <-- add me
+  pod 'react-native-contacts', :path => '../node_modules/react-native-contacts'
   config = use_native_modules!
+
+  # Remove the duplicate use_frameworks! line
+  use_frameworks! :linkage => :static  # <-- REMOVE THIS LINE
+  $RNFirebaseAsStaticFramework = true
 
   use_react_native!(
     :path => config[:reactNativePath],
@@ -70,6 +74,9 @@ target 'BDMT' do
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
+
+  rn_maps_path = '../node_modules/react-native-maps'
+  pod 'react-native-google-maps', :path => rn_maps_path
 
   post_install do |installer|
     # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
