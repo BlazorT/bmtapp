@@ -9,6 +9,7 @@ import moment from 'moment';
 import { useSelector } from 'react-redux';
 import Network from './network';
 import RecipientsList from './RecipientsList';
+import { useNavigation } from '@react-navigation/native';
 
 const CampaignNetwork = ({
   campaignInfo,
@@ -17,6 +18,7 @@ const CampaignNetwork = ({
   networks,
 }) => {
   const theme = useTheme();
+  const navigation = useNavigation();
 
   const [isShowRecipients, setIsShowRecipients] = useState(false);
 
@@ -25,16 +27,17 @@ const CampaignNetwork = ({
   const nextStep = () => {
     setIndex(2);
   };
+  const toRecipients = () => navigation.navigate('Recipients');
   return (
     <View>
       <RNSButton
         caption="Recipients"
-        onPress={toggleRecipients}
+        onPress={toRecipients}
         bgColor={theme.buttonBackColor}
         style={{ marginTop: 5 }}
         small
       />
-      <RecipientsList isOpen={isShowRecipients} onClose={toggleRecipients} />
+      {/* <RecipientsList isOpen={isShowRecipients} onClose={toggleRecipients} /> */}
       <ScrollView contentContainerStyle={{ rowGap: 10, marginTop: 10 }}>
         {networks.length > 0 &&
           networks

@@ -147,6 +147,7 @@ const styles = StyleSheet.create({
   container: {
     height: HEIGHT,
     // borderWidth: 1 / PixelRatio.get(),
+    width: '100%',
   },
   containerSmall: {
     height: HEIGHT_SMALL,
@@ -159,10 +160,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 30,
+
+    // width: 'auto',
+    // paddingHorizontal: 30,
   },
   buttonSmall: {
-    paddingHorizontal: 15,
+    paddingHorizontal: Platform.OS === 'ios' ? 2 : 15,
   },
   border: {
     borderWidth: 1,
@@ -194,7 +197,7 @@ const styles = StyleSheet.create({
     //  fontWeight: '500',
   },
   captionWithIcon: {
-    marginLeft: 12,
+    marginLeft: Platform.OS === 'ios' ? 4 : 12,
   },
   primaryCaption: {
     color: 'white',

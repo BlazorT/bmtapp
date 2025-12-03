@@ -894,13 +894,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
   },
   btnlogin: {
-    backgroundColor: colors.Blazorbutton,
     width: Dimensions.get('window').width - 50,
-    marginHorizontal: 25,
-    marginVertical: 10,
-    borderRadius: 8,
-    height: 46,
-    borderColor: colors.InputControlBorderColor,
+    marginTop: 15,
+    alignSelf: 'center',
   },
   TitleLogo: {
     color: colors.TextColorOther,

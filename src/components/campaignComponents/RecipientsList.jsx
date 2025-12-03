@@ -165,7 +165,7 @@ const RecipientsList = () => {
               onPress={toggleContactsOpen}
               small
               nIcon={
-                <AntdIcon name="contacts" size={22} color={theme.tintColor} />
+                <AntdIcon name="contacts" size={20} color={theme.tintColor} />
               }
             />
           </View>

@@ -76,7 +76,7 @@ target 'BDMT' do
   )
 
   rn_maps_path = '../node_modules/react-native-maps'
-  pod 'react-native-google-maps', :path => rn_maps_path
+  pod 'react-native-maps/Google', :path => rn_maps_path
 
   post_install do |installer|
     # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202

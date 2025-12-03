@@ -398,7 +398,7 @@ const AddSchedule = ({
             </Text>
             <CheckBox
               style={{
-                transform: [{ scale: 1.4 }],
+                transform: [{ scale: Platform.OS === 'ios' ? 0.8 : 1.4 }],
               }}
               boxType={'square'}
               tintColors={{
@@ -560,7 +560,7 @@ const AddSchedule = ({
             >
               <CheckBox
                 style={{
-                  transform: [{ scale: 1.4 }],
+                  transform: [{ scale: Platform.OS === 'ios' ? 0.8 : 1.4 }],
                 }}
                 onValueChange={value => {
                   if (value) {

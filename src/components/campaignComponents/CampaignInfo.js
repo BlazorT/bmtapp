@@ -152,6 +152,7 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex }) => {
           fontSize: 16,
           borderColor: '#ff00003d',
           borderWidth: 1,
+          height: 45,
         }}
       />
       <TouchableOpacity
@@ -492,7 +493,7 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex }) => {
             true: theme.selectedCheckBox,
             false: theme.buttonBackColor,
           }}
-          style={{ transform: [{ scale: 1.3 }] }}
+          style={{ transform: [{ scale: Platform.OS === 'ios' ? 0.8 : 1.3 }] }}
           boxType={'square'}
           onValueChange={value => handleCampaignInfo('autoLead', value)}
         />

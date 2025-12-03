@@ -144,7 +144,10 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
       <View style={styles.flexBW}>
         <CheckBox
           style={{
-            transform: [{ scaleX: 1.6 }, { scaleY: 1.6 }],
+            transform: [
+              { scaleX: Platform.OS === 'ios' ? 0.8 : 1.6 },
+              { scaleY: Platform.OS === 'ios' ? 0.8 : 1.6 },
+            ],
           }}
           value={isNetworkSelected}
           onValueChange={v => {
@@ -222,6 +225,7 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
             paddingHorizontal: 2,
             maxHeight: 35,
             paddingVertical: 0,
+            width: 'auto',
             // minWidth: 60,
           }}
         />
@@ -374,14 +378,17 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
                   >
                     <FontAwesome
                       name={'external-link'}
-                      size={26}
+                      size={Platform.OS === 'ios' ? 20 : 26}
                       color={theme.tintColor}
                     />
                   </TouchableOpacity>
 
                   <CheckBox
                     style={{
-                      transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }],
+                      transform: [
+                        { scaleX: Platform.OS === 'ios' ? 0.8 : 1.5 },
+                        { scaleY: Platform.OS === 'ios' ? 0.8 : 1.5 },
+                      ],
                       zIndex: 999,
                     }}
                     value={selectedNetwork?.Template?.id === item.id}

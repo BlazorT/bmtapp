@@ -78,8 +78,10 @@ const ContactsModal = ({
       } else {
         // iOS
         Contacts.checkPermission().then(permission => {
+          console.log({ permission });
           if (permission === 'undefined' || permission === 'denied') {
             Contacts.requestPermission().then(newPermission => {
+              console.log({ newPermission });
               if (newPermission === 'authorized') {
                 setPermissionGranted(true);
                 fetchContacts();
@@ -407,9 +409,9 @@ const ContactsModal = ({
           Visible={importAllContactAlert}
           alerttype={'confirmation'}
           Title={'Import All Contacts'}
-          Massage={`Are you sure you want to import ${filteredContacts.filter(
-            c => !isContactImported(c),
-          )} contact(s)?`}
+          Massage={`Are you sure you want to import ${
+            filteredContacts.filter(c => !isContactImported(c))?.length
+          } contact(s)?`}
         ></CustomeAlert>
         <SafeAreaView style={{ flex: 1, width: '100%' }}>
           <View

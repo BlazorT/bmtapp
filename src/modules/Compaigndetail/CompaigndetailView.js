@@ -45,7 +45,7 @@ export default function CompaigndetailScreen(props) {
           caption="Recipients"
           onPress={toRecipients}
           bgColor={theme.buttonBackColor}
-          style={{ marginTop: 5 }}
+          style={{ marginTop: 5, width: 'auto' }}
         />
       </View>
       <View style={styles.tabContainer}>
@@ -134,5 +134,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   tab: { flex: 1, padding: 10 },
-  tabText: { fontSize: 14, fontWeight: 'bold', textAlign: 'center' },
+  tabText: {
+    fontSize: Platform.OS === 'ios' ? 12 : 14,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
 });

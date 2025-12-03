@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Spentem</string>
+	<string>Blazor Media Toolkit</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -37,8 +37,6 @@
 	<string>This app requires access to the camera for video recording</string>
 	<key>NSContactsUsageDescription</key>
 	<string>This app would like to access your contacts to import recipients.</string>
-	<key>Privacy - Contacts Usage Description</key>
-	<string>This app would like to access your contacts to import recipients.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>This app requires access to the location for device location access</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
@@ -49,6 +47,10 @@
 	<string>We need access to video from library</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>We need access to video from library</string>
+	<key>Privacy - Contacts Usage Description</key>
+	<string>This app would like to access your contacts to import recipients.</string>
+	<key>RCTNewArchEnabled</key>
+	<true/>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Lato-Bold.ttf</string>
@@ -88,6 +90,11 @@
 		<string>NowAlt-Regular.otf</string>
 		<string>NowAlt-Thin.otf</string>
 		<string>fancypens.regular.ttf</string>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>

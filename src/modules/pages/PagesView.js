@@ -274,12 +274,14 @@ export default function PagesScreen(props) {
 
 const styles = StyleSheet.create({
   container: {
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
+    flex: 1,
     paddingTop: 10,
     alignItems: 'flex-start',
     justifyContent: 'center',
     flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
   },
   row: {
     flexDirection: 'row',
@@ -287,9 +289,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   item: {
-    backgroundColor: colors.PagePanelTab,
-    height: Platform.OS === 'ios' ? 130 : 120,
-    width: Platform.OS === 'ios' ? 130 : 120,
+    height: Platform.OS === 'ios' ? 110 : 120,
+    width: Platform.OS === 'ios' ? 110 : 120,
     paddingVertical: 20,
     borderRadius: 5,
     alignItems: 'center',

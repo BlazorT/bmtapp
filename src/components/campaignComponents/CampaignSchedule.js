@@ -307,6 +307,8 @@ const CampaignSchedule = ({
         setModalVisible(true);
         setTimeout(() => {
           setModalVisible(false);
+        }, 2000);
+        setTimeout(() => {
           navigation.navigate('Campaigns', { isReload: true });
           setIndex(0);
           setCampaignInfo({
@@ -334,7 +336,7 @@ const CampaignSchedule = ({
             minAge: MIN_AGE,
             maxAge: MAX_AGE,
           });
-        }, 4000);
+        }, 2500);
       }
     }
   };
