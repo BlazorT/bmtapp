@@ -251,7 +251,7 @@ export default function LoginScreen(props) {
           global.USERID = userData.id;
           global.StoreName = userData.TradeName;
           //console.log("global.Storeid check " + global.Storeid)
-
+          console.log({ userData });
           Toast.show(`${userData?.fullName} has been logged in successfully`);
           setmodalVisible(true);
           setTimeout(() => {

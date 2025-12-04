@@ -102,7 +102,6 @@ export default function CampaignScheduleScreen(props) {
             servicesettings.baseuri + 'Admin/custombundlingdetails',
             headerFetch,
           );
-
           if (!response.ok) {
             Toast.show('Something went wrong, please try again');
             return;
@@ -193,7 +192,7 @@ export default function CampaignScheduleScreen(props) {
     );
     setspinner(false);
 
-    // console.log({ response });
+    // console.log({ response, headerFetch });
     if (!response.ok) {
       Toast.show('Something went wrong, please try again');
       return;

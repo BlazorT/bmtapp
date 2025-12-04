@@ -42,14 +42,19 @@ export default function PagesScreen(props) {
   const hide = () => {
     setVisible(false);
   };
+
   const confirm = () => {
     setVisible(false);
-    logoutUser();
-    Toast.showWithGravity('LogOut successfully', Toast.LONG, Toast.CENTER);
-    props.navigation.navigate('Home');
-    global.img = 'data:image/png;base64,' + servicesettings.Default_User_Image;
-    global.Email = '';
-    global.Name = '';
+
+    setTimeout(() => {
+      logoutUser();
+      Toast.showWithGravity('LogOut successfully', Toast.LONG, Toast.CENTER);
+      props.navigation.navigate('Home');
+      global.img =
+        'data:image/png;base64,' + servicesettings.Default_User_Image;
+      global.Email = '';
+      global.Name = '';
+    }, [1000]);
   };
 
   const onUnsubscribe = async () => {
