@@ -31,6 +31,8 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>This app does not access your Apple Music library.</string>
 	<key>NSCalendarsUsageDescription</key>
 	<string>This app requires access for date time selection</string>
 	<key>NSCameraUsageDescription</key>

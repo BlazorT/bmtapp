@@ -24,25 +24,51 @@ const CampaignAttachment = ({ handleCampaignInfo, campaignInfo }) => {
     // Request camera and storage permissions on component mount
     requestPermissions();
   }, []);
-
   const requestPermissions = async () => {
     try {
-      const cameraStatus = await request(PERMISSIONS.ANDROID.CAMERA);
-      const readStorageStatus = await request(
-        PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE,
-      );
-      // const writeStorageStatus = await request(
-      //   PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE,
-      // );
+      if (Platform.OS === 'android') {
+        // Android permissions
+        const cameraStatus = await request(PERMISSIONS.ANDROID.CAMERA);
+        const readStorageStatus = await request(
+          PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE,
+        );
 
-      if (
-        cameraStatus === RESULTS.GRANTED &&
-        readStorageStatus === RESULTS.GRANTED
-      ) {
-        setIsPermissions(true);
+        if (
+          cameraStatus === RESULTS.GRANTED &&
+          readStorageStatus === RESULTS.GRANTED
+        ) {
+          setIsPermissions(true);
+        } else {
+          setIsPermissions(false);
+          // Alert.alert('Permissions not granted');
+        }
       } else {
-        setIsPermissions(false);
-        // Alert.alert('Permissions not granted');
+        // iOS permissions
+        const cameraStatus = await request(PERMISSIONS.IOS.CAMERA);
+        const photoLibraryStatus = await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
+
+        if (
+          cameraStatus === RESULTS.GRANTED &&
+          photoLibraryStatus === RESULTS.GRANTED
+        ) {
+          setIsPermissions(true);
+        } else if (
+          cameraStatus === RESULTS.BLOCKED ||
+          photoLibraryStatus === RESULTS.BLOCKED
+        ) {
+          // Permission was denied previously, need to open settings
+          setIsPermissions(false);
+          Alert.alert(
+            'Permissions Required',
+            'Camera and Photo Library access are required. Please enable them in Settings.',
+            [
+              { text: 'Cancel', style: 'cancel' },
+              { text: 'Open Settings', onPress: () => openSettings() },
+            ],
+          );
+        } else {
+          setIsPermissions(false);
+        }
       }
     } catch (error) {
       setIsPermissions(false);
