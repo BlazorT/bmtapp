@@ -1,24 +1,23 @@
 import Base64 from 'Base64';
 import React, { useEffect, useState } from 'react';
 import {
-  ActivityIndicator,
   Dimensions,
   ScrollView,
   StyleSheet,
   Text,
-  View,
   TextInput,
+  View,
 } from 'react-native';
+import Spinner from 'react-native-loading-spinner-overlay';
 import Toast from 'react-native-simple-toast';
 import Icon from 'react-native-vector-icons/Entypo';
 import { Button } from '../../components';
 import Alert from '../../components/Alert';
 import Model from '../../components/Model';
-import { colors } from '../../styles';
-import servicesettings from '../dataservices/servicesettings';
 import { useTheme } from '../../hooks/useTheme';
 import { useUser } from '../../hooks/useUser';
-import Spinner from 'react-native-loading-spinner-overlay';
+import { colors } from '../../styles';
+import servicesettings from '../dataservices/servicesettings';
 const Password = require('../../../assets/images/icons/Password1.png');
 export default function ForgotPasswordScreen(props) {
   const theme = useTheme();

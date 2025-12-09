@@ -2,22 +2,22 @@ import React from 'react';
 import { Image, TouchableOpacity } from 'react-native';
 import { useTheme } from '../../hooks/useTheme';
 import CampaignStatisticsScreen from '../../modules/CampaignStatistics/CampaignStatisticsViewContainer';
-import CampaigndetailScreen from '../../modules/Compaigndetail/CompaigndetailView';
+import {
+  default as CampaigndetailScreen,
+  default as CompaigndetailScreen,
+} from '../../modules/Compaigndetail/CompaigndetailView';
 import CreatcompainVersion from '../../modules/Creatcompain/CreatcompainViewContainer';
 import OrganizationAddEditScreen from '../../modules/OrganizationAddEdit/OrganizationAddEditViewContainer';
-import CampaignScheduleScreen from '../../modules/campaignSchedule/CampaignScheduleViewContainer';
 import DashboardVersion from '../../modules/dashboard/DashboardViewContainer';
 import ForgotPasswordScreen from '../../modules/forgotPassword/ForgotPasswordViewContainer';
 import LoginScreen from '../../modules/login/LoginViewContainer';
-import MyCampaignScreen from '../../modules/mycampaign/mycampaignViewContainer';
 import Preference_Settings from '../../modules/preferencesAndSettings/PreferencesAndSettingsViewContainer';
 import { colors, fonts } from '../../styles';
 import AboutScreen from '../about/AboutViewContainer';
 import HomeScreen from '../home/HomeViewContainer';
 import ProfileScreen from '../profile/ProfileViewContainer';
-import TabNavigator from './MainTabNavigator';
-import CompaigndetailScreen from '../../modules/Compaigndetail/CompaigndetailView';
 import RecipeitnsView from '../recipients/RecipeitnsViewContainer';
+import TabNavigator from './MainTabNavigator';
 const headerLeftComponent = props => {
   const theme = useTheme();
   return (

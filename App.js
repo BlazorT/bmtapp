@@ -5,10 +5,9 @@ import { Provider } from 'react-redux';
 import { persistStore } from 'redux-persist';
 import { PersistGate } from 'redux-persist/integration/react';
 import RemotePushNotification from './src/components/RemotePushNotification';
+import { LOVProvider } from './src/context/LovContext';
 import AppView from './src/modules/AppViewContainer';
 import store from './src/redux/store';
-import { StatusBar } from 'react-native';
-import { LOVProvider } from './src/context/LovContext';
 
 export default function App() {
   let persistor = persistStore(store);

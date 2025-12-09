@@ -1,13 +1,13 @@
-import { useDispatch } from 'react-redux';
-import useFetchData from '../hooks/useFetchData';
 import { createContext, useEffect } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
-import { setLovs } from '../redux/features/bmtLovs/lovsSlice';
-import { useTheme } from '../hooks/useTheme';
+import { useDispatch } from 'react-redux';
 import { Button } from '../components';
 import { GET_COUNTRY_INFO } from '../constants';
+import useFetchData from '../hooks/useFetchData';
+import { useTheme } from '../hooks/useTheme';
 import { useUser } from '../hooks/useUser';
+import { setLovs } from '../redux/features/bmtLovs/lovsSlice';
 const profilelogo = require('../../assets/images/BDMT.png');
 
 const apiConfigs = [

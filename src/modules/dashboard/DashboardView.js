@@ -3,6 +3,7 @@ import { Dimensions, Easing, StyleSheet, Text, View } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 
+import moment from 'moment';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Toast from 'react-native-simple-toast';
 import Icon from 'react-native-vector-icons/EvilIcons';
@@ -10,7 +11,6 @@ import { useTheme } from '../../hooks/useTheme';
 import { useUser } from '../../hooks/useUser';
 import { colors } from '../../styles';
 import servicesettings from '../dataservices/servicesettings';
-import moment from 'moment';
 export default function DashboardScreen(props) {
   const theme = useTheme();
   const { user } = useUser();

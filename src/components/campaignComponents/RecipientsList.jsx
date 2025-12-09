@@ -3,24 +3,22 @@ import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
-  Modal,
+  RefreshControl,
+  SafeAreaView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
-  SafeAreaView,
-  RefreshControl,
 } from 'react-native';
+import Toast from 'react-native-simple-toast';
+import AntdIcon from 'react-native-vector-icons/AntDesign';
+import { useSelector } from 'react-redux';
 import { useTheme } from '../../hooks/useTheme';
 import { useUser } from '../../hooks/useUser';
 import servicesettings from '../../modules/dataservices/servicesettings';
-import Toast from 'react-native-simple-toast';
-import { useSelector } from 'react-redux';
+import RNSButton from '../Button';
+import ContactsModal from '../ContactsModal';
 import RNSDropDown from '../Dropdown';
 import RNSTextInput from '../TextInput';
-import RNSButton from '../Button';
-import AntdIcon from 'react-native-vector-icons/AntDesign';
-import ContactsModal from '../ContactsModal';
 
 const RecipientsList = () => {
   const { user } = useUser();

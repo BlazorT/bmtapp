@@ -21,7 +21,7 @@ export const isAdminOrSuperAdmin = roleId => {
 export default function HomeScreen(props) {
   const theme = useTheme();
   const { isAuthenticated, user } = useUser();
-  console.log({ user });
+
   const opensignup = async () => {
     global.SignUp_Login = 0;
     props.navigation.navigate('Login');

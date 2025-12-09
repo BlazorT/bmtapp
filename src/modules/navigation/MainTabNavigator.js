@@ -1,13 +1,11 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React from 'react';
-import { Image, Platform, StyleSheet, Text, View } from 'react-native';
+import { Image, Platform, StyleSheet, Text } from 'react-native';
 import AntdIcon from 'react-native-vector-icons/AntDesign';
 import { useTheme } from '../../hooks/useTheme';
 import { useUser } from '../../hooks/useUser';
-import { colors } from '../../styles';
-import tabNavigationData from './tabNavigationData';
-import { StatusBar } from 'react-native';
 import { isAdminOrSuperAdmin } from '../home/HomeView';
+import tabNavigationData from './tabNavigationData';
 const Tab = createBottomTabNavigator();
 export default function BottomTabs() {
   const { isAuthenticated, user } = useUser();
