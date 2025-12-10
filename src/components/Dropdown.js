@@ -99,7 +99,7 @@ const RNSDropDown = props => {
           styles.container,
           style && style,
           {
-            borderColor,
+            // borderColor,
             height: multipleSelect ? 'auto' : 40,
             minHeight: 40,
           },

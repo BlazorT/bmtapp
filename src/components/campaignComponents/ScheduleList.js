@@ -196,6 +196,7 @@ const ScheduleList = ({
                         orgId: schedule.orgId,
                         days: schedule.days,
                         networkId: schedule.networkId,
+                        albums: schedule.albums,
                         compaignDetailId: schedule.compaignDetailId,
                         isFixedTime: schedule.isFixedTime,
                         startTime: schedule.startTime,

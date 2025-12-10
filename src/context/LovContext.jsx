@@ -73,7 +73,7 @@ export const LOVProvider = ({ children }) => {
 
   const { data, loading, error, fetchData } = useFetchData(apiConfigs);
 
-  console.log({ data, error, loading });
+  // console.log({ data, error, loading });
 
   useEffect(() => {
     fetchData();

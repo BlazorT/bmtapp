@@ -7,7 +7,9 @@ import {
   SafeAreaView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
+  ScrollView,
 } from 'react-native';
 import Toast from 'react-native-simple-toast';
 import AntdIcon from 'react-native-vector-icons/AntDesign';
@@ -29,14 +31,62 @@ const RecipientsList = () => {
   const [loading, setLoading] = useState(false);
   const [isContactsOpen, setIsContactsOpen] = useState(false);
   const [recipients, setRecipients] = useState([]);
+  const [albumList, setAlbumList] = useState([]);
   const [filteredRecipients, setFilteredRecipients] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [filterNetworkId, setFilterNetworkId] = useState([]);
+  const [selectedAlbumId, setSelectedAlbumId] = useState(null);
 
   const toggleContactsOpen = () => setIsContactsOpen(prev => !prev);
 
   const onImport = data => {
     console.log({ data });
+  };
+
+  const fetchAlbumList = async () => {
+    setLoading(true);
+    try {
+      let headerFetch = {
+        method: 'POST',
+        body: JSON.stringify({
+          id: 0,
+          orgId: user?.orgId,
+          rowVer: 1,
+          networkId: 0,
+          name: '',
+          status: 1,
+          createdAt: moment().utc().subtract(10, 'year').format('YYYY-MM-DD'),
+          lastUpdatedAt: moment().utc().format('YYYY-MM-DD'),
+        }),
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          Accept: 'application/json',
+          Authorization: servicesettings.AuthorizationKey,
+        },
+      };
+      const response = await fetch(
+        servicesettings.baseuri + 'Compaigns/albumlists',
+        headerFetch,
+      );
+
+      if (!response.ok) {
+        Toast.show('Something went wrong, please try again');
+        return;
+      }
+
+      const res = await response.json();
+      const albums = res?.data || [];
+      setAlbumList(albums);
+      // Set first album as selected by default
+      if (albums.length > 0 && !selectedAlbumId) {
+        setSelectedAlbumId(albums[0].id);
+      }
+    } catch (error) {
+      console.error('Error fetching recipients:', error);
+      Toast.show('Something went wrong, please try again');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const fetchRecipients = async () => {
@@ -71,7 +121,6 @@ const RecipientsList = () => {
       }
 
       const res = await response.json();
-      console.log({ res });
       setRecipients(res?.data || []);
     } catch (error) {
       console.error('Error fetching recipients:', error);
@@ -84,12 +133,20 @@ const RecipientsList = () => {
   const applyFilters = () => {
     let filtered = [...recipients];
 
+    // Filter by selected album
+    if (selectedAlbumId !== null) {
+      filtered = filtered.filter(
+        recipient => recipient.albumid == selectedAlbumId,
+      );
+    }
+
     // Apply search filter
     if (searchText.trim()) {
       filtered = filtered.filter(recipient =>
         recipient.contentId?.toLowerCase().includes(searchText.toLowerCase()),
       );
     }
+
     // Apply network filter
     if (Array.isArray(filterNetworkId) && filterNetworkId.length > 0) {
       filtered = filtered.filter(recipient =>
@@ -105,22 +162,24 @@ const RecipientsList = () => {
     return network?.name || 'Unknown Network';
   };
 
+  const getAlbumNetworkName = album => {
+    return getNetworkName(album.networkid);
+  };
+
   useEffect(() => {
+    fetchAlbumList();
     fetchRecipients();
   }, []);
 
   useEffect(() => {
     applyFilters();
-  }, [searchText, filterNetworkId, recipients]);
+  }, [searchText, filterNetworkId, recipients, selectedAlbumId]);
 
-  // The main content (everything inside the modal)
-
-  // Non-modal mode: render directly (e.g. full screen)
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.backgroundColor }}>
       <View
         style={[
-          styles.fullScreenContainer, // full screen when not modal
+          styles.fullScreenContainer,
           {
             backgroundColor: theme.backgroundColor,
           },
@@ -132,10 +191,9 @@ const RecipientsList = () => {
           onImportComplete={onImport}
           recipients={recipients}
           fetchRecipients={fetchRecipients}
+          albumList={albumList}
+          fetchAlbumList={fetchAlbumList}
         />
-        {/* Close button only shown in modal */}
-
-        {/* Non-modal header (optional - if you want a back button or title when full screen) */}
 
         {/* Filters */}
         <View style={styles.filtersContainer}>
@@ -194,6 +252,47 @@ const RecipientsList = () => {
             placeholder="Filter by Network..."
           />
         </View>
+
+        {/* Album Tabs */}
+        {albumList.length > 0 && (
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.tabsContainer}
+            contentContainerStyle={styles.tabsContent}
+          >
+            {albumList.map(album => (
+              <TouchableOpacity
+                key={album.id}
+                style={[
+                  styles.tab,
+                  {
+                    borderBottomColor:
+                      selectedAlbumId === album.id
+                        ? theme.textColor
+                        : theme.darkGray,
+                  },
+                ]}
+                onPress={() => setSelectedAlbumId(album.id)}
+              >
+                <Text
+                  style={[
+                    styles.tabText,
+                    {
+                      color:
+                        selectedAlbumId === album.id
+                          ? theme.textColor
+                          : theme.placeholderColor,
+                      fontWeight: selectedAlbumId === album.id ? '600' : '400',
+                    },
+                  ]}
+                >
+                  {album.name} ({getAlbumNetworkName(album)})
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        )}
 
         {!loading && (
           <Text style={[styles.resultsCount, { color: theme.textColor }]}>
@@ -266,7 +365,7 @@ const RecipientsList = () => {
               )}
               keyExtractor={item => item.id.toString()}
               contentContainerStyle={styles.listContent}
-              style={{ maxHeight: '90%' }}
+              // style={{ maxHeight: '70%' }}
               ListEmptyComponent={() => (
                 <View style={styles.emptyState}>
                   <Text style={[styles.emptyText, { color: theme.focusText }]}>
@@ -293,7 +392,6 @@ const RecipientsList = () => {
   );
 };
 
-// Updated styles
 const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
@@ -312,7 +410,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 6,
     alignSelf: 'center',
-    marginTop: 50, // space for status bar in modal
+    marginTop: 50,
   },
   fullScreenContainer: {
     flex: 1,
@@ -322,7 +420,23 @@ const styles = StyleSheet.create({
     elevation: 0,
     shadowOpacity: 0,
   },
-  // ... rest of your styles remain the same ...
+  tabsContainer: {
+    maxHeight: 50,
+    marginBottom: 12,
+  },
+  tabsContent: {
+    paddingHorizontal: 4,
+    gap: 12,
+  },
+  tab: {
+    borderBottomWidth: 1,
+    minWidth: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tabText: {
+    fontSize: 14,
+  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -367,7 +481,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   listContainer: {
-    flexGrow: 1,
+    flex: 1,
   },
   listContent: {
     paddingBottom: 10,
@@ -387,7 +501,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    // marginBottom: 10,
   },
   contentId: {
     fontSize: 16,

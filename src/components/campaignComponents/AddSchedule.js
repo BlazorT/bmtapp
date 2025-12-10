@@ -17,6 +17,7 @@ import { useUser } from '../../hooks/useUser';
 import RNSButton from '../Button';
 import RNSDropDown from '../Dropdown';
 import CampaignNetwork from './CampaignNetwork';
+import AlbumSelectionModal from './AlbumSelectionModal';
 
 const AddSchedule = ({
   campaignInfo,
@@ -35,7 +36,17 @@ const AddSchedule = ({
   const lovs = useSelector(state => state.lovs).lovs;
   const [showStartDatePicker, setShowStartDatePicker] = React.useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = React.useState(false);
-  const [scheduleMessageCount, setScheduleMessageCount] = React.useState(0);
+  const [showRecipientAlbumMdl, setShowRecipientAlbumMdl] =
+    React.useState(false);
+  const [selectedAlbums, setSelectedAlbums] = React.useState({});
+
+  const onCloseAlbumMdl = () => {
+    setShowRecipientAlbumMdl(false);
+  };
+  const onSubmitAlbum = albums => {
+    console.log({ albums });
+    setScheduleList(prev => ({ ...prev, albums }));
+  };
   const days = [
     { name: 'Sun' },
     { name: 'Mon' },
@@ -45,6 +56,16 @@ const AddSchedule = ({
     { name: 'Fri' },
     { name: 'Sat' },
   ];
+
+  useEffect(() => {
+    if (isUpdate && scheduleList?.albums?.length) {
+      const albumsMap = scheduleList.albums.reduce((acc, album) => {
+        acc[album.networkid] = album.id ?? null;
+        return acc;
+      }, {});
+      setSelectedAlbums(albumsMap);
+    }
+  }, [isUpdate, scheduleList]);
 
   useEffect(() => {
     calculateBudget();
@@ -64,6 +85,13 @@ const AddSchedule = ({
     }
     if (scheduleList.days.length == 0) {
       Toast.show('Please select a day');
+      return;
+    }
+    if (
+      scheduleList.albums?.length === 0 ||
+      scheduleList.CompaignNetworks.length !== scheduleList.albums?.length
+    ) {
+      Toast.show('Please select album recipients for selected networks');
       return;
     }
 
@@ -362,7 +390,6 @@ const AddSchedule = ({
     };
   }
   // console.log({ scheduleList }, { campaignInfo });
-  // console.log({ lovs: lovs['lovs'].intervals });
   const currencyId = lovs['orgs']?.find(c => c.id === user?.orgId)?.currencyId;
   return (
     <View style={{ marginTop: 10 }}>
@@ -517,6 +544,26 @@ const AddSchedule = ({
           />
         </View>
       </View>
+      <RNSButton
+        caption={
+          scheduleList?.albums?.length > 0
+            ? `Selected Albums : ${scheduleList?.albums?.map(a => `${a.name} (${lovs['lovs'].networks?.find(n => n?.id === a?.networkid)?.name || ''})`)?.join(', ')}`
+            : 'Select Recipient Albums'
+        }
+        bgColor={theme.buttonBackColor}
+        style={{
+          marginTop: 10,
+        }}
+        onPress={() => setShowRecipientAlbumMdl(true)}
+      />
+      <AlbumSelectionModal
+        visible={showRecipientAlbumMdl}
+        onClose={onCloseAlbumMdl}
+        onSubmit={onSubmitAlbum}
+        networkIds={campaignInfo.networks?.map(n => n.networkId)}
+        selectedAlbums={selectedAlbums}
+        setSelectedAlbums={setSelectedAlbums}
+      />
       <View
         style={{
           marginTop: 30,

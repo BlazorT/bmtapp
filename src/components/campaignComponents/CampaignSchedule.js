@@ -66,6 +66,7 @@ const CampaignSchedule = ({
         orgId: user.orgId,
         days: [],
         networkId: 0,
+        albums: [],
         compaignDetailId: 0,
         isFixedTime: 1,
         startTime: campaignInfo.campaignStartDate,
@@ -80,7 +81,6 @@ const CampaignSchedule = ({
 
   const addSchedule = async () => {
     console.log({ campaignInfo });
-    console.log({ campaignInfo: JSON.stringify(campaignInfo) });
     let campaignBody = {
       id: campaignInfo.id,
       targetaudiance: JSON.stringify({
@@ -143,6 +143,7 @@ const CampaignSchedule = ({
         RowVer: 0,
         days: JSON.stringify(s?.days || []),
         Budget: s?.budget || 0,
+        ContactsAlbums: JSON.stringify(s?.albums?.map(a => a.id)),
       })),
       totalBudget: campaignInfo.schedules.reduce((a, b) => a + b.budget, 0),
       Budget: campaignInfo.schedules.reduce((a, b) => a + b.budget, 0),
@@ -153,7 +154,6 @@ const CampaignSchedule = ({
     };
 
     console.log({ campaignBody });
-    // return;
     console.log('campaignBody: ' + JSON.stringify(campaignBody));
     setUpdateMessage(
       `${campaignInfo?.template} has been created successfully.`,
@@ -340,6 +340,7 @@ const CampaignSchedule = ({
       }
     }
   };
+
   const localNotification = async (title, message) => {
     const channelId = `channel_${Date.now().toString()}`; // Unique channel ID
 

@@ -22,7 +22,7 @@ export default function CompaigndetailScreen(props) {
   const navigate = useNavigation();
   const [imgErr, setImgErr] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
-
+  // console.log({ campaign });
   const toRecipients = () => navigate.navigate('Recipients');
 
   const imgUrl = servicesettings.Imagebaseuri + campaign?.logoAvatar;

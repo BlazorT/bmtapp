@@ -1,7 +1,7 @@
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
-import { useTheme } from '../../hooks/useTheme';
+import { Dimensions, StyleSheet, View } from 'react-native';
 import RecipientsList from '../../components/campaignComponents/RecipientsList';
+import { useTheme } from '../../hooks/useTheme';
 
 const RecipeitnsView = () => {
   const theme = useTheme();
@@ -9,7 +9,7 @@ const RecipeitnsView = () => {
     <View
       style={[styles.container, { backgroundColor: theme.backgroundColor }]}
     >
-      <RecipientsList isModal={false} isOpen={true} />
+      <RecipientsList />
     </View>
   );
 };
