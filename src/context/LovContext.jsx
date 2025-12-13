@@ -106,7 +106,8 @@ export const LOVProvider = ({ children }) => {
       >
         <Image source={profilelogo} style={{ width: 300, height: 100 }} />
         <Text style={styles.errorText}>
-          Something went wrong fetching LOVs, please try again later!
+          We’re having trouble connecting right now. Please check your internet
+          connection or try again in a moment.
         </Text>
         <Button
           style={{ width: '50%', marginTop: 10 }}
@@ -129,7 +130,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   errorText: {
-    color: 'red',
+    color: 'grey',
     fontSize: 18,
     padding: 10,
     fontWeight: '500',
