@@ -17,6 +17,11 @@ import {
   MAX_AGE,
   MIN_AGE,
 } from '../../constants';
+import PaymentView from '../../modules/payment/PaymentView';
+import {
+  extractTagValue,
+  keepOnlyAlphanumeric,
+} from '../../helper/dateFormatter';
 
 const CampaignSchedule = ({
   campaignInfo,
@@ -32,6 +37,10 @@ const CampaignSchedule = ({
   const { user } = useUser();
   const lovs = useSelector(state => state.lovs).lovs;
   const navigation = useNavigation();
+
+  const [selectedGateway, setSelectedGetway] = useState(null);
+  const [easypaisaOption, setEasypaisaOption] = useState('');
+  const [easyPaisaMobileNumber, setEasyPaisaMobileNumber] = useState('');
 
   const [scheduleTab, setScheduleTab] = React.useState(0);
   const [isUpdate, setIsUpdate] = React.useState(false);
@@ -53,6 +62,39 @@ const CampaignSchedule = ({
     intervalTypeId: 1,
     randomId: Math.floor(100000 + Math.random() * 900000),
   });
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (
+        campaignInfo?.networks?.length > 0 &&
+        scheduleList?.CompaignNetworks?.length === 0
+      ) {
+        const cNetworks =
+          campaignInfo?.networks?.map(network => ({
+            networkId: network.networkId,
+            orgId: user.orgId,
+            rowVer: 0,
+            purchasedQouta: network.purchasedQouta,
+            unitPriceInclTax: network.unitPriceInclTax,
+            usedQuota: network.usedQuota,
+            compaignId: 0,
+            id: 0,
+            desc: network.desc,
+            status: network.status,
+            createdBy: Number(user.id),
+            lastUpdatedBy: Number(user.id),
+            createdAt: moment().format(),
+            lastUpdatedAt: moment().format(),
+          })) ?? [];
+
+        setScheduleList(prev => ({
+          ...prev,
+          networkId: cNetworks[0]?.networkId ?? prev.networkId,
+          CompaignNetworks: [...prev.CompaignNetworks, ...cNetworks],
+        }));
+      }
+    }, 100);
+  }, []);
 
   useEffect(() => {
     // console.log('campaignInfo: ' + JSON.stringify(campaignInfo.schedules));
@@ -79,7 +121,7 @@ const CampaignSchedule = ({
     }
   }, [isUpdate]);
 
-  const addSchedule = async () => {
+  const addSchedule = async ref => {
     console.log({ campaignInfo });
     let campaignBody = {
       id: campaignInfo.id,
@@ -149,9 +191,12 @@ const CampaignSchedule = ({
       Budget: campaignInfo.schedules.reduce((a, b) => a + b.budget, 0),
       discount: 0,
       remarks: '',
-      paymentStatus: 0,
+      paymentStatus: ref ? 1 : 0,
+      paymentRef: ref || '',
       rowVer: 0,
     };
+    // navigation.navigate('Payment', { campaignBody });
+    // return;
 
     console.log({ campaignBody });
     console.log('campaignBody: ' + JSON.stringify(campaignBody));
@@ -362,6 +407,92 @@ const CampaignSchedule = ({
       },
     });
   };
+
+  const easyPaisaQuickPay = async () => {
+    const orderId =
+      `${keepOnlyAlphanumeric((Number(user.orgId) ?? '') + 'RBMT')}` +
+      'D' +
+      moment().format('YYYYMMDDHHmmss');
+    const transactionAmount = parseFloat((1)?.toFixed(2));
+
+    const xmlBody = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:dto="http://dto.transaction.partner.pg.systems.com/"
+    xmlns:dto1="http://dto.common.pg.systems.com/">
+       <soapenv:Header/>
+       <soapenv:Body>
+          <dto:initiateTransactionRequestType>
+             <dto1:username>${
+               selectedGateway.merchantAccountId ?? 'Hotmealndealz.'
+             }</dto1:username>
+             <dto1:password>${
+               selectedGateway?.primaryKey ?? '915c7b18ee8adec0393e55690c34d328'
+             }</dto1:password>
+             <orderId>${orderId}</orderId>
+             <storeId>${`760757`}</storeId>
+             <transactionAmount>${transactionAmount}</transactionAmount>
+             <transactionType>MA</transactionType>
+             <mobileAccountNo>${easyPaisaMobileNumber}</mobileAccountNo>
+             <emailAddress>${user?.email || ''}</emailAddress>
+             <paymentTokenExpiryDateTime>${moment()
+               .add(5, 'minute')
+               .toISOString()}</paymentTokenExpiryDateTime >
+          </dto:initiateTransactionRequestType>
+       </soapenv:Body>
+    </soapenv:Envelope>
+    `;
+    console.log({ xmlBody });
+    try {
+      setspinner(true);
+      const res = await fetch(
+        selectedGateway?.url ??
+          'https://easypay.easypaisa.com.pk/easypay-service/PartnerBusinessService',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'text/xml',
+            SOAPAction: 'initiateTransaction',
+            // Credentials: `${encodeBase64('znawazch@gmail.com:Blazor@025')}`,
+          },
+          body: xmlBody,
+        },
+      );
+      const data = await res.text();
+      const responseCode = extractTagValue(data, 'ns2:responseCode');
+      const transactionId = extractTagValue(data, 'transactionId');
+      console.log({ data, responseCode });
+      if (data && responseCode == '0000') {
+        addSchedule(btoa(data));
+        Toast.show('Payment successful');
+      } else {
+        Toast.show(
+          'Payment is not success, possible reasons, account holder acceptance is not done or easy paisa account does not exist!',
+        );
+        return;
+      }
+    } catch (e) {
+      Toast.show(e?.message || 'Something went wrong, try again later!');
+    } finally {
+      setspinner(false);
+    }
+  };
+
+  const payAndPlace = async () => {
+    if (!selectedGateway) {
+      Toast.show('Select a payment method to proceed');
+      return;
+    }
+    if (selectedGateway?.name?.toLowerCase() == 'easypaisa') {
+      if (easypaisaOption !== 'quickPay') {
+        Toast.show('Select an EasyPaisa payment mode to continue.');
+        return;
+      }
+      if (easyPaisaMobileNumber === '' || easyPaisaMobileNumber.length < 11) {
+        Toast.show('Enter a valid EasyPaisa account number');
+        return;
+      }
+      await easyPaisaQuickPay();
+    }
+  };
   // console.log({ user });
   return (
     <View style={{ marginTop: 5 }}>
@@ -374,59 +505,89 @@ const CampaignSchedule = ({
           alignItems: 'center',
         }}
       >
-        <TouchableOpacity
-          onPress={() => setScheduleTab(0)}
-          style={{
-            width: '50%',
-            height: '100%',
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderBottomWidth: scheduleTab == 0 ? 2 : 0,
-            borderBottomColor: theme.buttonBackColor,
-          }}
-        >
-          <Text
+        {scheduleTab !== 2 ? (
+          <TouchableOpacity
+            onPress={() => setScheduleTab(0)}
             style={{
-              fontSize: 16,
-              color: theme.textColor,
-              fontWeight: 'bold',
-              textAlign: 'center',
+              width: '50%',
+              height: '100%',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderBottomWidth: scheduleTab == 0 ? 2 : 0,
+              borderBottomColor: theme.buttonBackColor,
             }}
           >
-            Add Schedule
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            if (campaignInfo.schedules.length == 0) {
-              Toast.show('Please add schedule first');
-              return;
-            }
-            setScheduleTab(1);
-          }}
-          style={{
-            width: '50%',
-            height: '100%',
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderBottomWidth: scheduleTab == 1 ? 2 : 0,
-            borderBottomColor: theme.buttonBackColor,
-          }}
-        >
-          <Text
+            <Text
+              style={{
+                fontSize: 16,
+                color: theme.textColor,
+                fontWeight: 'bold',
+                textAlign: 'center',
+              }}
+            >
+              Add Schedule
+            </Text>
+          </TouchableOpacity>
+        ) : null}
+        {scheduleTab !== 2 ? (
+          <TouchableOpacity
+            onPress={() => {
+              if (campaignInfo.schedules.length == 0) {
+                Toast.show('Please add schedule first');
+                return;
+              }
+              setScheduleTab(1);
+            }}
             style={{
-              fontSize: 16,
-              color: theme.textColor,
-              fontWeight: 'bold',
-              textAlign: 'center',
+              width: '50%',
+              height: '100%',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderBottomWidth: scheduleTab == 1 ? 2 : 0,
+              borderBottomColor: theme.buttonBackColor,
             }}
           >
-            Schedule
-            {campaignInfo.schedules.length > 0
-              ? '(' + campaignInfo.schedules.length + ')'
-              : ''}
-          </Text>
-        </TouchableOpacity>
+            <Text
+              style={{
+                fontSize: 16,
+                color: theme.textColor,
+                fontWeight: 'bold',
+                textAlign: 'center',
+              }}
+            >
+              Schedule
+              {campaignInfo.schedules.length > 0
+                ? '(' + campaignInfo.schedules.length + ')'
+                : ''}
+            </Text>
+          </TouchableOpacity>
+        ) : null}
+        {scheduleTab === 2 ? (
+          <TouchableOpacity
+            onPress={() => {
+              setScheduleTab(2);
+            }}
+            style={{
+              width: '100%',
+              height: '100%',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderBottomWidth: scheduleTab == 1 ? 2 : 0,
+              borderBottomColor: theme.buttonBackColor,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 16,
+                color: theme.textColor,
+                fontWeight: 'bold',
+                textAlign: 'center',
+              }}
+            >
+              Select Payment Method
+            </Text>
+          </TouchableOpacity>
+        ) : null}
       </View>
       {scheduleTab == 0 && (
         <AddSchedule
@@ -454,10 +615,45 @@ const CampaignSchedule = ({
           <RNSButton
             style={{ width: '100%', marginTop: 10 }}
             bgColor={theme.buttonBackColor}
-            caption="Submit"
-            onPress={addSchedule}
+            caption="Checkout"
+            // onPress={addSchedule}
+            onPress={() => setScheduleTab(2)}
           />
         </>
+      )}
+      {scheduleTab === 2 && (
+        <View style={{ marginTop: 10 }}>
+          <PaymentView
+            onPayComplete={addSchedule}
+            selectedGateway={selectedGateway}
+            easyPaisaMobileNumber={easyPaisaMobileNumber}
+            easypaisaOption={easypaisaOption}
+            setEasyPaisaMobileNumber={setEasyPaisaMobileNumber}
+            setEasypaisaOption={setEasypaisaOption}
+            setSelectedGetway={setSelectedGetway}
+          />
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              marginVertical: 10,
+            }}
+          >
+            <RNSButton
+              style={{ width: '49%' }}
+              bgColor={theme.buttonBackColor}
+              caption="Cancel"
+              onPress={() => setScheduleTab(1)}
+            />
+
+            <RNSButton
+              style={{ width: '49%' }}
+              bgColor={theme.buttonBackColor}
+              caption="Pay & Place"
+              onPress={payAndPlace}
+            />
+          </View>
+        </View>
       )}
     </View>
   );

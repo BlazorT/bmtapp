@@ -1,0 +1,163 @@
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { useTheme } from '../../hooks/useTheme';
+import Toast from 'react-native-simple-toast';
+import Spinner from 'react-native-loading-spinner-overlay';
+import servicesettings from '../dataservices/servicesettings';
+import PaymentType from '../../components/PaymentType';
+import EasyPaisaPay from '../../components/EasyPaisaPay';
+import RNSButton from '../../components/Button';
+
+const PaymentView = ({
+  onPayComplete,
+  selectedGateway,
+  easypaisaOption,
+  easyPaisaMobileNumber,
+  setSelectedGetway,
+  setEasypaisaOption,
+  setEasyPaisaMobileNumber,
+}) => {
+  const theme = useTheme();
+
+  const [gateways, setGateways] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchPaymentGateways();
+  }, []);
+
+  const fetchPaymentGateways = async () => {
+    try {
+      setLoading(true);
+
+      let headerFetch = {
+        method: 'POST',
+        body: JSON.stringify({
+          storeId: 1,
+        }),
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          Accept: 'application/json',
+          Authorization: servicesettings.gateway_key,
+        },
+      };
+      const response = await fetch(
+        //
+        servicesettings.payment_gateways,
+        headerFetch,
+      );
+      if (!response.ok) {
+        Toast.show('Something went wrong, please try again');
+        return;
+      }
+
+      const res = await response.json();
+      if (res?.status && Array.isArray(res?.data)) {
+        const filterGateways = res?.data?.filter(d => d?.status == 1);
+        setGateways(filterGateways);
+      } else {
+        Toast.show(res?.message || 'Something went wrong, try again later!');
+      }
+    } catch (error) {
+      Toast.show(error?.message || 'Something went wrong, try again later!');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePaymentType = paymentOption => {
+    setSelectedGetway(paymentOption);
+  };
+
+  const handleOrderDetail = (value, key) => {
+    if (key === 'easypaisaOption') {
+      setEasypaisaOption(value);
+    }
+    if (key === 'easyPaisaMobileNumber') {
+      setEasyPaisaMobileNumber(value);
+    }
+  };
+
+  return (
+    <KeyboardAwareScrollView
+      resetScrollToCoords={{ x: 0, y: 0 }}
+      contentContainerStyle={[
+        styles.container,
+        { backgroundColor: theme.backgroundColor },
+      ]}
+      scrollEnabled={false}
+    >
+      <Spinner
+        visible={loading}
+        textContent="Loading..."
+        textStyle={{ color: theme.textColor }}
+        color={theme.textColor}
+      />
+      {gateways?.length === 0 && !loading && (
+        <View style={styles.empty}>
+          <Text style={[styles.emptyText, { color: theme.placeholderColor }]}>
+            No gateways found
+          </Text>
+        </View>
+      )}
+      {!selectedGateway &&
+        gateways?.length > 0 &&
+        gateways.map(item => (
+          <PaymentType
+            key={item.id}
+            handleOrderDetail={handlePaymentType}
+            {...item}
+          />
+        ))}
+
+      {selectedGateway?.name?.toLowerCase() == 'easypaisa' && (
+        <EasyPaisaPay
+          orderDetail={{
+            onlinePaymentType: selectedGateway,
+            easypaisaOption,
+            easyPaisaMobileNumber,
+          }}
+          handleOrderDetail={handleOrderDetail}
+          //   cartTotal={cartTotal}
+        />
+      )}
+      {selectedGateway?.id && gateways?.length > 1 && (
+        <RNSButton
+          style={{
+            width: '100%',
+            borderColor: theme.textColor,
+            borderWidth: 0.8,
+            borderRadius: 6,
+            borderStyle: 'dashed',
+          }}
+          bgColor={'transparent'}
+          textStyle={{ color: theme.textColor }}
+          caption="Change Payment Method"
+          onPress={() => setSelectedGetway(null)}
+        />
+      )}
+    </KeyboardAwareScrollView>
+  );
+};
+
+export default PaymentView;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    // paddingHorizontal: 5,
+    // paddingVertical: 5,
+    rowGap: 10,
+  },
+  empty: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    rowGap: 10,
+  },
+  emptyText: {
+    fontSize: 16,
+  },
+});

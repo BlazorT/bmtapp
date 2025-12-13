@@ -21,6 +21,7 @@ import { useUser } from '../../hooks/useUser';
 import servicesettings from '../dataservices/servicesettings';
 import moment from 'moment';
 import { MAX_AGE, MIN_AGE } from '../../constants';
+import PaymentView from '../payment/PaymentView';
 
 export default function CampaignScheduleScreen(props) {
   const theme = useTheme();

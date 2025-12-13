@@ -19,6 +19,7 @@ import { useUser } from '../../hooks/useUser';
 import servicesettings from '../../modules/dataservices/servicesettings';
 import RNSButton from '../Button';
 import { useSelector } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
 
 interface Album {
   id: number;
@@ -46,6 +47,7 @@ const AlbumSelectionModal: React.FC<Props> = ({
   setSelectedAlbums,
   selectedAlbums,
 }) => {
+  const { navigate } = useNavigation<any>();
   const theme = useTheme();
   const { user } = useUser();
   const lovs = useSelector((state: any) => state.lovs).lovs;
@@ -179,6 +181,10 @@ const AlbumSelectionModal: React.FC<Props> = ({
     onSubmit(albums);
     onClose();
   };
+  const toAddAlbum = () => {
+    onClose();
+    navigate('Recipients', { toCampaign: true }); //@ts-ignore
+  };
 
   const isSubmitDisabled =
     Object.values(selectedAlbums).every(v => v === null) || disabled;
@@ -256,6 +262,12 @@ const AlbumSelectionModal: React.FC<Props> = ({
                 >
                   No albums found for this network
                 </Text>
+                <RNSButton
+                  caption="Add Album"
+                  onPress={toAddAlbum}
+                  bgColor={theme.darkGray}
+                  style={{ marginRight: 10, width: '48%' }}
+                />
               </View>
             ) : (
               <FlatList
@@ -408,6 +420,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    rowGap: 10,
   },
   emptyText: {
     fontSize: 16,

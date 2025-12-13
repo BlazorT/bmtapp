@@ -37,7 +37,6 @@ const ContactsModal = ({
   albumList,
   fetchAlbumList,
 }) => {
-  // console.log({ albumList });
   const { user } = useUser();
   const networks = useSelector(state => state.lovs.lovs.lovs.networks);
   const theme = useTheme();
@@ -45,14 +44,12 @@ const ContactsModal = ({
   const [contacts, setContacts] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [permissionGranted, setPermissionGranted] = useState(false);
-  const [importingAll, setImportingAll] = useState(false);
   const [importingIds, setImportingIds] = useState(new Set());
-  const [importAllContactAlert, setImportAllContactAlert] = useState(false);
 
-  // New states for album selection
+  // Multi-album selection states
   const [selectedContacts, setSelectedContacts] = useState(new Set());
   const [showAlbumSelector, setShowAlbumSelector] = useState(false);
-  const [selectedAlbum, setSelectedAlbum] = useState(null);
+  const [selectedAlbums, setSelectedAlbums] = useState(new Set());
   const [showNewAlbumForm, setShowNewAlbumForm] = useState(false);
   const [newAlbumName, setNewAlbumName] = useState('');
   const [newAlbumCode, setNewAlbumCode] = useState('');
@@ -60,16 +57,107 @@ const ContactsModal = ({
   const [newAlbumNetworkId, setNewAlbumNetworkId] = useState(-1);
   const [creatingAlbumLoading, setCreatingAlbumLoading] = useState(false);
   const [submittingBatch, setSubmittingBatch] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
-  const toggleIsImportAllContactAlert = () =>
-    setImportAllContactAlert(prev => !prev);
-
-  // Check if a contact is already imported
-  const isContactImported = contact => {
+  // Helper: Check if contact exists in specific album
+  const existsInAlbum = (contact, albumId) => {
     if (!recipients || !Array.isArray(recipients)) return false;
     return recipients.some(
-      recipient => recipient.contentId === contact.primaryContact,
+      r => r.contentId === contact.primaryContact && r.albumId === albumId,
     );
+  };
+
+  // Helper: Get contact types (phone and/or email)
+  const getContactTypes = contact => {
+    const types = [];
+    if (contact.phoneNumbers && contact.phoneNumbers.length > 0) {
+      types.push('phone');
+    }
+    if (contact.emails && contact.emails.length > 0) {
+      types.push('email');
+    }
+    return types;
+  };
+
+  // Helper: Get network IDs for contact type
+  const getNetworkIdsForContactType = type => {
+    if (type === 'phone') return [1, 2]; // SMS, WhatsApp
+    if (type === 'email') return [3]; // Email
+    return [];
+  };
+
+  // Helper: Check if album is compatible with selected contacts
+  const isAlbumCompatibleWithContacts = (album, selectedContactsList) => {
+    const albumNetworkId = album.networkid;
+
+    return selectedContactsList.some(contact => {
+      const contactTypes = getContactTypes(contact);
+      return contactTypes.some(type => {
+        const networkIds = getNetworkIdsForContactType(type);
+        return networkIds.includes(albumNetworkId);
+      });
+    });
+  };
+
+  // Helper: Check if all selected contacts exist in album
+  const allContactsExistInAlbum = (album, selectedContactsList) => {
+    const compatibleContacts = selectedContactsList.filter(contact => {
+      const contactTypes = getContactTypes(contact);
+      return contactTypes.some(type => {
+        const networkIds = getNetworkIdsForContactType(type);
+        return networkIds.includes(album.networkid);
+      });
+    });
+
+    if (compatibleContacts.length === 0) return false;
+
+    return compatibleContacts.every(contact =>
+      existsInAlbum(contact, album.id),
+    );
+  };
+
+  // Helper: Count how many selected contacts exist in album
+  const countContactsInAlbum = (album, selectedContactsList) => {
+    const compatibleContacts = selectedContactsList.filter(contact => {
+      const contactTypes = getContactTypes(contact);
+      return contactTypes.some(type => {
+        const networkIds = getNetworkIdsForContactType(type);
+        return networkIds.includes(album.networkid);
+      });
+    });
+
+    const existingCount = compatibleContacts.filter(contact =>
+      existsInAlbum(contact, album.id),
+    ).length;
+
+    return { existing: existingCount, total: compatibleContacts.length };
+  };
+
+  // Helper: Check if contact exists in all selected albums
+  const contactExistsInAllSelectedAlbums = contact => {
+    if (selectedAlbums.size === 0) return false;
+
+    const contactTypes = getContactTypes(contact);
+    const compatibleAlbums = Array.from(selectedAlbums)
+      .map(albumId => albumList.find(a => a.id === albumId))
+      .filter(
+        album =>
+          album &&
+          contactTypes.some(type => {
+            const networkIds = getNetworkIdsForContactType(type);
+            return networkIds.includes(album.networkid);
+          }),
+      );
+
+    if (compatibleAlbums.length === 0) return false;
+
+    return compatibleAlbums.every(album => existsInAlbum(contact, album.id));
+  };
+
+  // Helper: Count albums contact is in
+  const countAlbumsForContact = contact => {
+    if (!albumList) return 0;
+    return albumList.filter(album => existsInAlbum(contact, album.id)).length;
   };
 
   // Toggle contact selection
@@ -85,12 +173,25 @@ const ContactsModal = ({
     });
   };
 
-  // Select all imported contacts
+  // Toggle album selection
+  const toggleAlbumSelection = albumId => {
+    setSelectedAlbums(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(albumId)) {
+        newSet.delete(albumId);
+      } else {
+        newSet.add(albumId);
+      }
+      return newSet;
+    });
+  };
+
+  // Select all non-imported contacts
   const selectAllImportedContacts = () => {
-    const importedContactIds = filteredContacts
-      .filter(c => !isContactImported(c))
+    const notInAllAlbumsContactIds = filteredContacts
+      .filter(c => !contactExistsInAllSelectedAlbums(c))
       .map(c => c.id);
-    setSelectedContacts(new Set(importedContactIds));
+    setSelectedContacts(new Set(notInAllAlbumsContactIds));
   };
 
   // Clear selection
@@ -100,8 +201,12 @@ const ContactsModal = ({
 
   // Create new album
   const createNewAlbum = async () => {
-    if (!newAlbumName.trim() || !newAlbumCode.trim()) {
-      Toast.show('Please enter album name and code');
+    if (
+      !newAlbumName.trim() ||
+      !newAlbumCode.trim() ||
+      newAlbumNetworkId === -1
+    ) {
+      Toast.show('Please enter album name, code, and select network');
       return;
     }
 
@@ -121,7 +226,7 @@ const ContactsModal = ({
         LastUpdatedAt: moment().utc().format(),
         RowVer: 1,
       };
-      console.log({ body });
+
       const headerFetch = {
         method: 'POST',
         body: JSON.stringify(body),
@@ -131,7 +236,7 @@ const ContactsModal = ({
           Authorization: servicesettings.AuthorizationKey,
         },
       };
-      // return;
+
       const response = await fetch(
         servicesettings.baseuri + 'Compaigns/submitalbumlist',
         headerFetch,
@@ -141,8 +246,9 @@ const ContactsModal = ({
         Toast.show('Failed to create album');
         return null;
       }
+
       const res = await response.json();
-      console.log({ res });
+
       if (res?.status) {
         Toast.show('Album created successfully');
         setNewAlbumName('');
@@ -165,10 +271,49 @@ const ContactsModal = ({
     }
   };
 
-  // Submit selected contacts to album
-  const submitSelectedContactsToAlbum = async () => {
-    if (!selectedAlbum) {
-      Toast.show('Please select an album');
+  // Calculate submission summary
+  const getSubmissionSummary = () => {
+    const selectedContactsList = filteredContacts.filter(c =>
+      selectedContacts.has(c.id),
+    );
+
+    const summary = Array.from(selectedAlbums)
+      .map(albumId => {
+        const album = albumList.find(a => a.id === albumId);
+        if (!album) return null;
+
+        const compatibleContacts = selectedContactsList.filter(contact => {
+          const contactTypes = getContactTypes(contact);
+          return contactTypes.some(type => {
+            const networkIds = getNetworkIdsForContactType(type);
+            return networkIds.includes(album.networkid);
+          });
+        });
+
+        const newContacts = compatibleContacts.filter(
+          contact => !existsInAlbum(contact, album.id),
+        );
+
+        const existingContacts = compatibleContacts.filter(contact =>
+          existsInAlbum(contact, album.id),
+        );
+
+        return {
+          album,
+          newCount: newContacts.length,
+          existingCount: existingContacts.length,
+          totalCompatible: compatibleContacts.length,
+        };
+      })
+      .filter(Boolean);
+
+    return summary;
+  };
+
+  // Submit selected contacts to selected albums
+  const submitSelectedContactsToAlbums = async () => {
+    if (selectedAlbums.size === 0) {
+      Toast.show('Please select at least one album');
       return;
     }
 
@@ -184,49 +329,80 @@ const ContactsModal = ({
     setSubmittingBatch(true);
 
     try {
-      const phoneContacts = selectedContactsList
-        .map(c => c.primaryContact)
-        .filter(p => p && /^[0-9+]+$/.test(p));
+      const requests = [];
 
-      const emailContacts = selectedContactsList
-        .flatMap(c => c.emails || [])
-        .filter(email => email && email.length > 3);
+      for (const albumId of selectedAlbums) {
+        const album = albumList.find(a => a.id === albumId);
+        if (!album) continue;
 
-      const body = [
-        ...[1, 2].map(networkId => ({
-          id: 0,
-          orgId: user?.orgId,
-          networkId: networkId,
-          contentlst: phoneContacts,
-          desc: '',
-          albumid: selectedAlbum,
-          createdBy: user?.id,
-          createdAt: moment().utc().format(),
-          lastUpdatedAt: moment().utc().format(),
-          rowVer: 1,
-        })),
-        ...(emailContacts.length > 0
-          ? [
-              {
-                id: 0,
-                orgId: user?.orgId,
-                networkId: 3,
-                contentlst: emailContacts,
-                desc: '',
-                albumid: selectedAlbum,
-                createdBy: user?.id,
-                createdAt: moment().utc().format(),
-                lastUpdatedAt: moment().utc().format(),
-                rowVer: 1,
-              },
-            ]
-          : []),
-      ];
-      console.log({ body: JSON.stringify(body) });
-      console.log({ body });
+        const albumNetworkId = album.networkid;
+
+        // Filter contacts compatible with this album's network
+        const compatibleContacts = selectedContactsList.filter(contact => {
+          // Skip if already exists
+          if (existsInAlbum(contact, albumId)) return false;
+
+          const contactTypes = getContactTypes(contact);
+          return contactTypes.some(type => {
+            const networkIds = getNetworkIdsForContactType(type);
+            return networkIds.includes(albumNetworkId);
+          });
+        });
+
+        if (compatibleContacts.length === 0) continue;
+
+        // Separate phone and email contacts
+        const phoneContacts = compatibleContacts
+          .filter(c => c.phoneNumbers && c.phoneNumbers.length > 0)
+          .map(c => c.primaryContact)
+          .filter(p => p && /^[0-9+]+$/.test(p));
+
+        const emailContacts = compatibleContacts
+          .filter(c => c.emails && c.emails.length > 0)
+          .flatMap(c => c.emails)
+          .filter(email => email && email.length > 3);
+
+        // Create request based on album network
+        if ([1, 2].includes(albumNetworkId) && phoneContacts.length > 0) {
+          // SMS or WhatsApp album
+          requests.push({
+            id: 0,
+            orgId: user?.orgId,
+            networkId: albumNetworkId,
+            contentlst: phoneContacts,
+            desc: '',
+            albumid: albumId,
+            createdBy: user?.id,
+            createdAt: moment().utc().format(),
+            lastUpdatedAt: moment().utc().format(),
+            rowVer: 1,
+          });
+        } else if (albumNetworkId === 3 && emailContacts.length > 0) {
+          // Email album
+          requests.push({
+            id: 0,
+            orgId: user?.orgId,
+            networkId: 3,
+            contentlst: emailContacts,
+            desc: '',
+            albumid: albumId,
+            createdBy: user?.id,
+            createdAt: moment().utc().format(),
+            lastUpdatedAt: moment().utc().format(),
+            rowVer: 1,
+          });
+        }
+      }
+
+      if (requests.length === 0) {
+        Toast.show('No new contacts to add');
+        setSubmittingBatch(false);
+        return;
+      }
+
       const headerFetch = {
         method: 'POST',
-        body: JSON.stringify(body),
+        body: JSON.stringify(requests),
         headers: {
           'Content-Type': 'application/json; charset=utf-8',
           Accept: 'application/json',
@@ -240,27 +416,27 @@ const ContactsModal = ({
       );
 
       if (!response.ok) {
-        Toast.show('Failed to add contacts to album');
+        Toast.show('Failed to add contacts to albums');
         return;
       }
 
       const res = await response.json();
       console.log({ res });
-
       if (res?.status) {
         Toast.show(
-          `Successfully added ${selectedContactsList.length} contact(s) to album`,
+          `Successfully added contacts to ${selectedAlbums.size} album(s)`,
         );
         await fetchRecipients();
         setSelectedContacts(new Set());
+        setSelectedAlbums(new Set());
         setShowAlbumSelector(false);
-        setSelectedAlbum(null);
+        setShowConfirmation(false);
       } else {
-        Toast.show(res?.message || 'Failed to add contacts to album');
+        Toast.show(res?.message || 'Failed to add contacts to albums');
       }
     } catch (error) {
-      console.error('Error adding contacts to album:', error);
-      Toast.show('Error adding contacts to album');
+      console.error('Error adding contacts to albums:', error);
+      Toast.show('Error adding contacts to albums');
     } finally {
       setSubmittingBatch(false);
     }
@@ -368,200 +544,6 @@ const ContactsModal = ({
     }
   };
 
-  // Import a single contact with album selection
-  const importContact = async (contact, albumId = null) => {
-    setImportingIds(prev => new Set(prev).add(contact.id));
-
-    try {
-      const body = [
-        {
-          id: 0,
-          orgId: user?.orgId,
-          networkId: 1,
-          contentlst: [contact.primaryContact],
-          desc: '',
-          albumid: albumId,
-          createdBy: user?.id,
-          createdAt: moment().utc().format(),
-          lastUpdatedAt: moment().utc().format(),
-          rowVer: 1,
-        },
-        {
-          id: 0,
-          orgId: user?.orgId,
-          networkId: 2,
-          contentlst: [contact.primaryContact],
-          desc: '',
-          albumid: albumId,
-          createdBy: user?.id,
-          createdAt: moment().utc().format(),
-          lastUpdatedAt: moment().utc().format(),
-          rowVer: 1,
-        },
-      ];
-
-      const validEmails = (contact.emails || []).filter(
-        email => email && email.length > 3,
-      );
-
-      if (validEmails.length > 0) {
-        body.push({
-          id: 0,
-          orgId: user?.orgId,
-          networkId: 3,
-          contentlst: validEmails,
-          desc: '',
-          albumid: albumId,
-          createdBy: user?.id,
-          createdAt: moment().utc().format(),
-          lastUpdatedAt: moment().utc().format(),
-          rowVer: 1,
-        });
-      }
-
-      const headerFetch = {
-        method: 'POST',
-        body: JSON.stringify(body),
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8',
-          Accept: 'application/json',
-          Authorization: servicesettings.AuthorizationKey,
-        },
-      };
-
-      const response = await fetch(
-        servicesettings.baseuri + 'Compaigns/postCompaignContactData',
-        headerFetch,
-      );
-
-      if (!response.ok) {
-        Toast.show(`Failed to import ${contact.name}`);
-        return false;
-      }
-
-      const res = await response.json();
-      if (res?.status) {
-        Toast.show(`Successfully imported ${contact.name}`);
-        await fetchRecipients();
-        return true;
-      } else {
-        Toast.show(res?.message || `Failed to import ${contact.name}`);
-        return false;
-      }
-    } catch (error) {
-      console.error('Error importing contact:', error);
-      Toast.show(`Error importing ${contact.name}`);
-      return false;
-    } finally {
-      setImportingIds(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(contact.id);
-        return newSet;
-      });
-    }
-  };
-
-  // Import all contacts with album selection
-  const importAllContacts = async () => {
-    if (!selectedAlbum) {
-      Toast.show('Please select an album first');
-      setShowAlbumSelector(true);
-      return;
-    }
-
-    toggleIsImportAllContactAlert();
-    const notImportedContacts = filteredContacts.filter(
-      c => !isContactImported(c),
-    );
-
-    if (notImportedContacts.length === 0) {
-      Toast.show('No new contacts to import');
-      return;
-    }
-    setImportingAll(true);
-
-    try {
-      const phoneContacts = notImportedContacts
-        .map(c => c.primaryContact)
-        .filter(p => p && /^[0-9+]+$/.test(p));
-
-      const emailContacts = notImportedContacts
-        .flatMap(c => c.emails || [])
-        .filter(email => email && email.length > 3);
-
-      const body = [
-        ...[1, 2].map(networkId => ({
-          id: 0,
-          orgId: user?.orgId,
-          networkId: networkId,
-          contentlst: phoneContacts,
-          desc: '',
-          albumid: selectedAlbum,
-          createdBy: user?.id,
-          createdAt: moment().utc().format(),
-          lastUpdatedAt: moment().utc().format(),
-          rowVer: 1,
-        })),
-        ...(emailContacts.length > 0
-          ? [
-              {
-                id: 0,
-                orgId: user?.orgId,
-                networkId: 3,
-                contentlst: emailContacts,
-                desc: '',
-                albumid: selectedAlbum,
-                createdBy: user?.id,
-                createdAt: moment().utc().format(),
-                lastUpdatedAt: moment().utc().format(),
-                rowVer: 1,
-              },
-            ]
-          : []),
-      ];
-
-      const headerFetch = {
-        method: 'POST',
-        body: JSON.stringify(body),
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8',
-          Accept: 'application/json',
-          Authorization: servicesettings.AuthorizationKey,
-        },
-      };
-      console.log({ body });
-      const response = await fetch(
-        servicesettings.baseuri + 'Compaigns/postCompaignContactData',
-        headerFetch,
-      );
-
-      if (!response.ok) {
-        Toast.show('Failed to import contacts');
-        return;
-      }
-
-      const res = await response.json();
-      console.log({ res });
-
-      if (res?.status) {
-        Toast.show(
-          `Successfully imported ${notImportedContacts.length} contact(s)`,
-        );
-        await fetchRecipients();
-        if (onImportComplete) {
-          onImportComplete();
-        }
-      } else {
-        Toast.show(res?.message || 'Failed to import contacts');
-      }
-    } catch (error) {
-      console.error('Error importing all contacts:', error);
-      Toast.show('Error importing contacts');
-    } finally {
-      setImportingAll(false);
-    }
-  };
-
   const filteredContacts = useMemo(() => {
     let list = contacts;
 
@@ -578,14 +560,33 @@ const ContactsModal = ({
       const aSelected = selectedContacts.has(a.id);
       const bSelected = selectedContacts.has(b.id);
 
-      // selected first
       if (aSelected && !bSelected) return -1;
       if (!aSelected && bSelected) return 1;
 
-      // same state → sort by name
       return a.name.localeCompare(b.name);
     });
   }, [contacts, searchText, selectedContacts]);
+
+  // Group albums by network
+  const groupedAlbums = useMemo(() => {
+    if (!albumList || !networks) return {};
+
+    const grouped = {};
+
+    networks.forEach(network => {
+      const networkAlbums = albumList.filter(
+        album => album.networkid === network.id,
+      );
+      if (networkAlbums.length > 0) {
+        grouped[network.id] = {
+          network,
+          albums: networkAlbums,
+        };
+      }
+    });
+
+    return grouped;
+  }, [albumList, networks]);
 
   useEffect(() => {
     if (isOpen && !permissionGranted) {
@@ -618,258 +619,489 @@ const ContactsModal = ({
     </View>
   );
 
-  const renderAlbumSelector = () => (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={showAlbumSelector}
-      onRequestClose={() => setShowAlbumSelector(false)}
-    >
-      <View style={styles.albumModalOverlay}>
-        <View
-          style={[
-            styles.albumModalContent,
-            { backgroundColor: theme.modalBackColor },
-          ]}
-        >
-          <View style={styles.albumModalHeader}>
-            <Text style={[styles.albumModalTitle, { color: theme.textColor }]}>
-              Select Album
-            </Text>
-            <TouchableOpacity onPress={() => setShowAlbumSelector(false)}>
-              <AntdIcon name="close" size={24} color={theme.textColor} />
-            </TouchableOpacity>
-          </View>
+  const renderConfirmationModal = () => {
+    const summary = getSubmissionSummary();
+    const totalNew = summary.reduce((sum, item) => sum + item.newCount, 0);
+    const totalExisting = summary.reduce(
+      (sum, item) => sum + item.existingCount,
+      0,
+    );
 
-          {showNewAlbumForm ? (
-            <View style={styles.newAlbumForm}>
-              <RNSTextInput
-                placeholder="Album Name"
-                placeholderTextColor={theme.placeholderColor}
-                value={newAlbumName}
-                onChangeText={setNewAlbumName}
-                style={[
-                  styles.albumInput,
-                  {
-                    backgroundColor: theme.inputBackColor,
-                    color: theme.textColor,
-                    borderColor: theme.containerBorderColor,
-                  },
-                ]}
-              />
-              <RNSTextInput
-                placeholder="Album Code"
-                value={newAlbumCode}
-                placeholderTextColor={theme.placeholderColor}
-                onChangeText={setNewAlbumCode}
-                style={[
-                  styles.albumInput,
-                  {
-                    backgroundColor: theme.inputBackColor,
-                    color: theme.textColor,
-                    borderColor: theme.containerBorderColor,
-                  },
-                ]}
-              />
-              <RNSDropDown
-                items={networks}
-                selectedIndex={newAlbumNetworkId}
-                onSelect={setNewAlbumNetworkId}
-                style={{
-                  width: '100%',
-                  borderRadius: 6,
-                  paddingHorizontal: 10,
-                  fontSize: 16,
-                  borderColor: '#ff00003d',
-                  borderWidth: 1,
-                  backgroundColor: theme.inputBackColor,
-                  color: theme.textColor,
-                  borderColor: theme.containerBorderColor,
-                }}
-                placeholder="Select Netword..."
-                clearTextOnFocus={true}
-                keyboardAppearance={'dark'}
-              />
-              <RNSTextInput
-                placeholder="Description (Optional)"
-                value={newAlbumDesc}
-                placeholderTextColor={theme.placeholderColor}
-                onChangeText={setNewAlbumDesc}
-                multiline
-                style={[
-                  styles.albumInput,
-                  styles.albumTextArea,
-                  {
-                    backgroundColor: theme.inputBackColor,
-                    color: theme.textColor,
-                    borderColor: theme.containerBorderColor,
-                  },
-                ]}
-              />
-              <View style={styles.albumFormButtons}>
-                <RNSButton
-                  caption="Cancel"
-                  bgColor={theme.placeholderColor}
-                  disabled={creatingAlbumLoading}
-                  onPress={() => {
-                    setShowNewAlbumForm(false);
-                    setNewAlbumName('');
-                    setNewAlbumCode('');
-                    setNewAlbumDesc('');
-                  }}
-                  style={styles.albumFormButton}
-                />
-                <RNSButton
-                  caption="Create"
-                  disabled={creatingAlbumLoading}
-                  bgColor={theme.buttonBackColor}
-                  onPress={async () => {
-                    const newAlbumId = await createNewAlbum();
-                    if (newAlbumId) {
-                      setSelectedAlbum(newAlbumId);
-                    }
-                  }}
-                  loading={creatingAlbumLoading}
-                  style={styles.albumFormButton}
-                />
-              </View>
+    return (
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={showConfirmation}
+        onRequestClose={() => setShowConfirmation(false)}
+      >
+        <View style={styles.confirmationOverlay}>
+          <View
+            style={[
+              styles.confirmationContent,
+              { backgroundColor: theme.modalBackColor },
+            ]}
+          >
+            <View style={styles.confirmationHeader}>
+              <Text
+                style={[styles.confirmationTitle, { color: theme.textColor }]}
+              >
+                Confirm Addition
+              </Text>
+              <TouchableOpacity onPress={() => setShowConfirmation(false)}>
+                <AntdIcon name="close" size={24} color={theme.textColor} />
+              </TouchableOpacity>
             </View>
-          ) : (
-            <>
-              <ScrollView style={styles.albumList}>
-                {albumList && albumList.length > 0 ? (
-                  albumList.map(album => (
-                    <TouchableOpacity
+
+            <View style={styles.confirmationSummary}>
+              <Text style={[styles.summaryTitle, { color: theme.textColor }]}>
+                Adding {selectedContacts.size} contact(s) to{' '}
+                {selectedAlbums.size} album(s):
+              </Text>
+
+              <ScrollView style={styles.summaryList}>
+                {summary.map(
+                  ({ album, newCount, existingCount, totalCompatible }) => (
+                    <View
                       key={album.id}
                       style={[
-                        styles.albumItem,
-                        {
-                          backgroundColor:
-                            selectedAlbum === album.id
-                              ? theme.buttonBackColor + '50'
-                              : theme.modalBackColor,
-                          borderColor:
-                            selectedAlbum === album.id
-                              ? theme.buttonBackColor
-                              : theme.containerBorderColor,
-                        },
+                        styles.summaryItem,
+                        { backgroundColor: theme.inputBackColor },
                       ]}
-                      onPress={() => setSelectedAlbum(album.id)}
                     >
-                      <View style={styles.albumItemContent}>
-                        <View
-                          style={{
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            columnGap: 5,
-                          }}
-                        >
-                          <Text
-                            style={[
-                              styles.albumName,
-                              { color: theme.textColor },
-                            ]}
-                          >
-                            {album.name}
-                          </Text>
-                          <View
-                            style={[
-                              styles.typeBadge,
-                              {
-                                backgroundColor: theme.green + '20',
-                              },
-                            ]}
-                          >
-                            <Text
-                              style={[
-                                styles.typeText,
-                                {
-                                  color: theme.green,
-                                },
-                              ]}
-                            >
-                              {networks?.find(n => n?.id == album.networkid)
-                                ?.name || ''}
-                            </Text>
-                          </View>
-                        </View>
+                      <View style={styles.summaryItemHeader}>
                         <Text
                           style={[
-                            styles.albumCode,
-                            { color: theme.placeholderColor },
+                            styles.summaryAlbumName,
+                            { color: theme.textColor },
                           ]}
                         >
-                          {album.code}
+                          {album.name}
                         </Text>
-                        {album.desc && (
+                        <View
+                          style={[
+                            styles.summaryBadge,
+                            { backgroundColor: theme.green + '20' },
+                          ]}
+                        >
                           <Text
                             style={[
-                              styles.albumDesc,
-                              { color: theme.placeholderColor },
+                              styles.summaryBadgeText,
+                              { color: theme.green },
                             ]}
                           >
-                            {album.desc}
+                            {
+                              networks?.find(n => n.id === album.networkid)
+                                ?.name
+                            }
                           </Text>
-                        )}
+                        </View>
                       </View>
-                      {selectedAlbum === album.id && (
-                        <MaterialIcon
-                          name="check-circle"
-                          size={24}
-                          color={theme.buttonBackColor}
-                        />
-                      )}
-                    </TouchableOpacity>
-                  ))
-                ) : (
-                  <Text
-                    style={[
-                      styles.noAlbumsText,
-                      { color: theme.placeholderColor },
-                    ]}
-                  >
-                    No albums available
-                  </Text>
+                      <Text
+                        style={[
+                          styles.summaryDetail,
+                          { color: theme.placeholderColor },
+                        ]}
+                      >
+                        {newCount} new contact{newCount !== 1 ? 's' : ''}
+                        {existingCount > 0 &&
+                          ` (${existingCount} already exist${existingCount !== 1 ? '' : 's'})`}
+                      </Text>
+                    </View>
+                  ),
                 )}
               </ScrollView>
 
-              <RNSButton
-                caption="Create New Album"
-                bgColor={theme.green}
-                onPress={() => setShowNewAlbumForm(true)}
-                nIcon={
-                  <MaterialIcon name="add" size={20} color={theme.tintColor} />
-                }
-                style={styles.createAlbumButton}
-              />
+              <View
+                style={[
+                  styles.summaryTotal,
+                  { borderTopColor: theme.containerBorderColor },
+                ]}
+              >
+                <Text
+                  style={[styles.summaryTotalText, { color: theme.textColor }]}
+                >
+                  Total: {totalNew} new addition{totalNew !== 1 ? 's' : ''}
+                  {totalExisting > 0 &&
+                    ` • ${totalExisting} skipped (already exist)`}
+                </Text>
+              </View>
+            </View>
 
+            <View style={styles.confirmationButtons}>
+              <RNSButton
+                caption="Cancel"
+                bgColor={theme.placeholderColor}
+                onPress={() => setShowConfirmation(false)}
+                disabled={submittingBatch}
+                style={styles.confirmationButton}
+              />
               <RNSButton
                 caption="Confirm"
                 bgColor={theme.buttonBackColor}
-                onPress={() => {
-                  if (selectedAlbum) {
-                    setShowAlbumSelector(false);
-                    submitSelectedContactsToAlbum();
-                  } else {
-                    Toast.show('Please select an album');
-                  }
-                }}
-                disabled={!selectedAlbum}
-                style={styles.confirmAlbumButton}
+                onPress={submitSelectedContactsToAlbums}
+                loading={submittingBatch}
+                disabled={submittingBatch || totalNew === 0}
+                style={styles.confirmationButton}
               />
-            </>
-          )}
+            </View>
+          </View>
         </View>
-      </View>
-    </Modal>
-  );
+      </Modal>
+    );
+  };
 
-  const notImportedCount = filteredContacts.filter(
-    c => !isContactImported(c),
-  ).length;
+  const renderAlbumSelector = () => {
+    const selectedContactsList = filteredContacts.filter(c =>
+      selectedContacts.has(c.id),
+    );
 
-  const importedCount = filteredContacts.filter(c =>
-    isContactImported(c),
+    return (
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={showAlbumSelector}
+        onRequestClose={() => setShowAlbumSelector(false)}
+      >
+        <View style={styles.albumModalOverlay}>
+          <View
+            style={[
+              styles.albumModalContent,
+              { backgroundColor: theme.modalBackColor },
+            ]}
+          >
+            <View style={styles.albumModalHeader}>
+              <Text
+                style={[styles.albumModalTitle, { color: theme.textColor }]}
+              >
+                Select Albums ({selectedAlbums.size} selected)
+              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setShowAlbumSelector(false);
+                  setSelectedAlbums(new Set());
+                }}
+              >
+                <AntdIcon name="close" size={24} color={theme.textColor} />
+              </TouchableOpacity>
+            </View>
+
+            {selectedContactsList.length > 0 && (
+              <View
+                style={[
+                  styles.contactsPreview,
+                  { backgroundColor: theme.inputBackColor },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.contactsPreviewText,
+                    { color: theme.textColor },
+                  ]}
+                >
+                  {selectedContactsList.length} contact
+                  {selectedContactsList.length !== 1 ? 's' : ''} selected
+                </Text>
+              </View>
+            )}
+
+            {showNewAlbumForm ? (
+              <View style={styles.newAlbumForm}>
+                <RNSTextInput
+                  placeholder="Album Name"
+                  placeholderTextColor={theme.placeholderColor}
+                  value={newAlbumName}
+                  onChangeText={setNewAlbumName}
+                  style={[
+                    styles.albumInput,
+                    {
+                      backgroundColor: theme.inputBackColor,
+                      color: theme.textColor,
+                      borderColor: theme.containerBorderColor,
+                    },
+                  ]}
+                />
+                <RNSTextInput
+                  placeholder="Album Code"
+                  value={newAlbumCode}
+                  placeholderTextColor={theme.placeholderColor}
+                  onChangeText={setNewAlbumCode}
+                  style={[
+                    styles.albumInput,
+                    {
+                      backgroundColor: theme.inputBackColor,
+                      color: theme.textColor,
+                      borderColor: theme.containerBorderColor,
+                    },
+                  ]}
+                />
+                <RNSDropDown
+                  items={networks}
+                  selectedIndex={newAlbumNetworkId}
+                  onSelect={setNewAlbumNetworkId}
+                  style={{
+                    width: '100%',
+                    borderRadius: 6,
+                    paddingHorizontal: 10,
+                    fontSize: 16,
+                    borderWidth: 1,
+                    backgroundColor: theme.inputBackColor,
+                    color: theme.textColor,
+                    borderColor: theme.containerBorderColor,
+                  }}
+                  placeholder="Select Network..."
+                  clearTextOnFocus={true}
+                  keyboardAppearance={'dark'}
+                />
+                <RNSTextInput
+                  placeholder="Description (Optional)"
+                  value={newAlbumDesc}
+                  placeholderTextColor={theme.placeholderColor}
+                  onChangeText={setNewAlbumDesc}
+                  multiline
+                  style={[
+                    styles.albumInput,
+                    styles.albumTextArea,
+                    {
+                      backgroundColor: theme.inputBackColor,
+                      color: theme.textColor,
+                      borderColor: theme.containerBorderColor,
+                    },
+                  ]}
+                />
+                <View style={styles.albumFormButtons}>
+                  <RNSButton
+                    caption="Cancel"
+                    bgColor={theme.placeholderColor}
+                    disabled={creatingAlbumLoading}
+                    onPress={() => {
+                      setShowNewAlbumForm(false);
+                      setNewAlbumName('');
+                      setNewAlbumCode('');
+                      setNewAlbumDesc('');
+                      setNewAlbumNetworkId(-1);
+                    }}
+                    style={styles.albumFormButton}
+                  />
+                  <RNSButton
+                    caption="Create"
+                    disabled={creatingAlbumLoading}
+                    bgColor={theme.buttonBackColor}
+                    onPress={async () => {
+                      const newAlbumId = await createNewAlbum();
+                      if (newAlbumId) {
+                        toggleAlbumSelection(newAlbumId);
+                      }
+                    }}
+                    loading={creatingAlbumLoading}
+                    style={styles.albumFormButton}
+                  />
+                </View>
+              </View>
+            ) : (
+              <>
+                <ScrollView style={styles.albumList}>
+                  {Object.values(groupedAlbums).map(({ network, albums }) => (
+                    <View key={network.id} style={styles.networkGroup}>
+                      <View
+                        style={[
+                          styles.networkHeader,
+                          { backgroundColor: theme.inputBackColor },
+                        ]}
+                      >
+                        <MaterialIcon
+                          name={network.id === 3 ? 'email' : 'phone'}
+                          size={16}
+                          color={theme.textColor}
+                        />
+                        <Text
+                          style={[
+                            styles.networkTitle,
+                            { color: theme.textColor },
+                          ]}
+                        >
+                          {network.name}
+                        </Text>
+                        <Text
+                          style={[
+                            styles.networkCount,
+                            { color: theme.placeholderColor },
+                          ]}
+                        >
+                          ({albums.length})
+                        </Text>
+                      </View>
+
+                      {albums.map(album => {
+                        const isSelected = selectedAlbums.has(album.id);
+                        const isCompatible = isAlbumCompatibleWithContacts(
+                          album,
+                          selectedContactsList,
+                        );
+                        const allExist = allContactsExistInAlbum(
+                          album,
+                          selectedContactsList,
+                        );
+                        const { existing, total } = countContactsInAlbum(
+                          album,
+                          selectedContactsList,
+                        );
+                        const isDisabled = !isCompatible || allExist;
+
+                        return (
+                          <TouchableOpacity
+                            key={album.id}
+                            style={[
+                              styles.albumItem,
+                              {
+                                backgroundColor: isSelected
+                                  ? theme.buttonBackColor + '30'
+                                  : theme.modalBackColor,
+                                borderColor: isSelected
+                                  ? theme.buttonBackColor
+                                  : theme.containerBorderColor,
+                                opacity: isDisabled ? 0.5 : 1,
+                              },
+                            ]}
+                            onPress={() =>
+                              !isDisabled && toggleAlbumSelection(album.id)
+                            }
+                            disabled={isDisabled}
+                          >
+                            <CheckBox
+                              value={isSelected}
+                              onValueChange={() =>
+                                !isDisabled && toggleAlbumSelection(album.id)
+                              }
+                              disabled={isDisabled}
+                              boxType={'square'}
+                              style={{
+                                transform: [
+                                  { scale: Platform.OS === 'ios' ? 0.8 : 1.2 },
+                                ],
+                                marginRight: 10,
+                              }}
+                              tintColors={{
+                                true: theme.buttonBackColor,
+                                false: theme.placeholderColor,
+                              }}
+                            />
+                            <View style={styles.albumItemContent}>
+                              <Text
+                                style={[
+                                  styles.albumName,
+                                  { color: theme.textColor },
+                                ]}
+                              >
+                                {album.name}
+                              </Text>
+                              <Text
+                                style={[
+                                  styles.albumCode,
+                                  { color: theme.placeholderColor },
+                                ]}
+                              >
+                                {album.code}
+                              </Text>
+                              {selectedContactsList.length > 0 && (
+                                <View style={styles.albumStats}>
+                                  {!isCompatible ? (
+                                    <Text
+                                      style={[
+                                        styles.albumStatsText,
+                                        { color: theme.darkGray },
+                                      ]}
+                                    >
+                                      No compatible contacts
+                                    </Text>
+                                  ) : allExist ? (
+                                    <Text
+                                      style={[
+                                        styles.albumStatsText,
+                                        { color: theme.green },
+                                      ]}
+                                    >
+                                      ✓ All {total} contact
+                                      {total !== 1 ? 's' : ''} already added
+                                    </Text>
+                                  ) : existing > 0 ? (
+                                    <Text
+                                      style={[
+                                        styles.albumStatsText,
+                                        { color: theme.blue },
+                                      ]}
+                                    >
+                                      {total - existing} new, {existing}{' '}
+                                      existing
+                                    </Text>
+                                  ) : (
+                                    <Text
+                                      style={[
+                                        styles.albumStatsText,
+                                        { color: theme.textColor },
+                                      ]}
+                                    >
+                                      {total} contact{total !== 1 ? 's' : ''}{' '}
+                                      compatible
+                                    </Text>
+                                  )}
+                                </View>
+                              )}
+                            </View>
+                          </TouchableOpacity>
+                        );
+                      })}
+                    </View>
+                  ))}
+
+                  {Object.keys(groupedAlbums).length === 0 && (
+                    <Text
+                      style={[
+                        styles.noAlbumsText,
+                        { color: theme.placeholderColor },
+                      ]}
+                    >
+                      No albums available
+                    </Text>
+                  )}
+                </ScrollView>
+
+                <RNSButton
+                  caption="Create New Album"
+                  bgColor={theme.green}
+                  onPress={() => setShowNewAlbumForm(true)}
+                  nIcon={
+                    <MaterialIcon
+                      name="add"
+                      size={20}
+                      color={theme.tintColor}
+                    />
+                  }
+                  style={styles.createAlbumButton}
+                />
+
+                <RNSButton
+                  caption={`Add to ${selectedAlbums.size} Album${selectedAlbums.size !== 1 ? 's' : ''}`}
+                  bgColor={theme.buttonBackColor}
+                  onPress={() => {
+                    if (selectedAlbums.size > 0) {
+                      setShowConfirmation(true);
+                    } else {
+                      Toast.show('Please select at least one album');
+                    }
+                  }}
+                  disabled={selectedAlbums.size === 0}
+                  style={styles.confirmAlbumButton}
+                />
+              </>
+            )}
+          </View>
+        </View>
+      </Modal>
+    );
+  };
+
+  const availableContactsCount = filteredContacts.filter(
+    c => !contactExistsInAllSelectedAlbums(c),
   ).length;
 
   return (
@@ -880,16 +1112,9 @@ const ContactsModal = ({
       onRequestClose={onClose}
     >
       <View style={styles.centeredView}>
-        <CustomeAlert
-          massagetype={'warning'}
-          hide={toggleIsImportAllContactAlert}
-          confirm={importAllContacts}
-          Visible={importAllContactAlert}
-          alerttype={'confirmation'}
-          Title={'Import All Contacts'}
-          Massage={`Are you sure you want to import ${notImportedCount} contact(s)?`}
-        />
         {renderAlbumSelector()}
+        {renderConfirmationModal()}
+
         <SafeAreaView style={{ flex: 1, width: '100%' }}>
           <View
             style={[
@@ -935,22 +1160,14 @@ const ContactsModal = ({
                     ]}
                   />
                   <RNSButton
-                    caption="Import All"
+                    caption="Select All"
                     bgColor={theme.buttonBackColor}
-                    onPress={() => {
-                      if (!selectedAlbum) {
-                        selectAllImportedContacts();
-                        setShowAlbumSelector(true);
-                      } else {
-                        toggleIsImportAllContactAlert();
-                      }
-                    }}
-                    loading={importingAll}
-                    disabled={loading || importingAll || notImportedCount === 0}
+                    onPress={selectAllImportedContacts}
+                    disabled={loading || availableContactsCount === 0}
                     small
                     nIcon={
                       <MaterialIcon
-                        name="file-download"
+                        name="select-all"
                         size={20}
                         color={theme.tintColor}
                       />
@@ -959,7 +1176,7 @@ const ContactsModal = ({
                   />
                 </View>
 
-                {selectedAlbum && (
+                {selectedAlbums.size > 0 && (
                   <View
                     style={[
                       styles.selectedAlbumBanner,
@@ -972,12 +1189,11 @@ const ContactsModal = ({
                         { color: theme.textColor },
                       ]}
                     >
-                      Album:{' '}
-                      {albumList?.find(a => a.id === selectedAlbum)?.name ||
-                        'Selected'}
+                      {selectedAlbums.size} album
+                      {selectedAlbums.size !== 1 ? 's' : ''} selected
                     </Text>
                     <TouchableOpacity
-                      onPress={() => setShowAlbumSelector(true)}
+                      onPress={() => setSelectedAlbums(new Set())}
                     >
                       <Text
                         style={[
@@ -985,7 +1201,7 @@ const ContactsModal = ({
                           { color: theme.placeholderColor },
                         ]}
                       >
-                        Change
+                        Clear
                       </Text>
                     </TouchableOpacity>
                   </View>
@@ -998,8 +1214,6 @@ const ContactsModal = ({
                     >
                       {filteredContacts.length} contact
                       {filteredContacts.length !== 1 ? 's' : ''} found
-                      {notImportedCount < filteredContacts.length &&
-                        ` (${notImportedCount} new)`}
                     </Text>
                     {selectedContacts.size > 0 && (
                       <TouchableOpacity onPress={clearSelection}>
@@ -1014,25 +1228,6 @@ const ContactsModal = ({
                       </TouchableOpacity>
                     )}
                   </View>
-                )}
-
-                {importedCount > 0 && selectedContacts.size === 0 && (
-                  <TouchableOpacity
-                    onPress={selectAllImportedContacts}
-                    style={[
-                      styles.selectAllButton,
-                      { backgroundColor: theme.blue + '20' },
-                    ]}
-                  >
-                    <MaterialIcon
-                      name="check-box"
-                      size={20}
-                      color={theme.blue}
-                    />
-                    <Text style={[styles.selectAllText, { color: theme.blue }]}>
-                      Select All Imported Contacts ({notImportedCount})
-                    </Text>
-                  </TouchableOpacity>
                 )}
 
                 <View style={styles.listContainer}>
@@ -1053,8 +1248,12 @@ const ContactsModal = ({
                       data={filteredContacts}
                       renderItem={({ item }) => {
                         const isImporting = importingIds.has(item.id);
-                        const isImported = isContactImported(item);
                         const isSelected = selectedContacts.has(item.id);
+                        const albumCount = countAlbumsForContact(item);
+                        const existsInAll =
+                          contactExistsInAllSelectedAlbums(item);
+                        const isDisabled =
+                          selectedAlbums.size > 0 && existsInAll;
 
                         return (
                           <View
@@ -1062,33 +1261,32 @@ const ContactsModal = ({
                               styles.contactCard,
                               {
                                 backgroundColor: theme.modalBackColor,
-                                opacity: isImported ? 0.9 : 1,
+                                opacity: isDisabled ? 0.6 : 1,
                                 borderWidth: isSelected ? 2 : 0,
                                 borderColor: theme.buttonBackColor,
                               },
                             ]}
                           >
-                            {!isImported && (
-                              <CheckBox
-                                style={{
-                                  transform: [
-                                    {
-                                      scale: Platform.OS === 'ios' ? 0.8 : 1.2,
-                                    },
-                                  ],
-                                  marginRight: 10,
-                                }}
-                                onValueChange={() =>
-                                  toggleContactSelection(item.id)
-                                }
-                                value={isSelected}
-                                boxType={'square'}
-                                tintColors={{
-                                  true: theme.buttonBackColor,
-                                  false: theme.placeholderColor,
-                                }}
-                              />
-                            )}
+                            <CheckBox
+                              style={{
+                                transform: [
+                                  {
+                                    scale: Platform.OS === 'ios' ? 0.8 : 1.2,
+                                  },
+                                ],
+                                marginRight: 10,
+                              }}
+                              onValueChange={() =>
+                                !isDisabled && toggleContactSelection(item.id)
+                              }
+                              value={isSelected}
+                              disabled={isDisabled}
+                              boxType={'square'}
+                              tintColors={{
+                                true: theme.buttonBackColor,
+                                false: theme.placeholderColor,
+                              }}
+                            />
                             <View style={styles.contactInfo}>
                               <View style={styles.contactHeader}>
                                 <Text
@@ -1147,67 +1345,28 @@ const ContactsModal = ({
                               >
                                 {item.primaryContact}
                               </Text>
-                              {isImported && (
+                              {albumCount > 0 && (
                                 <Text
                                   style={[
                                     styles.importedLabel,
                                     { color: theme.green },
                                   ]}
                                 >
-                                  ✓ Already imported
+                                  In {albumCount} album
+                                  {albumCount !== 1 ? 's' : ''}
+                                </Text>
+                              )}
+                              {isDisabled && (
+                                <Text
+                                  style={[
+                                    styles.disabledLabel,
+                                    { color: theme.darkGray },
+                                  ]}
+                                >
+                                  Already in all selected albums
                                 </Text>
                               )}
                             </View>
-                            {isImported && (
-                              <TouchableOpacity
-                                onPress={() => {
-                                  if (!selectedAlbum) {
-                                    setShowAlbumSelector(true);
-                                  } else {
-                                    importContact(item, selectedAlbum);
-                                  }
-                                }}
-                                disabled={
-                                  isImporting || importingAll || isImported
-                                }
-                                style={[
-                                  styles.importBtn,
-                                  {
-                                    backgroundColor: isImported
-                                      ? theme.green
-                                      : theme.buttonBackColor,
-                                    opacity:
-                                      isImporting || importingAll || isImported
-                                        ? 0.5
-                                        : 1,
-                                  },
-                                ]}
-                              >
-                                <MaterialIcon
-                                  name="check"
-                                  size={20}
-                                  color={theme.tintColor}
-                                />
-                                {/* {isImporting ? (
-                                <ActivityIndicator
-                                  size="small"
-                                  color={theme.tintColor}
-                                />
-                                ) : isImported ?
-                                  <MaterialIcon
-                                  name="check"
-                                  size={20}
-                                  color={theme.tintColor}
-                                /> (
-                                  ) : (
-                                    <MaterialIcon
-                                  name="person-add"
-                                  size={20}
-                                  color={theme.tintColor}
-                                  />
-                                  )} */}
-                              </TouchableOpacity>
-                            )}
                           </View>
                         );
                       }}
@@ -1273,7 +1432,7 @@ const ContactsModal = ({
                     color={theme.tintColor}
                   />
                   <Text style={[styles.fabText, { color: theme.tintColor }]}>
-                    Add {selectedContacts.size} to Album
+                    Add {selectedContacts.size} to Albums
                   </Text>
                 </>
               )}
@@ -1362,17 +1521,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
   },
-  selectAllButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 10,
-    borderRadius: 6,
-    gap: 8,
-  },
-  selectAllText: {
-    fontSize: 13,
-    fontWeight: '600',
-  },
   listContainer: {
     flexGrow: 1,
   },
@@ -1429,13 +1577,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginTop: 2,
   },
-  importBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 2,
+  disabledLabel: {
+    fontSize: 11,
+    fontStyle: 'italic',
+    marginTop: 2,
   },
   loadingContainer: {
     flex: 1,
@@ -1492,7 +1637,6 @@ const styles = StyleSheet.create({
   cancelText: {
     fontSize: 14,
   },
-  // Album selector modal styles
   albumModalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
@@ -1515,40 +1659,70 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 15,
   },
   albumModalTitle: {
     fontSize: 18,
     fontWeight: 'bold',
   },
-  albumList: {
-    maxHeight: 300,
+  contactsPreview: {
+    padding: 10,
+    borderRadius: 6,
     marginBottom: 15,
+  },
+  contactsPreviewText: {
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  albumList: {
+    maxHeight: 400,
+    marginBottom: 15,
+  },
+  networkGroup: {
+    marginBottom: 20,
+  },
+  networkHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 6,
+    marginBottom: 10,
+    gap: 8,
+  },
+  networkTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  networkCount: {
+    fontSize: 13,
   },
   albumItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 15,
+    padding: 12,
     borderRadius: 8,
-    marginBottom: 10,
+    marginBottom: 8,
+    marginLeft: 10,
     borderWidth: 2,
   },
   albumItemContent: {
     flex: 1,
   },
   albumName: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
-    marginBottom: 4,
-  },
-  albumCode: {
-    fontSize: 13,
     marginBottom: 2,
   },
-  albumDesc: {
+  albumCode: {
     fontSize: 12,
-    fontStyle: 'italic',
+    marginBottom: 4,
+  },
+  albumStats: {
+    marginTop: 4,
+  },
+  albumStatsText: {
+    fontSize: 11,
+    fontWeight: '500',
   },
   noAlbumsText: {
     textAlign: 'center',
@@ -1561,7 +1735,6 @@ const styles = StyleSheet.create({
   confirmAlbumButton: {
     marginTop: 5,
   },
-  // New album form styles
   newAlbumForm: {
     gap: 15,
   },
@@ -1585,7 +1758,92 @@ const styles = StyleSheet.create({
   albumFormButton: {
     flex: 1,
   },
-  // Floating action button
+  confirmationOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  confirmationContent: {
+    width: '100%',
+    maxHeight: '70%',
+    borderRadius: 12,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
+    elevation: 10,
+  },
+  confirmationHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  confirmationTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  confirmationSummary: {
+    flex: 1,
+  },
+  summaryTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    marginBottom: 15,
+  },
+  summaryList: {
+    maxHeight: 300,
+    marginBottom: 15,
+  },
+  summaryItem: {
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  summaryItemHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 6,
+  },
+  summaryAlbumName: {
+    fontSize: 15,
+    fontWeight: '600',
+    flex: 1,
+  },
+  summaryBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 10,
+  },
+  summaryBadgeText: {
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  summaryDetail: {
+    fontSize: 13,
+  },
+  summaryTotal: {
+    paddingTop: 15,
+    borderTopWidth: 1,
+    marginTop: 10,
+  },
+  summaryTotalText: {
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  confirmationButtons: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 20,
+  },
+  confirmationButton: {
+    flex: 1,
+  },
   fabContainer: {
     position: 'absolute',
     bottom: 30,
@@ -1609,21 +1867,6 @@ const styles = StyleSheet.create({
   fabText: {
     fontSize: 16,
     fontWeight: 'bold',
-  },
-  albumRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 14,
-    marginVertical: 4,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#3333',
-  },
-  input: {
-    backgroundColor: '#222',
-    color: '#fff',
-    borderRadius: 6,
-    paddingHorizontal: 12,
   },
 });
 

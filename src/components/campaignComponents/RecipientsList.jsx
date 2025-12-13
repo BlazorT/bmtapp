@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
+  Modal,
   RefreshControl,
   SafeAreaView,
   StyleSheet,
@@ -13,6 +14,7 @@ import {
 } from 'react-native';
 import Toast from 'react-native-simple-toast';
 import AntdIcon from 'react-native-vector-icons/AntDesign';
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import { useSelector } from 'react-redux';
 import { useTheme } from '../../hooks/useTheme';
 import { useUser } from '../../hooks/useUser';
@@ -37,10 +39,100 @@ const RecipientsList = () => {
   const [filterNetworkId, setFilterNetworkId] = useState([]);
   const [selectedAlbumId, setSelectedAlbumId] = useState(null);
 
+  // Add Album Modal states
+  const [showAddAlbumModal, setShowAddAlbumModal] = useState(false);
+  const [newAlbumName, setNewAlbumName] = useState('');
+  const [newAlbumCode, setNewAlbumCode] = useState('');
+  const [newAlbumDesc, setNewAlbumDesc] = useState('');
+  const [newAlbumNetworkId, setNewAlbumNetworkId] = useState(-1);
+  const [creatingAlbum, setCreatingAlbum] = useState(false);
+
   const toggleContactsOpen = () => setIsContactsOpen(prev => !prev);
+  const toggleAddAlbumModal = () => {
+    setShowAddAlbumModal(prev => !prev);
+    if (showAddAlbumModal) {
+      // Clear form when closing
+      setNewAlbumName('');
+      setNewAlbumCode('');
+      setNewAlbumDesc('');
+      setNewAlbumNetworkId(-1);
+    }
+  };
 
   const onImport = data => {
     console.log({ data });
+  };
+
+  const createNewAlbum = async () => {
+    if (
+      !newAlbumName.trim() ||
+      !newAlbumCode.trim() ||
+      newAlbumNetworkId === -1
+    ) {
+      Toast.show('Please enter album name, code, and select network');
+      return;
+    }
+
+    try {
+      setCreatingAlbum(true);
+      const body = {
+        Id: 0,
+        Orgid: user?.orgId,
+        Name: newAlbumName.trim(),
+        Code: newAlbumCode.trim(),
+        Desc: newAlbumDesc.trim(),
+        Networkid: networks[newAlbumNetworkId]?.id,
+        Status: 1,
+        CreatedBy: user?.id,
+        LastUpdatedBy: user?.id,
+        CreatedAt: moment().utc().format(),
+        LastUpdatedAt: moment().utc().format(),
+        RowVer: 1,
+      };
+
+      const headerFetch = {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          Accept: 'application/json',
+          Authorization: servicesettings.AuthorizationKey,
+        },
+      };
+
+      const response = await fetch(
+        servicesettings.baseuri + 'Compaigns/submitalbumlist',
+        headerFetch,
+      );
+
+      if (!response.ok) {
+        Toast.show('Failed to create album');
+        return;
+      }
+
+      const res = await response.json();
+
+      if (res?.status) {
+        Toast.show('Album created successfully');
+        setNewAlbumName('');
+        setNewAlbumCode('');
+        setNewAlbumDesc('');
+        setNewAlbumNetworkId(-1);
+        setShowAddAlbumModal(false);
+        await fetchAlbumList();
+        // Select the newly created album
+        if (res.data?.id || res.id) {
+          setSelectedAlbumId(res.data?.id || res.id);
+        }
+      } else {
+        Toast.show(res?.message || 'Failed to create album');
+      }
+    } catch (error) {
+      console.error('Error creating album:', error);
+      Toast.show('Error creating album');
+    } finally {
+      setCreatingAlbum(false);
+    }
   };
 
   const fetchAlbumList = async () => {
@@ -175,6 +267,118 @@ const RecipientsList = () => {
     applyFilters();
   }, [searchText, filterNetworkId, recipients, selectedAlbumId]);
 
+  const renderAddAlbumModal = () => (
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={showAddAlbumModal}
+      onRequestClose={toggleAddAlbumModal}
+    >
+      <View style={styles.modalOverlay}>
+        <View
+          style={[
+            styles.modalContent,
+            { backgroundColor: theme.modalBackColor },
+          ]}
+        >
+          <View style={styles.modalHeader}>
+            <Text style={[styles.modalTitle, { color: theme.textColor }]}>
+              Create New Album
+            </Text>
+            <TouchableOpacity onPress={toggleAddAlbumModal}>
+              <AntdIcon name="close" size={24} color={theme.textColor} />
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.formContainer}>
+            <RNSTextInput
+              placeholder="Album Name *"
+              placeholderTextColor={theme.placeholderColor}
+              value={newAlbumName}
+              onChangeText={setNewAlbumName}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: theme.inputBackColor,
+                  color: theme.textColor,
+                  borderColor: theme.containerBorderColor,
+                },
+              ]}
+            />
+
+            <RNSTextInput
+              placeholder="Album Code *"
+              placeholderTextColor={theme.placeholderColor}
+              value={newAlbumCode}
+              onChangeText={setNewAlbumCode}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: theme.inputBackColor,
+                  color: theme.textColor,
+                  borderColor: theme.containerBorderColor,
+                },
+              ]}
+            />
+
+            <RNSDropDown
+              items={networks || []}
+              selectedIndex={newAlbumNetworkId}
+              onSelect={setNewAlbumNetworkId}
+              style={[
+                styles.dropdown,
+                {
+                  backgroundColor: theme.inputBackColor,
+                  color: theme.textColor,
+                  borderColor: theme.containerBorderColor,
+                },
+              ]}
+              placeholder="Select Network *"
+              clearTextOnFocus={true}
+              keyboardAppearance={'dark'}
+            />
+
+            <RNSTextInput
+              placeholder="Description (Optional)"
+              placeholderTextColor={theme.placeholderColor}
+              value={newAlbumDesc}
+              onChangeText={setNewAlbumDesc}
+              multiline
+              numberOfLines={4}
+              style={[
+                styles.input,
+                styles.textArea,
+                {
+                  backgroundColor: theme.inputBackColor,
+                  color: theme.textColor,
+                  borderColor: theme.containerBorderColor,
+                },
+              ]}
+            />
+
+            <View style={styles.buttonRow}>
+              <RNSButton
+                caption="Cancel"
+                bgColor={theme.placeholderColor}
+                onPress={toggleAddAlbumModal}
+                disabled={creatingAlbum}
+                style={styles.button}
+              />
+              <RNSButton
+                caption="Create Album"
+                bgColor={theme.buttonBackColor}
+                onPress={createNewAlbum}
+                loading={creatingAlbum}
+                disabled={creatingAlbum}
+                style={styles.button}
+              />
+            </View>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.backgroundColor }}>
       <View
@@ -195,6 +399,8 @@ const RecipientsList = () => {
           fetchAlbumList={fetchAlbumList}
         />
 
+        {renderAddAlbumModal()}
+
         {/* Filters */}
         <View style={styles.filtersContainer}>
           <View style={[styles.row]}>
@@ -214,17 +420,29 @@ const RecipientsList = () => {
                 },
               ]}
             />
-            <RNSButton
-              style={{ width: 'auto' }}
-              bgColor={theme.buttonBackColor}
-              caption="Contacts"
-              onPress={toggleContactsOpen}
-              small
-              nIcon={
-                <AntdIcon name="contacts" size={20} color={theme.tintColor} />
-              }
-            />
+            <View style={styles.buttonGroup}>
+              <RNSButton
+                style={{ width: 'auto' }}
+                bgColor={theme.buttonBackColor}
+                caption="Contacts"
+                onPress={toggleContactsOpen}
+                small
+                nIcon={
+                  <AntdIcon name="contacts" size={20} color={theme.tintColor} />
+                }
+              />
+            </View>
           </View>
+          <RNSButton
+            style={{ width: 'auto' }}
+            bgColor={theme.green}
+            caption="Add Album"
+            onPress={toggleAddAlbumModal}
+            small
+            nIcon={
+              <MaterialIcon name="add" size={20} color={theme.tintColor} />
+            }
+          />
 
           <RNSDropDown
             items={networks || []}
@@ -254,43 +472,54 @@ const RecipientsList = () => {
         </View>
 
         {/* Album Tabs */}
-        {albumList.length > 0 && (
+        {albumList?.filter(al =>
+          filterNetworkId?.length > 0
+            ? filterNetworkId?.includes(al.networkid - 1)
+            : true,
+        ).length > 0 && (
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
             style={styles.tabsContainer}
             contentContainerStyle={styles.tabsContent}
           >
-            {albumList.map(album => (
-              <TouchableOpacity
-                key={album.id}
-                style={[
-                  styles.tab,
-                  {
-                    borderBottomColor:
-                      selectedAlbumId === album.id
-                        ? theme.textColor
-                        : theme.darkGray,
-                  },
-                ]}
-                onPress={() => setSelectedAlbumId(album.id)}
-              >
-                <Text
+            {albumList
+              ?.filter(al =>
+                filterNetworkId?.length > 0
+                  ? filterNetworkId?.includes(al.networkid - 1)
+                  : true,
+              )
+              .map(album => (
+                <TouchableOpacity
+                  key={album.id}
                   style={[
-                    styles.tabText,
+                    styles.tab,
                     {
-                      color:
+                      borderBottomColor:
                         selectedAlbumId === album.id
                           ? theme.textColor
-                          : theme.placeholderColor,
-                      fontWeight: selectedAlbumId === album.id ? '600' : '400',
+                          : theme.darkGray,
                     },
                   ]}
+                  onPress={() => setSelectedAlbumId(album.id)}
                 >
-                  {album.name} ({getAlbumNetworkName(album)})
-                </Text>
-              </TouchableOpacity>
-            ))}
+                  <Text
+                    style={[
+                      styles.tabText,
+                      {
+                        color:
+                          selectedAlbumId === album.id
+                            ? theme.textColor
+                            : theme.placeholderColor,
+                        fontWeight:
+                          selectedAlbumId === album.id ? '600' : '400',
+                      },
+                    ]}
+                  >
+                    {album.name} ({getAlbumNetworkName(album)})
+                  </Text>
+                </TouchableOpacity>
+              ))}
           </ScrollView>
         )}
 
@@ -365,7 +594,6 @@ const RecipientsList = () => {
               )}
               keyExtractor={item => item.id.toString()}
               contentContainerStyle={styles.listContent}
-              // style={{ maxHeight: '70%' }}
               ListEmptyComponent={() => (
                 <View style={styles.emptyState}>
                   <Text style={[styles.emptyText, { color: theme.focusText }]}>
@@ -461,6 +689,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  buttonGroup: {
+    flexDirection: 'row',
+    gap: 8,
+  },
   searchInput: {
     borderRadius: 8,
     paddingHorizontal: 12,
@@ -555,6 +787,65 @@ const styles = StyleSheet.create({
   emptySubText: {
     fontSize: 14,
     textAlign: 'center',
+  },
+  // Add Album Modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    width: '100%',
+    maxWidth: 400,
+    borderRadius: 12,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 6,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  formContainer: {
+    gap: 15,
+  },
+  input: {
+    borderRadius: 6,
+    paddingHorizontal: 12,
+    fontSize: 15,
+    height: 45,
+    borderWidth: 1,
+  },
+  dropdown: {
+    width: '100%',
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    fontSize: 16,
+    borderWidth: 1,
+  },
+  textArea: {
+    height: 80,
+    textAlignVertical: 'top',
+    paddingTop: 12,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 10,
+  },
+  button: {
+    flex: 1,
   },
 });
 
