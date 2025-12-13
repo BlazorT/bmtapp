@@ -535,7 +535,7 @@ export default function LoginScreen(props) {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <View>
+        <>
           <View style={styles.iconimage}>
             <Image source={profilelogo} style={{ width: 300, height: 100 }} />
           </View>
@@ -705,7 +705,7 @@ export default function LoginScreen(props) {
               </TouchableOpacity>
             </View>
           </View>
-          <View style={styles.field}>
+          <View style={styles.Bottomfield}>
             <View style={{ flexDirection: 'row' }}>
               <Text
                 style={[
@@ -725,7 +725,7 @@ export default function LoginScreen(props) {
               </Text>
             </View>
           </View>
-        </View>
+        </>
         <Modal
           animationType="fade"
           transparent={true}
@@ -810,7 +810,17 @@ export default function LoginScreen(props) {
               theme={theme}
             ></SignupWithFacebook> */}
             </View>
-            <View style={styles.Bottomfield}>
+            <View
+              style={[
+                styles.Bottomfield,
+                {
+                  bottom: 120,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  width: '100%',
+                },
+              ]}
+            >
               <TouchableOpacity
                 onPress={() => ClickTerms_Condition()}
                 style={styles.termOfUseView}
@@ -820,7 +830,7 @@ export default function LoginScreen(props) {
                 </Text>
               </TouchableOpacity>
             </View>
-            <View style={styles.Bottomfield}>
+            <View style={[styles.Bottomfield, { bottom: 100, width: '100%' }]}>
               <View style={{ flexDirection: 'row' }}>
                 <Text
                   style={[styles.copyrirgttext, { color: theme.textColor }]}
@@ -860,7 +870,7 @@ const styles = StyleSheet.create({
   },
   termOfUseView: {
     alignItems: 'center',
-    justifyContent: 'space-around',
+    justifyContent: 'center',
     zIndex: 3,
   },
   termOfUse: {
@@ -868,6 +878,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: 'bold',
     color: colors.TextColor,
+    textAlign: 'center',
   },
   DividerRow: {
     flexDirection: 'row',
@@ -877,10 +888,11 @@ const styles = StyleSheet.create({
     marginVertical: 12,
   },
   Bottomfield: {
-    paddingBottom: 12,
     alignItems: 'center',
     justifyContent: 'space-around',
     zIndex: 3,
+    position: 'absolute',
+    bottom: 20,
   },
   fieldView: {
     alignItems: 'center',
@@ -1121,18 +1133,11 @@ const styles = StyleSheet.create({
   ModalMainView: {
     //  minHeight:580,
     //  maxHeight:580,
-    height: Dimensions.get('window').height,
-    // flex: 1,
+    // height: Dimensions.get('window').height,
+    flex: 1,
     paddingTop: 12,
     top: 7 + '%',
     paddingBottom: 22,
-    //position:'absolute',
-    //bottom:1,
-    //backgroundColor:'#1a1c20',
-    backgroundColor: 'white',
-    //backgroundColor:colors.DarkModeApplicationBackgroundColor,
-    //alignItems:'center',
-    //justifyContent:'center'
   },
   centeredView: {
     paddingTop: 38,

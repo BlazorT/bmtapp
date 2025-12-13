@@ -7,6 +7,7 @@ import {
   Image,
   KeyboardAvoidingView,
   Linking,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -565,7 +566,7 @@ export default function VehicalSallerScreen(props) {
               // height: 18,
               // width: 18,
               // margin: 5,
-              transform: [{ scale: 1.2 }],
+              transform: [{ scale: Platform.OS === 'ios' ? 0.8 : 1.2 }],
             }}
             onValueChange={value => setselectterms(value)}
             lineWidth={1.0}

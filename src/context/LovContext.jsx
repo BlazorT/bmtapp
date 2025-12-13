@@ -106,8 +106,7 @@ export const LOVProvider = ({ children }) => {
       >
         <Image source={profilelogo} style={{ width: 300, height: 100 }} />
         <Text style={styles.errorText}>
-          Something went wrong fetching LOVs:{' '}
-          {error?.message || JSON.stringify(error)}
+          Something went wrong fetching LOVs, please try again later!
         </Text>
         <Button
           style={{ width: '50%', marginTop: 10 }}
