@@ -41,3 +41,4 @@ export const GET_ADDRESS_LIST = (query, countryCode) =>
 
 export const MIN_AGE = 18;
 export const MAX_AGE = 65;
+export const EASYPAISA_EXPIRY_TIME = 5;

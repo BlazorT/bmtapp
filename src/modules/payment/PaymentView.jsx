@@ -8,6 +8,7 @@ import servicesettings from '../dataservices/servicesettings';
 import PaymentType from '../../components/PaymentType';
 import EasyPaisaPay from '../../components/EasyPaisaPay';
 import RNSButton from '../../components/Button';
+import EasypaisaRedirect from '../../components/EasypaisaRedirect';
 
 const PaymentView = ({
   onPayComplete,
@@ -17,15 +18,24 @@ const PaymentView = ({
   setSelectedGetway,
   setEasypaisaOption,
   setEasyPaisaMobileNumber,
+  toPay,
 }) => {
   const theme = useTheme();
 
   const [gateways, setGateways] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isEPRedirectOpen, setIsEPRedirectOpen] = useState(false);
 
   useEffect(() => {
     fetchPaymentGateways();
   }, []);
+
+  const onEPRedirectClose = ref => {
+    setIsEPRedirectOpen(false);
+    if (ref) {
+      onPayComplete(ref);
+    }
+  };
 
   const fetchPaymentGateways = async () => {
     try {
@@ -119,9 +129,16 @@ const PaymentView = ({
             easyPaisaMobileNumber,
           }}
           handleOrderDetail={handleOrderDetail}
+          setIsEPRedirectOpen={setIsEPRedirectOpen}
           //   cartTotal={cartTotal}
         />
       )}
+      <EasypaisaRedirect
+        isOpen={isEPRedirectOpen}
+        onClose={onEPRedirectClose}
+        onlinePaymentType={selectedGateway}
+        toPay={toPay}
+      />
       {selectedGateway?.id && gateways?.length > 1 && (
         <RNSButton
           style={{

@@ -7,7 +7,11 @@ import RNSButton from './Button';
 import Divider from './Divider';
 import { TextInput } from '.';
 
-const EasyPaisaPay = ({ orderDetail, handleOrderDetail, cartTotal }) => {
+const EasyPaisaPay = ({
+  orderDetail,
+  handleOrderDetail,
+  setIsEPRedirectOpen,
+}) => {
   const { onlinePaymentType, easypaisaOption } = orderDetail;
   const navigation = useNavigation();
   const theme = useTheme();
@@ -85,11 +89,7 @@ const EasyPaisaPay = ({ orderDetail, handleOrderDetail, cartTotal }) => {
             style={{ width: '100%', marginTop: 10 }}
             bgColor={theme.buttonBackColor}
             caption="Easy Paisa Checkout"
-            // onPress={() =>
-            //   navigation.navigate('EPRedirect', {
-            //     cartTotal,
-            //   })
-            // }
+            onPress={() => setIsEPRedirectOpen(true)}
             nIcon={
               <FontAwesome
                 name={'external-link'}

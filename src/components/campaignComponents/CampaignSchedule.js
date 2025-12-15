@@ -408,12 +408,13 @@ const CampaignSchedule = ({
     });
   };
 
+  const toPay = campaignInfo.schedules.reduce((a, b) => a + b.budget, 0);
   const easyPaisaQuickPay = async () => {
     const orderId =
       `${keepOnlyAlphanumeric((Number(user.orgId) ?? '') + 'RBMT')}` +
       'D' +
       moment().format('YYYYMMDDHHmmss');
-    const transactionAmount = parseFloat((1)?.toFixed(2));
+    const transactionAmount = parseFloat(toPay?.toFixed(2));
 
     const xmlBody = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
     xmlns:dto="http://dto.transaction.partner.pg.systems.com/"
@@ -631,6 +632,7 @@ const CampaignSchedule = ({
             setEasyPaisaMobileNumber={setEasyPaisaMobileNumber}
             setEasypaisaOption={setEasypaisaOption}
             setSelectedGetway={setSelectedGetway}
+            toPay={toPay}
           />
           <View
             style={{
