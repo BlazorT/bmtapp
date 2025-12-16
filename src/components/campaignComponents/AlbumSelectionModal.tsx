@@ -147,7 +147,6 @@ const AlbumSelectionModal: React.FC<Props> = ({
         Toast.show('Something went wrong, please try again', 1000);
         return;
       }
-
       const res = await response.json();
       setRecipients(res?.data || []);
     } catch (error) {

@@ -1,27 +1,35 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { useTheme } from '../../hooks/useTheme';
-import AddSchedule from './AddSchedule';
-import Toast from 'react-native-simple-toast';
-import ScheduleList from './ScheduleList';
-import RNSButton from '../Button';
-import { useUser } from '../../hooks/useUser';
-import { useSelector } from 'react-redux';
-import moment from 'moment';
-import servicesettings from '../../modules/dataservices/servicesettings';
-import { useNavigation } from '@react-navigation/native';
 import notifee, { AndroidImportance } from '@notifee/react-native';
+import { useNavigation } from '@react-navigation/native';
+import moment from 'moment';
+import React, { useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  Modal,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { AppLifecycle } from 'react-native-applifecycle';
+import Toast from 'react-native-simple-toast';
 import {
   CAMPAIGN_INTERESTS,
   GENDER_LIST,
   MAX_AGE,
   MIN_AGE,
 } from '../../constants';
-import PaymentView from '../../modules/payment/PaymentView';
 import {
   extractTagValue,
   keepOnlyAlphanumeric,
 } from '../../helper/dateFormatter';
+import { useJazzCash } from '../../hooks/useJazzCash';
+import { useTheme } from '../../hooks/useTheme';
+import { useUser } from '../../hooks/useUser';
+import servicesettings from '../../modules/dataservices/servicesettings';
+import PaymentView from '../../modules/payment/PaymentView';
+import RNSButton from '../Button';
+import JCPaymentConfirm from '../JCPaymentConfirm';
+import AddSchedule from './AddSchedule';
+import ScheduleList from './ScheduleList';
 
 const CampaignSchedule = ({
   campaignInfo,
@@ -35,12 +43,19 @@ const CampaignSchedule = ({
 }) => {
   const theme = useTheme();
   const { user } = useUser();
-  const lovs = useSelector(state => state.lovs).lovs;
   const navigation = useNavigation();
+  const { payJC, jcLoading } = useJazzCash();
 
   const [selectedGateway, setSelectedGetway] = useState(null);
   const [easypaisaOption, setEasypaisaOption] = useState('');
   const [easyPaisaMobileNumber, setEasyPaisaMobileNumber] = useState('');
+
+  const [jazzCashMobileNumber, setJazzCashMobileNumber] = useState('');
+  const [jazzCashNic, setJazzCashNic] = useState('');
+  const [jazzCashOption, setJazzCashOption] = useState('');
+  const [jazzCashTxnRefNo, setJazzCashTxnRefNo] = useState('');
+  const [easypaisaOrderId, setEasypaisaOrderId] = useState('');
+  const [showJCPayment, setShowJCPayment] = useState(false);
 
   const [scheduleTab, setScheduleTab] = React.useState(0);
   const [isUpdate, setIsUpdate] = React.useState(false);
@@ -221,10 +236,10 @@ const CampaignSchedule = ({
     );
     setspinner(false);
     console.log({ response });
-    if (!response.ok) {
-      Toast.show('Something went wrong, please try again');
-      return;
-    }
+    // if (!response.ok) {
+    //   Toast.show('Something went wrong, please try again');
+    //   return;
+    // }
     const res = await response.json();
     console.log('response', res);
     if (res.status == false || res.status == '408' || res.status == '400') {
@@ -409,6 +424,7 @@ const CampaignSchedule = ({
   };
 
   const toPay = campaignInfo.schedules.reduce((a, b) => a + b.budget, 0);
+
   const easyPaisaQuickPay = async () => {
     const orderId =
       `${keepOnlyAlphanumeric((Number(user.orgId) ?? '') + 'RBMT')}` +
@@ -441,6 +457,7 @@ const CampaignSchedule = ({
        </soapenv:Body>
     </soapenv:Envelope>
     `;
+    setEasypaisaOrderId(orderId);
     console.log({ xmlBody });
     try {
       setspinner(true);
@@ -472,8 +489,131 @@ const CampaignSchedule = ({
       }
     } catch (e) {
       Toast.show(e?.message || 'Something went wrong, try again later!');
+      await easyPaisaCheckStatus(orderId);
     } finally {
       setspinner(false);
+    }
+  };
+
+  const easyPaisaCheckStatus = async orderId => {
+    // console.log('first', selectedGateway);
+    const xmlBody = `
+    <soapenv:Envelope
+      xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+      xmlns:dto="http://dto.transaction.partner.pg.systems.com/"
+      xmlns:dto1="http://dto.common.pg.systems.com/"
+    >
+      <soapenv:Header />
+      <soapenv:Body>
+        <dto:inquireTransactionRequestType>
+          <dto1:username>${selectedGateway?.merchantAccountId}</dto1:username>
+          <dto1:password>${selectedGateway?.primaryKey}</dto1:password>
+          <orderId>${orderId}</orderId>
+          <accountNum>159130486</accountNum>
+        </dto:inquireTransactionRequestType>
+      </soapenv:Body>
+    </soapenv:Envelope>
+  `;
+
+    // console.log({ xmlBody });
+    try {
+      setspinner(true);
+      const res = await fetch(
+        selectedGateway?.url ??
+          'https://easypay.easypaisa.com.pk/easypay-service/PartnerBusinessService',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'text/xml',
+            SOAPAction: 'inquireTransactionResponseType',
+            // Credentials: `${encodeBase64('znawazch@gmail.com:Blazor@025')}`,
+          },
+          body: xmlBody,
+        },
+      );
+      const data = await res.text();
+      const responseCode = extractTagValue(data, 'ns2:responseCode');
+      const transactionStatus = extractTagValue(data, 'transactionStatus');
+      if (responseCode === '0000' && transactionStatus) {
+        if (transactionStatus === 'PAID') {
+          Toast.show('Payment successful');
+          addSchedule(btoa(data));
+        }
+        if (transactionStatus === 'FAILED') {
+          Toast.show(
+            'Payment is not success, possible reasons, account holder acceptance is not done or easy paisa account does not exist!',
+          );
+          setEasypaisaOrderId('');
+        }
+        if (transactionStatus === 'PENDING') {
+          setspinner(true);
+          return;
+          // Toast.show(
+          //   'Payment is not success, possible reasons, account holder acceptance is not done or easy paisa account does not exist!',
+          // );
+          // setEasypaisaOrderId('');
+        }
+      } else if (responseCode) {
+        Toast.show(
+          'Payment is not success, possible reasons, account holder acceptance is not done or easy paisa account does not exist!',
+        );
+        return;
+      }
+    } catch (e) {
+      Toast.show(e?.message || 'Something went wrong, try again later!');
+    } finally {
+      setspinner(false);
+    }
+  };
+
+  const makeJCMwalltet = async () => {
+    const now = moment().local();
+    const txnDateTime = now.format('YYYYMMDDHHmmss');
+
+    // Generate TxnRefNo (first three letters of domain + timestamp)
+    const txnRef = `BMT${txnDateTime}`;
+    setJazzCashTxnRefNo(txnRef);
+
+    const jcBody = {
+      amount: parseInt(toPay?.toFixed(2) * 100)?.toString(), // will be sent as 200 (Rs 2.00)
+      mobile: jazzCashMobileNumber,
+      description: 'mobile',
+      billRef:
+        `${keepOnlyAlphanumeric((Number(user.orgId) ?? '') + 'RBMT')}` +
+        'D' +
+        moment().format('YYYYMMDDHHmmss'),
+      cnic: jazzCashNic,
+      ppmpf_1: keepOnlyAlphanumeric(user?.email ?? ''),
+      txnRef,
+      ppmpf_2: '',
+    };
+    const res = await payJC(jcBody);
+    console.log({ res });
+    if (res) {
+      const filteredResponse = {
+        pp_TxnType: res.pp_TxnType || '',
+        pp_Amount: res.pp_Amount || '',
+        pp_BillReference: res.pp_BillReference || '',
+        pp_ResponseCode: res.pp_ResponseCode || '',
+        pp_RetreivalReferenceNo: res.pp_RetreivalReferenceNo || '',
+        pp_SubMerchantID: res.pp_SubMerchantID || '',
+        pp_TxnCurrency: res.pp_TxnCurrency || '',
+        pp_TxnDateTime: res.pp_TxnDateTime || '',
+        pp_TxnRefNo: res.pp_TxnRefNo || '',
+        pp_MobileNumber: res.pp_MobileNumber || '',
+        pp_CNIC: res.pp_CNIC || '',
+        pp_SecureHash: res.pp_SecureHash || '',
+      };
+      if (res?.pp_ResponseCode === '157') {
+        // toggleJCPayment();
+        setShowJCPayment(true);
+      } else if (res?.pp_ResponseCode === '000') {
+        Toast.show(res?.pp_ResponseMessage);
+        addSchedule(1, btoa(JSON.stringify(filteredResponse)));
+      } else if (res?.pp_ResponseMessage) {
+        setJazzCashTxnRefNo('');
+        Toast.show(res?.pp_ResponseMessage);
+      }
     }
   };
 
@@ -493,7 +633,46 @@ const CampaignSchedule = ({
       }
       await easyPaisaQuickPay();
     }
+    if (selectedGateway?.name?.toLowerCase() == 'jazzcash') {
+      if (jazzCashOption !== 'wallet') {
+        Toast.show('Select a JazzCash payment mode to continue.');
+        return;
+      }
+      if (jazzCashMobileNumber === '' || jazzCashMobileNumber.length < 10) {
+        Toast.show('Enter a valid JazzCash account number');
+        return false;
+      }
+      if (jazzCashNic === '' || jazzCashNic.length < 6) {
+        Toast.show('Please enter at least 6 digits of your cnic');
+        return false;
+      }
+      await makeJCMwalltet();
+    }
   };
+
+  React.useEffect(() => {
+    let isMounted = true;
+
+    const listener = AppLifecycle.addEventListener('change', state => {
+      if (!isMounted) return;
+
+      if (state === 'active') {
+        console.log({ jazzCashTxnRefNo, easypaisaOrderId });
+        console.log('App came to foreground');
+        if (jazzCashTxnRefNo && jazzCashTxnRefNo !== '') {
+          setShowJCPayment(true);
+        }
+        // if (easypaisaOrderId && easypaisaOrderId !== '') {
+        //   // easyPaisaCheckStatus();
+        // }
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      listener.remove();
+    };
+  }, []);
   // console.log({ user });
   return (
     <View style={{ marginTop: 5 }}>
@@ -624,6 +803,57 @@ const CampaignSchedule = ({
       )}
       {scheduleTab === 2 && (
         <View style={{ marginTop: 10 }}>
+          <Modal visible={jcLoading} backdropColor={'transparent'}>
+            <View
+              style={{
+                backgroundColor: theme.modalBackColor,
+                paddingHorizontal: 15,
+                paddingVertical: 15,
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '90%',
+                borderRadius: 12,
+                shadowColor: theme.textColor,
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 10,
+                elevation: 5,
+                alignSelf: 'center',
+              }}
+            >
+              <Text
+                style={{
+                  color: theme.textColor,
+                  fontSize: 22,
+                  fontWeight: '700',
+                }}
+              >
+                Jazz Cash
+              </Text>
+              <View style={{ width: 200 }}>
+                <ActivityIndicator
+                  color={theme.buttonBackColor}
+                  style={{
+                    transform: [{ scaleX: 5 }, { scaleY: 5 }],
+                    marginVertical: 50,
+                  }}
+                />
+              </View>
+              <Text style={{ color: theme.textColor, fontSize: 18 }}>
+                Confirming payment it may take some time, might be upto 10
+                min....
+              </Text>
+              <Text
+                style={{
+                  color: theme.buttonBackColor,
+                  fontSize: 18,
+                }}
+              >
+                Please approve the payment request in your JazzCash app to
+                complete your order.
+              </Text>
+            </View>
+          </Modal>
           <PaymentView
             onPayComplete={addSchedule}
             selectedGateway={selectedGateway}
@@ -632,7 +862,20 @@ const CampaignSchedule = ({
             setEasyPaisaMobileNumber={setEasyPaisaMobileNumber}
             setEasypaisaOption={setEasypaisaOption}
             setSelectedGetway={setSelectedGetway}
+            jazzCashMobileNumber={jazzCashMobileNumber}
+            jazzCashNic={jazzCashNic}
+            jazzCashOption={jazzCashOption}
+            setJazzCashMobileNumber={setJazzCashMobileNumber}
+            setJazzCashNic={setJazzCashNic}
+            setJazzCashOption={setJazzCashOption}
             toPay={toPay}
+          />
+          <JCPaymentConfirm
+            isVisible={showJCPayment}
+            toggleModal={() => setShowJCPayment(prev => !prev)}
+            setShowJCPayment={setShowJCPayment}
+            onCheckout={addSchedule}
+            jazzCashTxnRefNo={jazzCashTxnRefNo}
           />
           <View
             style={{
@@ -662,5 +905,3 @@ const CampaignSchedule = ({
 };
 
 export default CampaignSchedule;
-
-const styles = StyleSheet.create({});

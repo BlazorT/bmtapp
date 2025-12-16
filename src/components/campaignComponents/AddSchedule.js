@@ -16,8 +16,8 @@ import { useTheme } from '../../hooks/useTheme';
 import { useUser } from '../../hooks/useUser';
 import RNSButton from '../Button';
 import RNSDropDown from '../Dropdown';
-import CampaignNetwork from './CampaignNetwork';
 import AlbumSelectionModal from './AlbumSelectionModal';
+import CampaignNetwork from './CampaignNetwork';
 
 const AddSchedule = ({
   campaignInfo,
@@ -75,6 +75,7 @@ const AddSchedule = ({
     scheduleList.days,
     scheduleList.intervalTypeId,
     scheduleList.interval,
+    scheduleList.albums,
     scheduleList?.CompaignNetworks?.length,
   ]);
 
@@ -319,10 +320,16 @@ const AddSchedule = ({
         // check if this specific network is special
         const isSpecial = [1, 2, 3].includes(item.networkId);
 
+        const findAlbum = prevState?.albums?.find(
+          al => al.networkid === item.networkId,
+        );
         // recipients for this network
-        let recipientsForNetwork =
-          recipients?.filter(r => r.networkId === item.networkId) || [];
-
+        let recipientsForNetwork = findAlbum
+          ? recipients?.filter(
+              r =>
+                r.networkId === item.networkId && r.albumid === findAlbum?.id,
+            )
+          : [];
         // if NOT special → force length = 1
         if (!isSpecial) {
           recipientsForNetwork = [1];

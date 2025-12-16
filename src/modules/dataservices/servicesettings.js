@@ -8,6 +8,7 @@ let servicesettings = {
   datefrom: datefrom,
   payment_gateways: 'https://hotmealzndealz.com/api/blazorApi/paymentgateways',
   gateway_key: '!09876RoZaLb',
+  // payment_service: 'http://192.168.18.203:5000',
   payment_service: 'http://72.61.77.197:5000',
   baseuri: 'https://bmt.blazortech.com/',
   Imagebaseuri: 'https://bmt.blazortech.com/',

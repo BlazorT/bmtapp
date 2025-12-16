@@ -9,6 +9,8 @@ import PaymentType from '../../components/PaymentType';
 import EasyPaisaPay from '../../components/EasyPaisaPay';
 import RNSButton from '../../components/Button';
 import EasypaisaRedirect from '../../components/EasypaisaRedirect';
+import JazzCashPay from '../../components/JazzCashPay';
+import JazzCashRedirect from '../../components/JazzCashRedirect';
 
 const PaymentView = ({
   onPayComplete,
@@ -18,6 +20,12 @@ const PaymentView = ({
   setSelectedGetway,
   setEasypaisaOption,
   setEasyPaisaMobileNumber,
+  jazzCashMobileNumber,
+  jazzCashNic,
+  jazzCashOption,
+  setJazzCashMobileNumber,
+  setJazzCashNic,
+  setJazzCashOption,
   toPay,
 }) => {
   const theme = useTheme();
@@ -25,6 +33,7 @@ const PaymentView = ({
   const [gateways, setGateways] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isEPRedirectOpen, setIsEPRedirectOpen] = useState(false);
+  const [isJCRedirectOpen, setIsJCRedirectOpen] = useState(false);
 
   useEffect(() => {
     fetchPaymentGateways();
@@ -32,6 +41,13 @@ const PaymentView = ({
 
   const onEPRedirectClose = ref => {
     setIsEPRedirectOpen(false);
+    if (ref) {
+      onPayComplete(ref);
+    }
+  };
+
+  const onJCRedirectClose = ref => {
+    setIsJCRedirectOpen(false);
     if (ref) {
       onPayComplete(ref);
     }
@@ -63,6 +79,7 @@ const PaymentView = ({
       }
 
       const res = await response.json();
+      console.log({ res });
       if (res?.status && Array.isArray(res?.data)) {
         const filterGateways = res?.data?.filter(d => d?.status == 1);
         setGateways(filterGateways);
@@ -86,6 +103,15 @@ const PaymentView = ({
     }
     if (key === 'easyPaisaMobileNumber') {
       setEasyPaisaMobileNumber(value);
+    }
+    if (key === 'jazzCashMobileNumber') {
+      setJazzCashMobileNumber(value);
+    }
+    if (key === 'jazzCashNic') {
+      setJazzCashNic(value);
+    }
+    if (key === 'jazzCashOption') {
+      setJazzCashOption(value);
     }
   };
 
@@ -133,9 +159,28 @@ const PaymentView = ({
           //   cartTotal={cartTotal}
         />
       )}
+      {selectedGateway?.name?.toLowerCase() == 'jazzcash' && (
+        <JazzCashPay
+          orderDetail={{
+            onlinePaymentType: selectedGateway,
+            jazzCashNic,
+            jazzCashMobileNumber,
+            jazzCashOption,
+          }}
+          handleOrderDetail={handleOrderDetail}
+          setIsJCRedirectOpen={setIsJCRedirectOpen}
+          //   cartTotal={cartTotal}
+        />
+      )}
       <EasypaisaRedirect
         isOpen={isEPRedirectOpen}
         onClose={onEPRedirectClose}
+        onlinePaymentType={selectedGateway}
+        toPay={toPay}
+      />
+      <JazzCashRedirect
+        isOpen={isJCRedirectOpen}
+        onClose={onJCRedirectClose}
         onlinePaymentType={selectedGateway}
         toPay={toPay}
       />
