@@ -28,6 +28,7 @@ import {
   MIN_AGE,
 } from '../../constants';
 import CampaignAddress from './CampaignAdress';
+import Icon from 'react-native-vector-icons/MaterialIcons'; // or your preferred icon set
 
 const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex }) => {
   const theme = useTheme();
@@ -38,6 +39,7 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex }) => {
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
   const [showCancelAlert, setShowCancelAlert] = useState(false);
+  const [inputValue, setInputValue] = useState('');
 
   const statusRadioBtns = [
     { value: 1, label: 'Active' },
@@ -70,7 +72,42 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex }) => {
     setIndex(1);
   };
 
-  // console.log({ campaignInfo });
+  const getHashtagsArray = () => {
+    if (!campaignInfo.hashtag) return [];
+    return campaignInfo.hashtag.split(',').filter(tag => tag.trim() !== '');
+  };
+
+  const handleTextChange = text => {
+    setInputValue(text);
+
+    // Check if user entered a comma
+    if (text.endsWith(',')) {
+      const newTag = text.slice(0, -1).trim();
+
+      if (newTag) {
+        // Get existing hashtags
+        const existingTags = getHashtagsArray();
+
+        // Add new tag if it doesn't exist
+        if (!existingTags.includes(newTag)) {
+          const updatedHashtags = [...existingTags, newTag].join(',');
+          handleCampaignInfo('hashtag', updatedHashtags);
+        }
+      }
+
+      // Clear input
+      setInputValue('');
+    }
+  };
+
+  const removeHashtag = tagToRemove => {
+    const existingTags = getHashtagsArray();
+    const updatedTags = existingTags.filter(tag => tag !== tagToRemove);
+    handleCampaignInfo('hashtag', updatedTags.join(','));
+  };
+
+  const hashtags = getHashtagsArray();
+
   return (
     <View style={{ width: '100%', marginTop: 10, rowGap: 10 }}>
       <Alert
@@ -138,23 +175,48 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex }) => {
         }}
         textAlignVertical="top"
       />
-      <TextInput
-        placeholder="Hashtag"
-        placeholderTextColor={theme.placeholderColor}
-        value={campaignInfo.hashtag}
-        onChangeText={value => handleCampaignInfo('hashtag', value)}
-        style={{
-          width: '100%',
-          backgroundColor: theme.inputBackColor,
-          color: theme.textColor,
-          borderRadius: 6,
-          paddingHorizontal: 10,
-          fontSize: 16,
-          borderColor: '#ff00003d',
-          borderWidth: 1,
-          height: 45,
-        }}
-      />
+      <View style={styles.container}>
+        {/* Display hashtags as chips */}
+        {hashtags.length > 0 && (
+          <View style={styles.tagsContainer}>
+            {hashtags.map((tag, index) => (
+              <View
+                key={index}
+                style={[styles.tag, { backgroundColor: theme.inputBackColor }]}
+              >
+                <Text style={[styles.tagText, { color: theme.textColor }]}>
+                  #{tag}
+                </Text>
+                <TouchableOpacity
+                  onPress={() => removeHashtag(tag)}
+                  style={styles.removeButton}
+                >
+                  <Icon name="close" size={16} color={theme.textColor} />
+                </TouchableOpacity>
+              </View>
+            ))}
+          </View>
+        )}
+
+        {/* Input field */}
+        <TextInput
+          placeholder="Hashtag (type and press comma)"
+          placeholderTextColor={theme.placeholderColor}
+          value={inputValue}
+          onChangeText={handleTextChange}
+          style={{
+            width: '100%',
+            backgroundColor: theme.inputBackColor,
+            color: theme.textColor,
+            borderRadius: 6,
+            paddingHorizontal: 10,
+            fontSize: 16,
+            borderColor: '#ff00003d',
+            borderWidth: 1,
+            height: 45,
+          }}
+        />
+      </View>
       <TouchableOpacity
         style={{
           flexDirection: 'row',
@@ -330,7 +392,7 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex }) => {
           <Text style={{ color: theme.textColor, fontSize: 17 }}>
             {campaignInfo.campaignStartDate
               ? moment(campaignInfo.campaignStartDate).format('DD-MM-YYYY')
-              : 'Campaign Start'}
+              : 'Start Time'}
           </Text>
         </TouchableOpacity>
         <DateTimePicker
@@ -401,7 +463,7 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex }) => {
           <Text style={{ color: theme.textColor, fontSize: 17 }}>
             {campaignInfo.campaignEndDate
               ? moment(campaignInfo.campaignEndDate).format('DD-MM-YYYY')
-              : 'Campaign End'}
+              : 'End Time'}
           </Text>
           <DateTimePicker
             isVisible={showEndDatePicker}
@@ -546,5 +608,31 @@ const styles = StyleSheet.create({
   railSelected: {
     height: 3,
     backgroundColor: 'red',
+  },
+  tagsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: 8,
+    gap: 8,
+  },
+  container: {
+    width: '100%',
+  },
+  tag: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 6,
+    paddingLeft: 12,
+    paddingRight: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#ff00003d',
+  },
+  tagText: {
+    fontSize: 14,
+    marginRight: 4,
+  },
+  removeButton: {
+    padding: 2,
   },
 });

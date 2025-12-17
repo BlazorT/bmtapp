@@ -2,6 +2,7 @@ import React from 'react';
 import {
   Dimensions,
   Image,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -29,15 +30,52 @@ export default function AboutScreen(props) {
           source={require('../../../assets/images/BDMT.png')}
         />
       </View>
-      <View style={{ paddingBottom: 5 }}>
-        <Text style={[styles.headertitle, { color: theme.textColor }]}>
-          Who We Are?
+
+      <ScrollView
+        style={{
+          height: isTablet ? '20%' : '50%',
+        }}
+        contentContainerStyle={{
+          paddingBottom: 60,
+        }}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={{ rowGap: 6 }}>
+          <Text style={[styles.headertitle, { color: theme.textColor }]}>
+            Who We Are?
+          </Text>
+          <Text style={[styles.header, { color: theme.textColor }]}>
+            Blazor Media Toolkit is an advertisement app
+          </Text>
+          <Text style={{ color: theme.textColor, textAlign: 'center' }}>
+            {'Version ' + (AppVersion == '' ? '2.5' : AppVersion)}
+          </Text>
+        </View>
+        <Text
+          ellipsizeMode="tail"
+          style={[
+            styles.Paragraph,
+            {
+              textAlign: isTablet ? 'auto' : 'justify',
+              lineHeight: fontSize * 1.7,
+              letterSpacing: 0.1,
+              fontSize, // Apply responsive font size
+              color: theme.textColor,
+              marginTop: 20,
+            },
+          ]}
+        >
+          Blazor Media Toolkit Campaign plays nice with others and integrates
+          with over 700 apps and services like whatsapp, facebook, tweeter,
+          messenger, youtube etc. Effective, seamless and continued presence in
+          global world to increase product rating and sales. BMT can run media
+          compaign on the following platforms, whatsapp, sms, email, facebook,
+          linkedIn, twitter, Instagram. Its powered with integrable plugins.
         </Text>
-        <Text style={[styles.header, { color: theme.textColor }]}>
-          BMT is an advertisement app
-        </Text>
-      </View>
-      <View style={styles.BottomView}>
+      </ScrollView>
+      <View
+        style={[styles.BottomView, { backgroundColor: theme.backgroundColor }]}
+      >
         <Text style={{ color: theme.textColor, fontSize: 22 }}>
           ✆{' '}
           <TouchableOpacity>
@@ -51,33 +89,6 @@ export default function AboutScreen(props) {
           www.blazortech.com
         </Text>
       </View>
-      <View style={{ paddingBottom: 5 }}>
-        <Text style={{ color: theme.textColor }}>
-          {'Version ' + (AppVersion == '' ? '2.5' : AppVersion)}
-        </Text>
-      </View>
-      <View style={{ paddingBottom: 5 }}>
-        <Text
-          ellipsizeMode="tail"
-          style={[
-            styles.Paragraph,
-            {
-              textAlign: isTablet ? 'auto' : 'justify',
-              lineHeight: fontSize * 1.7,
-              letterSpacing: 0.1,
-              fontSize, // Apply responsive font size
-              color: theme.textColor,
-            },
-          ]}
-        >
-          Blazor Media Toolkit Campaign plays nice with others and integrates
-          with over 700 apps and services like whatsapp, facebook, tweeter,
-          messenger, youtube etc. Effective, seamless and continued presence in
-          global world to increase product rating and sales. BMT can run media
-          compaign on the following platforms, whatsapp, sms, email, facebook,
-          linkedIn, twitter, Instagram. Its powered with integrable plugins.
-        </Text>
-      </View>
     </View>
   );
 }
@@ -86,10 +97,9 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     textAlign: 'center',
-    paddingHorizontal: 15,
-    flex: 1,
+    paddingHorizontal: 12,
+    flexGrow: 1,
     backgroundColor: 'white',
-    width: Dimensions.get('window').width,
   },
   componentsSection: {
     justifyContent: 'center',
@@ -103,8 +113,7 @@ const styles = StyleSheet.create({
     marginTop: 5 + '%',
   },
   logo: {
-    height: 180,
-    width: 380,
+    height: 150,
     resizeMode: 'contain',
   },
   headertitle: {
@@ -113,14 +122,12 @@ const styles = StyleSheet.create({
     color: colors.TextColorOther,
     fontSize: 22,
     fontWeight: 'bold',
-    marginTop: 10 + '%',
   },
   header: {
     fontFamily: fonts.primaryRegular,
     textAlign: 'center',
     color: colors.TextColorOther,
     fontSize: 20,
-    marginTop: 1 + '%',
   },
   WatchAnywhere: {
     fontFamily: fonts.primaryRegular,
@@ -139,7 +146,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     alignItems: 'center',
     position: 'absolute',
-    bottom: 10,
+    paddingBottom: 5,
+    bottom: 0,
+    width: '100%',
   },
   ContactNo: {
     marginTop: 10,

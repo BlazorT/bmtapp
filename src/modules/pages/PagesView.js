@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   Dimensions,
   Image,
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -25,6 +26,7 @@ import servicesettings from '../dataservices/servicesettings';
 import { isAdminOrSuperAdmin } from '../home/HomeView';
 import moment from 'moment';
 import { useNavigation } from '@react-navigation/native';
+import { ScrollView } from 'react-native';
 
 export default function PagesScreen(props) {
   const theme = useTheme();
@@ -200,8 +202,11 @@ export default function PagesScreen(props) {
     setVisible(true);
   };
   return (
-    <View
-      style={[styles.container, { backgroundColor: theme.backgroundColor }]}
+    <ScrollView
+      contentContainerStyle={[
+        styles.container,
+        { backgroundColor: theme.backgroundColor },
+      ]}
     >
       <Spinner
         visible={spinner}
@@ -273,13 +278,13 @@ export default function PagesScreen(props) {
             ),
         )}
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     paddingTop: 10,
     alignItems: 'flex-start',
     justifyContent: 'center',
@@ -329,6 +334,8 @@ const styles = StyleSheet.create({
   itemText: {
     color: colors.NavbarTextColor,
     fontFamily: fonts.primary,
+    marginTop: 4,
+    fontSize: Platform.OS === 'ios' ? 12 : 12,
   },
   itemImage: {
     height: 50,

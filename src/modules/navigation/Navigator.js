@@ -26,6 +26,7 @@ import iconHome from '../../../assets/images/drawer/home.png';
 import mycampaignIcon from '../../../assets/images/drawer/mycampaign.png';
 import iconAbout from '../../../assets/images/drawer/pencil.png';
 import Logout from '../../../assets/images/pages/Logout.png';
+import Login from '../../../assets/images/pages/login.png';
 import Alert from '../../components/Alert';
 import { useTheme } from '../../hooks/useTheme';
 import { useUser } from '../../hooks/useUser';
@@ -293,13 +294,21 @@ function CustomDrawerContent(props) {
         icon: Logout,
         condition: isAuthenticated,
       },
+      {
+        name: 'Log In',
+        icon: Login,
+        condition: !isAuthenticated,
+      },
     ],
     [isAuthenticated, user?.roleId],
   );
 
   const handleMenuPress = useCallback(
     itemName => {
-      if (itemName === 'Unsubscribe') {
+      if (itemName === 'Log In') {
+        global.SignUp_Login = 1;
+        navigate('Login');
+      } else if (itemName === 'Unsubscribe') {
         setUnsubscribeAlertVisible(true);
       } else if (itemName === 'Log Out') {
         setLogoutAlertVisible(true);

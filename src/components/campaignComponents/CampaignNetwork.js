@@ -27,16 +27,16 @@ const CampaignNetwork = ({
   const nextStep = () => {
     setIndex(2);
   };
-  const toRecipients = () => navigation.navigate('Recipients');
+  // const toRecipients = () => navigation.navigate('Recipients');
   return (
     <View>
-      <RNSButton
+      {/* <RNSButton
         caption="Recipients"
         onPress={toRecipients}
         bgColor={theme.buttonBackColor}
         style={{ marginTop: 5 }}
         small
-      />
+      /> */}
       {/* <RecipientsList isOpen={isShowRecipients} onClose={toggleRecipients} /> */}
       <ScrollView contentContainerStyle={{ rowGap: 10, marginTop: 10 }}>
         {networks.length > 0 &&

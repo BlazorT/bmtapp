@@ -540,6 +540,16 @@ export default function LoginScreen(props) {
             <Image source={profilelogo} style={{ width: 300, height: 100 }} />
           </View>
           <View style={styles.field}>
+            <Text
+              style={{
+                color: theme.textColor,
+                fontWeight: '700',
+                fontSize: 18,
+                textAlign: 'left',
+              }}
+            >
+              Email / Username
+            </Text>
             <TextInput
               placeholderTextColor={theme.placeholderColor}
               style={[
@@ -559,6 +569,17 @@ export default function LoginScreen(props) {
               keyboardAppearance={'dark'}
               maxLength={40}
             />
+            <Text
+              style={{
+                color: theme.textColor,
+                fontWeight: '700',
+                fontSize: 18,
+                textAlign: 'left',
+                marginTop: 10,
+              }}
+            >
+              Password
+            </Text>
             <View
               style={[
                 customestylePassword,
@@ -664,7 +685,7 @@ export default function LoginScreen(props) {
           FacebookmodalVisible={FacebookmodalVisible}
           theme={theme}
         ></ContinueWithFacebook> */}
-          <View style={styles.DividerRow}>
+          {/* <View style={styles.DividerRow}>
             <View
               style={{
                 flex: 1,
@@ -692,7 +713,7 @@ export default function LoginScreen(props) {
                 backgroundColor: colors.borderColorOr,
               }}
             />
-          </View>
+          </View> */}
           <View style={styles.fieldView}>
             <View style={styles.MainView}>
               <TouchableOpacity
@@ -864,7 +885,7 @@ const styles = StyleSheet.create({
     // justifyContent: 'center',
   },
   field: {
-    alignItems: 'center',
+    // alignItems: 'center',
     justifyContent: 'space-around',
     zIndex: 3,
   },
@@ -1175,9 +1196,9 @@ const styles = StyleSheet.create({
   sectionStyle: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 10,
     height: 46,
     fontSize: 16,
+    marginTop: 10,
     paddingLeft: 5,
     color: colors.TextBoxColor,
     width: Dimensions.get('window').width - 50,
@@ -1191,8 +1212,9 @@ const styles = StyleSheet.create({
   sectionStyleOnFocus: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 10,
     height: 46,
+    marginTop: 10,
+
     paddingLeft: 5,
     fontSize: 16,
     color: colors.TextBoxColor,

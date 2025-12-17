@@ -77,7 +77,7 @@ const RNSDropDown = props => {
             {isMulti && (
               <Icon
                 name={isSelected ? 'check-square-o' : 'square-o'}
-                size={18}
+                size={20}
                 color={isSelected ? theme.tintColor : theme.placeholderColor}
                 style={{ marginRight: 8 }}
               />
