@@ -548,7 +548,7 @@ export default function LoginScreen(props) {
                 textAlign: 'left',
               }}
             >
-              Email / Username
+              Login Name
             </Text>
             <TextInput
               placeholderTextColor={theme.placeholderColor}
@@ -560,7 +560,7 @@ export default function LoginScreen(props) {
                 },
               ]}
               contextMenuHidden={true}
-              placeholder="Email/Username"
+              placeholder="Email | Username"
               value={Email}
               onChangeText={value => setEmail(value)}
               onEndEditing={() => setemailFocus(false)}
