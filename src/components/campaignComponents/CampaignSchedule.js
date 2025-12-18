@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Modal,
+  Platform,
   Text,
   TouchableOpacity,
   View,
@@ -803,7 +804,7 @@ const CampaignSchedule = ({
       )}
       {scheduleTab === 2 && (
         <View style={{ marginTop: 10 }}>
-          <Modal visible={jcLoading} backdropColor={'transparent'}>
+          <Modal visible={jcLoading} backdropColor={'transparent'} transparent>
             <View
               style={{
                 backgroundColor: theme.modalBackColor,
@@ -819,6 +820,7 @@ const CampaignSchedule = ({
                 shadowRadius: 10,
                 elevation: 5,
                 alignSelf: 'center',
+                marginTop: Platform.OS === 'ios' ? 50 : 0,
               }}
             >
               <Text

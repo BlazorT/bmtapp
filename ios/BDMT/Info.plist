@@ -26,10 +26,33 @@
 	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
-		<key>NSAllowsArbitraryLoads</key>
-		<true/>
-		<key>NSAllowsLocalNetworking</key>
-		<true/>
+	    <key>NSExceptionDomains</key>
+	    <dict>
+	        <key>bmt.blazortech.com</key>
+	        <dict>
+	            <key>NSExceptionAllowsInsecureHTTPLoads</key>
+	            <true/>
+	            <key>NSIncludesSubdomains</key>
+	            <true/>
+	        </dict>
+	        <key>72.61.77.197</key>
+	        <dict>
+	            <key>NSExceptionAllowsInsecureHTTPLoads</key>
+	            <true/>
+				<key>NSIncludesSubdomains</key>
+            <true/>
+	        </dict>
+			<key>NSExceptionDomains</key>
+    <dict>
+        <key>easypay.easypaisa.com.pk</key>
+        <dict>
+            <key>NSExceptionAllowsInsecureHTTPLoads</key>
+            <true/>
+            <key>NSIncludesSubdomains</key>
+            <true/>
+        </dict>
+    </dict>
+	    </dict>
 	</dict>
 	<key>NSAppleMusicUsageDescription</key>
 	<string>This app does not access your Apple Music library.</string>

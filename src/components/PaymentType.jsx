@@ -39,7 +39,7 @@ const PaymentType = ({
         styles.card,
         {
           backgroundColor: theme.cardBackColor,
-          shadowColor: theme.textColor,
+          shadowColor: theme.buttonBackColor,
         },
       ]}
     >
@@ -99,6 +99,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 8,
     paddingVertical: 4,
+    margin: 2,
     borderRadius: 8,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 2,

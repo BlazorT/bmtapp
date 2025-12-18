@@ -283,7 +283,7 @@ const JazzCashRedirect = ({ isOpen, onClose, toPay, onlinePaymentType }) => {
         transparent
         animationType="slide"
       >
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, marginTop: Platform.OS === 'ios' ? 50 : 0 }}>
           <TouchableOpacity
             style={[styles.header, { backgroundColor: theme.modalBackColor }]}
             onPress={() => onClose(null)}

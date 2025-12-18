@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { ActivityIndicator, Modal, Text, View } from 'react-native';
+import { ActivityIndicator, Modal, Platform, Text, View } from 'react-native';
 import { AppLifecycle } from 'react-native-applifecycle';
 import { useTheme } from '../hooks/useTheme';
 import { useJCInquiry } from '../hooks/useJazzCash';
@@ -91,7 +91,7 @@ const JCPaymentConfirm = ({
   if (!isVisible) return null;
 
   return (
-    <Modal visible={isVisible} backdropColor={'transparent'}>
+    <Modal visible={isVisible} backdropColor={'transparent'} transparent>
       <View
         style={{
           backgroundColor: theme.modalBackColor,
@@ -107,6 +107,7 @@ const JCPaymentConfirm = ({
           shadowRadius: 10,
           elevation: 5,
           alignSelf: 'center',
+          marginTop: Platform.OS === 'ios' ? 50 : 0,
         }}
       >
         {/* <CloseIcon onPress={toggleModal} /> */}

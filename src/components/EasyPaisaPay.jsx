@@ -22,7 +22,7 @@ const EasyPaisaPay = ({
         styles.card,
         {
           backgroundColor: theme.cardBackColor,
-          shadowColor: theme.textColor,
+          shadowColor: theme.buttonBackColor,
         },
       ]}
     >
@@ -65,7 +65,13 @@ const EasyPaisaPay = ({
           {onlinePaymentType.name}
         </Text>
       </View>
-      <Text style={{ textAlign: 'center', color: theme.lightGray }}>
+      <Text
+        style={{
+          textAlign: 'center',
+          color: theme.placeholderColor,
+          marginVertical: 10,
+        }}
+      >
         Please ensure you have the EasyPaisa app installed on your device to
         receive payment notifications and complete your payment smoothly.
       </Text>

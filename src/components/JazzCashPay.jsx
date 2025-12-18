@@ -20,7 +20,7 @@ const JazzCashPay = ({
         styles.card,
         {
           backgroundColor: theme.cardBackColor,
-          shadowColor: theme.textColor,
+          shadowColor: theme.buttonBackColor,
         },
       ]}
     >
