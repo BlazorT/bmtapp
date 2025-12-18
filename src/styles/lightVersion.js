@@ -25,7 +25,8 @@ const ligthVersion = {
   breadcrumbText: 'gray',
   acytiveBreadcrumbText: '#ffffff',
   selectedCheckBox: '#1d9bf0c4',
-  green: '#6DD0A3',
+  // green: '#6DD0A3',
+  green: '#55B88B',
 };
 
 export default ligthVersion;

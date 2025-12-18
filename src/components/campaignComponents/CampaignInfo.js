@@ -530,6 +530,7 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex }) => {
           defaultButtonColor={theme.selectedCheckBox}
           buttonOuterSize={30}
           buttonInnerColor={theme.selectedCheckBox}
+          disabled={campaignInfo?.id === 0}
           buttonInnerSize={26}
           radioFormStyle={{
             flexDirection: 'row',

@@ -35,7 +35,7 @@ export default function CampaignScheduleScreen(props) {
     template: '',
     country: '',
     state: '',
-    campaignStartDate: '',
+    campaignStartDate: moment().local().format(),
     campaignEndDate: '',
     status: 1,
     autoLead: false,

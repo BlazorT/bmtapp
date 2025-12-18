@@ -25,7 +25,7 @@ const darkVersion = {
   breadcrumbText: '#ffffffba',
   acytiveBreadcrumbText: '#ffffff',
   selectedCheckBox: '#6DD0A3',
-  green: '#6DD0A3',
+  green: '#55B88B',
 };
 
 export default darkVersion;

@@ -10,6 +10,7 @@ import {
   ScrollView,
   StyleSheet,
   SafeAreaView,
+  Platform,
 } from 'react-native';
 import AntdIcon from 'react-native-vector-icons/AntDesign';
 import Toast from 'react-native-simple-toast';
@@ -202,7 +203,7 @@ const AlbumSelectionModal: React.FC<Props> = ({
           {/* Header */}
           <View style={styles.header}>
             <Text style={[styles.title, { color: theme.textColor }]}>
-              Select Albums
+              Select Contact List
             </Text>
             <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
               <AntdIcon name="close" size={24} color={theme.textColor} />
@@ -339,6 +340,7 @@ const AlbumSelectionModal: React.FC<Props> = ({
                 isSubmitDisabled ? theme.darkGray : theme.buttonBackColor
               }
               style={{ width: '48%' }}
+              textStyle={{ fontSize: Platform.OS === 'ios' ? 14 : 16 }}
             />
           </View>
         </View>

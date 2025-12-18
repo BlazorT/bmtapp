@@ -92,7 +92,7 @@ const AddSchedule = ({
       scheduleList.albums?.length === 0 ||
       scheduleList.CompaignNetworks.length !== scheduleList.albums?.length
     ) {
-      Toast.show('Please select album recipients for selected networks');
+      Toast.show('Please select contact list for selected networks');
       return;
     }
 
@@ -554,8 +554,8 @@ const AddSchedule = ({
       <RNSButton
         caption={
           scheduleList?.albums?.length > 0
-            ? `Selected Albums : ${scheduleList?.albums?.map(a => `${a.name} (${lovs['lovs'].networks?.find(n => n?.id === a?.networkid)?.name || ''})`)?.join(', ')}`
-            : 'Select Recipient Albums'
+            ? `Selected Contacts : ${scheduleList?.albums?.map(a => `${a.name} (${lovs['lovs'].networks?.find(n => n?.id === a?.networkid)?.name || ''})`)?.join(', ')}`
+            : 'Select Contact List'
         }
         bgColor={theme.buttonBackColor}
         style={{

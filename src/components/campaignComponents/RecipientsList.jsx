@@ -42,7 +42,9 @@ const RecipientsList = () => {
   // Add Album Modal states
   const [showAddAlbumModal, setShowAddAlbumModal] = useState(false);
   const [newAlbumName, setNewAlbumName] = useState('');
-  const [newAlbumCode, setNewAlbumCode] = useState('');
+  const [newAlbumCode, setNewAlbumCode] = useState(
+    moment().local().format('DDMMYYYY'),
+  );
   const [newAlbumDesc, setNewAlbumDesc] = useState('');
   const [newAlbumNetworkId, setNewAlbumNetworkId] = useState(-1);
   const [creatingAlbum, setCreatingAlbum] = useState(false);
@@ -53,7 +55,7 @@ const RecipientsList = () => {
     if (showAddAlbumModal) {
       // Clear form when closing
       setNewAlbumName('');
-      setNewAlbumCode('');
+      setNewAlbumCode(moment().local().format('DDMMYYYY'));
       setNewAlbumDesc('');
       setNewAlbumNetworkId(-1);
     }
@@ -115,7 +117,7 @@ const RecipientsList = () => {
       if (res?.status) {
         Toast.show('Album created successfully');
         setNewAlbumName('');
-        setNewAlbumCode('');
+        setNewAlbumCode(moment().local().format('DDMMYYYY'));
         setNewAlbumDesc('');
         setNewAlbumNetworkId(-1);
         setShowAddAlbumModal(false);
@@ -359,7 +361,7 @@ const RecipientsList = () => {
             <View style={styles.buttonRow}>
               <RNSButton
                 caption="Cancel"
-                bgColor={theme.placeholderColor}
+                bgColor={theme.buttonBackColor}
                 onPress={toggleAddAlbumModal}
                 disabled={creatingAlbum}
                 style={styles.button}
@@ -435,7 +437,7 @@ const RecipientsList = () => {
           </View>
           <RNSButton
             style={{ width: 'auto' }}
-            bgColor={theme.green}
+            bgColor={theme.buttonBackColor}
             caption="Add Album"
             onPress={toggleAddAlbumModal}
             small
