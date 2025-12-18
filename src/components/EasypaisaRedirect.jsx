@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Modal,
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -90,7 +91,9 @@ const EasypaisaRedirect = ({ isOpen, onClose, toPay, onlinePaymentType }) => {
           'https://easypay.easypaisa.com.pk/easypay/Index.jsf',
         method: 'POST',
         body: formBody,
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        ...(Platform.OS === 'ios'
+          ? { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+          : {}),
       });
     } catch (error) {
       console.error('🚨 Failed to prepare Easypay request:', error);
@@ -110,6 +113,7 @@ const EasypaisaRedirect = ({ isOpen, onClose, toPay, onlinePaymentType }) => {
 
   const onInitialNavigation = navState => {
     const url = navState.url;
+    console.log({ url });
     if (url.includes('auth_token') && !tokenReceived) {
       const params = parseQueryParams(url);
       const token = params['auth_token'];
@@ -124,7 +128,9 @@ const EasypaisaRedirect = ({ isOpen, onClose, toPay, onlinePaymentType }) => {
           'https://easypay.easypaisa.com.pk/easypay/Confirm.jsf',
         method: 'POST',
         body: formBody,
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        ...(Platform.OS === 'ios'
+          ? { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+          : {}),
       });
       setTokenReceived(true);
     }
@@ -162,7 +168,7 @@ const EasypaisaRedirect = ({ isOpen, onClose, toPay, onlinePaymentType }) => {
 
   if (!initialPostData) {
     return (
-      <Modal visible={isOpen} transparent animationType="slide">
+      <Modal visible={true} transparent animationType="slide">
         <View style={styles.loader}>
           <ActivityIndicator size="large" />
           <Text style={styles.loadingText}>Initializing transaction...</Text>

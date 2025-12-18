@@ -380,7 +380,7 @@ const RecipientsList = () => {
       </View>
     </Modal>
   );
-
+  // console.log({ albumList });
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.backgroundColor }}>
       <View

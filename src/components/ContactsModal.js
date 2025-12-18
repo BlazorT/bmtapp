@@ -419,7 +419,7 @@ const ContactsModal = ({
         Toast.show('Failed to add contacts to albums');
         return;
       }
-
+      console.log({ requests });
       const res = await response.json();
       console.log({ res });
       if (res?.status) {
