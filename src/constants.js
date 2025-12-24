@@ -1,3 +1,5 @@
+import { isTablet } from 'react-native-device-info';
+
 export const GENDER_LIST = [
   {
     id: 1,
@@ -42,3 +44,4 @@ export const GET_ADDRESS_LIST = (query, countryCode) =>
 export const MIN_AGE = 18;
 export const MAX_AGE = 65;
 export const EASYPAISA_EXPIRY_TIME = 5;
+export const isTab = isTablet();

@@ -34,6 +34,7 @@ import Icons from 'react-native-vector-icons/AntDesign';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useTheme } from '../../hooks/useTheme';
 import { useUser } from '../../hooks/useUser';
+import { isTab } from '../../constants';
 
 export default function LoginScreen(props) {
   const theme = useTheme();
@@ -524,13 +525,17 @@ export default function LoginScreen(props) {
   }
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
+      style={{ flex: 1, backgroundColor: theme.backgroundColor }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView
         contentContainerStyle={[
           styles.container,
-          { backgroundColor: theme.backgroundColor },
+          {
+            backgroundColor: theme.backgroundColor,
+            width: isTab ? '60%' : '100%',
+            alignSelf: 'center',
+          },
         ]}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
@@ -539,7 +544,7 @@ export default function LoginScreen(props) {
           <View style={styles.iconimage}>
             <Image source={profilelogo} style={{ width: 300, height: 100 }} />
           </View>
-          <View style={styles.field}>
+          <View style={[styles.field]}>
             <Text
               style={{
                 color: theme.textColor,
@@ -557,6 +562,7 @@ export default function LoginScreen(props) {
                 {
                   backgroundColor: theme.inputBackColor,
                   color: theme.textColor,
+                  width: '100%',
                 },
               ]}
               contextMenuHidden={true}
@@ -583,7 +589,7 @@ export default function LoginScreen(props) {
             <View
               style={[
                 customestylePassword,
-                { backgroundColor: theme.inputBackColor },
+                { backgroundColor: theme.inputBackColor, width: '100%' },
               ]}
             >
               <TextInput
@@ -593,6 +599,7 @@ export default function LoginScreen(props) {
                   {
                     backgroundColor: theme.inputBackColor,
                     color: theme.textColor,
+                    width: isTab ? '90%' : '85%',
                   },
                 ]}
                 contextMenuHidden={true}
@@ -624,96 +631,7 @@ export default function LoginScreen(props) {
             bgColor={theme.buttonBackColor}
             onPress={() => checkTextInput()}
           />
-          {/* <View style={styles.DividerRow}>
-          <View
-            style={{
-              flex: 1,
-              height: 1,
-              backgroundColor: colors.borderColorOr,
-            }}
-          />
-          <View>
-            <Text
-              style={{
-                width: 30,
-                fontSize: 19,
-                textAlign: 'center',
-                marginTop: -4,
-                color: colors.borderColorOr,
-              }}
-            >
-              or
-            </Text>
-          </View>
-          <View
-            style={{
-              flex: 1,
-              height: 1,
-              backgroundColor: colors.borderColorOr,
-            }}
-          />
-        </View> */}
-          {/* {Platform.OS === 'android' && (
-          <View style={styles.signupView}>
-            <TouchableOpacity
-              onPress={() => LoginWithGoogle()}
-              style={[
-                [
-                  styles.btnfacebook,
-                  { backgroundColor: theme.buttonBackColor },
-                ],
-                { backgroundColor: theme.buttonBackColor },
-              ]}
-            >
-              <View style={styles.googleIconView}>
-                <Image source={googleIcon} style={styles.googleIcon} />
-              </View>
-              <Text
-                style={
-                  Platform.OS === 'ios'
-                    ? styles.textfacebookIOS
-                    : styles.textfacebook
-                }
-              >
-                Sign In With Google
-              </Text>
-            </TouchableOpacity>
-          </View>
-        )} */}
-          {/* <ContinueWithFacebook
-          PressContinue={PressContinue}
-          FacebookmodalVisible={FacebookmodalVisible}
-          theme={theme}
-        ></ContinueWithFacebook> */}
-          {/* <View style={styles.DividerRow}>
-            <View
-              style={{
-                flex: 1,
-                height: 1,
-                backgroundColor: colors.borderColorOr,
-              }}
-            />
-            <View>
-              <Text
-                style={{
-                  width: 30,
-                  fontSize: 19,
-                  textAlign: 'center',
-                  marginTop: -4,
-                  color: colors.borderColorOr,
-                }}
-              >
-                or
-              </Text>
-            </View>
-            <View
-              style={{
-                flex: 1,
-                height: 1,
-                backgroundColor: colors.borderColorOr,
-              }}
-            />
-          </View> */}
+
           <View style={styles.fieldView}>
             <View style={styles.MainView}>
               <TouchableOpacity
@@ -756,7 +674,9 @@ export default function LoginScreen(props) {
           <View
             style={[
               styles.ModalMainView,
-              { backgroundColor: theme.backgroundColor },
+              {
+                backgroundColor: theme.backgroundColor,
+              },
             ]}
           >
             <TouchableOpacity
@@ -780,13 +700,16 @@ export default function LoginScreen(props) {
             <View style={styles.iconimage}>
               <Image source={profilelogo} style={{ width: 300, height: 100 }} />
             </View>
-            <View style={styles.centeredView}>
-              <View style={styles.signupWithEmailView}>
+            <View style={[styles.centeredView]}>
+              <View style={[styles.signupWithEmailView]}>
                 <TouchableOpacity
                   onPress={() => CreateUser()}
                   style={[
                     styles.btnfacebook,
-                    { backgroundColor: theme.buttonBackColor },
+                    {
+                      backgroundColor: theme.buttonBackColor,
+                      width: isTab ? '50%' : '80%',
+                    },
                   ]}
                 >
                   <Icon name={'envelope'} style={styles.IconEmail} />
@@ -888,6 +811,7 @@ const styles = StyleSheet.create({
     // alignItems: 'center',
     justifyContent: 'space-around',
     zIndex: 3,
+    width: isTab ? '60%' : '88%',
   },
   termOfUseView: {
     alignItems: 'center',
@@ -927,7 +851,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
   },
   btnlogin: {
-    width: Dimensions.get('window').width - 50,
+    width: isTab ? '60%' : '88%',
     marginTop: 15,
     alignSelf: 'center',
   },

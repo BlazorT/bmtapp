@@ -21,6 +21,7 @@ import servicesettings from '../../modules/dataservices/servicesettings';
 import RNSButton from '../Button';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
+import { isTab } from '../../constants';
 
 interface Album {
   id: number;
@@ -197,7 +198,11 @@ const AlbumSelectionModal: React.FC<Props> = ({
         <View
           style={[
             styles.modalContent,
-            { backgroundColor: theme.backgroundColor },
+            {
+              backgroundColor: theme.backgroundColor,
+              width: isTab ? '60%' : '100%',
+              alignSelf: 'center',
+            },
           ]}
         >
           {/* Header */}

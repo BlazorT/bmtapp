@@ -11,6 +11,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -20,13 +21,14 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import { PERMISSIONS, RESULTS, check, request } from 'react-native-permissions';
 import Toast from 'react-native-simple-toast';
 import { useSelector } from 'react-redux';
-import { Button, Dropdown, TextInput } from '../../components';
+import { Button, Dropdown } from '../../components';
 import Alert from '../../components/Alert';
 import TermsAndConditions from '../../components/Terms&Conditions';
 import { useTheme } from '../../hooks/useTheme';
 import { colors } from '../../styles';
 import servicesettings from '../dataservices/servicesettings';
 import { useUser } from '../../hooks/useUser';
+import { isTab } from '../../constants';
 const profileIcon = require('../../../assets/images/defaultUser.png');
 //import messaging from '@react-native-firebase/messaging';
 export default function VehicalSallerScreen(props) {
@@ -418,147 +420,366 @@ export default function VehicalSallerScreen(props) {
             />
           </TouchableOpacity>
         </View>
-        <TextInput
-          placeholderTextColor={theme.placeholderColor}
-          style={[
-            customestyleusername,
-            { backgroundColor: theme.inputBackColor, color: theme.textColor },
-          ]}
-          value={firstName}
-          onChangeText={value => setFirstName(value)}
-          placeholder="First name"
-          clearTextOnFocus={true}
-          keyboardAppearance={'dark'}
-          KeyboardType={'name'}
-          maxLength={50}
-        />
-        <TextInput
-          placeholderTextColor={theme.placeholderColor}
-          style={[
-            customestyleusername,
-            { backgroundColor: theme.inputBackColor, color: theme.textColor },
-          ]}
-          value={lastName}
-          onChangeText={value => setLastName(value)}
-          placeholder="Last name"
-          clearTextOnFocus={true}
-          keyboardAppearance={'dark'}
-          KeyboardType={'name'}
-          maxLength={50}
-        />
-        <TextInput
-          placeholderTextColor={theme.placeholderColor}
-          style={[
-            customestyleusername,
-            username == '' ? styles.mandatoryControl : null,
-            ,
-            { backgroundColor: theme.inputBackColor, color: theme.textColor },
-          ]}
-          value={username}
-          onChangeText={value => setusername(value)}
-          onEndEditing={() => setusernameFocus(false)}
-          onFocus={() => setusernameFocus(true)}
-          placeholder="User name"
-          clearTextOnFocus={true}
-          keyboardAppearance={'dark'}
-          KeyboardType={'name'}
-          maxLength={50}
-        />
-        <TextInput
-          placeholderTextColor={theme.placeholderColor}
-          value={Email}
-          onChangeText={value => setEmail(value)}
-          onEndEditing={() => setEmailFocus(false)}
-          onFocus={() => setEmailFocus(true)}
-          style={[
-            customestyleEmail,
-            Email == '' ? styles.mandatoryControl : null,
-            ,
-            { backgroundColor: theme.inputBackColor, color: theme.textColor },
-          ]}
-          placeholder="Email"
-          clearTextOnFocus={true}
-          keyboardAppearance={'dark'}
-          maxLength={40}
-        />
-        <TextInput
-          placeholderTextColor={theme.placeholderColor}
-          style={[
-            customestyleContact,
-            Contact == '' ? styles.mandatoryControl : null,
 
-            { backgroundColor: theme.inputBackColor, color: theme.textColor },
-          ]}
-          value={Contact}
-          onChangeText={value => setContact(value)}
-          onEndEditing={() => setContactFocus(false)}
-          onFocus={() => setContactFocus(true)}
-          placeholder="Contact"
-          clearTextOnFocus={false}
-          keyboardAppearance={'dark'}
-          KeyboardType={'phone-pad'}
-          maxLength={50}
-        />
-        <Dropdown
-          placeholderTextColor={theme.placeholderColor}
-          onSelect={value => setorgindex(value)}
-          selectedIndex={orgindex}
-          style={[
-            styles.Pickerstyle,
-            { backgroundColor: theme.inputBackColor, color: theme.textColor },
-          ]}
-          items={orgdata}
-          placeholder="Select organization..."
-          selectedItemViewStyle={colors.red}
-          clearTextOnFocus={true}
-          keyboardAppearance={'dark'}
-          maxLength={5}
-        />
-        <Dropdown
-          placeholderTextColor={theme.placeholderColor}
-          onSelect={value => setcityindex(value)}
-          selectedIndex={cityindex}
-          style={[
-            styles.Pickerstyle,
-            styles.mandatoryControl,
-            { backgroundColor: theme.inputBackColor, color: theme.textColor },
-          ]}
-          items={cities.sort(function (obj1, obj2) {
-            return obj1.id - obj2.id;
-          })}
-          placeholder="Select City..."
-          clearTextOnFocus={true}
-          keyboardAppearance={'dark'}
-          maxLength={5}
-        />
-        <View
-          style={[
-            customestylePassword,
-            Password == '' ? styles.mandatoryControl : null,
-            ,
-            { backgroundColor: theme.inputBackColor, color: theme.textColor },
-          ]}
-        >
-          <TextInput
-            placeholderTextColor={theme.placeholderColor}
-            value={Password}
-            onChangeText={value => setPassword(value)}
-            onEndEditing={() => setPasswordFocus(false)}
-            onFocus={() => setPasswordFocus(true)}
-            secureTextEntry={true}
-            style={[
-              styles.FieldText,
-              {
-                backgroundColor: theme.inputBackColor,
-                color: theme.textColor,
-              },
-            ]}
-            placeholder="Password"
-            clearTextOnFocus={true}
-            keyboardAppearance={'dark'}
-            maxLength={40}
-          />
-        </View>
+        {/* Form Fields - Responsive Layout */}
+        {isTab ? (
+          // Tablet Layout - 2 inputs per row
+          <>
+            <View style={[styles.rowContainer]}>
+              <TextInput
+                placeholderTextColor={theme.placeholderColor}
+                style={[
+                  customestyleusername,
+                  styles.halfWidth,
+                  {
+                    backgroundColor: theme.inputBackColor,
+                    color: theme.textColor,
+                  },
+                ]}
+                value={firstName}
+                onChangeText={value => setFirstName(value)}
+                placeholder="First name"
+                clearTextOnFocus={true}
+                keyboardAppearance={'dark'}
+                KeyboardType={'name'}
+                maxLength={50}
+              />
+              <TextInput
+                placeholderTextColor={theme.placeholderColor}
+                style={[
+                  customestyleusername,
+                  styles.halfWidth,
+                  {
+                    backgroundColor: theme.inputBackColor,
+                    color: theme.textColor,
+                  },
+                ]}
+                value={lastName}
+                onChangeText={value => setLastName(value)}
+                placeholder="Last name"
+                clearTextOnFocus={true}
+                keyboardAppearance={'dark'}
+                KeyboardType={'name'}
+                maxLength={50}
+              />
+            </View>
+
+            <View style={styles.rowContainer}>
+              <TextInput
+                placeholderTextColor={theme.placeholderColor}
+                style={[
+                  customestyleusername,
+                  styles.halfWidth,
+                  username == '' ? styles.mandatoryControl : null,
+                  {
+                    backgroundColor: theme.inputBackColor,
+                    color: theme.textColor,
+                  },
+                ]}
+                value={username}
+                onChangeText={value => setusername(value)}
+                onEndEditing={() => setusernameFocus(false)}
+                onFocus={() => setusernameFocus(true)}
+                placeholder="User name"
+                clearTextOnFocus={true}
+                keyboardAppearance={'dark'}
+                KeyboardType={'name'}
+                maxLength={50}
+              />
+              <TextInput
+                placeholderTextColor={theme.placeholderColor}
+                value={Email}
+                onChangeText={value => setEmail(value)}
+                onEndEditing={() => setEmailFocus(false)}
+                onFocus={() => setEmailFocus(true)}
+                style={[
+                  customestyleEmail,
+                  styles.halfWidth,
+                  Email == '' ? styles.mandatoryControl : null,
+                  {
+                    backgroundColor: theme.inputBackColor,
+                    color: theme.textColor,
+                  },
+                ]}
+                placeholder="Email"
+                clearTextOnFocus={true}
+                keyboardAppearance={'dark'}
+                maxLength={40}
+              />
+            </View>
+
+            <View style={styles.rowContainer}>
+              <TextInput
+                placeholderTextColor={theme.placeholderColor}
+                style={[
+                  customestyleContact,
+                  styles.halfWidth,
+                  Contact == '' ? styles.mandatoryControl : null,
+                  {
+                    backgroundColor: theme.inputBackColor,
+                    color: theme.textColor,
+                  },
+                ]}
+                value={Contact}
+                onChangeText={value => setContact(value)}
+                onEndEditing={() => setContactFocus(false)}
+                onFocus={() => setContactFocus(true)}
+                placeholder="Contact"
+                clearTextOnFocus={false}
+                keyboardAppearance={'dark'}
+                KeyboardType={'phone-pad'}
+                maxLength={50}
+              />
+              <View
+                style={[
+                  customestylePassword,
+                  Password == '' ? styles.mandatoryControl : null,
+                  styles.halfWidth,
+                  {
+                    backgroundColor: theme.inputBackColor,
+                    color: theme.textColor,
+                  },
+                ]}
+              >
+                <TextInput
+                  placeholderTextColor={theme.placeholderColor}
+                  value={Password}
+                  onChangeText={value => setPassword(value)}
+                  onEndEditing={() => setPasswordFocus(false)}
+                  onFocus={() => setPasswordFocus(true)}
+                  secureTextEntry={true}
+                  style={[
+                    styles.FieldText,
+                    styles.halfWidth,
+                    {
+                      backgroundColor: theme.inputBackColor,
+                      color: theme.textColor,
+                    },
+                  ]}
+                  placeholder="Password"
+                  clearTextOnFocus={true}
+                  keyboardAppearance={'dark'}
+                  maxLength={40}
+                />
+              </View>
+            </View>
+
+            <View style={styles.rowContainer}>
+              <View style={styles.halfWidth}>
+                <Dropdown
+                  placeholderTextColor={theme.placeholderColor}
+                  onSelect={value => setorgindex(value)}
+                  selectedIndex={orgindex}
+                  style={[
+                    styles.Pickerstyle,
+                    {
+                      backgroundColor: theme.inputBackColor,
+                      color: theme.textColor,
+                    },
+                  ]}
+                  items={orgdata}
+                  placeholder="Select organization..."
+                  selectedItemViewStyle={colors.red}
+                  clearTextOnFocus={true}
+                  keyboardAppearance={'dark'}
+                  maxLength={5}
+                />
+              </View>
+              <View style={styles.halfWidth}>
+                <Dropdown
+                  placeholderTextColor={theme.placeholderColor}
+                  onSelect={value => setcityindex(value)}
+                  selectedIndex={cityindex}
+                  style={[
+                    styles.Pickerstyle,
+                    styles.mandatoryControl,
+                    {
+                      backgroundColor: theme.inputBackColor,
+                      color: theme.textColor,
+                    },
+                  ]}
+                  items={cities.sort(function (obj1, obj2) {
+                    return obj1.id - obj2.id;
+                  })}
+                  placeholder="Select City..."
+                  clearTextOnFocus={true}
+                  keyboardAppearance={'dark'}
+                  maxLength={5}
+                />
+              </View>
+            </View>
+          </>
+        ) : (
+          // Mobile Layout - Single column
+          <>
+            <TextInput
+              placeholderTextColor={theme.placeholderColor}
+              style={[
+                customestyleusername,
+                {
+                  backgroundColor: theme.inputBackColor,
+                  color: theme.textColor,
+                },
+              ]}
+              value={firstName}
+              onChangeText={value => setFirstName(value)}
+              placeholder="First name"
+              clearTextOnFocus={true}
+              keyboardAppearance={'dark'}
+              KeyboardType={'name'}
+              maxLength={50}
+            />
+            <TextInput
+              placeholderTextColor={theme.placeholderColor}
+              style={[
+                customestyleusername,
+                {
+                  backgroundColor: theme.inputBackColor,
+                  color: theme.textColor,
+                },
+              ]}
+              value={lastName}
+              onChangeText={value => setLastName(value)}
+              placeholder="Last name"
+              clearTextOnFocus={true}
+              keyboardAppearance={'dark'}
+              KeyboardType={'name'}
+              maxLength={50}
+            />
+            <TextInput
+              placeholderTextColor={theme.placeholderColor}
+              style={[
+                customestyleusername,
+                username == '' ? styles.mandatoryControl : null,
+                ,
+                {
+                  backgroundColor: theme.inputBackColor,
+                  color: theme.textColor,
+                },
+              ]}
+              value={username}
+              onChangeText={value => setusername(value)}
+              onEndEditing={() => setusernameFocus(false)}
+              onFocus={() => setusernameFocus(true)}
+              placeholder="User name"
+              clearTextOnFocus={true}
+              keyboardAppearance={'dark'}
+              KeyboardType={'name'}
+              maxLength={50}
+            />
+            <TextInput
+              placeholderTextColor={theme.placeholderColor}
+              value={Email}
+              onChangeText={value => setEmail(value)}
+              onEndEditing={() => setEmailFocus(false)}
+              onFocus={() => setEmailFocus(true)}
+              style={[
+                customestyleEmail,
+                Email == '' ? styles.mandatoryControl : null,
+                ,
+                {
+                  backgroundColor: theme.inputBackColor,
+                  color: theme.textColor,
+                },
+              ]}
+              placeholder="Email"
+              clearTextOnFocus={true}
+              keyboardAppearance={'dark'}
+              maxLength={40}
+            />
+            <TextInput
+              placeholderTextColor={theme.placeholderColor}
+              style={[
+                customestyleContact,
+                Contact == '' ? styles.mandatoryControl : null,
+
+                {
+                  backgroundColor: theme.inputBackColor,
+                  color: theme.textColor,
+                },
+              ]}
+              value={Contact}
+              onChangeText={value => setContact(value)}
+              onEndEditing={() => setContactFocus(false)}
+              onFocus={() => setContactFocus(true)}
+              placeholder="Contact"
+              clearTextOnFocus={false}
+              keyboardAppearance={'dark'}
+              KeyboardType={'phone-pad'}
+              maxLength={50}
+            />
+            <Dropdown
+              placeholderTextColor={theme.placeholderColor}
+              onSelect={value => setorgindex(value)}
+              selectedIndex={orgindex}
+              style={[
+                styles.Pickerstyle,
+                {
+                  backgroundColor: theme.inputBackColor,
+                  color: theme.textColor,
+                },
+              ]}
+              items={orgdata}
+              placeholder="Select organization..."
+              selectedItemViewStyle={colors.red}
+              clearTextOnFocus={true}
+              keyboardAppearance={'dark'}
+              maxLength={5}
+            />
+            <Dropdown
+              placeholderTextColor={theme.placeholderColor}
+              onSelect={value => setcityindex(value)}
+              selectedIndex={cityindex}
+              style={[
+                styles.Pickerstyle,
+                styles.mandatoryControl,
+                {
+                  backgroundColor: theme.inputBackColor,
+                  color: theme.textColor,
+                },
+              ]}
+              items={cities.sort(function (obj1, obj2) {
+                return obj1.id - obj2.id;
+              })}
+              placeholder="Select City..."
+              clearTextOnFocus={true}
+              keyboardAppearance={'dark'}
+              maxLength={5}
+            />
+            <View
+              style={[
+                customestylePassword,
+                Password == '' ? styles.mandatoryControl : null,
+                ,
+                {
+                  backgroundColor: theme.inputBackColor,
+                  color: theme.textColor,
+                },
+              ]}
+            >
+              <TextInput
+                placeholderTextColor={theme.placeholderColor}
+                value={Password}
+                onChangeText={value => setPassword(value)}
+                onEndEditing={() => setPasswordFocus(false)}
+                onFocus={() => setPasswordFocus(true)}
+                secureTextEntry={true}
+                style={[
+                  styles.FieldText,
+                  {
+                    backgroundColor: theme.inputBackColor,
+                    color: theme.textColor,
+                  },
+                ]}
+                placeholder="Password"
+                clearTextOnFocus={true}
+                keyboardAppearance={'dark'}
+                maxLength={40}
+              />
+            </View>
+          </>
+        )}
+
         <View style={styles.termsView}>
           <CheckBox
             value={selectterms}
@@ -606,6 +827,8 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 20,
     flexGrow: 1,
+    rowGap: 10,
+    columnGap: 10,
   },
   ProfileImgView: {
     alignItems: 'center',
@@ -653,7 +876,7 @@ const styles = StyleSheet.create({
   sectionStyle: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 4 + '%',
+    // marginTop: 4 + '%',
     height: 46,
     fontSize: 16,
     color: colors.TextBoxColor,
@@ -670,7 +893,7 @@ const styles = StyleSheet.create({
     height: 46,
     fontSize: 16,
     color: colors.TextBoxColor,
-    width: Dimensions.get('window').width - 50,
+    // width: Dimensions.get('window').width - 50,
     borderWidth: 2,
     backgroundColor: colors.TextBoxContainer,
     borderColor: colors.borderColor,
@@ -700,7 +923,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   Pickerstyle: {
-    paddingHorizontal: 15,
+    // paddingHorizontal: 15,
     backgroundColor: colors.TextBoxContainer,
     borderColor: colors.borderColor,
     borderWidth: 1,
@@ -709,7 +932,6 @@ const styles = StyleSheet.create({
     height: 46,
     color: '#ffffff',
     fontSize: 15,
-    marginTop: 3 + '%',
     fontWeight: 'bold',
     //  textAlign: 'center',
   },
@@ -737,5 +959,14 @@ const styles = StyleSheet.create({
     color: colors.TextBoxColor,
     width: Dimensions.get('window').width - 70,
     marginLeft: 0,
+  },
+  // New styles for tablet layout
+  rowContainer: {
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
+  },
+  halfWidth: {
+    width: '49%',
   },
 });

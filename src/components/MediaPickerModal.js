@@ -7,7 +7,8 @@ import {
   View,
 } from 'react-native';
 import React from 'react';
-import {useTheme} from '../hooks/useTheme';
+import { useTheme } from '../hooks/useTheme';
+import { isTab } from '../constants';
 
 const MediaPickerModal = ({
   isOpen,
@@ -24,26 +25,28 @@ const MediaPickerModal = ({
           justifyContent: 'center',
           alignItems: 'center',
           flex: 1,
-        }}>
+        }}
+      >
         <View
           style={{
-            width: Dimensions.get('screen').width - 20,
+            width: isTab ? '30%' : Dimensions.get('screen').width - 20,
             height: Dimensions.get('screen').height - 550,
             borderRadius: 10,
             backgroundColor: theme.modalBackColor,
             paddingHorizontal: 10,
             paddingVertical: 20,
             rowGap: 10,
-          }}>
+          }}
+        >
           {isImage && (
             <>
               <TouchableOpacity onPress={openCamera}>
-                <Text style={{color: theme.textColor, fontSize: 20}}>
+                <Text style={{ color: theme.textColor, fontSize: 20 }}>
                   Take Photo
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={openGallery}>
-                <Text style={{color: theme.textColor, fontSize: 20}}>
+                <Text style={{ color: theme.textColor, fontSize: 20 }}>
                   Choose Photo from gallery
                 </Text>
               </TouchableOpacity>
@@ -52,12 +55,12 @@ const MediaPickerModal = ({
           {!isImage && (
             <>
               <TouchableOpacity onPress={openCamera}>
-                <Text style={{color: theme.textColor, fontSize: 20}}>
+                <Text style={{ color: theme.textColor, fontSize: 20 }}>
                   Take Video
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={openGallery}>
-                <Text style={{color: theme.textColor, fontSize: 20}}>
+                <Text style={{ color: theme.textColor, fontSize: 20 }}>
                   Choose Video from gallery
                 </Text>
               </TouchableOpacity>
@@ -71,8 +74,9 @@ const MediaPickerModal = ({
               bottom: 10,
               borderTopColor: theme.textColor,
               borderTopWidth: 1,
-            }}>
-            <Text style={{color: theme.textColor, fontSize: 20}}>Close</Text>
+            }}
+          >
+            <Text style={{ color: theme.textColor, fontSize: 20 }}>Close</Text>
           </TouchableOpacity>
         </View>
       </View>

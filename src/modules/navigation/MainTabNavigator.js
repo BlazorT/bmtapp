@@ -6,7 +6,9 @@ import { useTheme } from '../../hooks/useTheme';
 import { useUser } from '../../hooks/useUser';
 import { isAdminOrSuperAdmin } from '../home/HomeView';
 import tabNavigationData from './tabNavigationData';
+import { isTab } from '../../constants';
 const Tab = createBottomTabNavigator();
+
 export default function BottomTabs() {
   const { isAuthenticated, user } = useUser();
   const theme = useTheme();
@@ -15,7 +17,7 @@ export default function BottomTabs() {
     <Tab.Navigator
       screenOptions={{
         tabBarStyle: {
-          height: Platform.OS === 'ios' ? 90 : 50,
+          height: Platform.OS === 'ios' ? 90 : isTab ? 70 : 60,
           backgroundColor: theme.navBarBack,
         },
 

@@ -27,6 +27,7 @@ import { isAdminOrSuperAdmin } from '../home/HomeView';
 import moment from 'moment';
 import { useNavigation } from '@react-navigation/native';
 import { ScrollView } from 'react-native';
+import { isTab } from '../../constants';
 
 export default function PagesScreen(props) {
   const theme = useTheme();
@@ -299,8 +300,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   item: {
-    height: Platform.OS === 'ios' ? 110 : 120,
-    width: Platform.OS === 'ios' ? 110 : 120,
+    height: isTab ? 160 : Platform.OS === 'ios' ? 110 : 120,
+    width: isTab ? 160 : Platform.OS === 'ios' ? 110 : 120,
     paddingVertical: 20,
     borderRadius: 5,
     alignItems: 'center',
@@ -335,9 +336,9 @@ const styles = StyleSheet.create({
     color: colors.NavbarTextColor,
     fontFamily: fonts.primary,
     marginTop: 4,
-    fontSize: Platform.OS === 'ios' ? 12 : 12,
+    fontSize: isTab ? 20 : Platform.OS === 'ios' ? 12 : 12,
   },
   itemImage: {
-    height: 50,
+    height: isTab ? 80 : 50,
   },
 });
