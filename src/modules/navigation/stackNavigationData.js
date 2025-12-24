@@ -46,7 +46,7 @@ const headerBackground = require('../../../assets/images/ioGKFn.jpg');
 
 const StackNavigationData = [
   {
-    name: 'BMT',
+    name: 'Blazor Media ToolKit',
     component: TabNavigator,
     headerLeft: null,
     headerBackground: { source: headerBackground },

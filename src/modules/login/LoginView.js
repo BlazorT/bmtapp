@@ -257,7 +257,7 @@ export default function LoginScreen(props) {
           setmodalVisible(true);
           setTimeout(() => {
             setmodalVisible(false);
-            props.navigation.replace('BMT');
+            props.navigation.replace('Blazor Media ToolKit');
           }, 4000);
         }
       })
@@ -694,7 +694,7 @@ export default function LoginScreen(props) {
                   color: theme.textColor,
                 }}
               >
-                Sign Up To BMT
+                Sign Up To Blazor Media ToolKit
               </Text>
             </View>
             <View style={styles.iconimage}>

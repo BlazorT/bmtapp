@@ -362,7 +362,7 @@ function CustomDrawerContent(props) {
           Visible={unsubscribeAlertVisible}
           alerttype="confirmation"
           Title="Confirmation"
-          Massage="Are you sure you want to unsubscribe from BMT?"
+          Massage="Are you sure you want to unsubscribe from Blazor Media ToolKit?"
         />
 
         {drawerData.map((item, idx) =>

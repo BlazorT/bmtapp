@@ -88,11 +88,11 @@ export default function VehicalSallerScreen(props) {
   };
   const confirm = () => {
     setconfirmationVisible(false);
-    props.navigation.replace('BMT');
+    props.navigation.replace('Blazor Media ToolKit');
   };
   const successhide = () => {
     setsuccessVisible(false);
-    props.navigation.navigate('BMT');
+    props.navigation.navigate('Blazor Media ToolKit');
   };
   const cities = [
     { id: 1, name: 'Lahore' },

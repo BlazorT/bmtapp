@@ -117,14 +117,14 @@ export default function OrganizationAddEditScreen(props) {
   };
   const Edithide = () => {
     setEditconfirmationVisible(false);
-    props.navigation.navigate('BMT');
+    props.navigation.navigate('Blazor Media ToolKit');
   };
   const OK = () => {
     seterrorVisible(false);
   };
   const confirm = () => {
     setconfirmationVisible(false);
-    props.navigation.navigate('BMT');
+    props.navigation.navigate('Blazor Media ToolKit');
   };
   const Editconfirm = () => {
     setEditconfirmationVisible(false);

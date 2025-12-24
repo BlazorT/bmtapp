@@ -100,7 +100,7 @@ export default function MyCampaignScreen(props) {
       props.navigation.reset({
         index: 1,
         routes: [
-          { name: 'BMT' }, // Home is at index 0
+          { name: 'Blazor Media ToolKit' }, // Home is at index 0
           { name: 'Login' }, // Login is at index 1 (active screen)
         ],
       });
