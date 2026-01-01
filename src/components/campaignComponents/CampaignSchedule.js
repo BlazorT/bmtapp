@@ -796,9 +796,21 @@ const CampaignSchedule = ({
           <RNSButton
             style={{ width: '100%', marginTop: 10 }}
             bgColor={theme.buttonBackColor}
-            caption="Checkout"
+            caption={
+              campaignInfo?.schedules
+                .map((s, i) => s?.budget || 0)
+                .reduce((a, b) => a + b, 0) > 0
+                ? 'Checkout'
+                : 'Submit'
+            }
             // onPress={addSchedule}
-            onPress={() => setScheduleTab(2)}
+            onPress={() =>
+              campaignInfo?.schedules
+                .map((s, i) => s?.budget || 0)
+                .reduce((a, b) => a + b, 0) > 0
+                ? setScheduleTab(2)
+                : addSchedule('')
+            }
           />
         </>
       )}

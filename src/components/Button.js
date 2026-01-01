@@ -161,9 +161,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-
     // width: 'auto',
-    // paddingHorizontal: 30,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
   },
   buttonSmall: {
     paddingHorizontal: Platform.OS === 'ios' ? 2 : 15,

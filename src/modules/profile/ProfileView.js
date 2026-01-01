@@ -824,7 +824,7 @@ export default function VehicalSallerScreen(props) {
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    paddingVertical: 20,
+    paddingVertical: 0,
     paddingHorizontal: 20,
     flexGrow: 1,
     rowGap: 10,
@@ -832,8 +832,6 @@ const styles = StyleSheet.create({
   },
   ProfileImgView: {
     alignItems: 'center',
-    paddingBottom: '2%',
-    paddingTop: '1%',
     justifyContent: 'space-around',
     // marginTop: 2 + '%',
   },
@@ -841,7 +839,7 @@ const styles = StyleSheet.create({
     height: 90,
     width: 90,
     borderRadius: 90,
-    marginTop: 12,
+    // marginTop: 12,
     borderColor: colors.profileBorderColor,
     borderWidth: 2,
   },
@@ -889,11 +887,11 @@ const styles = StyleSheet.create({
   sectionStyleOnFocus: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 4 + '%',
+    // marginTop: 4 + '%',
     height: 46,
     fontSize: 16,
+    width: '100%',
     color: colors.TextBoxColor,
-    // width: Dimensions.get('window').width - 50,
     borderWidth: 2,
     backgroundColor: colors.TextBoxContainer,
     borderColor: colors.borderColor,

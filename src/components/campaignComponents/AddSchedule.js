@@ -88,9 +88,14 @@ const AddSchedule = ({
       Toast.show('Please select a day');
       return;
     }
+
+    const selectedNetworkSet = new Set(
+      scheduleList.albums?.map(al => al?.networkid),
+    );
+
     if (
       scheduleList.albums?.length === 0 ||
-      scheduleList.CompaignNetworks.length !== scheduleList.albums?.length
+      scheduleList.CompaignNetworks.length !== selectedNetworkSet?.size
     ) {
       Toast.show('Please select contact list for selected networks');
       return;
@@ -317,19 +322,26 @@ const AddSchedule = ({
         const matchedPrice =
           priceData?.find(pd => pd.networkId === item.networkId)?.unitPrice ||
           0;
+        const freeAllowed =
+          priceData?.find(pd => pd.networkId === item.networkId)?.freeAllowed ||
+          0;
         // check if this specific network is special
         const isSpecial = [1, 2, 3].includes(item.networkId);
 
-        const findAlbum = prevState?.albums?.find(
-          al => al.networkid === item.networkId,
-        );
-        // recipients for this network
-        let recipientsForNetwork = findAlbum
+        // collect all album ids for this network
+        const albumIdsForNetwork = prevState?.albums
+          ?.filter(al => al?.networkid === item.networkId)
+          ?.map(al => al?.id);
+
+        // recipients for this network (across all albums)
+        let recipientsForNetwork = albumIdsForNetwork?.length
           ? recipients?.filter(
               r =>
-                r.networkId === item.networkId && r.albumid === findAlbum?.id,
+                r?.networkId === item.networkId &&
+                albumIdsForNetwork.includes(r?.albumid),
             )
           : [];
+
         // if NOT special → force length = 1
         if (!isSpecial) {
           recipientsForNetwork = [1];
@@ -337,21 +349,20 @@ const AddSchedule = ({
 
         // used quota for this network
         const usedQuota = validDays * (recipientsForNetwork.length || 1);
-
-        // accumulate budget
-        totalBudget += matchedPrice * usedQuota;
         messageCount += validDays * (recipientsForNetwork.length || 1);
+        totalBudget += usedQuota <= freeAllowed ? 0 : matchedPrice * usedQuota;
+        // accumulate budget
 
         return {
           ...item,
           usedQuota,
-          budget: matchedPrice * usedQuota,
+          budget: usedQuota <= freeAllowed ? 0 : matchedPrice * usedQuota,
           messageCount: validDays * (recipientsForNetwork.length || 1), // this is global, unchanged
         };
       });
 
       const formattedBudget = Math.round(totalBudget * 100) / 100;
-      // console.log({ updatedNetworks });
+      // console.log({ formattedBudget });
       return {
         ...prevState,
         messageCount: messageCount, // this is global, unchanged
@@ -396,7 +407,7 @@ const AddSchedule = ({
       daysOfWeek: daysOfWeek,
     };
   }
-  // console.log({ scheduleList }, { campaignInfo });
+  // console.log({ scheduleList });
   const currencyId = lovs['orgs']?.find(c => c.id === user?.orgId)?.currencyId;
   return (
     <View style={{ marginTop: 10 }}>
@@ -425,14 +436,24 @@ const AddSchedule = ({
             }}
           >
             <Text
-              style={{ color: theme.textColor, fontSize: 16, marginRight: 10 }}
+              style={{ color: theme.textColor, fontSize: 16, marginRight: 1 }}
             >
-              {network.desc || network.networkName || network?.name} (
-              {network.purchasedQouta || network.compaignQouta})
+              {network.desc || network.networkName || network?.name}{' '}
+              <Text
+                style={{
+                  color: theme.textColor,
+                  fontSize: 12,
+                }}
+              >
+                (Free allowed :
+                {priceData?.find(p => p?.networkId === network.networkId)
+                  ?.freeAllowed || 0}
+                ){/* ({network.purchasedQouta || network.compaignQouta})  */}
+              </Text>
             </Text>
             <CheckBox
               style={{
-                transform: [{ scale: Platform.OS === 'ios' ? 0.8 : 1.4 }],
+                transform: [{ scale: Platform.OS === 'ios' ? 0.8 : 1.2 }],
               }}
               boxType={'square'}
               tintColors={{
@@ -560,6 +581,7 @@ const AddSchedule = ({
         bgColor={theme.buttonBackColor}
         style={{
           marginTop: 10,
+          height: 'auto',
         }}
         onPress={() => setShowRecipientAlbumMdl(true)}
       />

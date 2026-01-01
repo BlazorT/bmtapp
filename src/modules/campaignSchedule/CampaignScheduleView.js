@@ -458,6 +458,6 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
     alignItems: 'center',
-    paddingHorizontal: 5,
+    paddingHorizontal: 2,
   },
 });

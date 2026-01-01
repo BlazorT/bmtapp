@@ -27,16 +27,16 @@ interface Album {
   id: number;
   name: string;
   networkid: number;
-  totalContacts?: number; // we'll fetch this or assume it's in response
+  totalContacts?: number;
 }
 
 interface Props {
   visible: boolean;
-  networkIds: number[]; // e.g. [1, 2, 3]
+  networkIds: number[];
   disabled?: boolean;
-  onSubmit: (selectedAlbumIds: number[]) => void;
+  onSubmit: (selectedAlbums: Album[]) => void;
   onClose: () => void;
-  selectedAlbums: Record<number, number | null>;
+  selectedAlbums: Record<number, number[]>; // Changed to array
   setSelectedAlbums: any;
 }
 
@@ -55,6 +55,7 @@ const AlbumSelectionModal: React.FC<Props> = ({
   const lovs = useSelector((state: any) => state.lovs).lovs;
   const networks = lovs?.lovs?.networks;
   const [loading, setLoading] = useState(true);
+  const [recipientsLoading, setRecipientsLoading] = useState(true);
   const [albumsByNetwork, setAlbumsByNetwork] = useState<
     Record<number, Album[]>
   >({});
@@ -62,13 +63,6 @@ const AlbumSelectionModal: React.FC<Props> = ({
   const [albumList, setAlbumList] = useState([]);
 
   const [activeTab, setActiveTab] = useState<number>(networkIds[0]);
-
-  // Initialize selectedAlbums state
-  // useEffect(() => {
-  //   const initial: Record<number, number | null> = {};
-  //   networkIds.forEach(id => (initial[id] = null));
-  //   setSelectedAlbums(initial);
-  // }, [networkIds]);
 
   // Fetch albums for given networkIds
   const fetchAlbums = async () => {
@@ -120,7 +114,7 @@ const AlbumSelectionModal: React.FC<Props> = ({
   };
 
   const fetchRecipients = async () => {
-    setLoading(true);
+    setRecipientsLoading(true);
     try {
       let headerFetch = {
         method: 'POST',
@@ -155,42 +149,90 @@ const AlbumSelectionModal: React.FC<Props> = ({
       console.error('Error fetching recipients:', error);
       Toast.show('Something went wrong, please try again', 1000);
     } finally {
-      setLoading(false);
+      setRecipientsLoading(false);
     }
   };
 
   useEffect(() => {
     if (visible) {
-      fetchAlbums();
       fetchRecipients();
+      fetchAlbums();
       setActiveTab(networkIds[0]);
     }
   }, [visible]);
 
   const handleAlbumSelect = (networkId: number, albumId: number) => {
-    setSelectedAlbums(prev => ({
+    setSelectedAlbums((prev: Record<number, number[]>) => {
+      const currentSelections = prev[networkId] || [];
+      const isSelected = currentSelections.includes(albumId);
+
+      return {
+        ...prev,
+        [networkId]: isSelected
+          ? currentSelections.filter((id: number) => id !== albumId)
+          : [...currentSelections, albumId],
+      };
+    });
+  };
+
+  const handleSelectAll = (networkId: number) => {
+    const currentAlbums = albumsByNetwork[networkId] || [];
+    const currentSelections = selectedAlbums[networkId] || [];
+    const allAlbumIds = currentAlbums.map(a => a.id);
+
+    // Check if all are selected
+    const allSelected =
+      allAlbumIds.length > 0 &&
+      allAlbumIds.every(id => currentSelections.includes(id));
+
+    setSelectedAlbums((prev: Record<number, number[]>) => ({
       ...prev,
-      [networkId]: prev[networkId] === albumId ? null : albumId,
+      [networkId]: allSelected ? [] : allAlbumIds,
     }));
   };
 
   const handleSubmit = () => {
-    const selectedIds = Object.values(selectedAlbums).filter(
-      id => id !== null,
-    ) as number[];
+    // Flatten all selected album IDs from all networks
+    const selectedIds = Object.values(selectedAlbums)
+      .flat()
+      .filter(id => id !== null) as number[];
+
     const albums = albumList?.filter((al: any) => selectedIds.includes(al.id));
+
+    // Validate that all selected albums have contacts
+    const emptyAlbums = albums.filter((album: any) => {
+      const contactCount =
+        recipients?.filter((r: any) => r?.albumid === album.id)?.length || 0;
+      return contactCount === 0;
+    });
+
+    if (emptyAlbums.length > 0) {
+      const emptyAlbumNames = emptyAlbums.map((a: any) => a.name).join(', ');
+      Toast.show(`Add at least one contact to: ${emptyAlbumNames}`, Toast.LONG);
+      return;
+    }
+
     onSubmit(albums);
     onClose();
   };
+
   const toAddAlbum = () => {
     onClose();
-    navigate('Recipients', { toCampaign: true }); //@ts-ignore
+    navigate('Recipients', { toCampaign: true });
   };
 
   const isSubmitDisabled =
-    Object.values(selectedAlbums).every(v => v === null) || disabled;
+    Object.values(selectedAlbums).every(
+      (arr: number[]) => !arr || arr.length === 0,
+    ) || disabled;
 
   const currentAlbums = albumsByNetwork[activeTab] || [];
+  const currentSelections = selectedAlbums[activeTab] || [];
+
+  // Check if all albums in current network are selected
+  const allCurrentSelected =
+    currentAlbums.length > 0 &&
+    currentAlbums.every(album => currentSelections.includes(album.id));
 
   return (
     <Modal visible={visible} transparent animationType="slide">
@@ -253,7 +295,7 @@ const AlbumSelectionModal: React.FC<Props> = ({
 
           {/* Album List */}
           <View style={styles.listContainer}>
-            {loading ? (
+            {loading || recipientsLoading ? (
               <View style={styles.loading}>
                 <ActivityIndicator size="large" color={theme.buttonBackColor} />
                 <Text style={[styles.loadingText, { color: theme.textColor }]}>
@@ -275,57 +317,132 @@ const AlbumSelectionModal: React.FC<Props> = ({
                 />
               </View>
             ) : (
-              <FlatList
-                data={currentAlbums}
-                keyExtractor={item => item.id.toString()}
-                renderItem={({ item }) => {
-                  const isSelected = selectedAlbums[activeTab] === item.id;
-                  return (
-                    <TouchableOpacity
-                      onPress={() => handleAlbumSelect(activeTab, item.id)}
+              <>
+                {/* Select All Button */}
+                <TouchableOpacity
+                  onPress={() => handleSelectAll(activeTab)}
+                  style={[
+                    styles.selectAllContainer,
+                    { backgroundColor: theme.modalBackColor },
+                  ]}
+                >
+                  <View style={styles.selectAllContent}>
+                    <View
                       style={[
-                        styles.albumItem,
+                        styles.checkbox,
                         {
-                          backgroundColor: isSelected
-                            ? theme.buttonBackColor + '30'
-                            : theme.modalBackColor,
-                          borderColor: isSelected
+                          borderColor: theme.containerBorderColor,
+                          backgroundColor: allCurrentSelected
                             ? theme.buttonBackColor
-                            : theme.containerBorderColor,
+                            : 'transparent',
                         },
                       ]}
                     >
-                      <View style={styles.albumInfo}>
-                        <Text
-                          style={[styles.albumName, { color: theme.textColor }]}
-                        >
-                          {item.name}
-                        </Text>
-                        <Text
-                          style={[
-                            styles.contactCount,
-                            { color: theme.placeholderColor },
-                          ]}
-                        >
-                          {
-                            recipients?.filter(
-                              (r: any) => r?.albumid === item.id,
-                            )?.length
-                          }{' '}
-                          contacts
-                        </Text>
-                      </View>
-                      {isSelected && (
+                      {allCurrentSelected && (
                         <AntdIcon
-                          name="checkcircle"
-                          size={20}
-                          color={theme.buttonBackColor}
+                          name="check"
+                          size={16}
+                          color={theme.backgroundColor}
                         />
                       )}
-                    </TouchableOpacity>
-                  );
-                }}
-              />
+                    </View>
+                    <Text
+                      style={[
+                        styles.selectAllText,
+                        { color: theme.textColor, fontWeight: '600' },
+                      ]}
+                    >
+                      Select All Albums ({currentSelections.length}/
+                      {currentAlbums.length})
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+
+                {/* Album List */}
+                <FlatList
+                  data={currentAlbums}
+                  keyExtractor={item => item.id.toString()}
+                  showsVerticalScrollIndicator={false}
+                  renderItem={({ item }) => {
+                    const isSelected = currentSelections.includes(item.id);
+                    const contactCount =
+                      recipients?.filter((r: any) => r?.albumid === item.id)
+                        ?.length || 0;
+
+                    return (
+                      <TouchableOpacity
+                        onPress={() => handleAlbumSelect(activeTab, item.id)}
+                        style={[
+                          styles.albumItem,
+                          {
+                            backgroundColor: isSelected
+                              ? theme.buttonBackColor + '20'
+                              : theme.modalBackColor,
+                            borderColor: isSelected
+                              ? theme.buttonBackColor
+                              : theme.containerBorderColor,
+                          },
+                        ]}
+                      >
+                        <View style={styles.albumItemContent}>
+                          {/* Checkbox */}
+                          <View
+                            style={[
+                              styles.checkbox,
+                              {
+                                borderColor: isSelected
+                                  ? theme.buttonBackColor
+                                  : theme.containerBorderColor,
+                                backgroundColor: isSelected
+                                  ? theme.buttonBackColor
+                                  : 'transparent',
+                              },
+                            ]}
+                          >
+                            {isSelected && (
+                              <AntdIcon
+                                name="check"
+                                size={16}
+                                color={theme.backgroundColor}
+                              />
+                            )}
+                          </View>
+
+                          {/* Album Info */}
+                          <View style={styles.albumInfo}>
+                            <Text
+                              style={[
+                                styles.albumName,
+                                { color: theme.textColor },
+                              ]}
+                            >
+                              {item.name}
+                            </Text>
+                            <Text
+                              style={[
+                                styles.contactCount,
+                                { color: theme.placeholderColor },
+                              ]}
+                            >
+                              {contactCount} contact
+                              {contactCount === 1 ? '' : 's'}
+                            </Text>
+                          </View>
+
+                          {/* Check Icon */}
+                          {isSelected && (
+                            <AntdIcon
+                              name="checkcircle"
+                              size={22}
+                              color={theme.buttonBackColor}
+                            />
+                          )}
+                        </View>
+                      </TouchableOpacity>
+                    );
+                  }}
+                />
+              </>
             )}
           </View>
 
@@ -394,17 +511,40 @@ const styles = StyleSheet.create({
   listContainer: {
     flex: 1,
   },
-  albumItem: {
+  selectAllContainer: {
+    padding: 14,
+    borderRadius: 10,
+    marginBottom: 12,
+  },
+  selectAllContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 16,
+  },
+  selectAllText: {
+    fontSize: 16,
+    marginLeft: 12,
+  },
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderRadius: 6,
+    borderWidth: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  albumItem: {
     borderRadius: 10,
     marginBottom: 10,
     borderWidth: 1,
+    padding: 14,
+  },
+  albumItemContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   albumInfo: {
     flex: 1,
+    marginLeft: 12,
   },
   albumName: {
     fontSize: 16,
