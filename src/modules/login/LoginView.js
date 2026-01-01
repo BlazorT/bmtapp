@@ -35,6 +35,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { useTheme } from '../../hooks/useTheme';
 import { useUser } from '../../hooks/useUser';
 import { isTab } from '../../constants';
+import SignupWithFacebook from '../../components/SignupWithFacebook';
 
 export default function LoginScreen(props) {
   const theme = useTheme();
@@ -279,7 +280,7 @@ export default function LoginScreen(props) {
       async function (res) {
         //AsyncStorage.getItem('SignupWithGoogle').then(function (res) {
         let Asyncdata = JSON.parse(res);
-
+        console.log({ Asyncdata });
         if (Asyncdata != null) {
           setspinner(true);
           var fcmToken = servicesettings.fcmToken;
@@ -375,10 +376,11 @@ export default function LoginScreen(props) {
               JSON.stringify(ImageheaderFetch),
           );
           fetch(
-            servicesettings.baseuri + 'useraccountwithlogin',
+            servicesettings.baseuri + 'BlazorApi/useraccountwithlogin',
             ImageheaderFetch,
           )
             .then(response => {
+              console.log({ response });
               if (!response.ok) {
                 throw new Error(
                   `Request failed with code : ${response.status}`,
@@ -482,7 +484,7 @@ export default function LoginScreen(props) {
             .catch(error => {
               setspinner(false);
               //*********need to some disscuss*********/
-              console.error('uploadpicture error', error);
+              console.log(error?.message);
               Toast.showWithGravity(
                 error?.message ||
                   'Internet connection failed, try another time !!!',
@@ -632,6 +634,63 @@ export default function LoginScreen(props) {
             onPress={() => checkTextInput()}
           />
 
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: 15,
+              width: '87%',
+            }}
+          >
+            <View
+              style={{
+                height: 1,
+                width: '45%',
+                backgroundColor: theme.placeholderColor,
+              }}
+            />
+            <Text style={{ color: theme.placeholderColor, fontSize: 12 }}>
+              OR
+            </Text>
+            <View
+              style={{
+                height: 1,
+                width: '45%',
+                backgroundColor: theme.placeholderColor,
+              }}
+            />
+          </View>
+          {Platform.OS === 'android' && (
+            <View style={styles.signupView}>
+              <TouchableOpacity
+                onPress={() => SignupWithGoogle()}
+                style={[
+                  styles.btnfacebook,
+                  { backgroundColor: theme.buttonBackColor },
+                ]}
+              >
+                <View style={styles.googleIconView}>
+                  <Image source={googleIcon} style={styles.googleIcon} />
+                </View>
+                <Text
+                  style={
+                    Platform.OS === 'ios'
+                      ? styles.textfacebookIOS
+                      : styles.textfacebook
+                  }
+                >
+                  Sign Up With Google
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+          <SignupWithFacebook
+            PressSignUp={PressSignUp}
+            FacebookmodalVisible={FacebookmodalVisible}
+            theme={theme}
+          ></SignupWithFacebook>
+
           <View style={styles.fieldView}>
             <View style={styles.MainView}>
               <TouchableOpacity
@@ -708,7 +767,7 @@ export default function LoginScreen(props) {
                     styles.btnfacebook,
                     {
                       backgroundColor: theme.buttonBackColor,
-                      width: isTab ? '50%' : '80%',
+                      width: isTab ? '50%' : '87%',
                     },
                   ]}
                 >
@@ -724,35 +783,35 @@ export default function LoginScreen(props) {
                   </Text>
                 </TouchableOpacity>
               </View>
-              {/* {Platform.OS === 'android' && (
-              <View style={styles.signupView}>
-                <TouchableOpacity
-                  onPress={() => SignupWithGoogle()}
-                  style={[
-                    styles.btnfacebook,
-                    { backgroundColor: theme.buttonBackColor },
-                  ]}
-                >
-                  <View style={styles.googleIconView}>
-                    <Image source={googleIcon} style={styles.googleIcon} />
-                  </View>
-                  <Text
-                    style={
-                      Platform.OS === 'ios'
-                        ? styles.textfacebookIOS
-                        : styles.textfacebook
-                    }
+              {Platform.OS === 'android' && (
+                <View style={styles.signupView}>
+                  <TouchableOpacity
+                    onPress={() => SignupWithGoogle()}
+                    style={[
+                      styles.btnfacebook,
+                      { backgroundColor: theme.buttonBackColor },
+                    ]}
                   >
-                    Sign Up With Google
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            )}
-            <SignupWithFacebook
-              PressSignUp={PressSignUp}
-              FacebookmodalVisible={FacebookmodalVisible}
-              theme={theme}
-            ></SignupWithFacebook> */}
+                    <View style={styles.googleIconView}>
+                      <Image source={googleIcon} style={styles.googleIcon} />
+                    </View>
+                    <Text
+                      style={
+                        Platform.OS === 'ios'
+                          ? styles.textfacebookIOS
+                          : styles.textfacebook
+                      }
+                    >
+                      Sign Up With Google
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+              <SignupWithFacebook
+                PressSignUp={PressSignUp}
+                FacebookmodalVisible={FacebookmodalVisible}
+                theme={theme}
+              ></SignupWithFacebook>
             </View>
             <View
               style={[
@@ -852,7 +911,7 @@ const styles = StyleSheet.create({
   },
   btnlogin: {
     width: isTab ? '60%' : '88%',
-    marginTop: 15,
+    marginVertical: 15,
     alignSelf: 'center',
   },
   TitleLogo: {
@@ -904,9 +963,8 @@ const styles = StyleSheet.create({
   btnfacebook: {
     backgroundColor: colors.Blazorbutton,
     flexDirection: 'row',
-    width: Dimensions.get('window').width - 50,
+    width: isTab ? '60%' : '88%',
     color: 'white',
-    marginBottom: 1,
     height: 46,
     alignItems: 'center',
     borderRadius: 4,
