@@ -151,7 +151,7 @@ export default class SignupWithFacebook extends PureComponent {
                     : styles.textfacebook
                 }
               >
-                Sign Up With Facebook
+                Sign {this.props.isSignIn ? 'In' : 'Up'} With Facebook
               </Text>
             </TouchableOpacity>
           </View>
@@ -184,15 +184,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: Dimensions.get('window').width - 50,
     color: 'white',
-    marginBottom: 1,
+    // marginBottom: 1,
     height: 48,
-    marginVertical: 2,
-    alignItems: 'center',
+    // marginVertical: 2,
     borderRadius: 4,
+    alignItems: 'center',
+    // justifyContent: 'center',
   },
   Iconfacebook: {
     fontSize: 32,
-    paddingTop: 12,
+    paddingTop: 10,
     paddingHorizontal: 17,
     color: 'white',
     borderTopLeftRadius: 4,

@@ -15,6 +15,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { appleAuth } from '@invertase/react-native-apple-authentication';
+
 import DeviceInfo from 'react-native-device-info';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Toast from 'react-native-simple-toast';
@@ -23,6 +25,7 @@ import Model from '../../components/Model';
 import { colors } from '../../styles';
 import servicesettings from '../dataservices/servicesettings';
 const googleIcon = require('../../../assets/images/icons/google.png');
+import MaterialCommunityIcons from 'react-native-vector-icons/FontAwesome';
 
 import {
   GoogleSignin,
@@ -36,15 +39,15 @@ import { useTheme } from '../../hooks/useTheme';
 import { useUser } from '../../hooks/useUser';
 import { isTab } from '../../constants';
 import SignupWithFacebook from '../../components/SignupWithFacebook';
+import moment from 'moment/moment';
 
 export default function LoginScreen(props) {
   const theme = useTheme();
-  const { loginUser } = useUser();
+  const { loginUser, appleUsers, findAppleUser, updateAppleUsers } = useUser();
   const [spinner, setspinner] = useState(false);
 
   const profilelogo = require('../../../assets/images/BDMT.png');
 
-  const [userInfo, setUserInfo] = useState('');
   const [Email, setEmail] = useState('');
   const [emailfocus, setemailFocus] = useState(false);
   const customestyleEmail = emailfocus
@@ -88,7 +91,8 @@ export default function LoginScreen(props) {
   const Signup = async () => {
     global.SocialMedia = 1;
     try {
-      console.log('GoogleSignin Info --> ', JSON.stringify(GoogleSignin));
+      await GoogleSignin.signOut();
+      // console.log('GoogleSignin Info --> ', JSON.stringify(GoogleSignin));
       await GoogleSignin.hasPlayServices({
         showPlayServicesUpdateDialog: true,
       });
@@ -107,6 +111,10 @@ export default function LoginScreen(props) {
         var firstName = name.split(' ')[0];
         var lastName = name.split(' ')[1];
         var userName = name.replace(' ', '.');
+      } else {
+        var firstName = givenName || name;
+        var lastName = givenName || name;
+        var userName = givenName || name;
       }
       var facebookOS = 5;
       AsyncStorage.removeItem('SignupWithGoogle_Facebook');
@@ -126,7 +134,6 @@ export default function LoginScreen(props) {
         JSON.stringify(GoogleData),
       );
 
-      setUserInfo(userInfo);
       setmodalVisiblecamera(false);
       if (global.Signup_LoginWithGoogle == 1) {
         ContinueWithSocialMedia();
@@ -273,6 +280,15 @@ export default function LoginScreen(props) {
       });
   };
 
+  const normalizeAvatarPath = path => {
+    if (!path) return '';
+
+    return path
+      .replace(/\\/g, '/') // convert backslashes to slashes
+      .replace(/^\/?wwwroot/i, '') // remove leading "wwwroot"
+      .replace(/^\/+/, ''); // remove leading slashes
+  };
+
   const ContinueWithSocialMedia = () => {
     setspinner(true);
     LoginManager.setLoginBehavior('web_only');
@@ -327,9 +343,12 @@ export default function LoginScreen(props) {
           data.append('id', (0).toString());
           data.append('orgid', (1).toString());
           data.append('authtoken', authToken);
+          data.append('usercode', Asyncdata?.userID?.trim() || '');
+          data.append('createdby', '1');
           data.append('IMs', uniqueId);
           data.append('regsource', OS.toString());
           data.append('username', UserName.trim());
+          data.append('contact', '');
           if (
             FirstName == null ||
             FirstName == '' ||
@@ -390,6 +409,9 @@ export default function LoginScreen(props) {
             })
             .then(responseJson => {
               console.log({ responseJson });
+              console.log({ responseJson: JSON.stringify(responseJson) });
+              setspinner(false);
+
               if (
                 responseJson.status == false &&
                 responseJson.errorCode == '404'
@@ -399,8 +421,8 @@ export default function LoginScreen(props) {
                   responseJson.message != ''
                     ? Toast.show(' ' + responseJson.message + ' ')
                     : Toast.show('Data not found');
+                  return;
                 }
-                return;
               } else if (
                 responseJson.status == false &&
                 responseJson.errorCode == '202'
@@ -410,8 +432,16 @@ export default function LoginScreen(props) {
                   responseJson.message != ''
                     ? Toast.show(' ' + responseJson.message + ' ')
                     : Toast.show('Api validation failed');
+                  return;
                 }
-                return;
+              } else if (responseJson.status == false) {
+                {
+                  setspinner(false);
+                  responseJson.message != ''
+                    ? Toast.show(' ' + responseJson.message + ' ')
+                    : Toast.show('Api validation failed');
+                  return;
+                }
               } else if (
                 responseJson.status == true &&
                 responseJson.errorCode == '407'
@@ -423,18 +453,15 @@ export default function LoginScreen(props) {
                     : Toast.show(
                         'Too many requests, must be 40 Seconds interval between next request!',
                       );
+                  return;
                 }
-                return;
-              } else if (responseJson.data.length == 0) {
+              } else if (!responseJson?.data) {
                 setspinner(false);
                 Toast.show('Oops login failed incorrect username/password');
                 return;
               }
-              if (
-                responseJson.status == true &&
-                responseJson.errorCode == '0'
-              ) {
-                var responseJsonAdd = responseJson.data[0];
+              if (responseJson.status == true) {
+                var responseJsonAdd = responseJson.data;
                 var userId = responseJsonAdd.id;
                 var userRoleId = responseJsonAdd.roleId;
                 var userStatusId = responseJsonAdd.status;
@@ -451,7 +478,7 @@ export default function LoginScreen(props) {
                 );
                 var UserInfo = {
                   address: '',
-                  avatar: responseJsonAdd.avatar,
+                  avatar: normalizeAvatarPath(responseJsonAdd.avatar),
                   email: responseJsonAdd.email,
                   firstname: responseJsonAdd.firstName,
                   id: userId.toString(),
@@ -466,11 +493,9 @@ export default function LoginScreen(props) {
                 console.log({ responseJsonAdd, UserInfo });
                 loginUser(UserInfo);
 
-                setspinner(false);
-                Toast.show('Save successfully');
+                Toast.show(responseJson?.message || 'Save successfully');
                 setTimeout(() => {
                   setspinner(false);
-
                   props.navigation.replace('Dashboard');
                   //props.navigation.navigate('Home');
                 }, 2000);
@@ -506,6 +531,56 @@ export default function LoginScreen(props) {
     LoginManager.setLoginBehavior('web_only');
     setmodalVisiblecamera(false);
     ContinueWithSocialMedia();
+  }
+
+  async function signInWithApple() {
+    const appleAuthRequestResponse = await appleAuth.performRequest({
+      requestedOperation: appleAuth.Operation.LOGIN,
+      // Note: it appears putting FULL_NAME first is important, see issue #293
+      requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
+    });
+    console.log({ appleAuthRequestResponse });
+    if (appleAuthRequestResponse !== null || appleAuthRequestResponse !== '') {
+      let { email, fullName } = appleAuthRequestResponse;
+      if (email === null || fullName === null) {
+        const foundUser = findAppleUser(appleAuthRequestResponse.user);
+        if (foundUser) {
+          email = foundUser.email;
+          fullName = foundUser.fullName;
+        } else {
+          updateAppleUsers(appleAuthRequestResponse);
+        }
+      } else {
+        updateAppleUsers(appleAuthRequestResponse);
+      }
+      var facebookOS = 5;
+
+      AsyncStorage.removeItem('SignupWithGoogle_Facebook');
+      var GoogleData = {
+        firstName: fullName?.givenName ?? fullName?.nickname ?? '',
+        lastName: fullName?.familyName ?? fullName?.middleName ?? '',
+        userName: `${fullName?.givenName ?? fullName?.nickname ?? ''}.${fullName?.familyName ?? fullName?.middleName ?? ''}`,
+        facebookOS: facebookOS,
+        userID: '',
+        picture: '',
+        email: email ?? '',
+        authtoken: '',
+      };
+      console.log('google data ' + JSON.stringify(GoogleData));
+      AsyncStorage.setItem(
+        'SignupWithGoogle_Facebook',
+        JSON.stringify(GoogleData),
+      );
+
+      setmodalVisiblecamera(false);
+      if (global.Signup_LoginWithGoogle == 1) {
+        ContinueWithSocialMedia();
+      } else if (global.Signup_LoginWithGoogle == 2) {
+        ContinueWithSocialMedia();
+      }
+    } else {
+      Toast.show('Something went wrong');
+    }
   }
   function SignupWithGoogle() {
     global.Signup_LoginWithGoogle = 1;
@@ -680,7 +755,34 @@ export default function LoginScreen(props) {
                       : styles.textfacebook
                   }
                 >
-                  Sign Up With Google
+                  Sign In With Google
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+          {Platform.OS === 'ios' && (
+            <View style={styles.signupView}>
+              <TouchableOpacity
+                onPress={() => signInWithApple()}
+                style={[
+                  styles.btnfacebook,
+                  { backgroundColor: theme.buttonBackColor },
+                ]}
+              >
+                <View style={styles.googleIconView}>
+                  <MaterialCommunityIcons
+                    name={'apple'}
+                    style={styles.Iconfacebook}
+                  />
+                </View>
+                <Text
+                  style={
+                    Platform.OS === 'ios'
+                      ? styles.textfacebookIOS
+                      : styles.textfacebook
+                  }
+                >
+                  Sign In With Apple
                 </Text>
               </TouchableOpacity>
             </View>
@@ -689,6 +791,7 @@ export default function LoginScreen(props) {
             PressSignUp={PressSignUp}
             FacebookmodalVisible={FacebookmodalVisible}
             theme={theme}
+            isSignIn={true}
           ></SignupWithFacebook>
 
           <View style={styles.fieldView}>
@@ -803,6 +906,33 @@ export default function LoginScreen(props) {
                       }
                     >
                       Sign Up With Google
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+              {Platform.OS === 'ios' && (
+                <View style={styles.signupView}>
+                  <TouchableOpacity
+                    onPress={() => signInWithApple()}
+                    style={[
+                      styles.btnfacebook,
+                      { backgroundColor: theme.buttonBackColor },
+                    ]}
+                  >
+                    <View style={styles.googleIconView}>
+                      <MaterialCommunityIcons
+                        name={'apple'}
+                        style={styles.Iconfacebook}
+                      />
+                    </View>
+                    <Text
+                      style={
+                        Platform.OS === 'ios'
+                          ? styles.textfacebookIOS
+                          : styles.textfacebook
+                      }
+                    >
+                      Sign In With Apple
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -970,15 +1100,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   Iconfacebook: {
-    fontSize: 25,
-    paddingTop: 14,
-    paddingHorizontal: 19,
-    color: 'white',
-    borderTopLeftRadius: 4,
-    borderBottomLeftRadius: 4,
-    backgroundColor: 'red',
-    width: 15 + '%',
-    height: 46,
+    fontSize: 32,
   },
   IconEmail: {
     fontSize: 34,
@@ -995,10 +1117,13 @@ const styles = StyleSheet.create({
     height: 30,
     width: 30,
   },
+
   googleIconView: {
     height: 30,
-    paddingTop: 10,
-    paddingHorizontal: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    // paddingTop: 10,
+    // paddingHorizontal: 10,
     borderTopLeftRadius: 4,
     borderBottomLeftRadius: 4,
     backgroundColor: '#f0eff5',
