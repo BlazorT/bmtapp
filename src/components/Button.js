@@ -2,6 +2,7 @@ import React from 'react';
 import {
   ActivityIndicator,
   Image,
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -162,8 +163,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     // width: 'auto',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingHorizontal: Platform.OS === 'ios' ? 0 : 10,
+    paddingVertical: Platform.OS === 'ios' ? 0 : 5,
   },
   buttonSmall: {
     paddingHorizontal: Platform.OS === 'ios' ? 2 : 15,

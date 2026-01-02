@@ -1,137 +1,186 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>en</string>
-	<key>CFBundleDisplayName</key>
-	<string>Blazor Media Toolkit</string>
-	<key>CFBundleExecutable</key>
-	<string>$(EXECUTABLE_NAME)</string>
-	<key>CFBundleIdentifier</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-	<key>CFBundleInfoDictionaryVersion</key>
-	<string>25</string>
-	<key>CFBundleName</key>
-	<string>$(PRODUCT_NAME)</string>
-	<key>CFBundlePackageType</key>
-	<string>APPL</string>
-	<key>CFBundleShortVersionString</key>
-	<string>$(MARKETING_VERSION)</string>
-	<key>CFBundleSignature</key>
-	<string>????</string>
-	<key>CFBundleVersion</key>
-	<string>$(CURRENT_PROJECT_VERSION)</string>
-	<key>LSRequiresIPhoneOS</key>
-	<true/>
-	<key>NSAppTransportSecurity</key>
-	<dict>
-	    <key>NSExceptionDomains</key>
-	    <dict>
-	        <key>bmt.blazortech.com</key>
-	        <dict>
-	            <key>NSExceptionAllowsInsecureHTTPLoads</key>
-	            <true/>
-	            <key>NSIncludesSubdomains</key>
-	            <true/>
-	        </dict>
-	        <key>72.61.77.197</key>
-	        <dict>
-	            <key>NSExceptionAllowsInsecureHTTPLoads</key>
-	            <true/>
-				<key>NSIncludesSubdomains</key>
-            <true/>
-	        </dict>
-			<key>NSExceptionDomains</key>
+  <dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en</string>
+
+    <key>CFBundleDisplayName</key>
+    <string>Blazor Media Toolkit</string>
+
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
+
+    <key>CFBundleIdentifier</key>
+    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>25</string>
+
+    <key>CFBundleName</key>
+    <string>$(PRODUCT_NAME)</string>
+
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+
+    <key>CFBundleShortVersionString</key>
+    <string>$(MARKETING_VERSION)</string>
+
+    <key>CFBundleSignature</key>
+    <string>????</string>
+
+    <key>CFBundleVersion</key>
+    <string>$(CURRENT_PROJECT_VERSION)</string>
+
+    <key>LSRequiresIPhoneOS</key>
+    <true/>
+
+    <key>NSAppTransportSecurity</key>
     <dict>
-        <key>easypay.easypaisa.com.pk</key>
+      <key>NSExceptionDomains</key>
+      <dict>
+        <key>bmt.blazortech.com</key>
         <dict>
+          <key>NSExceptionAllowsInsecureHTTPLoads</key>
+          <true/>
+          <key>NSIncludesSubdomains</key>
+          <true/>
+        </dict>
+
+        <key>72.61.77.197</key>
+        <dict>
+          <key>NSExceptionAllowsInsecureHTTPLoads</key>
+          <true/>
+          <key>NSIncludesSubdomains</key>
+          <true/>
+        </dict>
+
+        <key>NSExceptionDomains</key>
+        <dict>
+          <key>easypay.easypaisa.com.pk</key>
+          <dict>
             <key>NSExceptionAllowsInsecureHTTPLoads</key>
             <true/>
             <key>NSIncludesSubdomains</key>
             <true/>
+          </dict>
         </dict>
+      </dict>
     </dict>
-	    </dict>
-	</dict>
-	<key>NSAppleMusicUsageDescription</key>
-	<string>This app does not access your Apple Music library.</string>
-	<key>NSCalendarsUsageDescription</key>
-	<string>This app requires access for date time selection</string>
-	<key>NSCameraUsageDescription</key>
-	<string>This app requires access to the camera for video recording</string>
-	<key>NSContactsUsageDescription</key>
-	<string>This app would like to access your contacts to import recipients.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>This app requires access to the location for device location access</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app requires access to your location</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>This app requires access to the microphone for voice recording during video recording</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>We need access to video from library</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>We need access to video from library</string>
-	<key>Privacy - Contacts Usage Description</key>
-	<string>This app would like to access your contacts to import recipients.</string>
-	<key>RCTNewArchEnabled</key>
-	<true/>
-	<key>UIAppFonts</key>
+	
+	<key>CFBundleURLTypes</key>
 	<array>
-		<string>Lato-Bold.ttf</string>
-		<string>Lato-BoldItalic.ttf</string>
-		<string>Lato-Italic.ttf</string>
-		<string>Lato-Light.ttf</string>
-		<string>Lato-LightItalic.ttf</string>
-		<string>Lato-Medium.ttf</string>
-		<string>Lato-Regular.ttf</string>
-		<string>Lato-Semibold.ttf</string>
-		<string>Lato-Thin.ttf</string>
-		<string>AntDesign.ttf</string>
-		<string>Entypo.ttf</string>
-		<string>EvilIcons.ttf</string>
-		<string>Feather.ttf</string>
-		<string>FontAwesome.ttf</string>
-		<string>FontAwesome5_Brands.ttf</string>
-		<string>FontAwesome5_Regular.ttf</string>
-		<string>FontAwesome5_Solid.ttf</string>
-		<string>Foundation.ttf</string>
-		<string>Ionicons.ttf</string>
-		<string>MaterialCommunityIcons.ttf</string>
-		<string>MaterialIcons.ttf</string>
-		<string>Octicons.ttf</string>
-		<string>SimpleLineIcons.ttf</string>
-		<string>Zocial.ttf</string>
-		<string>Now-Black.otf</string>
-		<string>Now-Bold.otf</string>
-		<string>Now-Light.otf</string>
-		<string>Now-Medium.otf</string>
-		<string>Now-Regular.otf</string>
-		<string>Now-Thin.otf</string>
-		<string>NowAlt-Black.otf</string>
-		<string>NowAlt-Bold.otf</string>
-		<string>NowAlt-Light.otf</string>
-		<string>NowAlt-Medium.otf</string>
-		<string>NowAlt-Regular.otf</string>
-		<string>NowAlt-Thin.otf</string>
-		<string>fancypens.regular.ttf</string>
+	  <dict>
+	  <key>CFBundleURLSchemes</key>
+	  <array>
+	    <string>fb2081794288680274</string>
+	  </array>
+	  </dict>
 	</array>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>fetch</string>
-		<string>remote-notification</string>
-	</array>
-	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen</string>
-	<key>UIRequiredDeviceCapabilities</key>
-	<array>
-		<string>arm64</string>
-	</array>
-	<key>UISupportedInterfaceOrientations</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-	</array>
-	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
-</dict>
+	<key>FacebookAppID</key>
+	<string>2081794288680274</string>
+	<key>FacebookClientToken</key>
+	<string>5e3964eec6437e292865dcb01f258299</string>
+	<key>FacebookDisplayName</key>
+	<string>Blazr Media Toolkit</string>
+
+    <key>NSAppleMusicUsageDescription</key>
+    <string>This app does not access your Apple Music library.</string>
+
+    <key>NSCalendarsUsageDescription</key>
+    <string>This app requires access for date time selection</string>
+
+    <key>NSCameraUsageDescription</key>
+    <string>This app requires access to the camera for video recording</string>
+
+    <key>NSContactsUsageDescription</key>
+    <string>This app would like to access your contacts to import recipients.</string>
+
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>This app requires access to the location for device location access</string>
+
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>This app requires access to your location</string>
+
+    <key>NSMicrophoneUsageDescription</key>
+    <string>
+      This app requires access to the microphone for voice recording during video recording
+    </string>
+
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>We need access to video from library</string>
+
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>We need access to video from library</string>
+
+    <key>Privacy - Contacts Usage Description</key>
+    <string>This app would like to access your contacts to import recipients.</string>
+
+    <key>RCTNewArchEnabled</key>
+    <true/>
+
+    <key>UIAppFonts</key>
+    <array>
+      <string>Lato-Bold.ttf</string>
+      <string>Lato-BoldItalic.ttf</string>
+      <string>Lato-Italic.ttf</string>
+      <string>Lato-Light.ttf</string>
+      <string>Lato-LightItalic.ttf</string>
+      <string>Lato-Medium.ttf</string>
+      <string>Lato-Regular.ttf</string>
+      <string>Lato-Semibold.ttf</string>
+      <string>Lato-Thin.ttf</string>
+      <string>AntDesign.ttf</string>
+      <string>Entypo.ttf</string>
+      <string>EvilIcons.ttf</string>
+      <string>Feather.ttf</string>
+      <string>FontAwesome.ttf</string>
+      <string>FontAwesome5_Brands.ttf</string>
+      <string>FontAwesome5_Regular.ttf</string>
+      <string>FontAwesome5_Solid.ttf</string>
+      <string>Foundation.ttf</string>
+      <string>Ionicons.ttf</string>
+      <string>MaterialCommunityIcons.ttf</string>
+      <string>MaterialIcons.ttf</string>
+      <string>Octicons.ttf</string>
+      <string>SimpleLineIcons.ttf</string>
+      <string>Zocial.ttf</string>
+      <string>Now-Black.otf</string>
+      <string>Now-Bold.otf</string>
+      <string>Now-Light.otf</string>
+      <string>Now-Medium.otf</string>
+      <string>Now-Regular.otf</string>
+      <string>Now-Thin.otf</string>
+      <string>NowAlt-Black.otf</string>
+      <string>NowAlt-Bold.otf</string>
+      <string>NowAlt-Light.otf</string>
+      <string>NowAlt-Medium.otf</string>
+      <string>NowAlt-Regular.otf</string>
+      <string>NowAlt-Thin.otf</string>
+      <string>fancypens.regular.ttf</string>
+    </array>
+
+    <key>UIBackgroundModes</key>
+    <array>
+      <string>fetch</string>
+      <string>remote-notification</string>
+    </array>
+
+    <key>UILaunchStoryboardName</key>
+    <string>LaunchScreen</string>
+
+    <key>UIRequiredDeviceCapabilities</key>
+    <array>
+      <string>arm64</string>
+    </array>
+
+    <key>UISupportedInterfaceOrientations</key>
+    <array>
+      <string>UIInterfaceOrientationPortrait</string>
+    </array>
+
+    <key>UIViewControllerBasedStatusBarAppearance</key>
+    <false/>
+  </dict>
 </plist>

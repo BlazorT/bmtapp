@@ -30,7 +30,7 @@ export const useUser = () => {
   };
 
   const findAppleUser = id => {
-    return appleUsers.find(user => user.user == id);
+    return appleUsers?.find(user => user?.user == id) || null;
   };
 
   return {

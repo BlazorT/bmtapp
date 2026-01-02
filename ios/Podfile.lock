@@ -2696,6 +2696,8 @@ PODS:
     - SocketRocket
   - rn-fetch-blob (0.12.0):
     - React-Core
+  - RNAppleAuthentication (2.5.0):
+    - React-Core
   - RNCAsyncStorage (2.2.0):
     - boost
     - DoubleConversion
@@ -3291,6 +3293,7 @@ DEPENDENCIES:
   - ReactCodegen (from `build/generated/ios`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - rn-fetch-blob (from `../node_modules/rn-fetch-blob`)
+  - "RNAppleAuthentication (from `../node_modules/@invertase/react-native-apple-authentication`)"
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNCCheckbox (from `../node_modules/@react-native-community/checkbox`)"
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
@@ -3517,6 +3520,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   rn-fetch-blob:
     :path: "../node_modules/rn-fetch-blob"
+  RNAppleAuthentication:
+    :path: "../node_modules/@invertase/react-native-apple-authentication"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-async-storage/async-storage"
   RNCCheckbox:
@@ -3668,6 +3673,7 @@ SPEC CHECKSUMS:
   ReactCodegen: a39a2e5ed4bfea8d6b9ad09ea9ffd9a1486e4273
   ReactCommon: 3ccdf6dd4738262600fad688f13d0d6bf4262b4e
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
+  RNAppleAuthentication: c088adfc7b371d44eb3da20c38d450d5543e5a0a
   RNCAsyncStorage: afe7c3711dc256e492aa3a50dcac43eecebd0ae5
   RNCCheckbox: 471ebdc33884c084f362615c1ef3507496cc07f1
   RNCMaskedView: 0e1bc4bfa8365eba5fbbb71e07fbdc0555249489

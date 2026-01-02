@@ -44,6 +44,7 @@ import moment from 'moment/moment';
 export default function LoginScreen(props) {
   const theme = useTheme();
   const { loginUser, appleUsers, findAppleUser, updateAppleUsers } = useUser();
+  console.log({ appleUsers });
   const [spinner, setspinner] = useState(false);
 
   const profilelogo = require('../../../assets/images/BDMT.png');
@@ -291,7 +292,7 @@ export default function LoginScreen(props) {
 
   const ContinueWithSocialMedia = () => {
     setspinner(true);
-    LoginManager.setLoginBehavior('web_only');
+    // LoginManager.setLoginBehavior('web_only');
     AsyncStorage.getItem('SignupWithGoogle_Facebook').then(
       async function (res) {
         //AsyncStorage.getItem('SignupWithGoogle').then(function (res) {
@@ -542,8 +543,10 @@ export default function LoginScreen(props) {
     console.log({ appleAuthRequestResponse });
     if (appleAuthRequestResponse !== null || appleAuthRequestResponse !== '') {
       let { email, fullName } = appleAuthRequestResponse;
+      console.log({ email, fullName });
       if (email === null || fullName === null) {
-        const foundUser = findAppleUser(appleAuthRequestResponse.user);
+        const foundUser = findAppleUser(appleAuthRequestResponse?.user);
+        console.log({ foundUser });
         if (foundUser) {
           email = foundUser.email;
           fullName = foundUser.fullName;
@@ -572,12 +575,7 @@ export default function LoginScreen(props) {
         JSON.stringify(GoogleData),
       );
 
-      setmodalVisiblecamera(false);
-      if (global.Signup_LoginWithGoogle == 1) {
-        ContinueWithSocialMedia();
-      } else if (global.Signup_LoginWithGoogle == 2) {
-        ContinueWithSocialMedia();
-      }
+      ContinueWithSocialMedia();
     } else {
       Toast.show('Something went wrong');
     }
@@ -1142,7 +1140,7 @@ const styles = StyleSheet.create({
   textfacebookIOS: {
     color: 'white',
     fontSize: 14,
-    fontWeight: '200',
+    fontWeight: '500',
     width: 87 + '%',
     textAlign: 'center',
   },

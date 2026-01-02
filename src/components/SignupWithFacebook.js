@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
   textfacebookIOS: {
     color: 'white',
     fontSize: 14,
-    fontWeight: '200',
+    fontWeight: '500',
     width: 87 + '%',
     textAlign: 'center',
   },

@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     textAlign: 'center',
-    paddingHorizontal: 15,
+    paddingHorizontal: 12,
     paddingVertical: 15,
     flex: 1,
     backgroundColor: 'white',

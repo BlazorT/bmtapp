@@ -241,10 +241,19 @@ function CustomDrawerContent(props) {
 
   const handleLogout = useCallback(() => {
     setLogoutAlertVisible(false);
-    logoutUser();
-    Toast.showWithGravity('Logged out successfully', Toast.LONG, Toast.CENTER);
-    navigate('Login');
-    resetGlobalUserData();
+    setTimeout(
+      () => {
+        logoutUser();
+        Toast.showWithGravity(
+          'Logged out successfully',
+          Toast.LONG,
+          Toast.CENTER,
+        );
+        navigate('Login');
+        resetGlobalUserData();
+      },
+      Platform.OS === 'ios' ? 1000 : 0,
+    );
   }, [logoutUser, navigate]);
 
   const handleUnsubscribe = useCallback(async () => {
