@@ -19,6 +19,7 @@ import ProfileScreen from '../profile/ProfileViewContainer';
 import RecipeitnsView from '../recipients/RecipeitnsViewContainer';
 import TabNavigator from './MainTabNavigator';
 import PaymentView from '../payment/PeymentViewContainer';
+import PricingDetailsScreen from '../packages/PackagesScreen';
 
 const headerLeftComponent = props => {
   const theme = useTheme();
@@ -259,6 +260,17 @@ const StackNavigationData = [
   {
     name: 'Add & Edit Organization',
     component: OrganizationAddEditScreen,
+    headerLeft: headerLeftComponent,
+    headerBackground: { source: headerBackground },
+    headerTitleStyle: {
+      fontFamily: fonts.primaryRegular,
+      color: colors.NavbarTextColor,
+      fontSize: 18,
+    },
+  },
+  {
+    name: 'Pricing Plans',
+    component: PricingDetailsScreen,
     headerLeft: headerLeftComponent,
     headerBackground: { source: headerBackground },
     headerTitleStyle: {

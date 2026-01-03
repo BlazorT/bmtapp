@@ -201,6 +201,16 @@ const DrawerMenuItem = ({ item, theme, onPress }) => {
         />
       );
     }
+    if (item.name === 'Pricing Plans') {
+      return (
+        <AntdIcon
+          name="gift"
+          size={25}
+          style={styles.imgStyle}
+          color={theme.tintColor}
+        />
+      );
+    }
     return (
       <Image
         style={styles.imgStyle}
@@ -285,6 +295,11 @@ function CustomDrawerContent(props) {
       },
       {
         name: 'Panel',
+        icon: iconPages,
+        condition: true,
+      },
+      {
+        name: 'Pricing Plans',
         icon: iconPages,
         condition: true,
       },

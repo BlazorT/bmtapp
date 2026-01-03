@@ -64,7 +64,6 @@ export default function PagesScreen(props) {
   };
 
   const onUnsubscribe = async () => {
-    console.log({ user });
     toggleUnsubscribeAlert();
     const body = {
       id: user?.id,
@@ -176,6 +175,12 @@ export default function PagesScreen(props) {
       condition: isAuthenticated,
     },
     {
+      icon: <AntdIcon name="gift" size={45} color={theme.tintColor} />,
+      text: 'Pricing Plans',
+      path: 'Pricing Plans',
+      condition: true,
+    },
+    {
       icon: <AntdIcon name="user" size={45} color={theme.tintColor} />,
       text: 'Unsubscribe',
       path: 'Unsubscribe',
@@ -195,7 +200,12 @@ export default function PagesScreen(props) {
     // },
   ];
   const onCardPress = path => {
-    if (isAuthenticated || path === 'About') {
+    if (
+      isAuthenticated ||
+      path === 'About' ||
+      path === 'Add & Edit Organization' ||
+      path === 'Pricing Plans'
+    ) {
       props.navigation.navigate(path);
     } else {
       Toast.show('Please login first');

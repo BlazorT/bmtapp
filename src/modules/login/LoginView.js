@@ -39,12 +39,10 @@ import { useTheme } from '../../hooks/useTheme';
 import { useUser } from '../../hooks/useUser';
 import { isTab } from '../../constants';
 import SignupWithFacebook from '../../components/SignupWithFacebook';
-import moment from 'moment/moment';
 
 export default function LoginScreen(props) {
   const theme = useTheme();
   const { loginUser, appleUsers, findAppleUser, updateAppleUsers } = useUser();
-  console.log({ appleUsers });
   const [spinner, setspinner] = useState(false);
 
   const profilelogo = require('../../../assets/images/BDMT.png');

@@ -48,7 +48,10 @@ export default function HomeScreen(props) {
       ) : (
         <Video
           source={require('../../../assets/images/home.mp4')}
-          style={styles.backgroundVideo}
+          style={[
+            styles.backgroundVideo,
+            { height: isAuthenticated ? '70%' : '61%' },
+          ]}
           muted={true}
           repeat={true}
           resizeMode={'stretch'}
@@ -64,7 +67,7 @@ export default function HomeScreen(props) {
             {global.NetworkFailed == 1 ? null : (
               <View>
                 <TouchableOpacity
-                  onPress={() => LoginClick()}
+                  onPress={LoginClick}
                   style={[
                     styles.loginbutton,
                     { backgroundColor: theme.buttonBackColor },
@@ -73,13 +76,33 @@ export default function HomeScreen(props) {
                   <Text style={styles.buttonText}>LOGIN</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => opensignup()}
+                  onPress={opensignup}
                   style={[
                     styles.loginbutton,
                     { backgroundColor: theme.buttonBackColor },
                   ]}
                 >
                   <Text style={styles.buttonText}>SIGNUP</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => props.navigation.navigate('Pricing Plans')}
+                  style={[
+                    styles.loginbutton,
+                    { backgroundColor: theme.buttonBackColor },
+                  ]}
+                >
+                  <Text style={styles.buttonText}>Pricing Plans</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() =>
+                    props.navigation.navigate('Add & Edit Organization')
+                  }
+                  style={[
+                    styles.loginbutton,
+                    { backgroundColor: theme.buttonBackColor },
+                  ]}
+                >
+                  <Text style={styles.buttonText}>Register Organization</Text>
                 </TouchableOpacity>
               </View>
             )}
@@ -165,7 +188,7 @@ export default function HomeScreen(props) {
 const styles = StyleSheet.create({
   backgroundVideo: {
     width: Dimensions.get('window').width,
-    height: 71 + '%',
+    height: 60 + '%',
   },
   container: {
     flex: 1,
@@ -285,13 +308,12 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width - 30,
     marginHorizontal: 15,
     marginVertical: 12,
-    height: 32 + '%',
+    height: 34 + '%',
   },
   Buttoncontainer: {
     marginTop: -10,
     width: Dimensions.get('window').width,
-    height: 34 + '%',
-    backgroundColor: colors.PagePanelTab,
+    height: '100%',
     shadowColor: '#000',
     shadowOffset: { width: 4, height: 6 },
     shadowOpacity: 0.3,
