@@ -82,7 +82,6 @@ export default function MycampaignScheduleList(props) {
 
   const currencyCode =
     lovs['lovs']?.currencies?.find(c => c.id === currencyId)?.code || '';
-  // console.log({ days: props?.days });
   return (
     <View style={[styles.card, { backgroundColor: theme.cardBackColor }]}>
       <TemplateViewer

@@ -31,7 +31,6 @@ const ScheduleList = ({
     return intervals.filter(interval => interval.id == id + 1)[0].name;
   };
   const currencyId = lovs['orgs']?.find(c => c.id === user?.orgId)?.currencyId;
-  // console.log({ campaignInfo });
   return (
     <View style={{ marginTop: 5 }}>
       <ScrollView

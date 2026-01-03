@@ -91,13 +91,11 @@ export default function LoginScreen(props) {
     global.SocialMedia = 1;
     try {
       await GoogleSignin.signOut();
-      // console.log('GoogleSignin Info --> ', JSON.stringify(GoogleSignin));
       await GoogleSignin.hasPlayServices({
         showPlayServicesUpdateDialog: true,
       });
       let userInfo = await GoogleSignin.signIn();
       userInfo = userInfo.data;
-      console.log('User Info --> ', userInfo);
 
       var givenName = userInfo.user.givenName;
       var name = userInfo.user.name;
@@ -127,7 +125,6 @@ export default function LoginScreen(props) {
         email: userInfo.user.email,
         authtoken: userInfo.idToken,
       };
-      console.log('google data ' + JSON.stringify(GoogleData));
       AsyncStorage.setItem(
         'SignupWithGoogle_Facebook',
         JSON.stringify(GoogleData),
@@ -140,7 +137,6 @@ export default function LoginScreen(props) {
         ContinueWithSocialMedia();
       }
     } catch (error) {
-      console.log('Message', JSON.stringify(error));
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         alert('User Cancelled the Login Flow');
       } else if (error.code === statusCodes.IN_PROGRESS) {
@@ -192,7 +188,6 @@ export default function LoginScreen(props) {
       },
     };
 
-    console.log('headerFetch from login', JSON.stringify(headerFetch.body));
     // authenticateorguser
     fetch(
       servicesettings.baseuri +
@@ -202,7 +197,6 @@ export default function LoginScreen(props) {
       .then(response => response.json())
       .then(responseJson => {
         setspinner(false);
-        console.log('headerFetch from login', JSON.stringify(responseJson));
         if (responseJson.status == false) {
           {
             responseJson.message != ''
@@ -258,8 +252,6 @@ export default function LoginScreen(props) {
           global.ROLEID = userData.roleid;
           global.USERID = userData.id;
           global.StoreName = userData.TradeName;
-          //console.log("global.Storeid check " + global.Storeid)
-          console.log({ userData });
           Toast.show(`${userData?.fullName} has been logged in successfully`);
           setmodalVisible(true);
           setTimeout(() => {
@@ -270,7 +262,6 @@ export default function LoginScreen(props) {
       })
       .catch(error => {
         setspinner(false);
-        console.error('service error', error);
         Toast.showWithGravity(
           'Something went wrong, try another time !!!',
           Toast.LONG,
@@ -295,7 +286,6 @@ export default function LoginScreen(props) {
       async function (res) {
         //AsyncStorage.getItem('SignupWithGoogle').then(function (res) {
         let Asyncdata = JSON.parse(res);
-        console.log({ Asyncdata });
         if (Asyncdata != null) {
           setspinner(true);
           var fcmToken = servicesettings.fcmToken;
@@ -325,7 +315,6 @@ export default function LoginScreen(props) {
             OS = 4;
           }
           const data = new FormData();
-          // console.log("imgdata check not equal null " + JSON.stringify(imgdata));
           if (pictureUrl != '') {
             var encodeUrl = Math.floor(Math.random() * 999999999999);
             data.append('profiles', {
@@ -333,10 +322,6 @@ export default function LoginScreen(props) {
               uri: pictureUrl,
               type: 'image/jpeg',
             });
-            console.log(
-              'pictureUrl check not equal pictureUrl data ' +
-                JSON.stringify(data),
-            );
           }
           data.append('fmctoken', fcmToken);
           data.append('id', (0).toString());
@@ -374,7 +359,6 @@ export default function LoginScreen(props) {
           }
           data.append('roleid', (5).toString());
           data.append('status', (1).toString());
-          // console.log('data ' + JSON.stringify(data));
           var ImageheaderFetch = {
             enctype: 'multipart/form-data',
             processData: false,
@@ -388,17 +372,12 @@ export default function LoginScreen(props) {
             },
           };
           //
-          console.log('useraccountwithlogin', await DeviceInfo.getUniqueId());
-          console.log(
-            'ImageheaderFetch check image 532 ' +
-              JSON.stringify(ImageheaderFetch),
-          );
+
           fetch(
             servicesettings.baseuri + 'BlazorApi/useraccountwithlogin',
             ImageheaderFetch,
           )
             .then(response => {
-              console.log({ response });
               if (!response.ok) {
                 throw new Error(
                   `Request failed with code : ${response.status}`,
@@ -407,8 +386,6 @@ export default function LoginScreen(props) {
               return response.json();
             })
             .then(responseJson => {
-              console.log({ responseJson });
-              console.log({ responseJson: JSON.stringify(responseJson) });
               setspinner(false);
 
               if (
@@ -465,16 +442,7 @@ export default function LoginScreen(props) {
                 var userRoleId = responseJsonAdd.roleId;
                 var userStatusId = responseJsonAdd.status;
                 var userOrgId = responseJsonAdd.orgId;
-                console.log(
-                  'userOrgId > ',
-                  userOrgId.toString(),
-                  'userRoleId > ',
-                  userRoleId.toString(),
-                  'userStatusId > ',
-                  userStatusId,
-                  'userOrgId > ',
-                  userOrgId,
-                );
+
                 var UserInfo = {
                   address: '',
                   avatar: normalizeAvatarPath(responseJsonAdd.avatar),
@@ -489,7 +457,6 @@ export default function LoginScreen(props) {
                   username: responseJsonAdd.userName,
                 };
 
-                console.log({ responseJsonAdd, UserInfo });
                 loginUser(UserInfo);
 
                 Toast.show(responseJson?.message || 'Save successfully');
@@ -508,7 +475,6 @@ export default function LoginScreen(props) {
             .catch(error => {
               setspinner(false);
               //*********need to some disscuss*********/
-              console.log(error?.message);
               Toast.showWithGravity(
                 error?.message ||
                   'Internet connection failed, try another time !!!',
@@ -538,13 +504,10 @@ export default function LoginScreen(props) {
       // Note: it appears putting FULL_NAME first is important, see issue #293
       requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
     });
-    console.log({ appleAuthRequestResponse });
     if (appleAuthRequestResponse !== null || appleAuthRequestResponse !== '') {
       let { email, fullName } = appleAuthRequestResponse;
-      console.log({ email, fullName });
       if (email === null || fullName === null) {
         const foundUser = findAppleUser(appleAuthRequestResponse?.user);
-        console.log({ foundUser });
         if (foundUser) {
           email = foundUser.email;
           fullName = foundUser.fullName;
@@ -567,7 +530,6 @@ export default function LoginScreen(props) {
         email: email ?? '',
         authtoken: '',
       };
-      console.log('google data ' + JSON.stringify(GoogleData));
       AsyncStorage.setItem(
         'SignupWithGoogle_Facebook',
         JSON.stringify(GoogleData),

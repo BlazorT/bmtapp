@@ -16,7 +16,6 @@ export const useJazzCash = () => {
       );
       return res.data;
     } catch (e) {
-      // console.log({e: e.message, res: e?.response?.data?.message});
       Toast.show(
         e?.response?.data?.message ?? e?.message ?? 'Something went wrong',
       );

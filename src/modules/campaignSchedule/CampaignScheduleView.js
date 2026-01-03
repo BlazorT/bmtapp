@@ -109,7 +109,6 @@ export default function CampaignScheduleScreen(props) {
           }
 
           const res = await response.json();
-          // console.log({ recipeints: res });
           const filtered = (res.data || []).filter(n => n.purchasedQouta > 0);
 
           setNetworks(filtered || []);
@@ -120,13 +119,10 @@ export default function CampaignScheduleScreen(props) {
           setspinner(false);
         }
         // const networks = await lovs['mybundlings'];
-        // console.log({ networks });
       } else {
         props.navigation.replace('Login');
       }
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
 
   const fetchRecipients = async () => {
@@ -161,7 +157,6 @@ export default function CampaignScheduleScreen(props) {
       }
 
       const res = await response.json();
-      // console.log({ recipeints: res });
       setRecipients(res?.data || []);
     } catch (error) {
       console.error('Error fetching recipients:', error);
@@ -175,7 +170,6 @@ export default function CampaignScheduleScreen(props) {
     const body = {
       orgId: '0',
     };
-    // console.log({ body });
     let headerFetch = {
       method: 'POST',
       body: JSON.stringify(body),
@@ -184,7 +178,6 @@ export default function CampaignScheduleScreen(props) {
         Authorization: servicesettings.AuthorizationKey,
       },
     };
-    // console.log({ headerFetch });
     setspinner(true);
     const response = await fetch(
       // createcompletecompaign
@@ -193,13 +186,11 @@ export default function CampaignScheduleScreen(props) {
     );
     setspinner(false);
 
-    // console.log({ response, headerFetch });
     if (!response.ok) {
       Toast.show('Something went wrong, please try again');
       return;
     }
     const res = await response.json();
-    // console.log({ res });
     if (res?.status) {
       setPriceData(res?.data || []);
     } else {
@@ -237,7 +228,6 @@ export default function CampaignScheduleScreen(props) {
     // const datNetworks = lovs['mybundlings'].filter(item =>
     //   networks.some(network => network.networkId === item.networkId),
     // );
-    // console.log('transformNetworks', transformNetworks);
     const schedule = JSON.parse(data.compaignschedules);
     const scheduleList = schedule.map(item => {
       const scheduleNetworks = transformNetworks.filter(
@@ -262,7 +252,6 @@ export default function CampaignScheduleScreen(props) {
         randomId: item.id,
       };
     });
-    // console.log('scheduleList', JSON.stringify(schedule));
     const uris = attachments.map(item => ({
       Id: item.Id,
       uri: `${servicesettings.Imagebaseuri}${item.image}`,
@@ -280,7 +269,6 @@ export default function CampaignScheduleScreen(props) {
         uri.uri.endsWith('.mov'),
     )[0];
     const pdfUris = uris.filter(uri => uri.uri.endsWith('.pdf'))[0];
-    console.log({ imageUris, videoUris, pdfUris });
     setCampaignInfo({
       id: data.id,
       subject: data.name,
@@ -343,7 +331,6 @@ export default function CampaignScheduleScreen(props) {
     }
     setIndex(index);
   }
-  // console.log({ priceData, networkData });
 
   return (
     <KeyboardAwareScrollView

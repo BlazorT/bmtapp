@@ -55,7 +55,6 @@ export default function CampaignStatisticsScreen() {
         headerFetch,
       );
       const responseJson = await response.json();
-      console.log(responseJson);
       if (responseJson.status === true) {
         const stats = responseJson.data;
         const labels = stats.map(item => item.name);
@@ -65,13 +64,7 @@ export default function CampaignStatisticsScreen() {
           .reduce((acc, curr) => acc + curr, 0);
         const currMontSale = calculateCurrentMonthSales(stats);
         const percentage = calculateOverallSalesPercentageChange(stats);
-        // console.log({
-        //   datasets: [{ data: data }],
-        //   labels: labels,
-        //   currentVol: totalVol,
-        //   currMonthSales: currMontSale,
-        // });
-        console.log({ percentage });
+
         setPercent(percentage);
         setDataList({
           datasets: [{ data: data }],
@@ -150,7 +143,6 @@ export default function CampaignStatisticsScreen() {
   //   fetch(servicesettings.baseuri + 'bmtcompaigns', headerFetch)
   //     .then(response => response.json())
   //     .then(responseJson => {
-  //       console.log(responseJson);
   //       if (responseJson.data != null) {
   //         //{"dataOfDay": "Monday", "totalAllies": 0, "totalLikes": 0, "totalVideos": 1}
   //       }

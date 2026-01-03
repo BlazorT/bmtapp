@@ -44,7 +44,6 @@ const AddSchedule = ({
     setShowRecipientAlbumMdl(false);
   };
   const onSubmitAlbum = albums => {
-    console.log({ albums });
     setScheduleList(prev => ({ ...prev, albums }));
   };
   const days = [
@@ -135,7 +134,6 @@ const AddSchedule = ({
       randomId: Math.floor(100000 + Math.random() * 900000),
     });
   };
-  // console.log({ campaignInfo });
 
   const updateSchedule = () => {
     if (scheduleList.CompaignNetworks.length == 0) {
@@ -159,7 +157,6 @@ const AddSchedule = ({
     setIsUpdate(false);
   };
   const calculateBudget = () => {
-    // console.log({ days: scheduleList.days });
     const { numberOfDays, daysOfWeek } = getDaysBetweenDates(
       scheduleList.startTime,
       scheduleList.finishTime,
@@ -305,7 +302,6 @@ const AddSchedule = ({
       }
       validDays = validDays * calculateFractionOfDay(scheduleList.interval);
     }
-    // console.log({ validDays });
     setCampaignInfo(prevState => ({
       ...prevState,
       networks: prevState.networks.map(item => ({
@@ -362,7 +358,6 @@ const AddSchedule = ({
       });
 
       const formattedBudget = Math.round(totalBudget * 100) / 100;
-      // console.log({ formattedBudget });
       return {
         ...prevState,
         messageCount: messageCount, // this is global, unchanged
@@ -407,7 +402,6 @@ const AddSchedule = ({
       daysOfWeek: daysOfWeek,
     };
   }
-  // console.log({ scheduleList });
   const currencyId = lovs['orgs']?.find(c => c.id === user?.orgId)?.currencyId;
   return (
     <View style={{ marginTop: 10 }}>

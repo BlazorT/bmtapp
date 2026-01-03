@@ -113,7 +113,6 @@ const CampaignSchedule = ({
   }, []);
 
   useEffect(() => {
-    // console.log('campaignInfo: ' + JSON.stringify(campaignInfo.schedules));
     if (!isUpdate) {
       setScheduleList({
         CompaignNetworks: [],
@@ -138,7 +137,6 @@ const CampaignSchedule = ({
   }, [isUpdate]);
 
   const addSchedule = async ref => {
-    console.log({ campaignInfo });
     let campaignBody = {
       id: campaignInfo.id,
       targetaudiance: JSON.stringify({
@@ -214,8 +212,6 @@ const CampaignSchedule = ({
     // navigation.navigate('Payment', { campaignBody });
     // return;
 
-    console.log({ campaignBody });
-    console.log('campaignBody: ' + JSON.stringify(campaignBody));
     setUpdateMessage(
       `${campaignInfo?.template} has been created successfully.`,
     );
@@ -236,13 +232,11 @@ const CampaignSchedule = ({
       headerFetch,
     );
     setspinner(false);
-    console.log({ response });
     // if (!response.ok) {
     //   Toast.show('Something went wrong, please try again');
     //   return;
     // }
     const res = await response.json();
-    console.log('response', res);
     if (res.status == false || res.status == '408' || res.status == '400') {
       Toast.show(res.message || 'Something went wrong, please try again');
     } else {
@@ -301,7 +295,6 @@ const CampaignSchedule = ({
         data.append('compaignid', res.data);
         data.append('userid', user.id);
         data.append('remarks', 'Remarks Text');
-        console.log('imgData: ', JSON.stringify(data));
         const ImageheaderFetch = {
           enctype: 'multipart/form-data',
           processData: false,
@@ -323,7 +316,6 @@ const CampaignSchedule = ({
         setspinner(false);
 
         const attachmentRes = await imageResponse.json();
-        console.log('attachmentRes', attachmentRes);
         if (attachmentRes.status == false || attachmentRes.status == '408') {
           setspinner(false);
           Toast.show(res.message || 'Something went wrong, please try again');
@@ -459,7 +451,6 @@ const CampaignSchedule = ({
     </soapenv:Envelope>
     `;
     setEasypaisaOrderId(orderId);
-    console.log({ xmlBody });
     try {
       setspinner(true);
       const res = await fetch(
@@ -478,7 +469,6 @@ const CampaignSchedule = ({
       const data = await res.text();
       const responseCode = extractTagValue(data, 'ns2:responseCode');
       const transactionId = extractTagValue(data, 'transactionId');
-      console.log({ data, responseCode });
       if (data && responseCode == '0000') {
         addSchedule(btoa(data));
         Toast.show('Payment successful');
@@ -497,7 +487,6 @@ const CampaignSchedule = ({
   };
 
   const easyPaisaCheckStatus = async orderId => {
-    // console.log('first', selectedGateway);
     const xmlBody = `
     <soapenv:Envelope
       xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
@@ -516,7 +505,6 @@ const CampaignSchedule = ({
     </soapenv:Envelope>
   `;
 
-    // console.log({ xmlBody });
     try {
       setspinner(true);
       const res = await fetch(
@@ -589,7 +577,6 @@ const CampaignSchedule = ({
       ppmpf_2: '',
     };
     const res = await payJC(jcBody);
-    console.log({ res });
     if (res) {
       const filteredResponse = {
         pp_TxnType: res.pp_TxnType || '',
@@ -658,8 +645,6 @@ const CampaignSchedule = ({
       if (!isMounted) return;
 
       if (state === 'active') {
-        console.log({ jazzCashTxnRefNo, easypaisaOrderId });
-        console.log('App came to foreground');
         if (jazzCashTxnRefNo && jazzCashTxnRefNo !== '') {
           setShowJCPayment(true);
         }
@@ -674,7 +659,6 @@ const CampaignSchedule = ({
       listener.remove();
     };
   }, []);
-  // console.log({ user });
   return (
     <View style={{ marginTop: 5 }}>
       <View

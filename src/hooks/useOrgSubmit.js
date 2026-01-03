@@ -149,7 +149,6 @@ export const useOrgSubmit = ({
         LogoAvatar: imageUrlOrg,
         RowVer: 0,
       };
-      console.log({ orgUpdateBody });
       // return;
       const response = await fetch(
         servicesettings.baseuri + 'BlazorApi/adupdateorg',
@@ -168,7 +167,6 @@ export const useOrgSubmit = ({
       }
 
       const responseJson = await response.json();
-      console.log({ responseJson });
       if (responseJson.status) {
         const message =
           OrgIdSelect === 0

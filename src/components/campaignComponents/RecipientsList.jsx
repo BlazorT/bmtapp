@@ -61,9 +61,7 @@ const RecipientsList = () => {
     }
   };
 
-  const onImport = data => {
-    console.log({ data });
-  };
+  const onImport = data => {};
 
   const createNewAlbum = async () => {
     if (
@@ -380,7 +378,6 @@ const RecipientsList = () => {
       </View>
     </Modal>
   );
-  // console.log({ albumList });
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.backgroundColor }}>
       <View

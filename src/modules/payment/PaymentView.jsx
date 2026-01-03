@@ -79,7 +79,6 @@ const PaymentView = ({
       }
 
       const res = await response.json();
-      console.log({ res });
       if (res?.status && Array.isArray(res?.data)) {
         const filterGateways = res?.data?.filter(d => d?.status == 1);
         setGateways(filterGateways);

@@ -85,9 +85,7 @@ const CampaignAttachment = ({ handleCampaignInfo, campaignInfo }) => {
       },
       response => {
         if (response.didCancel) {
-          console.log('User cancelled image picker');
         } else if (response.error) {
-          console.log('ImagePicker Error: ', response.error);
         } else {
           handleCampaignInfo(isImage ? 'image' : 'video', {
             ...response.assets[0],
@@ -110,9 +108,7 @@ const CampaignAttachment = ({ handleCampaignInfo, campaignInfo }) => {
       { mediaType: isImage ? 'photo' : 'video', durationLimit: 180 },
       response => {
         if (response.didCancel) {
-          console.log('User cancelled image picker');
         } else if (response.error) {
-          console.log('ImagePicker Error: ', response.error);
         } else {
           handleCampaignInfo(isImage ? 'image' : 'video', {
             ...response.assets[0],

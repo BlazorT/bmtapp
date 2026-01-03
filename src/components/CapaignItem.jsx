@@ -21,8 +21,6 @@ const CapaignItem = ({ item, loadCampiagns }) => {
   const imgUrl = servicesettings.Imagebaseuri + item?.logoAvatar;
   const networkCount = safeJSONParse(item?.compaignsdetails, []);
 
-  //   console.log({ item });
-
   const toCampaignDetails = () => {
     navigate('Campaign Details', {
       campaign: item,

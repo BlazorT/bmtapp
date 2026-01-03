@@ -152,12 +152,6 @@ export default function ForgotPasswordScreen(props) {
     fetch(servicesettings.baseuri + 'BlazorApi/forgot', headerFetch)
       .then(response => response.json())
       .then(responseJson => {
-        console.log('responseJson', responseJson, {
-          email: Email.trim().toLowerCase(),
-          securitytoken: '',
-          password: '',
-          orgid: '0',
-        });
         if (responseJson.data == null) {
           setspinner(false);
           Toast.showWithGravity(
@@ -200,7 +194,6 @@ export default function ForgotPasswordScreen(props) {
       return;
     }
     if (OTP.trim() != GenratedOTP) {
-      console.log({ GenratedOTP, OTP });
       Toast.showWithGravity(
         'Security code invalid or expired',
         Toast.LONG,
@@ -260,12 +253,6 @@ export default function ForgotPasswordScreen(props) {
     fetch(servicesettings.baseuri + 'BlazorApi/forgot', headerFetch)
       .then(response => response.json())
       .then(responseJson => {
-        console.log(responseJson, {
-          email: Email.trim().toLowerCase(),
-          securitytoken: OTP,
-          password: Base64.btoa(Password),
-          orgid: '0',
-        });
         if (responseJson.status == true) {
           Toast.showWithGravity(
             'Pawssword has beeen changed successfully',

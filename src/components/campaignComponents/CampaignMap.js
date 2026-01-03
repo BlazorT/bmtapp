@@ -124,9 +124,7 @@ const CampaignMap = ({ isOpen, toggleOpen, campaignInfo, setCampaignInfo }) => {
         const { latitude, longitude } = pos.coords;
         moveToLocation(latitude, longitude);
       },
-      error => {
-        console.log('Location error:', error);
-      },
+      error => {},
       { enableHighAccuracy: false, timeout: 15000, maximumAge: 10000 },
     );
   };
@@ -188,7 +186,6 @@ const CampaignMap = ({ isOpen, toggleOpen, campaignInfo, setCampaignInfo }) => {
         throw err;
       }
       const response = await res.json();
-      console.log({ response });
       setAddressList(response || []);
     } catch (e) {
       Toast.show(e?.message || 'Something went wrong, please try again');
@@ -377,7 +374,6 @@ const CampaignMap = ({ isOpen, toggleOpen, campaignInfo, setCampaignInfo }) => {
             low={campaignInfo.radius}
             high={500}
             onChange={(low, high) => {
-              // console.log({ low, high });
               setCampaignInfo(prev => {
                 if (prev.radius === low) {
                   return prev; // ✅ prevent unnecessary re-renders

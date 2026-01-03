@@ -210,7 +210,6 @@ const NetworkMycampaign = ({
                   { backgroundColor: theme.cardBackColor },
                 ]}
                 onPress={() => {
-                  console.log(`${action.title} clicked`);
                   setSidebarVisible(false);
                 }}
               >

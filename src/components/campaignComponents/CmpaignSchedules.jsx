@@ -7,7 +7,6 @@ const CmpaignSchedules = ({ campaign }) => {
   const compaignschedules = safeJSONParse(campaign?.compaignschedules, []);
   const compaignsdetails = safeJSONParse(campaign?.compaignsdetails, []);
 
-  console.log({ compaignschedules });
   return (
     <FlatList
       data={compaignschedules}

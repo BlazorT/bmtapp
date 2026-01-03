@@ -32,7 +32,6 @@ import { isTab } from '../../constants';
 const profileIcon = require('../../../assets/images/defaultUser.png');
 //import messaging from '@react-native-firebase/messaging';
 export default function VehicalSallerScreen(props) {
-  //console.log('props new ' + JSON.stringify(props));
   const { loginUser } = useUser();
   const lovs = useSelector(state => state.lovs).lovs;
   const theme = useTheme();
@@ -131,7 +130,6 @@ export default function VehicalSallerScreen(props) {
         case RESULTS.DENIED:
           const requestResult = await request(permissionType);
           if (requestResult === 'granted') {
-            console.log({ requestResult });
             handleLaunchCamera();
           }
           break;
@@ -250,20 +248,16 @@ export default function VehicalSallerScreen(props) {
             },
           },
         );
-        console.log({ res });
         if (!res.ok) {
           const err = new Error(`Request failed with status : ${res.status}`);
           throw err;
         }
         const response = await res?.json();
-        console.log({ response });
         imageUrlOrg =
           response?.data
             ?.replace(/^\\\\?wwwroot[\\/]/, '')
             .replace(/\\/g, '/') || '';
       } catch (error) {
-        console.log({ error });
-        console.log(error);
         Toast.showWithGravity(
           error?.message || 'Internet connection failed, try another time !!!',
           Toast.LONG,
@@ -301,7 +295,6 @@ export default function VehicalSallerScreen(props) {
         'Content-Type': 'application/json',
       },
     };
-    console.log({ bodyUser });
     fetch(servicesettings.baseuri + 'BlazorApi/updateuser', ImageheaderFetch)
       .then(response => {
         if (!response.ok) {
@@ -310,9 +303,7 @@ export default function VehicalSallerScreen(props) {
         return response.json();
       })
       .then(responseJson => {
-        console.log({ responseJson });
         if (responseJson.status == true) {
-          console.log('responseJson', responseJson, data);
           Toast.show(
             `${responseJson.data.firstName} ${responseJson.data.lastName} has been added successfully`,
           );

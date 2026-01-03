@@ -48,7 +48,6 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex }) => {
   ];
 
   const handleCampaignInfo = (property, value) => {
-    // console.log({ property, value });
     setCampaignInfo(prevState => ({
       ...prevState,
       [property]: value,
@@ -254,7 +253,6 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex }) => {
               low={campaignInfo.radius}
               high={500}
               onChange={(low, high) => {
-                // console.log({ low, high });
                 setCampaignInfo(prev => {
                   if (prev.radius === low) {
                     return prev; // ✅ prevent unnecessary re-renders

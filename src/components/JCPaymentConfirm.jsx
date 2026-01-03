@@ -16,7 +16,6 @@ const JCPaymentConfirm = ({
 }) => {
   const theme = useTheme();
   const { inquireJC } = useJCInquiry();
-  // console.log({timer});
   const lastState = useRef(null);
 
   React.useEffect(() => {
@@ -47,7 +46,6 @@ const JCPaymentConfirm = ({
       if (!isMounted) return;
 
       if (state === 'active' && lastState.current !== 'active') {
-        console.log('App came to foreground');
         handleConfirm();
       }
       lastState.current = state;
@@ -60,7 +58,6 @@ const JCPaymentConfirm = ({
   }, [isVisible]);
 
   const handleConfirm = async () => {
-    // console.log('first');
     if (!jazzCashTxnRefNo) {
       setShowJCPayment(false);
       Toast.show('Payment has been canceled');
@@ -69,9 +66,7 @@ const JCPaymentConfirm = ({
     const body = {
       txnRefNo: jazzCashTxnRefNo,
     };
-    // console.log({body});
     const res = await inquireJC(body);
-    console.log({ res });
     if (res) {
       if (res?.pp_PaymentResponseCode === '121') {
         setShowJCPayment(false);

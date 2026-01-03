@@ -22,10 +22,6 @@ export default function PreferencesAndSettingsScreen() {
   };
 
   const userImage = `${servicesettings.Imagebaseuri}/${user.avatar?.replace(/\\/g, '/').replace(',', '').replace(' //', '')}`;
-  // console.log(
-  //   'userImage',
-  //   userImage,
-  // );
 
   return (
     <View
@@ -39,7 +35,6 @@ export default function PreferencesAndSettingsScreen() {
           style={[styles.ProfileStyle]}
           onError={() => {
             setOnImageError(true);
-            console.log('error');
           }}
         />
       </View>

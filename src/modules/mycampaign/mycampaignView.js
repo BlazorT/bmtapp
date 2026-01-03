@@ -73,9 +73,6 @@ export default function MyCampaignScreen(props) {
       )
         .then(response => response.json())
         .then(responseJson => {
-          console.log('data response bmtcompaigns  =>', headerFetch.body);
-          console.log('data response bmtcompaigns  =>', responseJson.data);
-
           if (responseJson.data != null) {
             setdata(responseJson.data);
             setRefreshing(false);
@@ -129,15 +126,8 @@ export default function MyCampaignScreen(props) {
     fetch(servicesettings.baseuri + 'Compaigns/detailedcompaigns', headerFetch)
       .then(response => response.json())
       .then(responseJson => {
-        console.log(
-          'search bmtcompaigns response  =>',
-          JSON.stringify(responseJson),
-        );
         functionCombined();
-        console.log(
-          'search data response bmtcompaign  =>',
-          JSON.stringify(responseJson),
-        );
+
         if (responseJson.data != null) {
           setdata(responseJson.data);
           setspinner(false);

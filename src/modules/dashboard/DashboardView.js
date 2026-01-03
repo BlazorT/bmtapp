@@ -71,7 +71,6 @@ export default function DashboardScreen(props) {
           Authorization: servicesettings.AuthorizationKey,
         },
       };
-      console.log({ headerFetch });
       // /dashboard
       const response = await fetch(
         `${servicesettings.baseuri}BlazorApi/dashboard`,
@@ -85,7 +84,6 @@ export default function DashboardScreen(props) {
         throw error;
       }
       const responseJson = await response.json();
-      console.log(responseJson);
       if (responseJson.data) {
         // Map total campaigns to months
         const DashboardData = responseJson.data;

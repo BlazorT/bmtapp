@@ -113,7 +113,6 @@ const EasypaisaRedirect = ({ isOpen, onClose, toPay, onlinePaymentType }) => {
 
   const onInitialNavigation = navState => {
     const url = navState.url;
-    console.log({ url });
     if (url.includes('auth_token') && !tokenReceived) {
       const params = parseQueryParams(url);
       const token = params['auth_token'];
@@ -138,7 +137,6 @@ const EasypaisaRedirect = ({ isOpen, onClose, toPay, onlinePaymentType }) => {
 
   const onConfirmationNavigation = navState => {
     const url = navState.url;
-    console.log({ url });
     if (url.includes('message')) {
       const params = parseQueryParams(url);
       const orderRefNumber = params['orderRefNumber'];
@@ -148,7 +146,6 @@ const EasypaisaRedirect = ({ isOpen, onClose, toPay, onlinePaymentType }) => {
         : ''; // Remove plus signs
       const amount = params['amount'];
       const transactionRefNumber = params['transactionRefNumber'];
-      console.log('🚨 params', params);
 
       if (message) {
         onClose();
@@ -208,10 +205,7 @@ const EasypaisaRedirect = ({ isOpen, onClose, toPay, onlinePaymentType }) => {
             sharedCookiesEnabled
             domStorageEnabled
             // renderToHardwareTextureAndroid={true}
-            onLoadProgress={e => {
-              console.log('🚨 onLoadProgress', e.nativeEvent.progress);
-              console.log('🚨 onLoadProgress', e.nativeEvent.url);
-            }}
+            onLoadProgress={e => {}}
             // domStorageEnabled
             // userAgent="Mozilla/5.0"
           />

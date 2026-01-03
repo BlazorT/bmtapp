@@ -23,7 +23,6 @@ const RemotePushNotification = () => {
 
   const requestUserPermission = async () => {
     const apiLevel = await DeviceInfo.getApiLevel();
-    console.log({ apiLevel });
 
     if (Platform.OS === 'ios') {
       const authStatus = await messaging().requestPermission();
@@ -31,7 +30,6 @@ const RemotePushNotification = () => {
         authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
         authStatus === messaging.AuthorizationStatus.PROVISIONAL;
       if (enabled) {
-        console.log('Authorization status:', authStatus);
         setupNotifications();
       }
     } else if (Platform.OS === 'android' && apiLevel >= 33) {
@@ -40,10 +38,8 @@ const RemotePushNotification = () => {
         PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
       );
       if (res === PermissionsAndroid.RESULTS.GRANTED) {
-        console.log('Android notification permission granted');
         setupNotifications();
       } else {
-        console.log('Android notification permission denied');
       }
     } else {
       setupNotifications();
@@ -60,38 +56,24 @@ const RemotePushNotification = () => {
   const getFCMToken = async () => {
     const fcmToken = await messaging().getToken();
     if (fcmToken) {
-      console.log('Your Firebase Token is:', fcmToken);
     } else {
-      console.log('Failed', 'No token received');
     }
   };
 
   const subscribeForegroundNotifications = () => {
     messaging().onMessage(async remoteMessage => {
-      console.log(
-        'A new message arrived! (FOREGROUND)',
-        JSON.stringify(remoteMessage),
-      );
       localNotification(remoteMessage);
     });
   };
 
   const subscribeBackgroundNotifications = () => {
     messaging().setBackgroundMessageHandler(async remoteMessage => {
-      console.log(
-        'A new message arrived! (BACKGROUND)',
-        JSON.stringify(remoteMessage),
-      );
       localNotification(remoteMessage);
     });
   };
 
   const subscribeNotificationOpenedApp = () => {
     messaging().onNotificationOpenedApp(async remoteMessage => {
-      console.log(
-        'App opened from BACKGROUND by tapping notification:',
-        JSON.stringify(remoteMessage),
-      );
       localNotification(remoteMessage);
     });
   };
@@ -113,7 +95,6 @@ const RemotePushNotification = () => {
     const { title, body } = remoteMessage.notification;
     const { image } = remoteMessage.data;
     const sentTime = remoteMessage.sentTime;
-    console.log('title', title, 'message', body, 'sentTime', sentTime);
     const soundsList =
       await NotificationSounds.getNotifications('notification');
     await notifee.createChannel({

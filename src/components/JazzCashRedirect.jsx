@@ -71,12 +71,10 @@ const JazzCashRedirect = ({ isOpen, onClose, toPay, onlinePaymentType }) => {
         ppmpf_2: '',
         ppmpf_3: 'mobile',
       };
-      console.log({ transactionDetails });
       const response = await axios.post(
         `${servicesettings.payment_service}/api/payment/jc-secure-hash`,
         transactionDetails,
       );
-      console.log({ response });
       const url =
         response?.data?.redirectUrl ||
         'https://payments.jazzcash.com.pk/CustomerPortal/transactionmanagement/merchantform/';
@@ -142,7 +140,6 @@ const JazzCashRedirect = ({ isOpen, onClose, toPay, onlinePaymentType }) => {
   </html>
 `;
 
-      console.log({ formHtml });
       setPaymentUrl({
         uri: url,
         body: formHtml,
@@ -171,8 +168,6 @@ const JazzCashRedirect = ({ isOpen, onClose, toPay, onlinePaymentType }) => {
 
   const handleNavigationStateChange = useCallback(
     navState => {
-      console.log('Navigated to:', navState.url);
-
       // Prevent handling navigation state change after payment is processed
       if (isPaymentProcessed) return;
 
@@ -219,14 +214,12 @@ const JazzCashRedirect = ({ isOpen, onClose, toPay, onlinePaymentType }) => {
         };
 
         if (status === '000') {
-          console.log('✅ Payment Successful');
           setIsPaymentProcessed(true); // Mark payment as processed
           setTimeout(() => {
             onClose(btoa(JSON.stringify(filteredResponse)));
           }, 1000);
           // You can add additional success handling here
         } else {
-          console.log('❌ Payment Failed');
           setTimeout(() => {
             Toast.show(pp_ResponseMessage || 'Payment has been canceled');
             onClose();

@@ -19,7 +19,6 @@ const PaymentType = ({
   const theme = useTheme();
 
   const onPaymentType = () => {
-    // console.log(first)
     handleOrderDetail({
       id,
       name,

@@ -61,7 +61,6 @@ const CampaignAdress = ({ label, campaignInfo, setCampaignInfo }) => {
         throw err;
       }
       const response = await res.json();
-      console.log({ response });
       setAddressList(response || []);
     } catch (e) {
       Toast.show(e?.message || 'Something went wrong, please try again');

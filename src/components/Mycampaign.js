@@ -78,7 +78,6 @@ export default function Myvehicle(props) {
 
   const clickForDetailother = async () => {
     var AttachmentCount = props.data.attachments.length;
-    // console.log({ AttachmentCount });
     setAttachmentDataList(AttachmentCount);
     //
     let itemCount;
@@ -97,7 +96,6 @@ export default function Myvehicle(props) {
   };
   const UpdateCampaign = async props => {
     global.UpdateCampaign = 1;
-    console.log('UpdateCampaign click ' + JSON.stringify(props));
     props.OpenUpdateCampaign(props.data);
   };
   const clickForDetail = async props => {
@@ -128,61 +126,33 @@ export default function Myvehicle(props) {
     setCampaignVisible(true);
     setNetworkVisible(false);
     setScheduleVisible(false);
-    console.log(
-      'NetworkVisible > ' +
-        NetworkVisible +
-        ' CampaignVisible > ' +
-        CampaignVisible +
-        ' ScheduleVisible > ' +
-        ScheduleVisible,
-    );
   }
   function NotNetworkDetailClick() {
     setNetworkVisible(true);
     setCampaignVisible(false);
     setScheduleVisible(false);
     global.Network_Detail = 0;
-    console.log(
-      'NetworkVisible > ' +
-        NetworkVisible +
-        ' CampaignVisible > ' +
-        CampaignVisible +
-        ' ScheduleVisible > ' +
-        ScheduleVisible,
-    );
   }
   function ScheduleDetail() {
     setScheduleVisible(true);
     setNetworkVisible(false);
     setCampaignVisible(false);
     global.Network_Detail = 2;
-    console.log(
-      'NetworkVisible > ' +
-        NetworkVisible +
-        ' CampaignVisible > ' +
-        CampaignVisible +
-        ' ScheduleVisible > ' +
-        ScheduleVisible,
-    );
   }
 
   function SettingClickForChange(data) {
-    console.log('SettingClickForChange click ' + JSON.stringify(data));
     // props.SettingClickForChange(props);
     props.SettingClickForChangeFlatList(data);
   }
   const ClickDeleteData = async props => {
-    console.log({ props });
     props.StatusChangeOnClick(props);
     setButtonsvisible(false);
   };
   function AttachmentPreview(props) {
     var AttachmentPreview = props.data.attachments;
-    //console.log('AttachmentPreview ' + JSON.stringify(AttachmentPreview));
     props.AttachmentPreviewDetail(AttachmentPreview);
   }
   function ActionButtonClick(props) {
-    console.log('sidebarshowhidefunction click ' + JSON.stringify(props));
     if (sidebarshowhide == true) {
       setsidebarshowhide(false);
     }

@@ -35,14 +35,12 @@ const useFetchData = apiConfigs => {
             }),
           };
 
-          // console.log('headerFetch', headerFetch.body, endpoint);
           const response = await fetch(
             key === 'ipinfo'
               ? endpoint
               : `${servicesettings.baseuri}${endpoint}`,
             headerFetch,
           );
-          // console.log('response', response);
 
           if (!response.ok) {
             const error = new Error(
@@ -52,23 +50,19 @@ const useFetchData = apiConfigs => {
             throw error;
           }
           const result = await response.json();
-          // console.log('result', result);
           if (key !== 'ipinfo' && !result?.status) {
             const error = new Error(result?.message || 'server error');
             throw error;
           }
-          // console.log(endpoint?.split('/'));
           return {
             [key]: key === 'ipinfo' ? result : result.data,
           };
         }),
       );
-      // console.log({ results });
       const mergedResults = results.reduce(
         (acc, result) => ({ ...acc, ...result }),
         {},
       );
-      // console.log({ mergedResults });
       setData(mergedResults);
     } catch (err) {
       setError(err.message);

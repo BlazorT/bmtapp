@@ -16,7 +16,6 @@ import FontAwesome6Icon from 'react-native-vector-icons/FontAwesome5';
 import servicesettings from '../../modules/dataservices/servicesettings';
 import Video from 'react-native-video';
 const CampaignDetail = ({ campaign }) => {
-  // console.log({ campaign });
   const theme = useTheme();
   const [showAttachments, setShowAttachments] = useState(false);
   const [attachmentErrors, setAttachmentErrors] = useState({}); // { index: true }
