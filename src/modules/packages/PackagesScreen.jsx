@@ -671,7 +671,13 @@ export default function PricingDetailsScreen() {
                 style={[
                   styles.modeButton,
                   pricingMode === 'individual' && styles.modeButtonActive,
-                  { borderColor: theme.textColor },
+                  {
+                    borderColor: theme.textColor,
+                    backgroundColor:
+                      pricingMode === 'individual'
+                        ? theme.buttonBackColor
+                        : 'transparent',
+                  },
                 ]}
                 onPress={() => setPricingMode('individual')}
               >
@@ -692,7 +698,13 @@ export default function PricingDetailsScreen() {
                 style={[
                   styles.modeButton,
                   pricingMode === 'combo' && styles.modeButtonActive,
-                  { borderColor: theme.textColor },
+                  {
+                    borderColor: theme.textColor,
+                    backgroundColor:
+                      pricingMode === 'combo'
+                        ? theme.buttonBackColor
+                        : 'transparent',
+                  },
                 ]}
                 onPress={() => setPricingMode('combo')}
               >
