@@ -521,7 +521,9 @@ export default function PricingDetailsScreen() {
         </Text>
       </View>
 
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity
+        style={[styles.button, { backgroundColor: theme.buttonBackColor }]}
+      >
         <Text style={styles.buttonText}>
           {plan.name === 'Enterprise' ? 'Contact Sales' : 'Buy Now'}
         </Text>
@@ -1141,7 +1143,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '600',
   },
   features: {
