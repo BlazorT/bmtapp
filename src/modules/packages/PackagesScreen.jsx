@@ -824,7 +824,11 @@ export default function PricingDetailsScreen() {
                       <Switch
                         value={includeSMS}
                         onValueChange={setIncludeSMS}
-                        trackColor={{ false: '#ccc', true: colors.green }}
+                        trackColor={{
+                          false: theme.placeholderColor,
+                          true: theme.selectedCheckBox,
+                        }}
+                        thumbColor={theme.selectedCheckBox}
                       />
                       <Text
                         style={[
@@ -839,7 +843,11 @@ export default function PricingDetailsScreen() {
                       <Switch
                         value={includeEmail}
                         onValueChange={setIncludeEmail}
-                        trackColor={{ false: '#ccc', true: colors.green }}
+                        trackColor={{
+                          false: theme.placeholderColor,
+                          true: theme.selectedCheckBox,
+                        }}
+                        thumbColor={theme.selectedCheckBox}
                       />
                       <Text
                         style={[
