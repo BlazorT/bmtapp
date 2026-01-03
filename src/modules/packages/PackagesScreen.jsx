@@ -1,23 +1,19 @@
 // screens/PricingDetailsScreen.js
-import React, { useState, useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
-  View,
+  FlatList,
   ScrollView,
   StyleSheet,
-  Text,
-  TouchableOpacity,
-  Dimensions,
-  TextInput,
   Switch,
-  FlatList,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { useSelector } from 'react-redux';
-import { useTheme } from '../../hooks/useTheme';
 import { Dropdown } from '../../components';
+import { useTheme } from '../../hooks/useTheme';
 import { colors } from '../../styles';
-import { padding } from 'aes-js';
-
-const { width } = Dimensions.get('window');
 
 const DURATION = [
   { id: 1, name: '1 Month' },
