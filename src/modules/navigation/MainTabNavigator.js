@@ -27,7 +27,7 @@ export default function BottomTabs() {
       {tabNavigationData.map((item, idx) =>
         item.name == 'Campaign (+)' ? (
           isAuthenticated &&
-          isAdminOrSuperAdmin(user?.roleId) && (
+          isAdminOrSuperAdmin(user?.roleId) && ( //!!role check for campaigns
             <Tab.Screen
               key={`tab_item${idx + 1}`}
               name={item.name}
@@ -58,7 +58,7 @@ export default function BottomTabs() {
                 tabBarLabel: ({ focused }) => (
                   <Text
                     style={{
-                      fontSize: Platform.OS === 'ios' ? 10 : 12,
+                      fontSize: Platform.OS === 'ios' ? 10 : 11,
                       bottom: 2,
                       color: focused ? theme.textColor : 'gray',
                     }}
@@ -100,7 +100,7 @@ export default function BottomTabs() {
               tabBarLabel: ({ focused }) => (
                 <Text
                   style={{
-                    fontSize: Platform.OS === 'ios' ? 10 : 12,
+                    fontSize: Platform.OS === 'ios' ? 10 : 11,
                     bottom: 2,
                     color: focused ? theme.textColor : 'gray',
                   }}

@@ -143,8 +143,6 @@ export default function LoginScreen(props) {
         alert('Signing In');
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
         alert('Play Services Not Available or Outdated');
-      } else {
-        alert(error.message);
       }
     }
   };
@@ -247,9 +245,10 @@ export default function LoginScreen(props) {
             ? responseJson.data?.[0]
             : responseJson.data;
           AsyncStorage.setItem('LoginInformation', JSON.stringify(userData));
+          console.log({ userData });
           loginUser(userData);
-          global.Storeid = userData.storeid;
-          global.ROLEID = userData.roleid;
+          global.Storeid = userData.orgId;
+          global.ROLEID = userData.roleId;
           global.USERID = userData.id;
           global.StoreName = userData.TradeName;
           Toast.show(`${userData?.fullName} has been logged in successfully`);
@@ -325,7 +324,7 @@ export default function LoginScreen(props) {
           }
           data.append('fmctoken', fcmToken);
           data.append('id', (0).toString());
-          data.append('orgid', (1).toString());
+          data.append('orgid', (0).toString());
           data.append('authtoken', authToken);
           data.append('usercode', Asyncdata?.userID?.trim() || '');
           data.append('createdby', '1');
@@ -351,13 +350,16 @@ export default function LoginScreen(props) {
             data.append('email', '');
           } else {
             data.append('email', email.trim());
+            data.append('orgname', email.trim());
+            data.append('address', email.trim());
+            data.append('cityid', '0');
           }
           if (Password == null || Password == '' || Password == 'undefined') {
             data.append('password', Password);
           } else {
             data.append('password', Base64.btoa(Password.trim()));
           }
-          data.append('roleid', (5).toString());
+          data.append('roleid', (2).toString()); //!!sending admin because registring org for new user, and admin and super admin can only run campaigns
           data.append('status', (1).toString());
           var ImageheaderFetch = {
             enctype: 'multipart/form-data',
@@ -387,7 +389,7 @@ export default function LoginScreen(props) {
             })
             .then(responseJson => {
               setspinner(false);
-
+              console.log({ responseJson });
               if (
                 responseJson.status == false &&
                 responseJson.errorCode == '404'
@@ -438,23 +440,10 @@ export default function LoginScreen(props) {
               }
               if (responseJson.status == true) {
                 var responseJsonAdd = responseJson.data;
-                var userId = responseJsonAdd.id;
-                var userRoleId = responseJsonAdd.roleId;
-                var userStatusId = responseJsonAdd.status;
-                var userOrgId = responseJsonAdd.orgId;
 
                 var UserInfo = {
-                  address: '',
+                  ...responseJsonAdd,
                   avatar: normalizeAvatarPath(responseJsonAdd.avatar),
-                  email: responseJsonAdd.email,
-                  firstname: responseJsonAdd.firstName,
-                  id: userId.toString(),
-                  lastname: responseJsonAdd.lastName,
-                  orgid: userOrgId.toString(),
-                  orgname: responseJsonAdd.orgName,
-                  roleid: userRoleId.toString(),
-                  status: userStatusId.toString(),
-                  username: responseJsonAdd.userName,
                 };
 
                 loginUser(UserInfo);

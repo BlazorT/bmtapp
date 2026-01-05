@@ -282,7 +282,7 @@ const JazzCashRedirect = ({ isOpen, onClose, toPay, onlinePaymentType }) => {
             onPress={() => onClose(null)}
           >
             <AntdIcon name="close" size={24} color={theme.textColor} />
-            <Text color={theme.textColor}>JazzCash</Text>
+            <Text style={{ color: theme.textColor }}>JazzCash</Text>
           </TouchableOpacity>
           {loading && (
             <View style={styles.loaderContainer}>

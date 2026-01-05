@@ -113,7 +113,6 @@ const PaymentView = ({
       setJazzCashOption(value);
     }
   };
-
   return (
     <KeyboardAwareScrollView
       resetScrollToCoords={{ x: 0, y: 0 }}
@@ -208,8 +207,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    // paddingHorizontal: 5,
-    // paddingVertical: 5,
     rowGap: 10,
   },
   empty: {

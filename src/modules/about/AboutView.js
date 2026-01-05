@@ -76,14 +76,14 @@ export default function AboutScreen(props) {
       <View
         style={[styles.BottomView, { backgroundColor: theme.backgroundColor }]}
       >
-        <Text style={{ color: theme.textColor, fontSize: 22 }}>
-          ✆{' '}
-          <TouchableOpacity>
+        <TouchableOpacity>
+          <Text style={{ color: theme.textColor, fontSize: 20 }}>
+            ✆{' '}
             <Text style={[styles.ContactNo, { color: theme.textColor }]}>
               +923337069742
             </Text>
-          </TouchableOpacity>
-        </Text>
+          </Text>
+        </TouchableOpacity>
         <Text style={[styles.link, { color: theme.textColor }]}>
           {' '}
           www.blazortech.com
@@ -151,9 +151,8 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   ContactNo: {
-    marginTop: 10,
     color: colors.TextColorOther,
-    fontSize: 15,
+    fontSize: 16,
   },
   Paragraph: {
     color: colors.TextColorOther,

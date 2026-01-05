@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <!-- Allow non-secure traffic for development -->
+        <domain includeSubdomains="true">192.168.18.4</domain>
+        <domain includeSubdomains="true">192.168.18.163</domain>
+        <domain includeSubdomains="true">192.168.18.203</domain>
+        <domain includeSubdomains="true">167.88.45.70</domain>
+        <domain includeSubdomains="true">72.61.77.197</domain>
+        <domain includeSubdomains="true">localhost</domain>
+        <domain includeSubdomains="true">10.0.2.2</domain>
+        <domain includeSubdomains="true">bmt.blazortech.com</domain>
+        <domain includeSubdomains="true">hotmealzndealz.com</domain>
+        <domain includeSubdomains="true">nominatim.openstreetmap.org</domain>
+        <domain includeSubdomains="true">router.project-osrm.org</domain>
+        <domain includeSubdomains="true">www.geoplugin.net</domain>
+        <domain includeSubdomains="true">easypay.easypaisa.com.pk</domain>
+        <domain includeSubdomains="true">easypaystg.easypaisa.com.pk</domain>
+    </domain-config>
+</network-security-config>

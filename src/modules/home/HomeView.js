@@ -109,7 +109,7 @@ export default function HomeScreen(props) {
           </View>
         ) : (
           <View style={styles.Buttoncontainer2}>
-            {isAdminOrSuperAdmin(user?.roleId) && (
+            {isAdminOrSuperAdmin(user?.roleId) && ( //!!only admin and superadmin can create campaign
               <TouchableOpacity
                 onPress={() => AddCampaignClick()}
                 style={[

@@ -52,7 +52,9 @@ const ContactsModal = ({
   const [selectedAlbums, setSelectedAlbums] = useState(new Set());
   const [showNewAlbumForm, setShowNewAlbumForm] = useState(false);
   const [newAlbumName, setNewAlbumName] = useState('');
-  const [newAlbumCode, setNewAlbumCode] = useState('');
+  const [newAlbumCode, setNewAlbumCode] = useState(
+    moment().local().format('DDMMYYYY'),
+  );
   const [newAlbumDesc, setNewAlbumDesc] = useState('');
   const [newAlbumNetworkId, setNewAlbumNetworkId] = useState(-1);
   const [creatingAlbumLoading, setCreatingAlbumLoading] = useState(false);
@@ -252,20 +254,20 @@ const ContactsModal = ({
       if (res?.status) {
         Toast.show('Album created successfully');
         setNewAlbumName('');
-        setNewAlbumCode('');
+        setNewAlbumCode(moment().local().format('DDMMYYYY'));
         setNewAlbumDesc('');
         setNewAlbumNetworkId(-1);
         setShowNewAlbumForm(false);
         await fetchAlbumList?.();
-        return res.data?.id || res.id;
+        return { albumId: res.data?.id || res.id, networkId: body.Networkid };
       } else {
         Toast.show(res?.message || 'Failed to create album');
-        return null;
+        return { albumId: null, networkId: null };
       }
     } catch (error) {
       console.error('Error creating album:', error);
       Toast.show('Error creating album');
-      return null;
+      return { albumId: null, networkId: null };
     } finally {
       setCreatingAlbumLoading(false);
     }
@@ -874,7 +876,7 @@ const ContactsModal = ({
                     onPress={() => {
                       setShowNewAlbumForm(false);
                       setNewAlbumName('');
-                      setNewAlbumCode('');
+                      setNewAlbumCode(moment().local().format('DDMMYYYY'));
                       setNewAlbumDesc('');
                       setNewAlbumNetworkId(-1);
                     }}
@@ -885,9 +887,9 @@ const ContactsModal = ({
                     disabled={creatingAlbumLoading}
                     bgColor={theme.buttonBackColor}
                     onPress={async () => {
-                      const newAlbumId = await createNewAlbum();
-                      if (newAlbumId) {
-                        toggleAlbumSelection(newAlbumId);
+                      const { albumId, networkId } = await createNewAlbum();
+                      if (albumId && (networkId === 1 || networkId === 2)) {
+                        toggleAlbumSelection(albumId);
                       }
                     }}
                     loading={creatingAlbumLoading}

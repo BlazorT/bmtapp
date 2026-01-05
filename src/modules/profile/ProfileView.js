@@ -40,6 +40,9 @@ export default function VehicalSallerScreen(props) {
   const [cityindex, setcityindex] = useState(-1);
   const [orgindex, setorgindex] = useState('');
   const [orgdata, setorgdata] = useState([]);
+  const [orgname, setorgname] = useState(''); // NEW: for custom org name
+  const [showOrgDropdown, setshowOrgDropdown] = useState(false); // NEW: control dropdown visibility
+  const [filteredOrgData, setfilteredOrgData] = useState([]); // NEW: filtered results
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [username, setusername] = useState('');
@@ -161,14 +164,37 @@ export default function VehicalSallerScreen(props) {
         return;
       }
     });
-    //setorgdata(global.OrgData);
-    //setorgdata(orgdata => [...orgdata, {"id": 1,"name": "App user"}]);
-    //setorgdata(orgdata => [...orgdata, {"id": 1,"name": "App user"}]);
     getdata();
   }, []);
+
   function getdata() {
-    setorgdata(lovs['orgs']);
+    const orgs = lovs['orgs'];
+    setorgdata(orgs);
+    setfilteredOrgData(orgs);
   }
+  // Handle custom organization name input with search filter
+  const handleOrgNameChange = text => {
+    setorgname(text);
+    setorgindex(''); // Clear selection when typing custom name
+
+    // Filter organization data based on input
+    if (text.trim() === '') {
+      setfilteredOrgData(orgdata);
+    } else {
+      const filtered = orgdata.filter(org =>
+        org.name.toLowerCase().includes(text.toLowerCase()),
+      );
+      setfilteredOrgData(filtered);
+    }
+  };
+
+  // Handle organization selection from dropdown
+  const handleOrgSelect = (selectedOrg, index) => {
+    setorgindex(index);
+    setorgname(selectedOrg.name);
+    setshowOrgDropdown(false);
+  };
+
   /************************************************************* submit data **********************************************************/
   async function submit() {
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
@@ -205,6 +231,15 @@ export default function VehicalSallerScreen(props) {
       Toast.showWithGravity('Please select "City"', Toast.LONG, Toast.CENTER);
       return;
     }
+    if (orgindex === '' && orgname.trim() === '') {
+      Toast.showWithGravity(
+        'Please select or enter an organization',
+        Toast.LONG,
+        Toast.CENTER,
+      );
+      return;
+    }
+
     if (Password.trim() == '') {
       Toast.showWithGravity(
         'Please enter "Password"',
@@ -271,15 +306,17 @@ export default function VehicalSallerScreen(props) {
 
     const bodyUser = {
       id: 0,
-      OrgId: orgdata[orgindex].id,
+      OrgId: orgindex !== '' ? orgdata[orgindex].id : 0, // 0 if custom name
+      OrgName: orgname,
       FirstName: firstName,
       LastName: lastName,
       UserName: username,
       Contact: Contact,
       Email: Email,
       CityId: cities[cityindex].id,
+      Address: cities[cityindex].name,
       Password: Base64.btoa(Password.trim()),
-      RoleId: 5,
+      RoleId: orgindex !== '' ? 4 : 2, //!!if organization is selected then its public user other wise for new org its admin
       Ims: '',
       RegistrationSource: 1,
       SecurityToken: '',
@@ -287,6 +324,7 @@ export default function VehicalSallerScreen(props) {
       Avatar: imageUrlOrg,
       UserCode: '',
     };
+    console.log({ bodyUser });
     var ImageheaderFetch = {
       method: 'post',
       body: JSON.stringify(bodyUser),
@@ -303,6 +341,7 @@ export default function VehicalSallerScreen(props) {
         return response.json();
       })
       .then(responseJson => {
+        console.log({ responseJson });
         if (responseJson.status == true) {
           Toast.show(
             `${responseJson.data.firstName} ${responseJson.data.lastName} has been added successfully`,
@@ -557,24 +596,57 @@ export default function VehicalSallerScreen(props) {
 
             <View style={styles.rowContainer}>
               <View style={styles.halfWidth}>
-                <Dropdown
-                  placeholderTextColor={theme.placeholderColor}
-                  onSelect={value => setorgindex(value)}
-                  selectedIndex={orgindex}
+                <View
                   style={[
-                    styles.Pickerstyle,
+                    customestyleusername,
                     {
                       backgroundColor: theme.inputBackColor,
                       color: theme.textColor,
+                      paddingHorizontal: 0,
                     },
                   ]}
-                  items={orgdata}
-                  placeholder="Select organization..."
-                  selectedItemViewStyle={colors.red}
-                  clearTextOnFocus={true}
-                  keyboardAppearance={'dark'}
-                  maxLength={5}
-                />
+                >
+                  <TextInput
+                    placeholderTextColor={theme.placeholderColor}
+                    style={[
+                      styles.FieldText,
+                      {
+                        backgroundColor: theme.inputBackColor,
+                        color: theme.textColor,
+                        flex: 1,
+                      },
+                    ]}
+                    value={orgname}
+                    onChangeText={handleOrgNameChange}
+                    onFocus={() => setshowOrgDropdown(true)}
+                    placeholder="Select or type organization..."
+                    clearTextOnFocus={false}
+                    keyboardAppearance={'dark'}
+                    maxLength={50}
+                  />
+                  {showOrgDropdown && filteredOrgData.length > 0 && (
+                    <View
+                      style={[
+                        styles.dropdownList,
+                        { backgroundColor: theme.buttonBackColor },
+                      ]}
+                    >
+                      <ScrollView style={{ maxHeight: 150 }}>
+                        {filteredOrgData.map((org, index) => (
+                          <TouchableOpacity
+                            key={index}
+                            onPress={() => handleOrgSelect(org, index)}
+                            style={styles.dropdownItem}
+                          >
+                            <Text style={{ color: theme.textColor }}>
+                              {org.name}
+                            </Text>
+                          </TouchableOpacity>
+                        ))}
+                      </ScrollView>
+                    </View>
+                  )}
+                </View>
               </View>
               <View style={styles.halfWidth}>
                 <Dropdown
@@ -699,24 +771,57 @@ export default function VehicalSallerScreen(props) {
               KeyboardType={'phone-pad'}
               maxLength={50}
             />
-            <Dropdown
-              placeholderTextColor={theme.placeholderColor}
-              onSelect={value => setorgindex(value)}
-              selectedIndex={orgindex}
+            <View
               style={[
-                styles.Pickerstyle,
+                customestyleusername,
                 {
                   backgroundColor: theme.inputBackColor,
                   color: theme.textColor,
+                  paddingHorizontal: 0,
+                  position: 'relative',
                 },
               ]}
-              items={orgdata}
-              placeholder="Select organization..."
-              selectedItemViewStyle={colors.red}
-              clearTextOnFocus={true}
-              keyboardAppearance={'dark'}
-              maxLength={5}
-            />
+            >
+              <TextInput
+                placeholderTextColor={theme.placeholderColor}
+                style={[
+                  styles.FieldText,
+                  {
+                    backgroundColor: theme.inputBackColor,
+                    color: theme.textColor,
+                  },
+                ]}
+                value={orgname}
+                onChangeText={handleOrgNameChange}
+                onFocus={() => setshowOrgDropdown(true)}
+                placeholder="Select or type organization..."
+                clearTextOnFocus={false}
+                keyboardAppearance={'dark'}
+                maxLength={50}
+              />
+              {showOrgDropdown && filteredOrgData.length > 0 && (
+                <View
+                  style={[
+                    styles.dropdownList,
+                    { backgroundColor: theme.modalBackColor },
+                  ]}
+                >
+                  <ScrollView style={{ maxHeight: 150 }}>
+                    {filteredOrgData.map((org, index) => (
+                      <TouchableOpacity
+                        key={index}
+                        onPress={() => handleOrgSelect(org, index)}
+                        style={styles.dropdownItem}
+                      >
+                        <Text style={{ color: theme.textColor }}>
+                          {org.name}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
+                </View>
+              )}
+            </View>
             <Dropdown
               placeholderTextColor={theme.placeholderColor}
               onSelect={value => setcityindex(value)}
@@ -897,6 +1002,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginVertical: 8,
     //   justifyContent: 'center',
+  },
+  dropdownList: {
+    position: 'absolute',
+    top: 46,
+    left: 0,
+    right: 0,
+    borderWidth: 1,
+    borderRadius: 4,
+    zIndex: 1000,
+  },
+  dropdownItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+    borderBottomWidth: 1,
   },
   lable: {
     marginLeft: 12,

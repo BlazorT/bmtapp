@@ -1,7 +1,9 @@
 // screens/PricingDetailsScreen.js
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
+  ActivityIndicator,
   FlatList,
+  Modal,
   ScrollView,
   StyleSheet,
   Switch,
@@ -14,6 +16,21 @@ import { useSelector } from 'react-redux';
 import { Dropdown } from '../../components';
 import { useTheme } from '../../hooks/useTheme';
 import { colors } from '../../styles';
+import useFetchData from '../../hooks/useFetchData';
+import Spinner from 'react-native-loading-spinner-overlay';
+import { useNavigation } from '@react-navigation/native';
+import { useUser } from '../../hooks/useUser';
+import PaymentView from '../payment/PaymentView';
+import JCPaymentConfirm from '../../components/JCPaymentConfirm';
+import RNSButton from '../../components/Button';
+import { useJazzCash } from '../../hooks/useJazzCash';
+import Toast from 'react-native-simple-toast';
+import {
+  extractTagValue,
+  keepOnlyAlphanumeric,
+} from '../../helper/dateFormatter';
+import moment from 'moment';
+import servicesettings from '../dataservices/servicesettings';
 
 const DURATION = [
   { id: 1, name: '1 Month' },
@@ -23,11 +40,47 @@ const DURATION = [
 
 export default function PricingDetailsScreen() {
   const theme = useTheme();
+  const navigation = useNavigation();
+  const { user, isAuthenticated } = useUser();
+  const { payJC, jcLoading } = useJazzCash();
   const networks = useSelector(state => state.lovs?.lovs?.lovs?.networks) || [];
+  const { data, loading, fetchData } = useFetchData([
+    {
+      endpoint: 'Admin/bundlingdetails',
+      method: 'POST',
+      body: {
+        orgId: '0',
+      },
+      key: 'bundlingDetails',
+    },
+    ...(isAuthenticated
+      ? [
+          {
+            endpoint: 'Organization/orgpackagedetails',
+            method: 'POST',
+            body: {
+              id: '0',
+              orgId: user?.orgId?.toString(),
+            },
+            key: 'orgPackageDetails',
+          },
+        ]
+      : []),
+  ]);
 
   // =======================
   // STATE
   // =======================
+  const [isBuying, setIsBuying] = useState(null);
+  const [spinner, setspinner] = useState(false);
+  const [selectedGateway, setSelectedGetway] = useState(null);
+  const [easypaisaOption, setEasypaisaOption] = useState('');
+  const [easyPaisaMobileNumber, setEasyPaisaMobileNumber] = useState('');
+  const [jazzCashMobileNumber, setJazzCashMobileNumber] = useState('');
+  const [jazzCashNic, setJazzCashNic] = useState('');
+  const [jazzCashOption, setJazzCashOption] = useState('');
+  const [jazzCashTxnRefNo, setJazzCashTxnRefNo] = useState('');
+  const [showJCPayment, setShowJCPayment] = useState(false);
   const [pricingMode, setPricingMode] = useState('individual');
   const [selectedNetwork, setSelectedNetwork] = useState('');
   const [messages, setMessages] = useState('');
@@ -46,10 +99,104 @@ export default function PricingDetailsScreen() {
     calculator: false,
   });
 
+  const bundlingDetails = useMemo(() => data?.bundlingDetails || [], [data]);
+  const orgPackageDetails = useMemo(
+    () => data?.orgPackageDetails || [],
+    [data],
+  );
+  useEffect(() => {
+    fetchData();
+  }, []);
+  // console.log({ data, user });
   // =======================
-  // PRICING DATA
+  // HELPER: Get latest bundling detail for network
   // =======================
-  const pricingPlans = {
+  const getLatestBundlingDetail = networkId => {
+    const networkDetails = bundlingDetails.filter(
+      bd => bd.networkId === networkId && bd.status === 1,
+    );
+    if (networkDetails.length === 0) return null;
+
+    // Sort by lastUpdatedAt descending and get first
+    return networkDetails.sort(
+      (a, b) => new Date(b.lastUpdatedAt) - new Date(a.lastUpdatedAt),
+    )[0];
+  };
+
+  // =======================
+  // HELPER: Generate dynamic pricing plans
+  // =======================
+  const generateDynamicPlans = (networkId, networkName) => {
+    const bundlingDetail = getLatestBundlingDetail(networkId);
+    if (!bundlingDetail) return [];
+
+    const basePrice =
+      bundlingDetail.unitPrice - (bundlingDetail?.discount || 0);
+    const freeAllowed = bundlingDetail.freeAllowed || 0;
+    const plans = [];
+    // Free plan (if freeAllowed exists)
+    if (freeAllowed > 0) {
+      plans.push({
+        id: 0,
+        name: 'Free',
+        price: '$0',
+        period: '/One Time',
+        features: [
+          `${freeAllowed} credits/One Time`,
+          'Basic support',
+          'Standard delivery',
+        ],
+        networkId,
+      });
+    }
+
+    // Pay As You Go
+    plans.push({
+      id: 1,
+      name: 'Pay As You Go',
+      price: `$${basePrice.toFixed(2)}`,
+      period: '/Unit',
+      features: [
+        'No commitment',
+        'Instant delivery',
+        'Pay only for what you use',
+      ],
+      networkId,
+    });
+
+    // Bulk plans with 10%, 15%, 20% discounts
+    const quantities = [1000, 5000, 10000];
+    const discounts = [0.1, 0.15, 0.2]; // 10%, 15%, 20%
+    const durations = ['Monthly', '6 Month', 'Yearly'];
+
+    quantities.forEach((qty, idx) => {
+      const discountRate = discounts[idx];
+      const discountedPrice = basePrice * (1 - discountRate);
+      const totalPrice = qty * discountedPrice;
+      const badgeText = `SAVE ${Math.round(discountRate * 100)}%`;
+
+      plans.push({
+        id: idx + 2,
+        name: `Bulk ${qty / 1000}K`,
+        price: `$${totalPrice.toFixed(2)}`,
+        originalPrice: `$${(qty * basePrice).toFixed(2)}`,
+        period: `/${durations[idx]}`,
+        badge: badgeText,
+        features: [
+          `${qty} credits`,
+          `Valid for ${durations[idx].toLowerCase()}`,
+          `Best value at ${Math.round(discountRate * 100)}% off`,
+        ],
+        qouta: qty,
+        networkId,
+      });
+    });
+
+    return plans;
+  };
+
+  // Fallback static plans (when no dynamic data)
+  const fallbackPlans = {
     sms: [
       {
         id: 1,
@@ -394,6 +541,30 @@ export default function PricingDetailsScreen() {
   };
 
   // =======================
+  // PRICING DATA - Static fallback
+  // =======================
+  const pricingPlans = useMemo(() => {
+    const networkMap = {};
+
+    // Build dynamic plans for each network
+    networks.forEach(network => {
+      const dynamicPlans = generateDynamicPlans(network.id, network.name);
+      if (dynamicPlans.length > 0) {
+        networkMap[`network_${network.id}`] = dynamicPlans;
+      }
+    });
+    return {
+      sms: networkMap['network_1'] || fallbackPlans?.sms,
+      whatsapp: networkMap['network_2'] || fallbackPlans?.whatsapp,
+      email: networkMap['network_3'] || fallbackPlans?.email,
+      facebook: networkMap['network_5'] || fallbackPlans?.facebook,
+      instagram: networkMap['network_6'] || fallbackPlans?.instagram,
+      linkedin: networkMap['network_7'] || fallbackPlans?.linkedin,
+      tiktok: networkMap['network_8'] || fallbackPlans?.tiktok,
+    };
+  }, [networks, bundlingDetails, fallbackPlans]);
+
+  // =======================
   // CALCULATION LOGIC
   // =======================
   const pricingMatrix = useMemo(() => {
@@ -402,13 +573,17 @@ export default function PricingDetailsScreen() {
         return [];
       }
 
-      const basePricePerMsg = 1;
+      const bundlingDetail = getLatestBundlingDetail(selectedNetwork);
+      if (!bundlingDetail) return [];
+
+      const basePrice =
+        bundlingDetail.unitPrice - (bundlingDetail?.discount || 0);
       let discount = 1;
       if (duration === 3) discount = 0.9;
       if (duration === 6) discount = 0.8;
 
-      const pricePerMsg = basePricePerMsg * discount;
-      const totalPrice = Number(messages) * pricePerMsg;
+      const pricePerUnit = basePrice * discount;
+      const totalPrice = Number(messages) * pricePerUnit;
 
       const networkName =
         networks.find(n => n.id == selectedNetwork)?.name || '';
@@ -419,7 +594,7 @@ export default function PricingDetailsScreen() {
           network: networkName,
           messages: Number(messages),
           duration: `${duration} Month(s)`,
-          pricePerMsg: `$${pricePerMsg.toFixed(2)}`,
+          pricePerMsg: `$${pricePerUnit.toFixed(2)}`,
           totalPrice: `$${totalPrice.toFixed(2)}`,
         },
       ];
@@ -480,6 +655,7 @@ export default function PricingDetailsScreen() {
     includeSMS,
     includeEmail,
     networks,
+    bundlingDetails,
   ]);
 
   // =======================
@@ -493,53 +669,247 @@ export default function PricingDetailsScreen() {
   };
 
   // =======================
+  // HELPER: Check if package is valid
+  // =======================
+  const isPackageValid = (startTime, finishTime) => {
+    const now = moment();
+    const start = moment(startTime);
+    const finish = moment(finishTime);
+    return now.isBetween(start, finish);
+  };
+
+  // =======================
+  // HELPER: Check if package is expired
+  // =======================
+  const isPackageExpired = finishTime => {
+    const now = moment();
+    const finish = moment(finishTime);
+    return now.isAfter(finish);
+  };
+
+  // =======================
+  // HELPER: Calculate remaining days
+  // =======================
+  const getRemainingDays = finishTime => {
+    const now = moment();
+    const finish = moment(finishTime);
+    const days = finish.diff(now, 'days');
+    return days > 0 ? days : 0;
+  };
+
+  // =======================
+  // HELPER: Get current valid package for network
+  // =======================
+  const getCurrentValidPackage = networkId => {
+    const npackage = orgPackageDetails?.find(
+      op =>
+        op?.networkId === networkId &&
+        isPackageValid(op.startTime, op.finishTime),
+    );
+    return npackage || null;
+  };
+
+  // =======================
+  // HELPER: Get expired package for network
+  // =======================
+  const getExpiredPackage = networkId => {
+    const npackage = orgPackageDetails?.find(
+      op => op?.networkId === networkId && isPackageExpired(op.finishTime),
+    );
+    return npackage || null;
+  };
+
+  // =======================
   // COMPONENTS
   // =======================
-  const PricingCard = ({ plan }) => (
-    <View style={[styles.card, { backgroundColor: theme.inputBackColor }]}>
-      {plan.badge && (
-        <View style={styles.badge}>
-          <Text style={styles.badgeText}>{plan.badge}</Text>
-        </View>
-      )}
+  const PricingCard = ({
+    plan,
+    currentValidPackage,
+    expiredPackage,
+    networkId,
+  }) => {
+    const hasValidPackage = !!currentValidPackage;
+    const hasExpiredPackage = !!expiredPackage;
 
-      <Text style={[styles.planName, { color: theme.textColor }]}>
-        {plan.name}
-      </Text>
+    // Check if THIS specific plan card matches the purchased quota
+    const isThisCardThePurchasedPlan =
+      currentValidPackage && currentValidPackage.purchasedQouta === plan.qouta;
 
-      <View style={styles.priceSection}>
-        {plan.originalPrice && (
-          <Text
-            style={[styles.originalPrice, { color: theme.placeholderColor }]}
-          >
-            {plan.originalPrice}
-          </Text>
+    const isThisCardTheExpiredPlan =
+      expiredPackage && expiredPackage.purchasedQouta === plan.qouta;
+
+    const remainingDays = currentValidPackage
+      ? getRemainingDays(currentValidPackage.finishTime)
+      : 0;
+
+    return (
+      <View style={[styles.card, { backgroundColor: theme.inputBackColor }]}>
+        {plan.badge && !isThisCardThePurchasedPlan && (
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>{plan.badge}</Text>
+          </View>
         )}
-        <Text style={styles.price}>{plan.price}</Text>
-        <Text style={[styles.period, { color: theme.placeholderColor }]}>
-          {plan.period}
-        </Text>
-      </View>
 
-      <TouchableOpacity
-        style={[styles.button, { backgroundColor: theme.buttonBackColor }]}
-      >
-        <Text style={styles.buttonText}>
-          {plan.name === 'Enterprise' ? 'Contact Sales' : 'Buy Now'}
-        </Text>
-      </TouchableOpacity>
-
-      <View style={styles.features}>
-        {plan.features.map((feature, idx) => (
-          <View key={idx} style={styles.feature}>
-            <Text style={[styles.featureText, { color: theme.textColor }]}>
-              ✓ {feature}
+        {/* Show active badge only on the card with matching purchased quota */}
+        {isThisCardThePurchasedPlan && (
+          <View
+            style={[
+              styles.activePackageBadge,
+              { backgroundColor: colors.success || '#28a745' },
+            ]}
+          >
+            <Text style={styles.activePackageText}>
+              ✓ Active ({remainingDays} days remaining)
             </Text>
           </View>
-        ))}
+        )}
+
+        {/* Show expired badge only on the card with matching expired quota */}
+        {isThisCardTheExpiredPlan && (
+          <View
+            style={[
+              styles.activePackageBadge,
+              { backgroundColor: colors.danger || '#dc3545' },
+            ]}
+          >
+            <Text style={styles.activePackageText}>
+              ⓘ Expired on{' '}
+              {moment(expiredPackage.finishTime).format('DD MMM YYYY')}
+            </Text>
+          </View>
+        )}
+
+        <Text style={[styles.planName, { color: theme.textColor }]}>
+          {plan.name}
+        </Text>
+
+        <View style={styles.priceSection}>
+          {plan.originalPrice && (
+            <Text
+              style={[styles.originalPrice, { color: theme.placeholderColor }]}
+            >
+              {plan.originalPrice}
+            </Text>
+          )}
+          <Text style={styles.price}>{plan.price}</Text>
+          <Text style={[styles.period, { color: theme.placeholderColor }]}>
+            {plan.period}
+          </Text>
+        </View>
+
+        {/* Show package details only if this card is the active one */}
+        {isThisCardThePurchasedPlan && (
+          <View
+            style={[
+              styles.packageDetails,
+              { borderColor: colors.success || '#28a745' },
+            ]}
+          >
+            <View style={styles.detailRow}>
+              <Text style={[styles.detailLabel, { color: theme.textColor }]}>
+                Purchased Quota:
+              </Text>
+              <Text
+                style={[
+                  styles.detailValue,
+                  { color: colors.success || '#28a745' },
+                ]}
+              >
+                {currentValidPackage.purchasedQouta}
+              </Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={[styles.detailLabel, { color: theme.textColor }]}>
+                Used:
+              </Text>
+              <Text style={[styles.detailValue, { color: theme.textColor }]}>
+                {currentValidPackage.usedQuota || 0}
+              </Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={[styles.detailLabel, { color: theme.textColor }]}>
+                Remaining:
+              </Text>
+              <Text
+                style={[
+                  styles.detailValue,
+                  { color: colors.success || '#28a745' },
+                ]}
+              >
+                {(currentValidPackage.purchasedQouta || 0) -
+                  (currentValidPackage.usedQuota || 0)}
+              </Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={[styles.detailLabel, { color: theme.textColor }]}>
+                Valid Until:
+              </Text>
+              <Text style={[styles.detailValue, { color: theme.textColor }]}>
+                {moment(currentValidPackage.finishTime).format('DD MMM YYYY')}
+              </Text>
+            </View>
+          </View>
+        )}
+
+        {isBuying ? null : (
+          <TouchableOpacity
+            style={[
+              styles.button,
+              {
+                backgroundColor: isThisCardThePurchasedPlan
+                  ? theme.placeholderColor
+                  : theme.buttonBackColor,
+                opacity: isThisCardThePurchasedPlan ? 0.6 : 1,
+              },
+            ]}
+            onPress={() => {
+              if (isAuthenticated) {
+                if (plan.name === 'Free' || plan.name === 'Pay As You Go') {
+                  navigation.navigate('Blazor Media ToolKit', {
+                    screen: 'Campaign (+)',
+                  });
+                } else {
+                  setIsBuying({
+                    ...plan,
+                    toPay: parseFloat(plan.price?.replace('$', '')),
+                  });
+                }
+              } else {
+                navigation.navigate('Login');
+              }
+            }}
+            disabled={
+              isThisCardThePurchasedPlan &&
+              plan.name !== 'Free' &&
+              plan.name !== 'Pay As You Go'
+            }
+          >
+            <Text style={styles.buttonText}>
+              {isThisCardThePurchasedPlan &&
+              plan.name !== 'Free' &&
+              plan.name !== 'Pay As You Go'
+                ? 'Active Package'
+                : plan.name?.includes('Bulk')
+                  ? 'Buy Now'
+                  : plan.name === 'Enterprise'
+                    ? 'Contact Sales'
+                    : 'Get Started'}
+            </Text>
+          </TouchableOpacity>
+        )}
+
+        <View style={styles.features}>
+          {plan.features.map((feature, idx) => (
+            <View key={idx} style={styles.feature}>
+              <Text style={[styles.featureText, { color: theme.textColor }]}>
+                ✓ {feature}
+              </Text>
+            </View>
+          ))}
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   const SectionHeader = ({ title, section }) => (
     <TouchableOpacity
@@ -555,213 +925,666 @@ export default function PricingDetailsScreen() {
     </TouchableOpacity>
   );
 
-  return (
-    <ScrollView
-      style={[styles.container, { backgroundColor: theme.backgroundColor }]}
-      showsVerticalScrollIndicator={false}
+  const easyPaisaQuickPay = async () => {
+    const orderId =
+      `${keepOnlyAlphanumeric((Number(user.orgId) ?? '') + 'RBMT')}` +
+      'D' +
+      moment().format('YYYYMMDDHHmmss');
+    const transactionAmount = parseFloat(
+      ((isBuying?.toPay || 0.0) * 280.67)?.toFixed(2),
+    );
+
+    const xmlBody = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:dto="http://dto.transaction.partner.pg.systems.com/"
+    xmlns:dto1="http://dto.common.pg.systems.com/">
+       <soapenv:Header/>
+       <soapenv:Body>
+          <dto:initiateTransactionRequestType>
+             <dto1:username>${
+               selectedGateway.merchantAccountId ?? 'Hotmealndealz.'
+             }</dto1:username>
+             <dto1:password>${
+               selectedGateway?.primaryKey ?? '915c7b18ee8adec0393e55690c34d328'
+             }</dto1:password>
+             <orderId>${orderId}</orderId>
+             <storeId>${`760757`}</storeId>
+             <transactionAmount>${transactionAmount}</transactionAmount>
+             <transactionType>MA</transactionType>
+             <mobileAccountNo>${easyPaisaMobileNumber}</mobileAccountNo>
+             <emailAddress>${user?.email || ''}</emailAddress>
+             <paymentTokenExpiryDateTime>${moment()
+               .add(5, 'minute')
+               .toISOString()}</paymentTokenExpiryDateTime >
+          </dto:initiateTransactionRequestType>
+       </soapenv:Body>
+    </soapenv:Envelope>
+    `;
+    try {
+      setspinner(true);
+      const res = await fetch(
+        selectedGateway?.url ??
+          'https://easypay.easypaisa.com.pk/easypay-service/PartnerBusinessService',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'text/xml',
+            SOAPAction: 'initiateTransaction',
+            // Credentials: `${encodeBase64('znawazch@gmail.com:Blazor@025')}`,
+          },
+          body: xmlBody,
+        },
+      );
+      const data = await res.text();
+      const responseCode = extractTagValue(data, 'ns2:responseCode');
+      const transactionId = extractTagValue(data, 'transactionId');
+      if (data && responseCode == '0000') {
+        updatePurchasedQuota(btoa(data));
+        Toast.show('Payment successful');
+      } else {
+        Toast.show(
+          'Payment is not success, possible reasons, account holder acceptance is not done or easy paisa account does not exist!',
+        );
+        return;
+      }
+    } catch (e) {
+      Toast.show(e?.message || 'Something went wrong, try again later!');
+      await easyPaisaCheckStatus(orderId);
+    } finally {
+      setspinner(false);
+    }
+  };
+
+  const easyPaisaCheckStatus = async orderId => {
+    const xmlBody = `
+    <soapenv:Envelope
+      xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+      xmlns:dto="http://dto.transaction.partner.pg.systems.com/"
+      xmlns:dto1="http://dto.common.pg.systems.com/"
     >
-      {/* <Text style={[styles.title, { color: theme.textColor }]}>
-        Pricing Plans
-      </Text> */}
+      <soapenv:Header />
+      <soapenv:Body>
+        <dto:inquireTransactionRequestType>
+          <dto1:username>${selectedGateway?.merchantAccountId}</dto1:username>
+          <dto1:password>${selectedGateway?.primaryKey}</dto1:password>
+          <orderId>${orderId}</orderId>
+          <accountNum>159130486</accountNum>
+        </dto:inquireTransactionRequestType>
+      </soapenv:Body>
+    </soapenv:Envelope>
+  `;
 
-      {/* SMS Plans */}
-      <View style={styles.sectionContainer}>
-        <SectionHeader title="📱 SMS Marketing" section="sms" />
-        {expandedSections.sms && (
-          <FlatList
-            scrollEnabled={false}
-            data={pricingPlans.sms}
-            keyExtractor={item => item.id.toString()}
-            renderItem={({ item }) => <PricingCard plan={item} />}
-          />
-        )}
-      </View>
+    try {
+      setspinner(true);
+      const res = await fetch(
+        selectedGateway?.url ??
+          'https://easypay.easypaisa.com.pk/easypay-service/PartnerBusinessService',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'text/xml',
+            SOAPAction: 'inquireTransactionResponseType',
+            // Credentials: `${encodeBase64('znawazch@gmail.com:Blazor@025')}`,
+          },
+          body: xmlBody,
+        },
+      );
+      const data = await res.text();
+      const responseCode = extractTagValue(data, 'ns2:responseCode');
+      const transactionStatus = extractTagValue(data, 'transactionStatus');
+      if (responseCode === '0000' && transactionStatus) {
+        if (transactionStatus === 'PAID') {
+          Toast.show('Payment successful');
+          updatePurchasedQuota(btoa(data));
+        }
+        if (transactionStatus === 'FAILED') {
+          Toast.show(
+            'Payment is not success, possible reasons, account holder acceptance is not done or easy paisa account does not exist!',
+          );
+        }
+        if (transactionStatus === 'PENDING') {
+          setspinner(true);
+          return;
+          // Toast.show(
+          //   'Payment is not success, possible reasons, account holder acceptance is not done or easy paisa account does not exist!',
+          // );
+        }
+      } else if (responseCode) {
+        Toast.show(
+          'Payment is not success, possible reasons, account holder acceptance is not done or easy paisa account does not exist!',
+        );
+        return;
+      }
+    } catch (e) {
+      Toast.show(e?.message || 'Something went wrong, try again later!');
+    } finally {
+      setspinner(false);
+    }
+  };
 
-      {/* Email Plans */}
-      <View style={styles.sectionContainer}>
-        <SectionHeader title="✉️ Email Marketing" section="email" />
-        {expandedSections.email && (
-          <FlatList
-            scrollEnabled={false}
-            data={pricingPlans.email}
-            keyExtractor={item => item.id.toString()}
-            renderItem={({ item }) => <PricingCard plan={item} />}
-          />
-        )}
-      </View>
+  const makeJCMwalltet = async () => {
+    const now = moment().local();
+    const txnDateTime = now.format('YYYYMMDDHHmmss');
 
-      {/* Facebook Plans */}
-      <View style={styles.sectionContainer}>
-        <SectionHeader title="👍 Facebook Marketing" section="facebook" />
-        {expandedSections.facebook && (
-          <FlatList
-            scrollEnabled={false}
-            data={pricingPlans.facebook}
-            keyExtractor={item => item.id.toString()}
-            renderItem={({ item }) => <PricingCard plan={item} />}
-          />
-        )}
-      </View>
+    // Generate TxnRefNo (first three letters of domain + timestamp)
+    const txnRef = `BMT${txnDateTime}`;
+    setJazzCashTxnRefNo(txnRef);
 
-      {/* WhatsApp Plans */}
-      <View style={styles.sectionContainer}>
-        <SectionHeader title="💬 WhatsApp Business" section="whatsapp" />
-        {expandedSections.whatsapp && (
-          <FlatList
-            scrollEnabled={false}
-            data={pricingPlans.whatsapp}
-            keyExtractor={item => item.id.toString()}
-            renderItem={({ item }) => <PricingCard plan={item} />}
-          />
-        )}
-      </View>
+    const jcBody = {
+      amount: parseInt(
+        parseFloat(((isBuying?.toPay || 0.0) * 280.67)?.toFixed(2)) * 100,
+      )?.toString(), // will be sent as 200 (Rs 2.00)
+      mobile: jazzCashMobileNumber,
+      description: 'mobile',
+      billRef:
+        `${keepOnlyAlphanumeric((Number(user.orgId) ?? '') + 'RBMT')}` +
+        'D' +
+        moment().format('YYYYMMDDHHmmss'),
+      cnic: jazzCashNic,
+      ppmpf_1: keepOnlyAlphanumeric(user?.email ?? ''),
+      txnRef,
+      ppmpf_2: '',
+    };
+    console.log({ jcBody });
+    const res = await payJC(jcBody);
+    if (res) {
+      const filteredResponse = {
+        pp_TxnType: res.pp_TxnType || '',
+        pp_Amount: res.pp_Amount || '',
+        pp_BillReference: res.pp_BillReference || '',
+        pp_ResponseCode: res.pp_ResponseCode || '',
+        pp_RetreivalReferenceNo: res.pp_RetreivalReferenceNo || '',
+        pp_SubMerchantID: res.pp_SubMerchantID || '',
+        pp_TxnCurrency: res.pp_TxnCurrency || '',
+        pp_TxnDateTime: res.pp_TxnDateTime || '',
+        pp_TxnRefNo: res.pp_TxnRefNo || '',
+        pp_MobileNumber: res.pp_MobileNumber || '',
+        pp_CNIC: res.pp_CNIC || '',
+        pp_SecureHash: res.pp_SecureHash || '',
+      };
+      if (res?.pp_ResponseCode === '157') {
+        // toggleJCPayment();
+        setShowJCPayment(true);
+      } else if (res?.pp_ResponseCode === '000') {
+        Toast.show(res?.pp_ResponseMessage);
+        updatePurchasedQuota(1, btoa(JSON.stringify(filteredResponse)));
+      } else if (res?.pp_ResponseMessage) {
+        setJazzCashTxnRefNo('');
+        Toast.show(res?.pp_ResponseMessage);
+      }
+    }
+  };
 
-      {/* Instagram Plans */}
-      <View style={styles.sectionContainer}>
-        <SectionHeader title="📸 Instagram Marketing" section="instagram" />
-        {expandedSections.instagram && (
-          <FlatList
-            scrollEnabled={false}
-            data={pricingPlans.instagram}
-            keyExtractor={item => item.id.toString()}
-            renderItem={({ item }) => <PricingCard plan={item} />}
-          />
-        )}
-      </View>
+  const payAndPlace = async () => {
+    if (!selectedGateway) {
+      Toast.show('Select a payment method to proceed');
+      return;
+    }
+    if (selectedGateway?.name?.toLowerCase() == 'easypaisa') {
+      if (easypaisaOption !== 'quickPay') {
+        Toast.show('Select an EasyPaisa payment mode to continue.');
+        return;
+      }
+      if (easyPaisaMobileNumber === '' || easyPaisaMobileNumber.length < 11) {
+        Toast.show('Enter a valid EasyPaisa account number');
+        return;
+      }
+      await easyPaisaQuickPay();
+    }
+    if (selectedGateway?.name?.toLowerCase() == 'jazzcash') {
+      if (jazzCashOption !== 'wallet') {
+        Toast.show('Select a JazzCash payment mode to continue.');
+        return;
+      }
+      if (jazzCashMobileNumber === '' || jazzCashMobileNumber.length < 10) {
+        Toast.show('Enter a valid JazzCash account number');
+        return false;
+      }
+      if (jazzCashNic === '' || jazzCashNic.length < 6) {
+        Toast.show('Please enter at least 6 digits of your cnic');
+        return false;
+      }
+      await makeJCMwalltet();
+    }
+  };
+  const getPackageTimeRange = () => {
+    // /Monthly, /6 Month , /Yearly
+    const period = isBuying?.period;
 
-      {/* TikTok Plans */}
-      <View style={styles.sectionContainer}>
-        <SectionHeader title="🎵 TikTok Marketing" section="tiktok" />
-        {expandedSections.tiktok && (
-          <FlatList
-            scrollEnabled={false}
-            data={pricingPlans.tiktok}
-            keyExtractor={item => item.id.toString()}
-            renderItem={({ item }) => <PricingCard plan={item} />}
-          />
-        )}
-      </View>
+    if (period === '/Monthly') {
+      return {
+        startTime: moment().utc().startOf('day').format(),
+        finishTime: moment().utc().add(1, 'month').startOf('day').format(),
+      };
+    }
+    if (period === '/6 Month') {
+      return {
+        startTime: moment().utc().startOf('day').format(),
+        finishTime: moment().utc().add(6, 'month').startOf('day').format(),
+      };
+    }
+    if (period === '/Yearly') {
+      return {
+        startTime: moment().utc().startOf('day').format(),
+        finishTime: moment().utc().add(1, 'year').startOf('day').format(),
+      };
+    }
+  };
 
-      {/* LinkedIn Plans */}
-      <View style={styles.sectionContainer}>
-        <SectionHeader title="💼 LinkedIn Marketing" section="linkedin" />
-        {expandedSections.linkedin && (
-          <FlatList
-            scrollEnabled={false}
-            data={pricingPlans.linkedin}
-            keyExtractor={item => item.id.toString()}
-            renderItem={({ item }) => <PricingCard plan={item} />}
-          />
-        )}
-      </View>
+  const updatePurchasedQuota = async (ref = '') => {
+    try {
+      setspinner(true);
+      let body;
 
-      {/* Pricing Calculator */}
-      <View style={styles.sectionContainer}>
-        <SectionHeader title="🧮 Pricing Calculator" section="calculator" />
-        {expandedSections.calculator && (
-          <View
-            style={[
-              styles.calculatorContainer,
-              { backgroundColor: theme.inputBackColor },
-            ]}
-          >
-            {/* Mode Selector */}
-            <View style={styles.modeSelector}>
-              <TouchableOpacity
-                style={[
-                  styles.modeButton,
-                  pricingMode === 'individual' && styles.modeButtonActive,
-                  {
-                    borderColor: theme.textColor,
-                    backgroundColor:
-                      pricingMode === 'individual'
-                        ? theme.buttonBackColor
-                        : 'transparent',
-                  },
-                ]}
-                onPress={() => setPricingMode('individual')}
+      const findNetworkPackageDetails = orgPackageDetails?.find(
+        op => op?.networkId === isBuying?.networkId,
+      );
+
+      const { startTime, finishTime } = getPackageTimeRange();
+      if (findNetworkPackageDetails) {
+        body = [
+          {
+            ...findNetworkPackageDetails,
+            startTime,
+            finishTime,
+            purchasedQouta: isBuying.qouta,
+            lastUpdatedAt: moment().utc().format(),
+            lastUpdatedBy: user?.id,
+          },
+        ];
+      } else {
+        body = [
+          {
+            orgId: user?.orgId,
+            name: '',
+            description: null,
+            targetAudienceId: null,
+            smtpserver: '',
+            smtpport: '',
+            smtpcreduser: '',
+            smtpcredpwd: '',
+            smtpsslenabled: 0,
+            smtpsecretkey: '',
+            password: '',
+            m2mIntervalSeconds: 0,
+            apikeySecret: '',
+            port: null,
+            custom2: '',
+            custom1: '',
+            sender: '',
+            unitId: 0,
+            virtualAccount: 0,
+            url: '',
+            hashTags: null,
+            networkId: isBuying?.networkId,
+            autoReplyContent: '',
+            replyMediaContentId: null,
+            autoReplyAllowed: 1,
+            postTypeId: null,
+            usedQuota: 0,
+            bufferQuota: null,
+            status: 1,
+            businessId: '',
+            apiuri: '',
+            apikey: '',
+            webUrl: null,
+            accountAuthData: '',
+            id: 0,
+            rowVer: 0,
+            startTime,
+            finishTime,
+            purchasedQouta: isBuying.qouta,
+            lastUpdatedBy: user?.id,
+            createdBy: user?.id,
+            lastUpdatedAt: moment().utc().format(),
+            createdAt: moment().utc().format(),
+          },
+        ];
+      }
+      const headerFetch = {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          Accept: 'application/json',
+          Authorization: servicesettings.AuthorizationKey,
+        },
+      };
+
+      const response = await fetch(
+        servicesettings.baseuri + 'Organization/addupdatenetworksettings',
+        headerFetch,
+      );
+
+      if (!response.ok) {
+        Toast.show('Failed to create album');
+        return;
+      }
+
+      const res = await response.json();
+      if (res?.status) {
+        Toast.show(res?.message || 'updated purchased quota');
+        setIsBuying(null);
+        fetchData();
+      } else {
+        Toast.show(res?.message || 'Error updating purchased quota');
+      }
+    } catch (e) {
+      Toast.show(e?.message || 'Error updating purchased quota');
+    } finally {
+      setspinner(false);
+    }
+  };
+
+  return (
+    <View
+      style={[styles.container, { backgroundColor: theme.backgroundColor }]}
+    >
+      <Spinner visible={loading || spinner} />
+      {isBuying ? (
+        <View style={{ flex: 1 }}>
+          <Modal visible={jcLoading} backdropColor={'transparent'} transparent>
+            <View
+              style={[
+                styles.jcLoadingMdl,
+                {
+                  backgroundColor: theme.modalBackColor,
+                  shadowColor: theme.textColor,
+                },
+              ]}
+            >
+              <Text
+                style={{
+                  color: theme.textColor,
+                  fontSize: 22,
+                  fontWeight: '700',
+                }}
               >
-                <Text
-                  style={[
-                    styles.modeButtonText,
-                    pricingMode === 'individual' && styles.modeButtonTextActive,
-                    {
-                      color: theme.textColor,
-                    },
-                  ]}
-                >
-                  Individual
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  styles.modeButton,
-                  pricingMode === 'combo' && styles.modeButtonActive,
-                  {
-                    borderColor: theme.textColor,
-                    backgroundColor:
-                      pricingMode === 'combo'
-                        ? theme.buttonBackColor
-                        : 'transparent',
-                  },
-                ]}
-                onPress={() => setPricingMode('combo')}
-              >
-                <Text
-                  style={[
-                    styles.modeButtonText,
-                    pricingMode === 'combo' && styles.modeButtonTextActive,
-                    {
-                      color: theme.textColor,
-                    },
-                  ]}
-                >
-                  Combo Bundle
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Duration */}
-            <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: theme.textColor }]}>
-                Duration
+                Jazz Cash
               </Text>
-              <View
-                style={[
-                  styles.dropdown,
-                  {
-                    backgroundColor: theme.backgroundColor,
-                    borderColor: theme.placeholderColor,
-                    borderWidth: 1,
-                  },
-                ]}
-              >
-                <Dropdown
-                  placeholderTextColor={theme.placeholderColor}
-                  onSelect={index => setDuration(DURATION[index]?.id)}
-                  selectedIndex={DURATION.findIndex(d => d.id === duration)}
-                  style={[
-                    {
-                      backgroundColor: theme.inputBackColor,
-                      color: theme.textColor,
-                    },
-                  ]}
-                  items={DURATION}
-                  placeholder="Select Currency..."
-                  clearTextOnFocus={true}
-                  keyboardAppearance="dark"
-                  maxLength={5}
+              <View style={{ width: 200 }}>
+                <ActivityIndicator
+                  color={theme.buttonBackColor}
+                  style={{
+                    transform: [{ scaleX: 5 }, { scaleY: 5 }],
+                    marginVertical: 50,
+                  }}
                 />
               </View>
+              <Text style={{ color: theme.textColor, fontSize: 18 }}>
+                Confirming payment it may take some time, might be upto 10
+                min....
+              </Text>
+              <Text
+                style={{
+                  color: theme.buttonBackColor,
+                  fontSize: 18,
+                }}
+              >
+                Please approve the payment request in your JazzCash app to
+                complete your order.
+              </Text>
             </View>
+          </Modal>
+          <PaymentView
+            onPayComplete={updatePurchasedQuota}
+            selectedGateway={selectedGateway}
+            easyPaisaMobileNumber={easyPaisaMobileNumber}
+            easypaisaOption={easypaisaOption}
+            setEasyPaisaMobileNumber={setEasyPaisaMobileNumber}
+            setEasypaisaOption={setEasypaisaOption}
+            setSelectedGetway={setSelectedGetway}
+            jazzCashMobileNumber={jazzCashMobileNumber}
+            jazzCashNic={jazzCashNic}
+            jazzCashOption={jazzCashOption}
+            setJazzCashMobileNumber={setJazzCashMobileNumber}
+            setJazzCashNic={setJazzCashNic}
+            setJazzCashOption={setJazzCashOption}
+            toPay={(isBuying?.toPay || 0.0) * 280.67}
+          />
+          <JCPaymentConfirm
+            isVisible={showJCPayment}
+            toggleModal={() => setShowJCPayment(prev => !prev)}
+            setShowJCPayment={setShowJCPayment}
+            onCheckout={updatePurchasedQuota}
+            jazzCashTxnRefNo={jazzCashTxnRefNo}
+          />
+          <PricingCard plan={isBuying} />
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              marginBottom: 20,
+            }}
+          >
+            <RNSButton
+              style={{ width: '49%' }}
+              bgColor={theme.buttonBackColor}
+              caption="Cancel"
+              onPress={() => setIsBuying(null)}
+            />
 
-            {/* Individual Mode Inputs */}
-            {pricingMode === 'individual' ? (
-              <>
+            <RNSButton
+              style={{ width: '49%' }}
+              bgColor={theme.buttonBackColor}
+              caption={`Pay PKR ${((isBuying?.toPay || 0.0) * 280.67)?.toFixed(2)}`}
+              onPress={payAndPlace}
+            />
+          </View>
+        </View>
+      ) : (
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {/* SMS Plans */}
+          <View style={styles.sectionContainer}>
+            <SectionHeader title="📱 SMS Marketing" section="sms" />
+            {expandedSections.sms && (
+              <FlatList
+                scrollEnabled={false}
+                data={pricingPlans.sms}
+                keyExtractor={item => item.id.toString()}
+                renderItem={({ item }) => (
+                  <PricingCard
+                    plan={item}
+                    currentValidPackage={getCurrentValidPackage(1)}
+                    expiredPackage={getExpiredPackage(1)}
+                    networkId={1}
+                  />
+                )}
+              />
+            )}
+          </View>
+
+          {/* Email Plans */}
+          <View style={styles.sectionContainer}>
+            <SectionHeader title="✉️ Email Marketing" section="email" />
+            {expandedSections.email && (
+              <FlatList
+                scrollEnabled={false}
+                data={pricingPlans.email}
+                keyExtractor={item => item.id.toString()}
+                renderItem={({ item }) => (
+                  <PricingCard
+                    plan={item}
+                    currentValidPackage={getCurrentValidPackage(3)}
+                    expiredPackage={getExpiredPackage(3)}
+                    networkId={3}
+                  />
+                )}
+              />
+            )}
+          </View>
+
+          {/* WhatsApp Plans */}
+          <View style={styles.sectionContainer}>
+            <SectionHeader title="💬 WhatsApp Business" section="whatsapp" />
+            {expandedSections.whatsapp && (
+              <FlatList
+                scrollEnabled={false}
+                data={pricingPlans.whatsapp}
+                keyExtractor={item => item.id.toString()}
+                renderItem={({ item }) => (
+                  <PricingCard
+                    plan={item}
+                    currentValidPackage={getCurrentValidPackage(2)}
+                    expiredPackage={getExpiredPackage(2)}
+                    networkId={2}
+                  />
+                )}
+              />
+            )}
+          </View>
+
+          {/* Facebook Plans */}
+          <View style={styles.sectionContainer}>
+            <SectionHeader title="👍 Facebook Marketing" section="facebook" />
+            {expandedSections.facebook && (
+              <FlatList
+                scrollEnabled={false}
+                data={pricingPlans.facebook}
+                keyExtractor={item => item.id.toString()}
+                renderItem={({ item }) => (
+                  <PricingCard
+                    plan={item}
+                    currentValidPackage={getCurrentValidPackage(5)}
+                    expiredPackage={getExpiredPackage(5)}
+                    networkId={5}
+                  />
+                )}
+              />
+            )}
+          </View>
+
+          {/* Instagram Plans */}
+          <View style={styles.sectionContainer}>
+            <SectionHeader title="📸 Instagram Marketing" section="instagram" />
+            {expandedSections.instagram && (
+              <FlatList
+                scrollEnabled={false}
+                data={pricingPlans.instagram}
+                keyExtractor={item => item.id.toString()}
+                renderItem={({ item }) => (
+                  <PricingCard
+                    plan={item}
+                    currentValidPackage={getCurrentValidPackage(6)}
+                    expiredPackage={getExpiredPackage(6)}
+                    networkId={6}
+                  />
+                )}
+              />
+            )}
+          </View>
+
+          {/* TikTok Plans */}
+          <View style={styles.sectionContainer}>
+            <SectionHeader title="🎵 TikTok Marketing" section="tiktok" />
+            {expandedSections.tiktok && (
+              <FlatList
+                scrollEnabled={false}
+                data={pricingPlans.tiktok}
+                keyExtractor={item => item.id.toString()}
+                renderItem={({ item }) => (
+                  <PricingCard
+                    plan={item}
+                    currentValidPackage={getCurrentValidPackage(8)}
+                    expiredPackage={getExpiredPackage(8)}
+                    networkId={8}
+                  />
+                )}
+              />
+            )}
+          </View>
+
+          {/* LinkedIn Plans */}
+          <View style={styles.sectionContainer}>
+            <SectionHeader title="💼 LinkedIn Marketing" section="linkedin" />
+            {expandedSections.linkedin && (
+              <FlatList
+                scrollEnabled={false}
+                data={pricingPlans.linkedin}
+                keyExtractor={item => item.id.toString()}
+                renderItem={({ item }) => (
+                  <PricingCard
+                    plan={item}
+                    currentValidPackage={getCurrentValidPackage(7)}
+                    expiredPackage={getExpiredPackage(7)}
+                    networkId={7}
+                  />
+                )}
+              />
+            )}
+          </View>
+
+          {/* Pricing Calculator */}
+          <View style={styles.sectionContainer}>
+            <SectionHeader title="🧮 Pricing Calculator" section="calculator" />
+            {expandedSections.calculator && (
+              <View
+                style={[
+                  styles.calculatorContainer,
+                  { backgroundColor: theme.inputBackColor },
+                ]}
+              >
+                {/* Mode Selector */}
+                <View style={styles.modeSelector}>
+                  <TouchableOpacity
+                    style={[
+                      styles.modeButton,
+                      pricingMode === 'individual' && styles.modeButtonActive,
+                      {
+                        borderColor: theme.textColor,
+                        backgroundColor:
+                          pricingMode === 'individual'
+                            ? theme.buttonBackColor
+                            : 'transparent',
+                      },
+                    ]}
+                    onPress={() => setPricingMode('individual')}
+                  >
+                    <Text
+                      style={[
+                        styles.modeButtonText,
+                        pricingMode === 'individual' &&
+                          styles.modeButtonTextActive,
+                        {
+                          color: theme.textColor,
+                        },
+                      ]}
+                    >
+                      Individual
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={[
+                      styles.modeButton,
+                      pricingMode === 'combo' && styles.modeButtonActive,
+                      {
+                        borderColor: theme.textColor,
+                        backgroundColor:
+                          pricingMode === 'combo'
+                            ? theme.buttonBackColor
+                            : 'transparent',
+                      },
+                    ]}
+                    onPress={() => setPricingMode('combo')}
+                  >
+                    <Text
+                      style={[
+                        styles.modeButtonText,
+                        pricingMode === 'combo' && styles.modeButtonTextActive,
+                        {
+                          color: theme.textColor,
+                        },
+                      ]}
+                    >
+                      Combo Bundle
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+
+                {/* Duration */}
                 <View style={styles.inputGroup}>
                   <Text style={[styles.label, { color: theme.textColor }]}>
-                    Select Network
+                    Duration
                   </Text>
                   <View
                     style={[
@@ -774,312 +1597,366 @@ export default function PricingDetailsScreen() {
                     ]}
                   >
                     <Dropdown
-                      items={networks}
-                      selectedIndex={networks.findIndex(
-                        n => n.id == selectedNetwork,
-                      )}
-                      onSelect={idx =>
-                        setSelectedNetwork(networks[idx]?.id || '')
-                      }
-                      placeholder="Select Network"
-                      style={{ flex: 1, backgroundColor: theme.inputBackColor }}
+                      placeholderTextColor={theme.placeholderColor}
+                      onSelect={index => setDuration(DURATION[index]?.id)}
+                      selectedIndex={DURATION.findIndex(d => d.id === duration)}
+                      style={[
+                        {
+                          backgroundColor: theme.inputBackColor,
+                          color: theme.textColor,
+                        },
+                      ]}
+                      items={DURATION}
+                      placeholder="Select Duration..."
+                      clearTextOnFocus={true}
+                      keyboardAppearance="dark"
+                      maxLength={5}
                     />
                   </View>
                 </View>
 
-                <View style={styles.inputGroup}>
-                  <Text style={[styles.label, { color: theme.textColor }]}>
-                    Number of Messages
-                  </Text>
-                  <TextInput
-                    style={[
-                      styles.input,
-                      {
-                        color: theme.textColor,
-                        borderColor: theme.placeholderColor,
-                      },
-                    ]}
-                    placeholder="e.g., 5000"
-                    placeholderTextColor={theme.placeholderColor}
-                    value={messages}
-                    onChangeText={setMessages}
-                    keyboardType="number-pad"
-                  />
-                </View>
-              </>
-            ) : (
-              <>
-                <View style={styles.inputGroup}>
-                  <Text style={[styles.label, { color: theme.textColor }]}>
-                    WhatsApp Conversations
-                  </Text>
-                  <TextInput
-                    style={[
-                      styles.input,
-                      {
-                        color: theme.textColor,
-                        borderColor: theme.placeholderColor,
-                      },
-                    ]}
-                    placeholder="e.g., 1000"
-                    placeholderTextColor={theme.placeholderColor}
-                    value={waConversations}
-                    onChangeText={setWaConversations}
-                    keyboardType="number-pad"
-                  />
-                </View>
-
-                <View style={styles.checkboxGroup}>
-                  <Text style={[styles.label, { color: theme.textColor }]}>
-                    Include in Bundle
-                  </Text>
-                  <View style={styles.checkboxRow}>
-                    <View style={styles.checkbox}>
-                      <Switch
-                        value={includeSMS}
-                        onValueChange={setIncludeSMS}
-                        trackColor={{
-                          false: theme.placeholderColor,
-                          true: theme.selectedCheckBox,
-                        }}
-                        thumbColor={theme.selectedCheckBox}
-                      />
-                      <Text
+                {/* Individual Mode Inputs */}
+                {pricingMode === 'individual' ? (
+                  <>
+                    <View style={styles.inputGroup}>
+                      <Text style={[styles.label, { color: theme.textColor }]}>
+                        Select Network
+                      </Text>
+                      <View
                         style={[
-                          styles.checkboxLabel,
-                          { color: theme.textColor },
+                          styles.dropdown,
+                          {
+                            backgroundColor: theme.backgroundColor,
+                            borderColor: theme.placeholderColor,
+                            borderWidth: 1,
+                          },
                         ]}
                       >
-                        SMS
-                      </Text>
+                        <Dropdown
+                          items={networks}
+                          selectedIndex={networks.findIndex(
+                            n => n.id == selectedNetwork,
+                          )}
+                          onSelect={idx =>
+                            setSelectedNetwork(networks[idx]?.id || '')
+                          }
+                          placeholder="Select Network"
+                          style={{
+                            flex: 1,
+                            backgroundColor: theme.inputBackColor,
+                          }}
+                        />
+                      </View>
                     </View>
-                    <View style={styles.checkbox}>
-                      <Switch
-                        value={includeEmail}
-                        onValueChange={setIncludeEmail}
-                        trackColor={{
-                          false: theme.placeholderColor,
-                          true: theme.selectedCheckBox,
-                        }}
-                        thumbColor={theme.selectedCheckBox}
-                      />
-                      <Text
-                        style={[
-                          styles.checkboxLabel,
-                          { color: theme.textColor },
-                        ]}
-                      >
-                        Email
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-              </>
-            )}
 
-            {/* Pricing Summary */}
-            {pricingMatrix.length > 0 && (
-              <View
-                style={[
-                  styles.summary,
-                  { backgroundColor: theme.backgroundColor },
-                ]}
-              >
-                <Text style={[styles.summaryTitle, { color: theme.textColor }]}>
-                  💰 Pricing Summary
-                </Text>
-                {pricingMatrix.map(item => (
-                  <View key={item.id}>
-                    {pricingMode === 'individual' ? (
-                      <>
-                        <View style={styles.summaryRow}>
+                    <View style={styles.inputGroup}>
+                      <Text style={[styles.label, { color: theme.textColor }]}>
+                        Number of Messages
+                      </Text>
+                      <TextInput
+                        style={[
+                          styles.input,
+                          {
+                            color: theme.textColor,
+                            borderColor: theme.placeholderColor,
+                          },
+                        ]}
+                        placeholder="e.g., 5000"
+                        placeholderTextColor={theme.placeholderColor}
+                        value={messages}
+                        onChangeText={setMessages}
+                        keyboardType="number-pad"
+                      />
+                    </View>
+                  </>
+                ) : (
+                  <>
+                    <View style={styles.inputGroup}>
+                      <Text style={[styles.label, { color: theme.textColor }]}>
+                        WhatsApp Conversations
+                      </Text>
+                      <TextInput
+                        style={[
+                          styles.input,
+                          {
+                            color: theme.textColor,
+                            borderColor: theme.placeholderColor,
+                          },
+                        ]}
+                        placeholder="e.g., 1000"
+                        placeholderTextColor={theme.placeholderColor}
+                        value={waConversations}
+                        onChangeText={setWaConversations}
+                        keyboardType="number-pad"
+                      />
+                    </View>
+
+                    <View style={styles.checkboxGroup}>
+                      <Text style={[styles.label, { color: theme.textColor }]}>
+                        Include in Bundle
+                      </Text>
+                      <View style={styles.checkboxRow}>
+                        <View style={styles.checkbox}>
+                          <Switch
+                            value={includeSMS}
+                            onValueChange={setIncludeSMS}
+                            trackColor={{
+                              false: theme.placeholderColor,
+                              true: theme.selectedCheckBox,
+                            }}
+                            thumbColor={theme.selectedCheckBox}
+                          />
                           <Text
                             style={[
-                              styles.summaryLabel,
-                              { color: theme.placeholderColor },
-                            ]}
-                          >
-                            Network:
-                          </Text>
-                          <Text
-                            style={[
-                              styles.summaryValue,
+                              styles.checkboxLabel,
                               { color: theme.textColor },
                             ]}
                           >
-                            {item.network}
+                            SMS
                           </Text>
                         </View>
-                        <View style={styles.summaryRow}>
+                        <View style={styles.checkbox}>
+                          <Switch
+                            value={includeEmail}
+                            onValueChange={setIncludeEmail}
+                            trackColor={{
+                              false: theme.placeholderColor,
+                              true: theme.selectedCheckBox,
+                            }}
+                            thumbColor={theme.selectedCheckBox}
+                          />
                           <Text
                             style={[
-                              styles.summaryLabel,
-                              { color: theme.placeholderColor },
-                            ]}
-                          >
-                            Messages:
-                          </Text>
-                          <Text
-                            style={[
-                              styles.summaryValue,
+                              styles.checkboxLabel,
                               { color: theme.textColor },
                             ]}
                           >
-                            {item.messages}
+                            Email
                           </Text>
                         </View>
-                        <View style={styles.summaryRow}>
-                          <Text
-                            style={[
-                              styles.summaryLabel,
-                              { color: theme.placeholderColor },
-                            ]}
-                          >
-                            Duration:
-                          </Text>
-                          <Text
-                            style={[
-                              styles.summaryValue,
-                              { color: theme.textColor },
-                            ]}
-                          >
-                            {item.duration}
-                          </Text>
-                        </View>
-                        <View style={styles.summaryRow}>
-                          <Text
-                            style={[
-                              styles.summaryLabel,
-                              { color: theme.placeholderColor },
-                            ]}
-                          >
-                            Price/Msg:
-                          </Text>
-                          <Text
-                            style={[
-                              styles.summaryValue,
-                              { color: theme.textColor },
-                            ]}
-                          >
-                            {item.pricePerMsg}
-                          </Text>
-                        </View>
-                      </>
-                    ) : (
-                      <>
-                        <View style={styles.summaryRow}>
-                          <Text
-                            style={[
-                              styles.summaryLabel,
-                              { color: theme.placeholderColor },
-                            ]}
-                          >
-                            Bundle:
-                          </Text>
-                          <Text
-                            style={[
-                              styles.summaryValue,
-                              { color: theme.textColor },
-                            ]}
-                          >
-                            {item.bundle}
-                          </Text>
-                        </View>
-                        <View style={styles.summaryRow}>
-                          <Text
-                            style={[
-                              styles.summaryLabel,
-                              { color: theme.placeholderColor },
-                            ]}
-                          >
-                            Conversations:
-                          </Text>
-                          <Text
-                            style={[
-                              styles.summaryValue,
-                              { color: theme.textColor },
-                            ]}
-                          >
-                            {item.waConversations}
-                          </Text>
-                        </View>
-                        <View style={styles.summaryRow}>
-                          <Text
-                            style={[
-                              styles.summaryLabel,
-                              { color: theme.placeholderColor },
-                            ]}
-                          >
-                            Included:
-                          </Text>
-                          <Text
-                            style={[
-                              styles.summaryValue,
-                              { color: theme.textColor },
-                            ]}
-                            numberOfLines={2}
-                          >
-                            {item.included}
-                          </Text>
-                        </View>
-                      </>
-                    )}
-                    <View
-                      style={[
-                        styles.summaryRow,
-                        styles.summaryTotal,
-                        { borderTopColor: theme.placeholderColor },
-                      ]}
+                      </View>
+                    </View>
+                  </>
+                )}
+
+                {/* Pricing Summary */}
+                {pricingMatrix.length > 0 && (
+                  <View
+                    style={[
+                      styles.summary,
+                      { backgroundColor: theme.backgroundColor },
+                    ]}
+                  >
+                    <Text
+                      style={[styles.summaryTitle, { color: theme.textColor }]}
                     >
-                      <Text
-                        style={[
-                          styles.summaryLabel,
-                          { color: theme.placeholderColor },
-                        ]}
-                      >
-                        Total Price:
-                      </Text>
-                      <Text
-                        style={[
-                          styles.totalPrice,
-                          { color: theme.selectedCheckBox },
-                        ]}
-                      >
-                        {item.totalPrice}
-                      </Text>
-                    </View>
+                      💰 Pricing Summary
+                    </Text>
+                    {pricingMatrix.map(item => (
+                      <View key={item.id}>
+                        {pricingMode === 'individual' ? (
+                          <>
+                            <View style={styles.summaryRow}>
+                              <Text
+                                style={[
+                                  styles.summaryLabel,
+                                  { color: theme.placeholderColor },
+                                ]}
+                              >
+                                Network:
+                              </Text>
+                              <Text
+                                style={[
+                                  styles.summaryValue,
+                                  { color: theme.textColor },
+                                ]}
+                              >
+                                {item.network}
+                              </Text>
+                            </View>
+                            <View style={styles.summaryRow}>
+                              <Text
+                                style={[
+                                  styles.summaryLabel,
+                                  { color: theme.placeholderColor },
+                                ]}
+                              >
+                                Messages:
+                              </Text>
+                              <Text
+                                style={[
+                                  styles.summaryValue,
+                                  { color: theme.textColor },
+                                ]}
+                              >
+                                {item.messages}
+                              </Text>
+                            </View>
+                            <View style={styles.summaryRow}>
+                              <Text
+                                style={[
+                                  styles.summaryLabel,
+                                  { color: theme.placeholderColor },
+                                ]}
+                              >
+                                Duration:
+                              </Text>
+                              <Text
+                                style={[
+                                  styles.summaryValue,
+                                  { color: theme.textColor },
+                                ]}
+                              >
+                                {item.duration}
+                              </Text>
+                            </View>
+                            <View style={styles.summaryRow}>
+                              <Text
+                                style={[
+                                  styles.summaryLabel,
+                                  { color: theme.placeholderColor },
+                                ]}
+                              >
+                                Price/Unit:
+                              </Text>
+                              <Text
+                                style={[
+                                  styles.summaryValue,
+                                  { color: theme.textColor },
+                                ]}
+                              >
+                                {item.pricePerMsg}
+                              </Text>
+                            </View>
+                          </>
+                        ) : (
+                          <>
+                            <View style={styles.summaryRow}>
+                              <Text
+                                style={[
+                                  styles.summaryLabel,
+                                  { color: theme.placeholderColor },
+                                ]}
+                              >
+                                Bundle:
+                              </Text>
+                              <Text
+                                style={[
+                                  styles.summaryValue,
+                                  { color: theme.textColor },
+                                ]}
+                              >
+                                {item.bundle}
+                              </Text>
+                            </View>
+                            <View style={styles.summaryRow}>
+                              <Text
+                                style={[
+                                  styles.summaryLabel,
+                                  { color: theme.placeholderColor },
+                                ]}
+                              >
+                                Conversations:
+                              </Text>
+                              <Text
+                                style={[
+                                  styles.summaryValue,
+                                  { color: theme.textColor },
+                                ]}
+                              >
+                                {item.waConversations}
+                              </Text>
+                            </View>
+                            <View style={styles.summaryRow}>
+                              <Text
+                                style={[
+                                  styles.summaryLabel,
+                                  { color: theme.placeholderColor },
+                                ]}
+                              >
+                                Included:
+                              </Text>
+                              <Text
+                                style={[
+                                  styles.summaryValue,
+                                  { color: theme.textColor },
+                                ]}
+                                numberOfLines={2}
+                              >
+                                {item.included}
+                              </Text>
+                            </View>
+                          </>
+                        )}
+                        <View
+                          style={[
+                            styles.summaryRow,
+                            styles.summaryTotal,
+                            { borderTopColor: theme.placeholderColor },
+                          ]}
+                        >
+                          <Text
+                            style={[
+                              styles.summaryLabel,
+                              { color: theme.placeholderColor },
+                            ]}
+                          >
+                            Total Price:
+                          </Text>
+                          <Text
+                            style={[
+                              styles.totalPrice,
+                              { color: theme.selectedCheckBox },
+                            ]}
+                          >
+                            {item.totalPrice}
+                          </Text>
+                        </View>
+                      </View>
+                    ))}
                   </View>
-                ))}
+                )}
+
+                {pricingMatrix.length === 0 && (
+                  <Text
+                    style={[
+                      styles.emptyText,
+                      { color: theme.placeholderColor },
+                    ]}
+                  >
+                    Enter details above to calculate pricing
+                  </Text>
+                )}
               </View>
             )}
-
-            {pricingMatrix.length === 0 && (
-              <Text
-                style={[styles.emptyText, { color: theme.placeholderColor }]}
-              >
-                Enter details above to calculate pricing
-              </Text>
-            )}
           </View>
-        )}
-      </View>
 
-      <View style={{ height: 20 }} />
-    </ScrollView>
+          <View style={{ height: 20 }} />
+        </ScrollView>
+      )}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    paddingHorizontal: 12,
+    flexGrow: 1,
+    paddingHorizontal: 6,
     paddingTop: 16,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 16,
-    textAlign: 'center',
+  jcLoadingMdl: {
+    paddingHorizontal: 15,
+    paddingVertical: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '90%',
+    borderRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 5,
+    alignSelf: 'center',
+    marginTop: Platform.OS === 'ios' ? 50 : 0,
   },
   sectionContainer: {
     marginBottom: 12,
@@ -1126,7 +2003,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     marginTop: 12,
-    marginBottom: 12,
+    marginBottom: 6,
   },
   priceSection: {
     alignItems: 'center',
@@ -1165,7 +2042,7 @@ const styles = StyleSheet.create({
     marginVertical: 4,
   },
   featureText: {
-    fontSize: 13,
+    fontSize: 15,
     lineHeight: 20,
   },
   calculatorContainer: {
@@ -1276,5 +2153,37 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginVertical: 16,
     fontStyle: 'italic',
+  },
+  activePackageBadge: {
+    marginBottom: 0,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  activePackageText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#fff',
+  },
+  packageDetails: {
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 12,
+    marginVertical: 12,
+    backgroundColor: 'rgba(40, 167, 69, 0.05)',
+  },
+  detailRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 6,
+  },
+  detailLabel: {
+    fontSize: 13,
+    fontWeight: '500',
+  },
+  detailValue: {
+    fontSize: 13,
+    fontWeight: '600',
   },
 });

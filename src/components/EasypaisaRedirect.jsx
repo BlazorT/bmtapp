@@ -72,7 +72,6 @@ const EasypaisaRedirect = ({ isOpen, onClose, toPay, onlinePaymentType }) => {
         }/api/payment/ep-callback`,
         storeId: onlinePaymentType?.profileId ?? '760757',
       };
-
       const HASH_KEY = onlinePaymentType?.cert ?? 'YHVUNCYFR0V4XLW8';
       const aes = new AesJs.ModeOfOperation.ecb(
         AesJs.utils.utf8.toBytes(HASH_KEY),
@@ -182,7 +181,7 @@ const EasypaisaRedirect = ({ isOpen, onClose, toPay, onlinePaymentType }) => {
           onPress={() => onClose(null)}
         >
           <AntdIcon name="close" size={24} color={theme.textColor} />
-          <Text color={theme.textColor}>Easypaisa</Text>
+          <Text style={{ color: theme.textColor }}>Easypaisa</Text>
         </TouchableOpacity>
         {!tokenReceived ? (
           <WebView

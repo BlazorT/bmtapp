@@ -21,7 +21,7 @@ const ligthVersion = {
   white: '#fff',
   breadCrumbContainer: '#eff3f4',
   containerBorderColor: '#D3D3D3',
-  activeBreadCrumb: '#1d9bf0c4',
+  activeBreadCrumb: '#1d9bf0',
   breadcrumbText: 'gray',
   acytiveBreadcrumbText: '#ffffff',
   selectedCheckBox: '#1d9bf0c4',
