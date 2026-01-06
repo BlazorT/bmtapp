@@ -2,6 +2,7 @@ import React from 'react';
 import {
   Dimensions,
   Image,
+  Platform,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -188,7 +189,7 @@ export default function HomeScreen(props) {
 const styles = StyleSheet.create({
   backgroundVideo: {
     width: Dimensions.get('window').width,
-    height: 60 + '%',
+    height: Platform.OS === 'ios' ? '40%' : '60%',
   },
   container: {
     flex: 1,
@@ -326,7 +327,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute',
-    bottom: 4,
+    bottom: Platform.OS === 'ios' ? -3 : 4,
   },
   copyrirgttext: {
     marginTop: 5,
