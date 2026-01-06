@@ -29,14 +29,19 @@ import { colors } from '../../styles';
 import servicesettings from '../dataservices/servicesettings';
 import { useUser } from '../../hooks/useUser';
 import { isTab } from '../../constants';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { useImageHandler } from '../../hooks/useOrgSubmit';
+import ProfileSection from '../../components/ProfileSection';
+
 const profileIcon = require('../../../assets/images/defaultUser.png');
 //import messaging from '@react-native-firebase/messaging';
 export default function VehicalSallerScreen(props) {
+  const { img, setimg, EditImgURI, setEditImgURI, imageUrl, setImageUrl } =
+    useImageHandler();
   const { loginUser } = useUser();
   const lovs = useSelector(state => state.lovs).lovs;
   const theme = useTheme();
   const [spinner, setspinner] = useState(false);
-  const [img, setimg] = useState('');
   const [cityindex, setcityindex] = useState(-1);
   const [orgindex, setorgindex] = useState('');
   const [orgdata, setorgdata] = useState([]);
@@ -71,9 +76,20 @@ export default function VehicalSallerScreen(props) {
   const [successVisible, setsuccessVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectterms, setselectterms] = useState(false);
+  const [show, setshow] = useState(true);
+
   const CancelClick = () => {
     setconfirmationVisible(true);
   };
+  const showhidepassword = () => {
+    if (show == false) {
+      setshow(true);
+    }
+    if (show == true) {
+      setshow(false);
+    }
+  };
+
   const [permissionVisible, setpermissionVisible] = useState(false);
   const hidepermission = () => {
     setpermissionVisible(false);
@@ -435,7 +451,7 @@ export default function VehicalSallerScreen(props) {
           Title={'Error'}
           Massage={'Email already has been taken!'}
         ></Alert>
-        <View style={styles.ProfileImgView}>
+        {/* <View style={styles.ProfileImgView}>
           <TouchableOpacity
             selectable={true}
             onPress={() => requestCameraPermission()}
@@ -449,7 +465,8 @@ export default function VehicalSallerScreen(props) {
               style={styles.ProfileStyle}
             />
           </TouchableOpacity>
-        </View>
+        </View> */}
+        <ProfileSection img={img} setimg={setimg} EditImgURI={EditImgURI} />
 
         {/* Form Fields - Responsive Layout */}
         {isTab ? (
@@ -750,6 +767,51 @@ export default function VehicalSallerScreen(props) {
               keyboardAppearance={'dark'}
               maxLength={40}
             />
+            <View
+              style={[
+                customestylePassword,
+                Password == '' ? styles.mandatoryControl : null,
+                ,
+                {
+                  backgroundColor: theme.inputBackColor,
+                  color: theme.textColor,
+                },
+              ]}
+            >
+              <TextInput
+                placeholderTextColor={theme.placeholderColor}
+                value={Password}
+                onChangeText={value => setPassword(value)}
+                onEndEditing={() => setPasswordFocus(false)}
+                onFocus={() => setPasswordFocus(true)}
+                style={[
+                  styles.FieldText,
+                  {
+                    backgroundColor: theme.inputBackColor,
+                    color: theme.textColor,
+                  },
+                ]}
+                secureTextEntry={show}
+                placeholder="Password"
+                clearTextOnFocus={true}
+                keyboardAppearance={'dark'}
+                maxLength={40}
+              />
+              {Password != '' ? (
+                <TouchableOpacity
+                  onPress={showhidepassword}
+                  style={{ position: 'absolute', right: 10 }}
+                >
+                  <Icon
+                    name={show == false ? 'eye-slash' : 'eye'}
+                    style={[
+                      styles.imageStyleshowhide,
+                      { color: theme.textColor },
+                    ]}
+                  />
+                </TouchableOpacity>
+              ) : null}
+            </View>
             <TextInput
               placeholderTextColor={theme.placeholderColor}
               style={[
@@ -842,37 +904,6 @@ export default function VehicalSallerScreen(props) {
               keyboardAppearance={'dark'}
               maxLength={5}
             />
-            <View
-              style={[
-                customestylePassword,
-                Password == '' ? styles.mandatoryControl : null,
-                ,
-                {
-                  backgroundColor: theme.inputBackColor,
-                  color: theme.textColor,
-                },
-              ]}
-            >
-              <TextInput
-                placeholderTextColor={theme.placeholderColor}
-                value={Password}
-                onChangeText={value => setPassword(value)}
-                onEndEditing={() => setPasswordFocus(false)}
-                onFocus={() => setPasswordFocus(true)}
-                secureTextEntry={true}
-                style={[
-                  styles.FieldText,
-                  {
-                    backgroundColor: theme.inputBackColor,
-                    color: theme.textColor,
-                  },
-                ]}
-                placeholder="Password"
-                clearTextOnFocus={true}
-                keyboardAppearance={'dark'}
-                maxLength={40}
-              />
-            </View>
           </>
         )}
 
@@ -921,10 +952,14 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     paddingVertical: 0,
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
     flexGrow: 1,
     rowGap: 10,
     columnGap: 10,
+  },
+  imageStyleshowhide: {
+    fontSize: 25,
+    color: 'white',
   },
   ProfileImgView: {
     alignItems: 'center',
@@ -979,11 +1014,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.TextBoxContainer,
     borderColor: colors.borderColor,
     borderRadius: 4,
+    paddingLeft: 10,
   },
   sectionStyleOnFocus: {
     flexDirection: 'row',
     alignItems: 'center',
-    // marginTop: 4 + '%',
     height: 46,
     fontSize: 16,
     width: '100%',
@@ -992,6 +1027,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.TextBoxContainer,
     borderColor: colors.borderColor,
     borderRadius: 4,
+    paddingLeft: 10,
   },
   mandatoryControl: {
     borderWidth: 1,

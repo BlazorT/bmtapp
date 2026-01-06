@@ -1361,6 +1361,7 @@ export default function PricingDetailsScreen() {
               bgColor={theme.buttonBackColor}
               caption="Cancel"
               onPress={() => setIsBuying(null)}
+              textStyle={{ fontSize: 14 }}
             />
 
             <RNSButton
@@ -1368,6 +1369,7 @@ export default function PricingDetailsScreen() {
               bgColor={theme.buttonBackColor}
               caption={`Pay PKR ${((isBuying?.toPay || 0.0) * 280.67)?.toFixed(2)}`}
               onPress={payAndPlace}
+              textStyle={{ fontSize: 14 }}
             />
           </View>
         </View>
@@ -1942,7 +1944,7 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     paddingHorizontal: 6,
-    paddingTop: 16,
+    paddingTop: 6,
   },
   jcLoadingMdl: {
     paddingHorizontal: 15,

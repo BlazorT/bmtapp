@@ -1,10 +1,11 @@
-import React, {useEffect, useState} from 'react';
-import {Dimensions, Modal, StyleSheet, Text, View} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Dimensions, Modal, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {Button} from '../components';
-import {colors} from '../styles';
-import {useSelector} from 'react-redux';
-import {useTheme} from '../hooks/useTheme';
+import { Button } from '../components';
+import { colors } from '../styles';
+import { useSelector } from 'react-redux';
+import { useTheme } from '../hooks/useTheme';
+import { isTab } from '../constants';
 export default function CustomeAlert(props) {
   const theme = useTheme();
   const isMode = useSelector(state => state.theme.mode);
@@ -26,6 +27,8 @@ export default function CustomeAlert(props) {
   function confirmation() {
     props.confirm();
   }
+
+  if (!props.Visible) return null;
   return (
     <View>
       {props.alerttype == 'confirmation' ? (
@@ -33,33 +36,42 @@ export default function CustomeAlert(props) {
           style={styles.modalView}
           visible={props.Visible}
           transparent={true}
-          animationType={'fade'}>
+          animationType={'fade'}
+        >
           <View
-            style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+            style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+          >
             <LinearGradient
-              colors={
-                isMode === 'light'
-                  ? ['#cdcdcd', '#f5f5f5', '#cdcdcd']
-                  : [
-                      theme.modalBackColor,
-                      theme.modalBackColor,
-                      theme.modalBackColor,
-                    ]
-              }
-              style={styles.Alert_Main_View}>
-              <Text style={[styles.Alert_Title, {color: theme.textColor}]}>
+              colors={[
+                theme.modalBackColor,
+                theme.modalBackColor,
+                theme.modalBackColor,
+              ]}
+              style={[
+                styles.Alert_Main_View,
+                {
+                  boxShadow: `-1px 1px 15px 0px ${theme.textColor}`,
+                },
+              ]}
+            >
+              <Text style={[styles.Alert_Title, { color: theme.textColor }]}>
                 {props.Title}
               </Text>
               <Text
                 style={[
                   customestyle,
                   styles.customestyleMessage,
-                  {color: theme.textColor},
-                ]}>
+                  { color: theme.textColor },
+                ]}
+              >
                 {props.Massage}
               </Text>
               <View
-                style={{width: '100%', height: 0.3, backgroundColor: '#474747'}}
+                style={{
+                  width: '100%',
+                  height: 0.3,
+                  backgroundColor: '#474747',
+                }}
               />
               <View style={styles.ButtonView}>
                 <Button
@@ -83,7 +95,8 @@ export default function CustomeAlert(props) {
           visible={props.Visible}
           transparent={true}
           animationType={'fade'}
-          onRequestClose={() => Hide()}>
+          onRequestClose={() => Hide()}
+        >
           <LinearGradient
             colors={
               isMode === 'light'
@@ -94,20 +107,22 @@ export default function CustomeAlert(props) {
                     theme.modalBackColor,
                   ]
             }
-            style={styles.Alert_Main_View}>
-            <Text style={[styles.Alert_Title, {color: theme.textColor}]}>
+            style={styles.Alert_Main_View}
+          >
+            <Text style={[styles.Alert_Title, { color: theme.textColor }]}>
               {props.Title}
             </Text>
             <Text
               style={[
                 customestyle,
                 styles.customestyleMessage,
-                {color: theme.textColor},
-              ]}>
+                { color: theme.textColor },
+              ]}
+            >
               {props.Massage}
             </Text>
             <View
-              style={{width: '100%', height: 0.3, backgroundColor: '#fff'}}
+              style={{ width: '100%', height: 0.3, backgroundColor: '#fff' }}
             />
             <View style={styles.ButtonView}>
               <Button
@@ -127,14 +142,8 @@ const styles = StyleSheet.create({
   Alert_Main_View: {
     alignItems: 'center',
     justifyContent: 'center',
-    //backgroundColor : "#8a8a8a",
     height: 200,
-    width: Dimensions.get('window').width - 20,
-    marginLeft: 5,
-    //marginHorizontal:10,
-    //width: '97%',
-    //borderWidth: 1,
-    //borderColor: '#fff',
+    width: isTab ? '50%' : '90%',
     borderRadius: 7,
   },
   ButtonView: {

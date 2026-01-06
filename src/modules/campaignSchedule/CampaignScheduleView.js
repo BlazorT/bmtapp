@@ -442,9 +442,9 @@ export default function CampaignScheduleScreen(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
+    // width: Dimensions.get('window').width,
+    // height: Dimensions.get('window').height,
     alignItems: 'center',
-    paddingHorizontal: 6,
+    paddingHorizontal: 8,
   },
 });

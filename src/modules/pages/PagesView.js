@@ -1,8 +1,11 @@
+import { useNavigation } from '@react-navigation/native';
+import moment from 'moment';
 import React, { useState } from 'react';
 import {
-  Dimensions,
+  FlatList,
   Image,
   Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -19,15 +22,12 @@ import dashboardIcon from '../../../assets/images/pages/blog.png';
 import loginIcon from '../../../assets/images/pages/login.png';
 import organizationIcon from '../../../assets/images/tabbar/organization.png';
 import Alert from '../../components/Alert';
+import { isTab } from '../../constants';
 import { useTheme } from '../../hooks/useTheme';
 import { useUser } from '../../hooks/useUser';
 import { colors, fonts } from '../../styles';
 import servicesettings from '../dataservices/servicesettings';
 import { isAdminOrSuperAdmin } from '../home/HomeView';
-import moment from 'moment';
-import { useNavigation } from '@react-navigation/native';
-import { ScrollView } from 'react-native';
-import { isTab } from '../../constants';
 
 export default function PagesScreen(props) {
   const theme = useTheme();
@@ -72,7 +72,7 @@ export default function PagesScreen(props) {
       firstName: user?.firstName || user?.fullName?.split(' ')[0] || '',
       lastName: user?.lastName || user?.fullName?.split(' ')[1] || '',
       status: 2,
-      rowVer: user?.rowVer, // MUST match DB rowVer
+      rowVer: user?.rowVer,
       lastUpdatedBy: user?.id,
       UserCode: '',
       GenderId: 0,
@@ -169,36 +169,31 @@ export default function PagesScreen(props) {
       condition: true,
     },
     {
-      icon: <AntdIcon name="contacts" size={45} color={theme.tintColor} />,
+      icon: <AntdIcon name="contacts" size={40} color={theme.tintColor} />,
       text: 'Recipients',
       path: 'Recipients',
       condition: isAuthenticated,
     },
     {
-      icon: <AntdIcon name="gift" size={45} color={theme.tintColor} />,
+      icon: <AntdIcon name="gift" size={40} color={theme.tintColor} />,
       text: 'Pricing Plans',
       path: 'Pricing Plans',
       condition: true,
     },
     {
-      icon: <AntdIcon name="user" size={45} color={theme.tintColor} />,
+      icon: <AntdIcon name="user" size={40} color={theme.tintColor} />,
       text: 'Unsubscribe',
       path: 'Unsubscribe',
       condition: isAuthenticated,
     },
     {
-      icon: <AntdIcon name="infocirlceo" size={45} color={theme.tintColor} />,
+      icon: <AntdIcon name="infocirlceo" size={40} color={theme.tintColor} />,
       text: 'About',
       path: 'About',
       condition: true,
     },
-    // {
-    //   // icon: <AntdIcon name="infocirlceo" size={45} color={theme.tintColor} />,
-    //   // text: 'About',
-    //   // path: 'About',
-    //   condition: true,
-    // },
   ];
+
   const onCardPress = path => {
     if (
       isAuthenticated ||
@@ -212,9 +207,11 @@ export default function PagesScreen(props) {
       props.navigation.navigate('Login');
     }
   };
+
   const onLogout = () => {
     setVisible(true);
   };
+
   return (
     <ScrollView
       contentContainerStyle={[
@@ -249,11 +246,11 @@ export default function PagesScreen(props) {
       <View
         style={{
           flexDirection: 'row',
-          flexWrap: 'wrap',
           justifyContent: 'center',
-          alignItems: 'flex-start',
-          rowGap: 10,
-          columnGap: 10,
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          rowGap: 12,
+          columnGap: '2.5%',
         }}
       >
         {items.map(
@@ -298,23 +295,16 @@ export default function PagesScreen(props) {
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
+    flex: 1,
     paddingTop: 10,
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    alignItems: 'flex-start',
+    alignItems: 'center',
   },
   row: {
     flexDirection: 'row',
-    paddingHorizontal: 10,
-    marginTop: 10,
   },
   item: {
     height: isTab ? 160 : Platform.OS === 'ios' ? 110 : 120,
-    width: isTab ? 160 : Platform.OS === 'ios' ? 110 : 120,
+    width: '30%',
     paddingVertical: 20,
     borderRadius: 5,
     alignItems: 'center',
@@ -325,26 +315,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4,
   },
-  paymentitem: {
-    backgroundColor: colors.BlazorBox,
-    flex: 1,
-    height: 120,
-    paddingVertical: 20,
-    borderColor: 'red',
-    borderWidth: 1,
-    borderRadius: 5,
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    marginHorizontal: 5,
-  },
-  itemEmpty: {
-    flex: 1,
-    height: 120,
-    paddingVertical: 20,
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    marginHorizontal: 5,
-  },
   itemText: {
     color: colors.NavbarTextColor,
     fontFamily: fonts.primary,
@@ -352,6 +322,6 @@ const styles = StyleSheet.create({
     fontSize: isTab ? 20 : Platform.OS === 'ios' ? 12 : 12,
   },
   itemImage: {
-    height: isTab ? 80 : 50,
+    height: isTab ? 80 : 45,
   },
 });

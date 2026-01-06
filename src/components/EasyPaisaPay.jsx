@@ -92,7 +92,7 @@ const EasyPaisaPay = ({
 
           <Divider text={'Or'} />
           <RNSButton
-            style={{ width: '100%', marginTop: 10 }}
+            style={{ width: '100%' }}
             bgColor={theme.buttonBackColor}
             caption="Easy Paisa Checkout"
             onPress={() => setIsEPRedirectOpen(true)}

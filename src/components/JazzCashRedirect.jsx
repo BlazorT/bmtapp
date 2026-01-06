@@ -241,8 +241,15 @@ const JazzCashRedirect = ({ isOpen, onClose, toPay, onlinePaymentType }) => {
         transparent
         animationType="slide"
       >
-        <View style={{ flex: 1 }}>
-          <View style={styles.loaderContainer}>
+        <View style={{ flex: 1, marginTop: Platform.OS === 'ios' ? 50 : 0 }}>
+          <TouchableOpacity
+            style={[styles.header, { backgroundColor: theme.modalBackColor }]}
+            onPress={() => onClose(null)}
+          >
+            <AntdIcon name="close" size={24} color={theme.textColor} />
+            <Text style={{ color: theme.textColor }}>JazzCash</Text>
+          </TouchableOpacity>
+          <View style={[styles.loaderContainer, { top: 50 }]}>
             <ActivityIndicator size="large" color="#C4151C" />
           </View>
         </View>

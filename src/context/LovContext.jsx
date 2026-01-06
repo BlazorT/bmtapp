@@ -1,12 +1,10 @@
 import { createContext, useEffect } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
-import Spinner from 'react-native-loading-spinner-overlay';
+import { ActivityIndicator, Image, StyleSheet, Text, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { Button } from '../components';
 import { GET_COUNTRY_INFO } from '../constants';
 import useFetchData from '../hooks/useFetchData';
 import { useTheme } from '../hooks/useTheme';
-import { useUser } from '../hooks/useUser';
 import { setLovs } from '../redux/features/bmtLovs/lovsSlice';
 const profilelogo = require('../../assets/images/BDMT.png');
 
@@ -68,14 +66,13 @@ const LOVContext = createContext({
 
 export const LOVProvider = ({ children }) => {
   const theme = useTheme();
-  const { isAuthenticated } = useUser();
   const dispatch = useDispatch();
 
   const { data, loading, error, fetchData } = useFetchData(apiConfigs);
 
   useEffect(() => {
     fetchData();
-  }, [isAuthenticated]);
+  }, []);
 
   useEffect(() => {
     if (loading || error) return;
@@ -88,11 +85,12 @@ export const LOVProvider = ({ children }) => {
       <View
         style={[styles.container, { backgroundColor: theme.backgroundColor }]}
       >
-        <Spinner
-          visible={true}
-          textContent={'Loading...'}
-          textStyle={{ color: theme.textColor }}
+        <Image
+          source={profilelogo}
+          style={{ width: 300, height: 100, marginBottom: 10 }}
         />
+        <ActivityIndicator size={'small'} color={theme.textColor} />
+        <Text style={styles.errorText}>Initializing App...</Text>
       </View>
     );
   }

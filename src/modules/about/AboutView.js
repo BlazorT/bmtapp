@@ -69,7 +69,7 @@ export default function AboutScreen(props) {
           with over 700 apps and services like whatsapp, facebook, tweeter,
           messenger, youtube etc. Effective, seamless and continued presence in
           global world to increase product rating and sales. BMT can run media
-          compaign on the following platforms, whatsapp, sms, email, facebook,
+          campaign on the following platforms, whatsapp, sms, email, facebook,
           linkedIn, twitter, Instagram. Its powered with integrable plugins.
         </Text>
       </ScrollView>
