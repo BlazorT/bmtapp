@@ -19,7 +19,7 @@ const Model = props => {
         </View>
         <Text
           style={{
-            color: theme.textColor,
+            color: theme.buttonBackColor,
             position: 'absolute',
             fontSize: 20,
             width: '70%',

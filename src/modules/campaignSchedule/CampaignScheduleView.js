@@ -341,12 +341,6 @@ export default function CampaignScheduleScreen(props) {
       ]}
       scrollEnabled={false}
     >
-      <Spinner
-        visible={spinner}
-        textContent="Loading..."
-        textStyle={{ color: theme.textColor }}
-        color={theme.textColor}
-      />
       <TouchableOpacity>
         <AppBreadcrumb
           crumbs={[
@@ -398,8 +392,8 @@ export default function CampaignScheduleScreen(props) {
             <Spinner
               visible={spinner}
               textContent="Submitting..."
-              textStyle={{ color: theme.textColor }}
-              color={theme.textColor}
+              textStyle={{ color: theme.buttonBackColor }}
+              color={theme.buttonBackColor}
             />
             <Model modalVisible={modalVisible} message={updateMessage}></Model>
             {/* <Alert
