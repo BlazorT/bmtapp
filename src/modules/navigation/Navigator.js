@@ -204,7 +204,7 @@ const DrawerMenuItem = ({ item, theme, onPress }) => {
     if (item.name === 'Pricing Plans') {
       return (
         <AntdIcon
-          name="gift"
+          name="creditcard"
           size={25}
           style={styles.imgStyle}
           color={theme.tintColor}
