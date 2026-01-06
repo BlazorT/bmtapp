@@ -197,12 +197,42 @@ export default function CampaignScheduleScreen(props) {
       Toast.show(res?.message || 'Something went wrong, please try again');
     }
   };
-  const updateCampaignData = data => {
+  const updateCampaignData = async data => {
+    console.log({ data });
+
+    const headerFetch = {
+      method: 'POST',
+      body: JSON.stringify({
+        id: 0,
+        orgId: user?.orgId,
+        rowVer: 1,
+        networkId: 0,
+        name: '',
+        status: 1,
+        createdAt: moment().utc().subtract(10, 'year').format('YYYY-MM-DD'),
+        lastUpdatedAt: moment().utc().format('YYYY-MM-DD'),
+      }),
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+        Accept: 'application/json',
+        Authorization: servicesettings.AuthorizationKey,
+      },
+    };
+
+    const response = await fetch(
+      servicesettings.baseuri + 'Compaigns/albumlists',
+      headerFetch,
+    );
+
+    const res = await response.json();
+    const albums = res?.data || [];
     const attachments =
       data.attachments !== '' ? JSON.parse(data.attachments) : [];
+    const targetaudiance =
+      data.targetaudiance !== '' ? JSON.parse(data.targetaudiance) : [];
     const userNetworks = JSON.parse(data.compaignsdetails);
     const networkData = lovs['mybundlings'];
-
+    console.log({ userNetworks });
     const transformNetworks = userNetworks.map(item => {
       const selectedNetwork = networkData.find(
         network => item.networkId == network.networkId,
@@ -229,29 +259,34 @@ export default function CampaignScheduleScreen(props) {
     //   networks.some(network => network.networkId === item.networkId),
     // );
     const schedule = JSON.parse(data.compaignschedules);
+    console.log({ schedule });
+
     const scheduleList = schedule.map(item => {
       const scheduleNetworks = transformNetworks.filter(
         network => network.networkId == item.NetworkId,
       );
+      const albumList = JSON.parse(item.ContactsAlbums);
       return {
         CompaignNetworks: scheduleNetworks,
         id: item.id,
         budget: item.budget,
         rowVer: 0,
+        albums: albumList?.map(a => albums.find(al => al.id === a) || null),
         messageCount: item.MessageCount,
         orgId: user.orgId,
-        days: item.days.split(',').map(item => Number(item.replace(/"/g, ''))),
+        days: JSON.parse(item.days),
         networkId: item.NetworkId,
         compaignDetailId: item.CompaignDetailId,
         isFixedTime: 1,
-        startTime: item.StartTime,
-        finishTime: item.FinishTime,
+        startTime: moment(item.StartTime).local().format(),
+        finishTime: moment(item.FinishTime).local().format(),
         interval: item.Interval,
         status: 1,
         intervalTypeId: item.IntervalTypeId,
         randomId: item.id,
       };
     });
+    // console.log({ scheduleList });
     const uris = attachments.map(item => ({
       Id: item.Id,
       uri: `${servicesettings.Imagebaseuri}${item.image}`,
@@ -287,6 +322,11 @@ export default function CampaignScheduleScreen(props) {
       schedules: schedule.length > 0 ? scheduleList : [],
       totalBudget: data.budget ? data.budget : 0,
       discount: data.discount ? data.discount : 0,
+      genderId: targetaudiance?.genderId || 0,
+      interests: targetaudiance?.interests || [],
+      locations: targetaudiance?.locations || [],
+      maxAge: targetaudiance?.maxAge || 0,
+      minAge: targetaudiance?.minAge || 0,
     });
   };
 

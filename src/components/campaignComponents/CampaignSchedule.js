@@ -137,6 +137,7 @@ const CampaignSchedule = ({
   }, [isUpdate]);
 
   const addSchedule = async ref => {
+    console.log({ campaignInfo });
     let campaignBody = {
       id: campaignInfo.id,
       targetaudiance: JSON.stringify({
@@ -167,7 +168,8 @@ const CampaignSchedule = ({
       startTime: moment.utc(campaignInfo.campaignStartDate).format(),
       finishTime: moment.utc(campaignInfo.campaignEndDate).format(),
       CompaignNetworks: campaignInfo.networks?.map(n => ({
-        CompaignId: n?.compaignId,
+        CompaignId: n?.id ? campaignInfo.id : 0,
+        id: n?.id || 0,
         NetworkId: n?.networkId,
         Desc: n?.desc,
         Status: n?.status,
@@ -209,6 +211,7 @@ const CampaignSchedule = ({
       paymentRef: ref || '',
       rowVer: 0,
     };
+    console.log({ campaignBody });
     // navigation.navigate('Payment', { campaignBody });
     // return;
 
@@ -237,6 +240,7 @@ const CampaignSchedule = ({
     //   return;
     // }
     const res = await response.json();
+    console.log({ res });
     if (res.status == false || res.status == '408' || res.status == '400') {
       Toast.show(res.message || 'Something went wrong, please try again');
     } else {
