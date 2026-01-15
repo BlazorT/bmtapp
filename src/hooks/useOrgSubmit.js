@@ -28,6 +28,8 @@ export const useOrgSubmit = ({
   setspinner,
   goBack,
   orgAddress,
+  signature,
+  signatureJSON,
 }) => {
   const validateForm = () => {
     const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
@@ -68,6 +70,17 @@ export const useOrgSubmit = ({
       );
       return false;
     }
+
+    // For authenticated users with roleId 2, require signature
+    if (user?.isAuthenticated && user?.roleId === 2 && !signature) {
+      Toast.showWithGravity(
+        'Please sign the agreement to proceed',
+        Toast.LONG,
+        Toast.CENTER,
+      );
+      return false;
+    }
+
     return true;
   };
 
@@ -118,6 +131,14 @@ export const useOrgSubmit = ({
     setspinner(true);
 
     try {
+      if (user?.roleId === 2 && !signature) {
+        Toast.showWithGravity(
+          'To proceed, review and sign the aggreement.',
+          Toast.LONG,
+          Toast.CENTER,
+        );
+        return;
+      }
       let imageUrlOrg = imageUrl;
 
       if (img !== '' && img) {
@@ -125,6 +146,18 @@ export const useOrgSubmit = ({
       }
 
       const OrgIdSelect = editOrgId || 0; // 0 for new registration
+
+      // Prepare signature data
+      const signatureData = signature
+        ? JSON.stringify(
+            signatureJSON || {
+              signature: signature,
+              dt: moment().utc().format(),
+              adminId: user?.id,
+              adminName: user?.name || user?.userInfo?.fullName,
+            },
+          )
+        : null;
 
       const orgUpdateBody = {
         id: OrgIdSelect,
@@ -147,9 +180,10 @@ export const useOrgSubmit = ({
         CreatedBy: orgCreatedAt?.createdBy || user?.id || 1,
         LastUpdatedBy: user?.id || 1,
         LogoAvatar: imageUrlOrg,
+        Signature: signatureData, // Add signature field
         RowVer: 0,
       };
-      // return;
+
       const response = await fetch(
         servicesettings.baseuri + 'BlazorApi/adupdateorg',
         {
@@ -220,6 +254,10 @@ export const useOrgData = () => {
   const [cityDataList, setCityDataList] = useState([]);
   const [orgCreatedAt, setOrgCreatedAt] = useState(null);
 
+  // Signature state
+  const [signature, setSignature] = useState('');
+  const [signatureJSON, setSignatureJSON] = useState(null);
+
   return {
     orgName,
     setOrgName,
@@ -265,6 +303,10 @@ export const useOrgData = () => {
     setCityDataList,
     orgCreatedAt,
     setOrgCreatedAt,
+    signature,
+    setSignature,
+    signatureJSON,
+    setSignatureJSON,
   };
 };
 

@@ -30,7 +30,7 @@ import {
 import CampaignAddress from './CampaignAdress';
 import Icon from 'react-native-vector-icons/MaterialIcons'; // or your preferred icon set
 
-const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex }) => {
+const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex, orgData }) => {
   const theme = useTheme();
   const navigation = useNavigation();
 
@@ -156,6 +156,17 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex }) => {
           borderWidth: 1,
         }}
       /> */}
+      {!orgData?.signature ? (
+        <Text
+          style={{
+            fontSize: 12,
+            color: theme.selectedCheckBox,
+            fontStyle: 'italic',
+          }}
+        >
+          Note : Campaign will be auto activated once admin sign the contract!!!
+        </Text>
+      ) : null}
       <TextInput
         placeholder="Title / short description..."
         placeholderTextColor={theme.placeholderColor}

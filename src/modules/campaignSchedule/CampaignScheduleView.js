@@ -59,6 +59,7 @@ export default function CampaignScheduleScreen(props) {
   const [spinner, setspinner] = useState(false);
   const [networkData, setNetworks] = useState('');
   const [priceData, setPriceData] = useState([]);
+  const [orgData, setOrgData] = useState(null);
   const [recipients, setRecipients] = useState([]);
 
   useEffect(() => {
@@ -72,6 +73,7 @@ export default function CampaignScheduleScreen(props) {
         return;
       }
     });
+    loadOrganization();
     loadInitialData();
     fetchRecipients();
     loadNetworkPricing();
@@ -123,6 +125,39 @@ export default function CampaignScheduleScreen(props) {
         props.navigation.replace('Login');
       }
     } catch (error) {}
+  };
+
+  const loadOrganization = () => {
+    setspinner(true);
+    const headerFetch = {
+      method: 'POST',
+      body: JSON.stringify({ id: user?.orgId.toString(), Name: '', Status: 1 }),
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json; charset=utf-8',
+        Authorization: servicesettings.AuthorizationKey,
+      },
+    };
+
+    fetch(servicesettings.baseuri + 'BlazorApi/orgsfulldata', headerFetch)
+      .then(response => response.json())
+      .then(responseJson => {
+        if (responseJson.data?.length > 0) {
+          setOrgData(responseJson.data[0]);
+        } else {
+          Toast.show(responseJson.message || 'Organization not found');
+        }
+        setspinner(false);
+      })
+      .catch(error => {
+        console.error('service error', error);
+        setspinner(false);
+        Toast.showWithGravity(
+          'Internet connection failed',
+          Toast.LONG,
+          Toast.CENTER,
+        );
+      });
   };
 
   const fetchRecipients = async () => {
@@ -197,6 +232,7 @@ export default function CampaignScheduleScreen(props) {
       Toast.show(res?.message || 'Something went wrong, please try again');
     }
   };
+
   const updateCampaignData = async data => {
     console.log({ data });
 
@@ -407,6 +443,7 @@ export default function CampaignScheduleScreen(props) {
             campaignInfo={campaignInfo}
             setCampaignInfo={setCampaignInfo}
             setIndex={setIndex}
+            orgData={orgData}
           />
         )}
         {Index == 1 && (
@@ -428,6 +465,7 @@ export default function CampaignScheduleScreen(props) {
               setspinner={setspinner}
               priceData={priceData}
               recipients={recipients}
+              orgData={orgData}
             />
             <Spinner
               visible={spinner}

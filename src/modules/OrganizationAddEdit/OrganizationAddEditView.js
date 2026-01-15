@@ -5,7 +5,8 @@ import {
   View,
   StyleSheet,
   KeyboardAvoidingView,
-  Keyboard,
+  Platform,
+  TouchableOpacity,
 } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import Toast from 'react-native-simple-toast';
@@ -14,6 +15,8 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import { useTheme } from '../../hooks/useTheme';
 import { useUser } from '../../hooks/useUser';
 import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Text } from 'react-native';
 
 import ProfileSection from '../../components/ProfileSection';
 import CurrencyStrengthSection from '../../components/CurrencyStrengthSection';
@@ -27,8 +30,11 @@ import { useOrgData } from '../../hooks/useOrgSubmit';
 import { useImageHandler } from '../../hooks/useOrgSubmit';
 import AlertDialogs from '../../components/AlertDialogs';
 import BasicInfoSection from '../../components/BasicInfoSection';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import SignatureModal from '../../components/SignatureModal';
 import servicesettings from '../dataservices/servicesettings';
+import { generateOrgAgreementPDF } from '../../helper/generateAgreementPDF';
+import PDFViewerModal from '../../components/PDFViewerModal';
+import { Button } from '../../components';
 
 export default function OrganizationAddEditScreen(props) {
   const theme = useTheme();
@@ -86,6 +92,10 @@ export default function OrganizationAddEditScreen(props) {
     setCityDataList,
     orgCreatedAt,
     setOrgCreatedAt,
+    signature,
+    setSignature,
+    signatureJSON,
+    setSignatureJSON,
   } = useOrgData();
 
   // UI state
@@ -96,7 +106,11 @@ export default function OrganizationAddEditScreen(props) {
   const [EditconfirmationVisible, setEditconfirmationVisible] = useState(false);
   const [permissionVisible, setpermissionVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-
+  const [signatureModalVisible, setSignatureModalVisible] = useState(false);
+  // Add state
+  const [pdfViewerVisible, setPdfViewerVisible] = useState(false);
+  const [generatedPdfUri, setGeneratedPdfUri] = useState(null);
+  const [pdfLoading, setPdfLoading] = useState(false);
   // Dropdown data
   const CurrencyItem = lovs['lovs']?.currencies || [];
   const stateList = lovs['lovs']?.states || [];
@@ -131,12 +145,23 @@ export default function OrganizationAddEditScreen(props) {
     setspinner,
     goBack,
     orgAddress,
+    signature,
+    signatureJSON,
   });
 
   // Initialize
   useEffect(() => {
     checkInternetAndInit();
   }, []);
+
+  // Auto-check terms when signature is added
+  useEffect(() => {
+    if (signature && !selectterms) {
+      setselectterms(true);
+    }
+  }, [signature, selectterms]);
+
+  // Update handleViewContract
 
   const checkInternetAndInit = async () => {
     const state = await NetInfo.fetch();
@@ -154,7 +179,7 @@ export default function OrganizationAddEditScreen(props) {
 
   const loginInfoLoaded = () => {
     props.navigation.setOptions({
-      title: `${isAuthenticated ? 'Edit' : 'Register'} Organization`, // Dynamic title
+      title: `${isAuthenticated ? 'Edit' : 'Register'} Organization`,
     });
 
     if (isAuthenticated) {
@@ -243,6 +268,17 @@ export default function OrganizationAddEditScreen(props) {
     setInstagramId(EditOrg.instagram || '');
     setIban(EditOrg.ibanorWireTransferId || '');
 
+    // Load signature if exists
+    if (EditOrg.signature) {
+      try {
+        const sJSON = JSON.parse(EditOrg.signature);
+        setSignatureJSON(sJSON);
+        setSignature(sJSON?.signature || '');
+      } catch (e) {
+        console.error('Error parsing signature:', e);
+      }
+    }
+
     setOrgCreatedAt({
       createdBy: EditOrg?.createdBy,
       createdAt: EditOrg?.createdAt,
@@ -279,6 +315,41 @@ export default function OrganizationAddEditScreen(props) {
     setSelectCityId(city.id);
   };
 
+  const handleViewContract = async () => {
+    if (!signature) {
+      setSignatureModalVisible(true);
+    } else {
+      try {
+        setPdfLoading(true);
+        const pdfPath = await generateOrgAgreementPDF(
+          signature,
+          signatureJSON?.adminName || '',
+          signatureJSON?.dt || new Date(),
+        );
+        console.log({ pdfPath });
+        setGeneratedPdfUri(`file://${pdfPath}`);
+        setPdfViewerVisible(true);
+      } catch (err) {
+        Toast.show('Failed to generate agreement PDF', Toast.LONG);
+      } finally {
+        setPdfLoading(false);
+      }
+    }
+  };
+
+  const handleSubmitWithSignature = () => {
+    if (!signature) {
+      Toast.showWithGravity(
+        'Please sign the agreement first',
+        Toast.LONG,
+        Toast.CENTER,
+      );
+      setSignatureModalVisible(true);
+      return;
+    }
+    submit();
+  };
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: theme.backgroundColor }}
@@ -301,6 +372,24 @@ export default function OrganizationAddEditScreen(props) {
         setModalVisible={setModalVisible}
         onConfirmCancel={handleConfirmCancel}
         onEditConfirm={handleEditConfirmClick}
+      />
+
+      <PDFViewerModal
+        visible={pdfViewerVisible}
+        onClose={() => setPdfViewerVisible(false)}
+        pdfUri={generatedPdfUri}
+      />
+
+      <SignatureModal
+        visible={signatureModalVisible}
+        onClose={() => setSignatureModalVisible(false)}
+        signature={signature}
+        setSignature={setSignature}
+        signatureJSON={signatureJSON}
+        setSignatureJSON={setSignatureJSON}
+        user={user}
+        isAuthenticated={isAuthenticated}
+        onSubmit={handleSubmitWithSignature}
       />
 
       <ScrollView
@@ -374,6 +463,34 @@ export default function OrganizationAddEditScreen(props) {
           theme={theme}
         />
 
+        {/* Agreement Section - Only show for authenticated users or role 2 */}
+        {(isAuthenticated || user?.roleId === 2) && (
+          <View style={styles.agreementSection}>
+            <Button
+              style={[styles.button]}
+              bgColor={theme.buttonBackColor}
+              caption={
+                signature
+                  ? 'View and Download Agreement'
+                  : 'View and Sign Agreement'
+              }
+              onPress={handleViewContract}
+              loading={pdfLoading}
+            />
+
+            {signature &&
+              isAuthenticated &&
+              user?.id === signatureJSON?.adminId && (
+                <Button
+                  style={[styles.button]}
+                  bgColor={theme.buttonBackColor}
+                  caption={'Change Signature'}
+                  onPress={() => setSignatureModalVisible(true)}
+                />
+              )}
+          </View>
+        )}
+
         <TermsCheckboxSection
           selectterms={selectterms}
           setselectterms={setselectterms}
@@ -395,5 +512,40 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     paddingHorizontal: 8,
+  },
+  agreementSection: {
+    marginVertical: 15,
+    paddingHorizontal: 10,
+    alignItems: 'center',
+    rowGap: 5,
+  },
+  agreementButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  agreementButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 10,
+  },
+  changeSignatureButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+  },
+  changeSignatureText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '500',
+    marginLeft: 8,
   },
 });

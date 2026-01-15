@@ -41,6 +41,7 @@ const CampaignSchedule = ({
   setUpdateMessage,
   setspinner,
   recipients,
+  orgData,
 }) => {
   const theme = useTheme();
   const { user } = useUser();
@@ -157,7 +158,7 @@ const CampaignSchedule = ({
       }),
       createdBy: Number(user.id),
       lastUpdatedBy: Number(user.id),
-      status: campaignInfo.status,
+      status: !orgData?.signature ? 4 : campaignInfo.status,
       orgId: Number(user.orgId),
       hashTags: campaignInfo.hashtag,
       description: campaignInfo?.template,
