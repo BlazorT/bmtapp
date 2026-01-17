@@ -199,6 +199,7 @@ export const useOrgSubmit = ({
       if (!response.ok) {
         throw new Error(`Request failed with status: ${response.status}`);
       }
+      setspinner(false);
 
       const responseJson = await response.json();
       if (responseJson.status) {

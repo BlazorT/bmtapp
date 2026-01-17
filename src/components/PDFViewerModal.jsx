@@ -7,6 +7,7 @@ import {
   Text,
   StyleSheet,
   Dimensions,
+  Platform,
 } from 'react-native';
 import Pdf from 'react-native-pdf';
 
@@ -43,7 +44,11 @@ export default function PDFViewerModal({ visible, onClose, pdfUri }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000' },
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
+    marginTop: Platform.OS === 'ios' ? 50 : 0,
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',

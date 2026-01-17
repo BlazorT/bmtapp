@@ -1749,6 +1749,35 @@ PODS:
     - React-RCTFBReactNativeSpec
     - ReactCommon/turbomodule/core
     - SocketRocket
+  - react-native-blob-util (0.24.6):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
   - react-native-contacts (8.0.7):
     - boost
     - DoubleConversion
@@ -1978,6 +2007,35 @@ PODS:
     - React-Core
   - react-native-notification-sounds (0.5.8):
     - React
+  - react-native-pdf (7.0.3):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
   - react-native-render-html (6.3.4):
     - React-Core
   - react-native-safe-area-context (5.6.2):
@@ -2694,8 +2752,6 @@ PODS:
     - React-perflogger (= 0.80.0)
     - React-utils (= 0.80.0)
     - SocketRocket
-  - rn-fetch-blob (0.12.0):
-    - React-Core
   - RNAppleAuthentication (2.5.0):
     - React-Core
   - RNCAsyncStorage (2.2.0):
@@ -3246,6 +3302,7 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
+  - react-native-blob-util (from `../node_modules/react-native-blob-util`)
   - react-native-contacts (from `../node_modules/react-native-contacts`)
   - "react-native-document-picker (from `../node_modules/@react-native-documents/picker`)"
   - react-native-fbsdk-next (from `../node_modules/react-native-fbsdk-next`)
@@ -3255,6 +3312,7 @@ DEPENDENCIES:
   - react-native-maps/Google (from `../node_modules/react-native-maps`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-notification-sounds (from `../node_modules/react-native-notification-sounds`)
+  - react-native-pdf (from `../node_modules/react-native-pdf`)
   - react-native-render-html (from `../node_modules/react-native-render-html`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-simple-toast (from `../node_modules/react-native-simple-toast`)
@@ -3292,7 +3350,6 @@ DEPENDENCIES:
   - ReactAppDependencyProvider (from `build/generated/ios`)
   - ReactCodegen (from `build/generated/ios`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
-  - rn-fetch-blob (from `../node_modules/rn-fetch-blob`)
   - "RNAppleAuthentication (from `../node_modules/@invertase/react-native-apple-authentication`)"
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNCCheckbox (from `../node_modules/@react-native-community/checkbox`)"
@@ -3428,6 +3485,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   React-microtasksnativemodule:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/microtasks"
+  react-native-blob-util:
+    :path: "../node_modules/react-native-blob-util"
   react-native-contacts:
     :path: "../node_modules/react-native-contacts"
   react-native-document-picker:
@@ -3444,6 +3503,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-notification-sounds:
     :path: "../node_modules/react-native-notification-sounds"
+  react-native-pdf:
+    :path: "../node_modules/react-native-pdf"
   react-native-render-html:
     :path: "../node_modules/react-native-render-html"
   react-native-safe-area-context:
@@ -3518,8 +3579,6 @@ EXTERNAL SOURCES:
     :path: build/generated/ios
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
-  rn-fetch-blob:
-    :path: "../node_modules/rn-fetch-blob"
   RNAppleAuthentication:
     :path: "../node_modules/@invertase/react-native-apple-authentication"
   RNCAsyncStorage:
@@ -3627,6 +3686,7 @@ SPEC CHECKSUMS:
   React-logger: b69e65dc60f768e5509ac0cc27a360124bf70478
   React-Mapbuffer: 0a17c5b42d79218d96833c6f2a169ad198d84bd0
   React-microtasksnativemodule: abd0447fc2a02ba07a3ba84517139bfad87dbe0c
+  react-native-blob-util: 87c44e182cfa4759a174dc46f9dabf9eae921bb7
   react-native-contacts: 9c63bbfe2bd61a35b9a7fd70717be6134e49ce8b
   react-native-document-picker: e283c739831e67b6922793228f6a740310b42b3f
   react-native-fbsdk-next: 1baeeacf0ecdeb839cca16ca75cb16a9bbbf8e03
@@ -3635,6 +3695,7 @@ SPEC CHECKSUMS:
   react-native-maps: f25882b7b82037a1687b32aa4d82b5fc2d7a8644
   react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
   react-native-notification-sounds: 739f8adc4010138e4cd72fd4e3220e7df758473f
+  react-native-pdf: ce9e236cde8d7c79a77908a9631feebda0385e11
   react-native-render-html: 984dfe2294163d04bf5fe25d7c9f122e60e05ebe
   react-native-safe-area-context: 7fd5a52f4d8d07ae5898ae9a9426d1da97c987f2
   react-native-simple-toast: cacae3e5ebb93fe95679e04254519817181243ba
@@ -3672,7 +3733,6 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: cd55f820247d424280ae0b94e1ffb38963410c01
   ReactCodegen: a39a2e5ed4bfea8d6b9ad09ea9ffd9a1486e4273
   ReactCommon: 3ccdf6dd4738262600fad688f13d0d6bf4262b4e
-  rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
   RNAppleAuthentication: c088adfc7b371d44eb3da20c38d450d5543e5a0a
   RNCAsyncStorage: afe7c3711dc256e492aa3a50dcac43eecebd0ae5
   RNCCheckbox: 471ebdc33884c084f362615c1ef3507496cc07f1
