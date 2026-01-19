@@ -1,40 +1,35 @@
 // OrganizationAddEditScreen.js
+import NetInfo from '@react-native-community/netinfo';
+import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import {
-  ScrollView,
-  View,
-  StyleSheet,
   KeyboardAvoidingView,
   Platform,
-  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+  View
 } from 'react-native';
-import NetInfo from '@react-native-community/netinfo';
+import Spinner from 'react-native-loading-spinner-overlay';
 import Toast from 'react-native-simple-toast';
 import { useSelector } from 'react-redux';
-import Spinner from 'react-native-loading-spinner-overlay';
 import { useTheme } from '../../hooks/useTheme';
 import { useUser } from '../../hooks/useUser';
-import { useNavigation } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Text } from 'react-native';
 
-import ProfileSection from '../../components/ProfileSection';
-import CurrencyStrengthSection from '../../components/CurrencyStrengthSection';
+import { Button } from '../../components';
+import ActionButtonsSection from '../../components/ActionButtonsSection';
+import AlertDialogs from '../../components/AlertDialogs';
+import BasicInfoSection from '../../components/BasicInfoSection';
 import CampaignAudienceSection from '../../components/CampaignAudienceSection';
+import CurrencyStrengthSection from '../../components/CurrencyStrengthSection';
+import PDFViewerModal from '../../components/PDFViewerModal';
+import ProfileSection from '../../components/ProfileSection';
+import SignatureModal from '../../components/SignatureModal';
 import SocialControlSection from '../../components/SocialControlSection';
 import StatusSection from '../../components/StatusSection';
 import TermsCheckboxSection from '../../components/TermsCheckboxSection';
-import ActionButtonsSection from '../../components/ActionButtonsSection';
-import { useOrgSubmit } from '../../hooks/useOrgSubmit';
-import { useOrgData } from '../../hooks/useOrgSubmit';
-import { useImageHandler } from '../../hooks/useOrgSubmit';
-import AlertDialogs from '../../components/AlertDialogs';
-import BasicInfoSection from '../../components/BasicInfoSection';
-import SignatureModal from '../../components/SignatureModal';
-import servicesettings from '../dataservices/servicesettings';
 import { generateOrgAgreementPDF } from '../../helper/generateAgreementPDF';
-import PDFViewerModal from '../../components/PDFViewerModal';
-import { Button } from '../../components';
+import { useImageHandler, useOrgData, useOrgSubmit } from '../../hooks/useOrgSubmit';
+import servicesettings from '../dataservices/servicesettings';
 
 export default function OrganizationAddEditScreen(props) {
   const theme = useTheme();
@@ -231,10 +226,10 @@ export default function OrganizationAddEditScreen(props) {
   const populateOrgData = EditOrg => {
     const EditImg = EditOrg.logoAvatar
       ? servicesettings.Imagebaseuri +
-        EditOrg.logoAvatar
-          .replace(/\\/g, '/')
-          .replace(',', '')
-          .replace('//', '')
+      EditOrg.logoAvatar
+        .replace(/\\/g, '/')
+        .replace(',', '')
+        .replace('//', '')
       : '';
 
     setEditImgURI(EditImg);

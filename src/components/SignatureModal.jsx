@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Dimensions,
   Image,
+  Platform,
 } from 'react-native';
 import SignatureCanvas from 'react-native-signature-canvas';
 import Icon from 'react-native-vector-icons/AntDesign';
@@ -264,7 +265,12 @@ const SignatureModal = ({
                     }
                     onClose();
                     if (onSubmit) {
-                      onSubmit();
+                      setTimeout(
+                        () => {
+                          onSubmit();
+                        },
+                        Platform.OS === 'ios' ? 1000 : 0,
+                      );
                     }
                   }}
                 />
