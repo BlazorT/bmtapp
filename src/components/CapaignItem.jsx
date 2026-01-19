@@ -46,6 +46,7 @@ const CapaignItem = ({ item, loadCampiagns }) => {
           {
             backgroundColor: theme.cardBackColor,
             borderColor: item.status !== 1 ? '#8B0000' : theme.textColor,
+            borderWidth: item.status !== 1 ? 1 : 0,
           },
         ]}
       >
@@ -57,7 +58,7 @@ const CapaignItem = ({ item, loadCampiagns }) => {
         <View style={styles.contentContainer}>
           <View style={{ rowGap: 10 }}>
             <Text style={{ color: theme.textColor }}>{item.name}</Text>
-            <Text style={{ color: theme.textColor }}>
+            <Text style={{ color: theme.textColor, fontSize: 12 }}>
               {dateFormatter(item.startTime)}
             </Text>
           </View>
@@ -78,7 +79,7 @@ const CapaignItem = ({ item, loadCampiagns }) => {
                 {networkCount?.length}
               </Text>
             </View>
-            <Text style={{ color: theme.textColor }}>
+            <Text style={{ color: theme.textColor, fontSize: 12 }}>
               {dateFormatter(item.finishTime)}
             </Text>
           </View>
@@ -90,10 +91,9 @@ const CapaignItem = ({ item, loadCampiagns }) => {
 
 const styles = StyleSheet.create({
   card: {
-    borderWidth: 0,
     borderRadius: 5,
     padding: 6,
-    borderWidth: 0.5,
+    borderWidth: 1,
     flexDirection: 'row',
     alignItems: 'center',
     columnGap: 5,

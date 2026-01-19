@@ -189,7 +189,7 @@ export default function LoginScreen(props) {
     // authenticateorguser
     fetch(
       servicesettings.baseuri +
-        `Common/login?email=${Email.trim()}&password=${Password.trim()}`,
+      `Common/login?email=${Email.trim()}&password=${Password.trim()}`,
       headerFetch,
     )
       .then(response => response.json())
@@ -230,8 +230,8 @@ export default function LoginScreen(props) {
             responseJson.message != ''
               ? Toast.show(' ' + responseJson.message + ' ')
               : Toast.show(
-                  'Too many requests, must be 40 Seconds interval between next request!',
-                );
+                'Too many requests, must be 40 Seconds interval between next request!',
+              );
           }
           return;
         } else if (!responseJson?.data) {
@@ -429,8 +429,8 @@ export default function LoginScreen(props) {
                   responseJson.message != ''
                     ? Toast.show(' ' + responseJson.message + ' ')
                     : Toast.show(
-                        'Too many requests, must be 40 Seconds interval between next request!',
-                      );
+                      'Too many requests, must be 40 Seconds interval between next request!',
+                    );
                   return;
                 }
               } else if (!responseJson?.data) {
@@ -466,7 +466,7 @@ export default function LoginScreen(props) {
               //*********need to some disscuss*********/
               Toast.showWithGravity(
                 error?.message ||
-                  'Internet connection failed, try another time !!!',
+                'Internet connection failed, try another time !!!',
                 Toast.LONG,
                 Toast.CENTER,
               );
@@ -595,7 +595,6 @@ export default function LoginScreen(props) {
               onChangeText={value => setEmail(value)}
               onEndEditing={() => setemailFocus(false)}
               onFocus={() => setemailFocus(true)}
-              clearTextOnFocus={true}
               keyboardAppearance={'dark'}
               maxLength={40}
             />
@@ -633,7 +632,6 @@ export default function LoginScreen(props) {
                 onFocus={() => setPasswordFocus(true)}
                 onChangeText={value => setPassword(value)}
                 secureTextEntry={show}
-                clearTextOnFocus={true}
                 keyboardAppearance={'dark'}
                 maxLength={10}
               />

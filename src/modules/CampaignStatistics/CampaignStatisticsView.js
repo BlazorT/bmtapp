@@ -321,10 +321,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 12,
     borderRadius: 6,
     backgroundColor: colors.PagePanelTab,
+    // Android shadow
     elevation: 5,
-    shadowColor: 'black',
-    shadowOffset: { width: 4, height: 6 },
-    shadowOpacity: 0.8,
+    // iOS shadow - much softer and more natural
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   Volumelable: {
     fontSize: 16,

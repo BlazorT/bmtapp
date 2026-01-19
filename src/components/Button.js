@@ -2,7 +2,6 @@ import React from 'react';
 import {
   ActivityIndicator,
   Image,
-  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -38,7 +37,6 @@ export default function RNSButton(props) {
         borderColor: colors.bgColor,
       },
       props.bgColor && {
-        // borderColor: props.bgColor,
         backgroundColor: props.bgColor,
       },
       props.rounded && styles.rounded,
@@ -54,10 +52,7 @@ export default function RNSButton(props) {
       props.secondary && {
         color: colors.secondary,
       },
-      props.bgColor &&
-        {
-          //color:props.bgColor,
-        },
+      props.bgColor && {},
       props.textColor && {
         color: props.textColor,
       },
@@ -148,7 +143,6 @@ const HEIGHT_LARGE = 60;
 const styles = StyleSheet.create({
   container: {
     height: HEIGHT,
-    // borderWidth: 1 / PixelRatio.get(),
     width: '100%',
   },
   containerSmall: {
@@ -162,12 +156,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    // width: 'auto',
-    paddingHorizontal: Platform.OS === 'ios' ? 0 : 10,
-    paddingVertical: Platform.OS === 'ios' ? 0 : 5,
+    paddingHorizontal: 10, // Consistent padding for both platforms
+    paddingVertical: 0, // Remove vertical padding to maintain height
   },
   buttonSmall: {
-    paddingHorizontal: Platform.OS === 'ios' ? 2 : 15,
+    paddingHorizontal: 15, // Consistent padding for small buttons
   },
   border: {
     borderWidth: 1,
@@ -175,7 +168,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   primaryButton: {
-    //backgroundColor: 'green',
     borderRadius: 5,
   },
   rounded: {
@@ -192,20 +184,17 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     fontSize: 18,
     fontFamily: fonts.primaryBold,
+    textAlign: 'center', // Center text properly
   },
   captionSmall: {
     fontSize: 15,
     color: '#a2a2a2',
-    //  fontWeight: '500',
   },
   captionWithIcon: {
-    marginLeft: Platform.OS === 'ios' ? 4 : 12,
+    marginLeft: 12, // Consistent spacing with icon for both platforms
   },
   primaryCaption: {
     color: 'white',
-  },
-  primaryCaptionsss: {
-    //color: 'red',
   },
   secondaryCaption: {
     color: 'white',

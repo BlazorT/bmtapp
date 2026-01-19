@@ -731,12 +731,14 @@ export default function PricingDetailsScreen() {
     const hasValidPackage = !!currentValidPackage;
     const hasExpiredPackage = !!expiredPackage;
 
-    // Check if THIS specific plan card matches the purchased quota
-    const isThisCardThePurchasedPlan =
-      currentValidPackage && currentValidPackage.purchasedQouta === plan.qouta;
-
     const isThisCardTheExpiredPlan =
       expiredPackage && expiredPackage.purchasedQouta === plan.qouta;
+
+    // Check if THIS specific plan card matches the purchased quota
+    const isThisCardThePurchasedPlan =
+      currentValidPackage &&
+      currentValidPackage.purchasedQouta === plan.qouta &&
+      !isThisCardTheExpiredPlan;
 
     const remainingDays = currentValidPackage
       ? getRemainingDays(currentValidPackage.finishTime)

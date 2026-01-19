@@ -305,29 +305,34 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontSize: 14,
   },
-  Buttoncontainer2: {
-    width: Dimensions.get('window').width - 30,
-    marginHorizontal: 15,
-    marginVertical: 12,
-    height: 34 + '%',
-  },
+  // Update Buttoncontainer style:
   Buttoncontainer: {
     marginTop: -10,
     width: Dimensions.get('window').width,
-    height: '100%',
+    flex: 1, // Changed from height: '100%'
     shadowColor: '#000',
     shadowOffset: { width: 4, height: 6 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
+    justifyContent: 'space-between', // Add this
   },
+
+  // Update Buttoncontainer2:
+  Buttoncontainer2: {
+    width: Dimensions.get('window').width - 30,
+    marginHorizontal: 15,
+    marginVertical: 12,
+    flex: 1, // Changed from fixed height
+  },
+
+  // Update Buttoncontainer3:
   Buttoncontainer3: {
-    width: 100 + '%',
+    width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    position: 'absolute',
-    bottom: Platform.OS === 'ios' ? -3 : 4,
+    paddingBottom: Platform.OS === 'ios' ? 10 : 15, // Remove absolute positioning
   },
   copyrirgttext: {
     marginTop: 5,

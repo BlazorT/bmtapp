@@ -6,7 +6,7 @@ import moment from 'moment';
  * @returns {string} - The formatted date string.
  */
 export const dateFormatter = date => {
-  return moment(date).format('MM-DD-YY HH:mm');
+  return moment(date).format('MMM DD, YYYY . hh:mm A');
 };
 export const safeJSONParse = (value, fallback = null) => {
   try {
