@@ -67,11 +67,12 @@ export default function HomeScreen(props) {
           <View style={styles.Buttoncontainer2}>
             {global.NetworkFailed == 1 ? null : (
               <View>
+                <View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between'}}>
                 <TouchableOpacity
                   onPress={LoginClick}
                   style={[
                     styles.loginbutton,
-                    { backgroundColor: theme.buttonBackColor },
+                    { backgroundColor: theme.buttonBackColor ,width:'48%'},
                   ]}
                 >
                   <Text style={styles.buttonText}>LOGIN</Text>
@@ -80,11 +81,12 @@ export default function HomeScreen(props) {
                   onPress={opensignup}
                   style={[
                     styles.loginbutton,
-                    { backgroundColor: theme.buttonBackColor },
+                    { backgroundColor: theme.buttonBackColor,width:'48%' },
                   ]}
                 >
                   <Text style={styles.buttonText}>SIGNUP</Text>
                 </TouchableOpacity>
+                </View>
                 <TouchableOpacity
                   onPress={() => props.navigation.navigate('Pricing Plans')}
                   style={[
