@@ -3,7 +3,9 @@ import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   ScrollView,
   StyleSheet,
   Switch,
@@ -134,6 +136,7 @@ export default function PricingDetailsScreen() {
       bundlingDetail.unitPrice - (bundlingDetail?.discount || 0);
     const freeAllowed = bundlingDetail.freeAllowed || 0;
     const plans = [];
+
     // Free plan (if freeAllowed exists)
     if (freeAllowed > 0) {
       plans.push({
@@ -142,55 +145,133 @@ export default function PricingDetailsScreen() {
         price: '$0',
         period: '/One Time',
         features: [
-          `${freeAllowed} credits/One Time`,
-          'Basic support',
+          `${freeAllowed} ${networkId === 3 ? 'emails' : 'credits'}/One Time`,
+          networkId === 3 ? 'Basic Templates' : 'Basic support',
           'Standard delivery',
         ],
         networkId,
       });
     }
 
-    // Pay As You Go
-    plans.push({
-      id: 1,
-      name: 'Pay As You Go',
-      price: `$${basePrice.toFixed(2)}`,
-      period: '/Unit',
-      features: [
-        'No commitment',
-        'Instant delivery',
-        'Pay only for what you use',
-      ],
-      networkId,
-    });
-
-    // Bulk plans with 10%, 15%, 20% discounts
-    const quantities = [1000, 5000, 10000];
-    const discounts = [0.1, 0.15, 0.2]; // 10%, 15%, 20%
-    const durations = ['Monthly', '6 Month', 'Yearly'];
-
-    quantities.forEach((qty, idx) => {
-      const discountRate = discounts[idx];
-      const discountedPrice = basePrice * (1 - discountRate);
-      const totalPrice = qty * discountedPrice;
-      const badgeText = `SAVE ${Math.round(discountRate * 100)}%`;
-
+    // Special handling for Email (networkId === 3)
+    if (networkId === 3) {
       plans.push({
-        id: idx + 2,
-        name: `Bulk ${qty / 1000}K`,
-        price: `$${totalPrice.toFixed(2)}`,
-        originalPrice: `$${(qty * basePrice).toFixed(2)}`,
-        period: `/${durations[idx]}`,
-        badge: badgeText,
+        id: 1,
+        name: 'Pay As You Go',
+        price: `$${basePrice.toFixed(2)}`,
+        period: '/Unit',
         features: [
-          `${qty} credits`,
-          `Valid for ${durations[idx].toLowerCase()}`,
-          `Best value at ${Math.round(discountRate * 100)}% off`,
+          'No commitment',
+          'Instant delivery',
+          'Pay only for what you use',
         ],
-        qouta: qty,
         networkId,
       });
-    });
+
+      // Email-specific plans
+      const emailPlans = [
+        {
+          id: 2,
+          name: 'Starter',
+          qty: 5000,
+          discount: 0.1,
+          period: '/1 month',
+          badge: 'SAVE 10%',
+          features: [
+            '5,000 emails/ 1 month',
+            'Custom templates',
+            'Advanced analytics',
+          ],
+        },
+        {
+          id: 3,
+          name: 'Premium',
+          qty: 10000,
+          discount: 0.15,
+          period: '/6 month',
+          badge: 'SAVE 15%',
+          features: [
+            '10,000 emails/ 6 month',
+            'Custom templates',
+            'Advanced analytics',
+          ],
+        },
+        {
+          id: 4,
+          name: 'Business',
+          qty: 50000,
+          discount: 0.2,
+          period: '/Yearly',
+          badge: 'SAVE 20%',
+          features: [
+            '50,000 emails/Yearly',
+            'Automation workflows',
+            'Priority support',
+          ],
+        },
+      ];
+
+      emailPlans.forEach(plan => {
+        const discountedPrice = basePrice * (1 - plan.discount);
+        const totalPrice = plan.qty * discountedPrice;
+        const originalPrice = plan.qty * basePrice;
+
+        plans.push({
+          id: plan.id,
+          name: plan.name,
+          price: `$${totalPrice.toFixed(2)}`,
+          originalPrice: `$${originalPrice.toFixed(2)}`,
+          period: plan.period,
+          badge: plan.badge,
+          features: plan.features,
+          qouta: plan.qty,
+          networkId,
+        });
+      });
+    } else {
+      // Original logic for other networks
+      // Pay As You Go
+      plans.push({
+        id: 1,
+        name: 'Pay As You Go',
+        price: `$${basePrice.toFixed(2)}`,
+        period: '/Unit',
+        features: [
+          'No commitment',
+          'Instant delivery',
+          'Pay only for what you use',
+        ],
+        networkId,
+      });
+
+      // Bulk plans with 10%, 15%, 20% discounts
+      const quantities = [1000, 5000, 10000];
+      const discounts = [0.1, 0.15, 0.2]; // 10%, 15%, 20%
+      const durations = ['Monthly', '6 Month', 'Yearly'];
+
+      quantities.forEach((qty, idx) => {
+        const discountRate = discounts[idx];
+        const discountedPrice = basePrice * (1 - discountRate);
+        const totalPrice = qty * discountedPrice;
+        const badgeText = `SAVE ${Math.round(discountRate * 100)}%`;
+
+        plans.push({
+          id: idx + 2,
+          name: `Bulk ${qty / 1000}K`,
+          price: `$${totalPrice.toFixed(2)}`,
+          originalPrice: `$${(qty * basePrice).toFixed(2)}`,
+          period: `/${durations[idx]}`,
+          badge: badgeText,
+          features: [
+            `${qty} credits`,
+            `Valid for ${durations[idx].toLowerCase()}`,
+            `Best value at ${Math.round(discountRate * 100)}% off`,
+          ],
+          qouta: qty,
+          networkId,
+        });
+      });
+    }
 
     return plans;
   };
@@ -1376,567 +1457,593 @@ export default function PricingDetailsScreen() {
           </View>
         </View>
       ) : (
-        <ScrollView showsVerticalScrollIndicator={false}>
-          {/* SMS Plans */}
-          <View style={styles.sectionContainer}>
-            <SectionHeader title="📱 SMS Marketing" section="sms" />
-            {expandedSections.sms && (
-              <FlatList
-                scrollEnabled={false}
-                data={pricingPlans.sms}
-                keyExtractor={item => item.id.toString()}
-                renderItem={({ item }) => (
-                  <PricingCard
-                    plan={item}
-                    currentValidPackage={getCurrentValidPackage(1)}
-                    expiredPackage={getExpiredPackage(1)}
-                    networkId={1}
-                  />
-                )}
-              />
-            )}
-          </View>
-
-          {/* Email Plans */}
-          <View style={styles.sectionContainer}>
-            <SectionHeader title="✉️ Email Marketing" section="email" />
-            {expandedSections.email && (
-              <FlatList
-                scrollEnabled={false}
-                data={pricingPlans.email}
-                keyExtractor={item => item.id.toString()}
-                renderItem={({ item }) => (
-                  <PricingCard
-                    plan={item}
-                    currentValidPackage={getCurrentValidPackage(3)}
-                    expiredPackage={getExpiredPackage(3)}
-                    networkId={3}
-                  />
-                )}
-              />
-            )}
-          </View>
-
-          {/* WhatsApp Plans */}
-          <View style={styles.sectionContainer}>
-            <SectionHeader title="💬 WhatsApp Business" section="whatsapp" />
-            {expandedSections.whatsapp && (
-              <FlatList
-                scrollEnabled={false}
-                data={pricingPlans.whatsapp}
-                keyExtractor={item => item.id.toString()}
-                renderItem={({ item }) => (
-                  <PricingCard
-                    plan={item}
-                    currentValidPackage={getCurrentValidPackage(2)}
-                    expiredPackage={getExpiredPackage(2)}
-                    networkId={2}
-                  />
-                )}
-              />
-            )}
-          </View>
-
-          {/* Facebook Plans */}
-          <View style={styles.sectionContainer}>
-            <SectionHeader title="👍 Facebook Marketing" section="facebook" />
-            {expandedSections.facebook && (
-              <FlatList
-                scrollEnabled={false}
-                data={pricingPlans.facebook}
-                keyExtractor={item => item.id.toString()}
-                renderItem={({ item }) => (
-                  <PricingCard
-                    plan={item}
-                    currentValidPackage={getCurrentValidPackage(5)}
-                    expiredPackage={getExpiredPackage(5)}
-                    networkId={5}
-                  />
-                )}
-              />
-            )}
-          </View>
-
-          {/* Instagram Plans */}
-          <View style={styles.sectionContainer}>
-            <SectionHeader title="📸 Instagram Marketing" section="instagram" />
-            {expandedSections.instagram && (
-              <FlatList
-                scrollEnabled={false}
-                data={pricingPlans.instagram}
-                keyExtractor={item => item.id.toString()}
-                renderItem={({ item }) => (
-                  <PricingCard
-                    plan={item}
-                    currentValidPackage={getCurrentValidPackage(6)}
-                    expiredPackage={getExpiredPackage(6)}
-                    networkId={6}
-                  />
-                )}
-              />
-            )}
-          </View>
-
-          {/* TikTok Plans */}
-          <View style={styles.sectionContainer}>
-            <SectionHeader title="🎵 TikTok Marketing" section="tiktok" />
-            {expandedSections.tiktok && (
-              <FlatList
-                scrollEnabled={false}
-                data={pricingPlans.tiktok}
-                keyExtractor={item => item.id.toString()}
-                renderItem={({ item }) => (
-                  <PricingCard
-                    plan={item}
-                    currentValidPackage={getCurrentValidPackage(8)}
-                    expiredPackage={getExpiredPackage(8)}
-                    networkId={8}
-                  />
-                )}
-              />
-            )}
-          </View>
-
-          {/* LinkedIn Plans */}
-          <View style={styles.sectionContainer}>
-            <SectionHeader title="💼 LinkedIn Marketing" section="linkedin" />
-            {expandedSections.linkedin && (
-              <FlatList
-                scrollEnabled={false}
-                data={pricingPlans.linkedin}
-                keyExtractor={item => item.id.toString()}
-                renderItem={({ item }) => (
-                  <PricingCard
-                    plan={item}
-                    currentValidPackage={getCurrentValidPackage(7)}
-                    expiredPackage={getExpiredPackage(7)}
-                    networkId={7}
-                  />
-                )}
-              />
-            )}
-          </View>
-
-          {/* Pricing Calculator */}
-          <View style={styles.sectionContainer}>
-            <SectionHeader title="🧮 Pricing Calculator" section="calculator" />
-            {expandedSections.calculator && (
-              <View
-                style={[
-                  styles.calculatorContainer,
-                  { backgroundColor: theme.inputBackColor },
-                ]}
-              >
-                {/* Mode Selector */}
-                <View style={styles.modeSelector}>
-                  <TouchableOpacity
-                    style={[
-                      styles.modeButton,
-                      pricingMode === 'individual' && styles.modeButtonActive,
-                      {
-                        borderColor: theme.textColor,
-                        backgroundColor:
-                          pricingMode === 'individual'
-                            ? theme.buttonBackColor
-                            : 'transparent',
-                      },
-                    ]}
-                    onPress={() => setPricingMode('individual')}
-                  >
-                    <Text
-                      style={[
-                        styles.modeButtonText,
-                        pricingMode === 'individual' &&
-                          styles.modeButtonTextActive,
-                        {
-                          color: theme.textColor,
-                        },
-                      ]}
-                    >
-                      Individual
-                    </Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    style={[
-                      styles.modeButton,
-                      pricingMode === 'combo' && styles.modeButtonActive,
-                      {
-                        borderColor: theme.textColor,
-                        backgroundColor:
-                          pricingMode === 'combo'
-                            ? theme.buttonBackColor
-                            : 'transparent',
-                      },
-                    ]}
-                    onPress={() => setPricingMode('combo')}
-                  >
-                    <Text
-                      style={[
-                        styles.modeButtonText,
-                        pricingMode === 'combo' && styles.modeButtonTextActive,
-                        {
-                          color: theme.textColor,
-                        },
-                      ]}
-                    >
-                      Combo Bundle
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-
-                {/* Duration */}
-                <View style={styles.inputGroup}>
-                  <Text style={[styles.label, { color: theme.textColor }]}>
-                    Duration
-                  </Text>
-                  <View
-                    style={[
-                      styles.dropdown,
-                      {
-                        backgroundColor: theme.backgroundColor,
-                        borderColor: theme.placeholderColor,
-                        borderWidth: 1,
-                      },
-                    ]}
-                  >
-                    <Dropdown
-                      placeholderTextColor={theme.placeholderColor}
-                      onSelect={index => setDuration(DURATION[index]?.id)}
-                      selectedIndex={DURATION.findIndex(d => d.id === duration)}
-                      style={[
-                        {
-                          backgroundColor: theme.inputBackColor,
-                          color: theme.textColor,
-                        },
-                      ]}
-                      items={DURATION}
-                      placeholder="Select Duration..."
-                      clearTextOnFocus={true}
-                      keyboardAppearance="dark"
-                      maxLength={5}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={{ flex: 1 }}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 90}
+        >
+          <ScrollView showsVerticalScrollIndicator={false}>
+            {/* SMS Plans */}
+            <View style={styles.sectionContainer}>
+              <SectionHeader title="📱 SMS Marketing" section="sms" />
+              {expandedSections.sms && (
+                <FlatList
+                  scrollEnabled={false}
+                  data={pricingPlans.sms}
+                  keyExtractor={item => item.id.toString()}
+                  renderItem={({ item }) => (
+                    <PricingCard
+                      plan={item}
+                      currentValidPackage={getCurrentValidPackage(1)}
+                      expiredPackage={getExpiredPackage(1)}
+                      networkId={1}
                     />
-                  </View>
-                </View>
+                  )}
+                />
+              )}
+            </View>
 
-                {/* Individual Mode Inputs */}
-                {pricingMode === 'individual' ? (
-                  <>
-                    <View style={styles.inputGroup}>
-                      <Text style={[styles.label, { color: theme.textColor }]}>
-                        Select Network
-                      </Text>
-                      <View
+            {/* Email Plans */}
+            <View style={styles.sectionContainer}>
+              <SectionHeader title="✉️ Email Marketing" section="email" />
+              {expandedSections.email && (
+                <FlatList
+                  scrollEnabled={false}
+                  data={pricingPlans.email}
+                  keyExtractor={item => item.id.toString()}
+                  renderItem={({ item }) => (
+                    <PricingCard
+                      plan={item}
+                      currentValidPackage={getCurrentValidPackage(3)}
+                      expiredPackage={getExpiredPackage(3)}
+                      networkId={3}
+                    />
+                  )}
+                />
+              )}
+            </View>
+
+            {/* WhatsApp Plans */}
+            <View style={styles.sectionContainer}>
+              <SectionHeader title="💬 WhatsApp Business" section="whatsapp" />
+              {expandedSections.whatsapp && (
+                <FlatList
+                  scrollEnabled={false}
+                  data={pricingPlans.whatsapp}
+                  keyExtractor={item => item.id.toString()}
+                  renderItem={({ item }) => (
+                    <PricingCard
+                      plan={item}
+                      currentValidPackage={getCurrentValidPackage(2)}
+                      expiredPackage={getExpiredPackage(2)}
+                      networkId={2}
+                    />
+                  )}
+                />
+              )}
+            </View>
+
+            {/* Facebook Plans */}
+            <View style={styles.sectionContainer}>
+              <SectionHeader title="👍 Facebook Marketing" section="facebook" />
+              {expandedSections.facebook && (
+                <FlatList
+                  scrollEnabled={false}
+                  data={pricingPlans.facebook}
+                  keyExtractor={item => item.id.toString()}
+                  renderItem={({ item }) => (
+                    <PricingCard
+                      plan={item}
+                      currentValidPackage={getCurrentValidPackage(5)}
+                      expiredPackage={getExpiredPackage(5)}
+                      networkId={5}
+                    />
+                  )}
+                />
+              )}
+            </View>
+
+            {/* Instagram Plans */}
+            <View style={styles.sectionContainer}>
+              <SectionHeader
+                title="📸 Instagram Marketing"
+                section="instagram"
+              />
+              {expandedSections.instagram && (
+                <FlatList
+                  scrollEnabled={false}
+                  data={pricingPlans.instagram}
+                  keyExtractor={item => item.id.toString()}
+                  renderItem={({ item }) => (
+                    <PricingCard
+                      plan={item}
+                      currentValidPackage={getCurrentValidPackage(6)}
+                      expiredPackage={getExpiredPackage(6)}
+                      networkId={6}
+                    />
+                  )}
+                />
+              )}
+            </View>
+
+            {/* TikTok Plans */}
+            <View style={styles.sectionContainer}>
+              <SectionHeader title="🎵 TikTok Marketing" section="tiktok" />
+              {expandedSections.tiktok && (
+                <FlatList
+                  scrollEnabled={false}
+                  data={pricingPlans.tiktok}
+                  keyExtractor={item => item.id.toString()}
+                  renderItem={({ item }) => (
+                    <PricingCard
+                      plan={item}
+                      currentValidPackage={getCurrentValidPackage(8)}
+                      expiredPackage={getExpiredPackage(8)}
+                      networkId={8}
+                    />
+                  )}
+                />
+              )}
+            </View>
+
+            {/* LinkedIn Plans */}
+            <View style={styles.sectionContainer}>
+              <SectionHeader title="💼 LinkedIn Marketing" section="linkedin" />
+              {expandedSections.linkedin && (
+                <FlatList
+                  scrollEnabled={false}
+                  data={pricingPlans.linkedin}
+                  keyExtractor={item => item.id.toString()}
+                  renderItem={({ item }) => (
+                    <PricingCard
+                      plan={item}
+                      currentValidPackage={getCurrentValidPackage(7)}
+                      expiredPackage={getExpiredPackage(7)}
+                      networkId={7}
+                    />
+                  )}
+                />
+              )}
+            </View>
+
+            {/* Pricing Calculator */}
+            <View style={styles.sectionContainer}>
+              <SectionHeader
+                title="🧮 Pricing Calculator"
+                section="calculator"
+              />
+              {expandedSections.calculator && (
+                <View
+                  style={[
+                    styles.calculatorContainer,
+                    { backgroundColor: theme.inputBackColor },
+                  ]}
+                >
+                  {/* Mode Selector */}
+                  <View style={styles.modeSelector}>
+                    <TouchableOpacity
+                      style={[
+                        styles.modeButton,
+                        pricingMode === 'individual' && styles.modeButtonActive,
+                        {
+                          borderColor: theme.textColor,
+                          backgroundColor:
+                            pricingMode === 'individual'
+                              ? theme.buttonBackColor
+                              : 'transparent',
+                        },
+                      ]}
+                      onPress={() => setPricingMode('individual')}
+                    >
+                      <Text
                         style={[
-                          styles.dropdown,
+                          styles.modeButtonText,
+                          pricingMode === 'individual' &&
+                            styles.modeButtonTextActive,
                           {
-                            backgroundColor: theme.backgroundColor,
-                            borderColor: theme.placeholderColor,
-                            borderWidth: 1,
+                            color: theme.textColor,
                           },
                         ]}
                       >
-                        <Dropdown
-                          items={networks}
-                          selectedIndex={networks.findIndex(
-                            n => n.id == selectedNetwork,
-                          )}
-                          onSelect={idx =>
-                            setSelectedNetwork(networks[idx]?.id || '')
-                          }
-                          placeholder="Select Network"
-                          style={{
-                            flex: 1,
-                            backgroundColor: theme.inputBackColor,
-                          }}
-                        />
-                      </View>
-                    </View>
-
-                    <View style={styles.inputGroup}>
-                      <Text style={[styles.label, { color: theme.textColor }]}>
-                        Number of Messages
+                        Individual
                       </Text>
-                      <TextInput
-                        style={[
-                          styles.input,
-                          {
-                            color: theme.textColor,
-                            borderColor: theme.placeholderColor,
-                          },
-                        ]}
-                        placeholder="e.g., 5000"
-                        placeholderTextColor={theme.placeholderColor}
-                        value={messages}
-                        onChangeText={setMessages}
-                        keyboardType="number-pad"
-                      />
-                    </View>
-                  </>
-                ) : (
-                  <>
-                    <View style={styles.inputGroup}>
-                      <Text style={[styles.label, { color: theme.textColor }]}>
-                        WhatsApp Conversations
-                      </Text>
-                      <TextInput
-                        style={[
-                          styles.input,
-                          {
-                            color: theme.textColor,
-                            borderColor: theme.placeholderColor,
-                          },
-                        ]}
-                        placeholder="e.g., 1000"
-                        placeholderTextColor={theme.placeholderColor}
-                        value={waConversations}
-                        onChangeText={setWaConversations}
-                        keyboardType="number-pad"
-                      />
-                    </View>
+                    </TouchableOpacity>
 
-                    <View style={styles.checkboxGroup}>
-                      <Text style={[styles.label, { color: theme.textColor }]}>
-                        Include in Bundle
-                      </Text>
-                      <View style={styles.checkboxRow}>
-                        <View style={styles.checkbox}>
-                          <Switch
-                            value={includeSMS}
-                            onValueChange={setIncludeSMS}
-                            trackColor={{
-                              false: theme.placeholderColor,
-                              true: theme.selectedCheckBox,
-                            }}
-                            thumbColor={theme.selectedCheckBox}
-                          />
-                          <Text
-                            style={[
-                              styles.checkboxLabel,
-                              { color: theme.textColor },
-                            ]}
-                          >
-                            SMS
-                          </Text>
-                        </View>
-                        <View style={styles.checkbox}>
-                          <Switch
-                            value={includeEmail}
-                            onValueChange={setIncludeEmail}
-                            trackColor={{
-                              false: theme.placeholderColor,
-                              true: theme.selectedCheckBox,
-                            }}
-                            thumbColor={theme.selectedCheckBox}
-                          />
-                          <Text
-                            style={[
-                              styles.checkboxLabel,
-                              { color: theme.textColor },
-                            ]}
-                          >
-                            Email
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                  </>
-                )}
-
-                {/* Pricing Summary */}
-                {pricingMatrix.length > 0 && (
-                  <View
-                    style={[
-                      styles.summary,
-                      { backgroundColor: theme.backgroundColor },
-                    ]}
-                  >
-                    <Text
-                      style={[styles.summaryTitle, { color: theme.textColor }]}
+                    <TouchableOpacity
+                      style={[
+                        styles.modeButton,
+                        pricingMode === 'combo' && styles.modeButtonActive,
+                        {
+                          borderColor: theme.textColor,
+                          backgroundColor:
+                            pricingMode === 'combo'
+                              ? theme.buttonBackColor
+                              : 'transparent',
+                        },
+                      ]}
+                      onPress={() => setPricingMode('combo')}
                     >
-                      💰 Pricing Summary
+                      <Text
+                        style={[
+                          styles.modeButtonText,
+                          pricingMode === 'combo' &&
+                            styles.modeButtonTextActive,
+                          {
+                            color: theme.textColor,
+                          },
+                        ]}
+                      >
+                        Combo Bundle
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  {/* Duration */}
+                  <View style={styles.inputGroup}>
+                    <Text style={[styles.label, { color: theme.textColor }]}>
+                      Duration
                     </Text>
-                    {pricingMatrix.map(item => (
-                      <View key={item.id}>
-                        {pricingMode === 'individual' ? (
-                          <>
-                            <View style={styles.summaryRow}>
-                              <Text
-                                style={[
-                                  styles.summaryLabel,
-                                  { color: theme.placeholderColor },
-                                ]}
-                              >
-                                Network:
-                              </Text>
-                              <Text
-                                style={[
-                                  styles.summaryValue,
-                                  { color: theme.textColor },
-                                ]}
-                              >
-                                {item.network}
-                              </Text>
-                            </View>
-                            <View style={styles.summaryRow}>
-                              <Text
-                                style={[
-                                  styles.summaryLabel,
-                                  { color: theme.placeholderColor },
-                                ]}
-                              >
-                                Messages:
-                              </Text>
-                              <Text
-                                style={[
-                                  styles.summaryValue,
-                                  { color: theme.textColor },
-                                ]}
-                              >
-                                {item.messages}
-                              </Text>
-                            </View>
-                            <View style={styles.summaryRow}>
-                              <Text
-                                style={[
-                                  styles.summaryLabel,
-                                  { color: theme.placeholderColor },
-                                ]}
-                              >
-                                Duration:
-                              </Text>
-                              <Text
-                                style={[
-                                  styles.summaryValue,
-                                  { color: theme.textColor },
-                                ]}
-                              >
-                                {item.duration}
-                              </Text>
-                            </View>
-                            <View style={styles.summaryRow}>
-                              <Text
-                                style={[
-                                  styles.summaryLabel,
-                                  { color: theme.placeholderColor },
-                                ]}
-                              >
-                                Price/Unit:
-                              </Text>
-                              <Text
-                                style={[
-                                  styles.summaryValue,
-                                  { color: theme.textColor },
-                                ]}
-                              >
-                                {item.pricePerMsg}
-                              </Text>
-                            </View>
-                          </>
-                        ) : (
-                          <>
-                            <View style={styles.summaryRow}>
-                              <Text
-                                style={[
-                                  styles.summaryLabel,
-                                  { color: theme.placeholderColor },
-                                ]}
-                              >
-                                Bundle:
-                              </Text>
-                              <Text
-                                style={[
-                                  styles.summaryValue,
-                                  { color: theme.textColor },
-                                ]}
-                              >
-                                {item.bundle}
-                              </Text>
-                            </View>
-                            <View style={styles.summaryRow}>
-                              <Text
-                                style={[
-                                  styles.summaryLabel,
-                                  { color: theme.placeholderColor },
-                                ]}
-                              >
-                                Conversations:
-                              </Text>
-                              <Text
-                                style={[
-                                  styles.summaryValue,
-                                  { color: theme.textColor },
-                                ]}
-                              >
-                                {item.waConversations}
-                              </Text>
-                            </View>
-                            <View style={styles.summaryRow}>
-                              <Text
-                                style={[
-                                  styles.summaryLabel,
-                                  { color: theme.placeholderColor },
-                                ]}
-                              >
-                                Included:
-                              </Text>
-                              <Text
-                                style={[
-                                  styles.summaryValue,
-                                  { color: theme.textColor },
-                                ]}
-                                numberOfLines={2}
-                              >
-                                {item.included}
-                              </Text>
-                            </View>
-                          </>
+                    <View
+                      style={[
+                        styles.dropdown,
+                        {
+                          backgroundColor: theme.backgroundColor,
+                          borderColor: theme.placeholderColor,
+                          borderWidth: 1,
+                        },
+                      ]}
+                    >
+                      <Dropdown
+                        placeholderTextColor={theme.placeholderColor}
+                        onSelect={index => setDuration(DURATION[index]?.id)}
+                        selectedIndex={DURATION.findIndex(
+                          d => d.id === duration,
                         )}
+                        style={[
+                          {
+                            backgroundColor: theme.inputBackColor,
+                            color: theme.textColor,
+                          },
+                        ]}
+                        items={DURATION}
+                        placeholder="Select Duration..."
+                        clearTextOnFocus={true}
+                        keyboardAppearance="dark"
+                        maxLength={5}
+                      />
+                    </View>
+                  </View>
+
+                  {/* Individual Mode Inputs */}
+                  {pricingMode === 'individual' ? (
+                    <>
+                      <View style={styles.inputGroup}>
+                        <Text
+                          style={[styles.label, { color: theme.textColor }]}
+                        >
+                          Select Network
+                        </Text>
                         <View
                           style={[
-                            styles.summaryRow,
-                            styles.summaryTotal,
-                            { borderTopColor: theme.placeholderColor },
+                            styles.dropdown,
+                            {
+                              backgroundColor: theme.backgroundColor,
+                              borderColor: theme.placeholderColor,
+                              borderWidth: 1,
+                            },
                           ]}
                         >
-                          <Text
-                            style={[
-                              styles.summaryLabel,
-                              { color: theme.placeholderColor },
-                            ]}
-                          >
-                            Total Price:
-                          </Text>
-                          <Text
-                            style={[
-                              styles.totalPrice,
-                              { color: theme.selectedCheckBox },
-                            ]}
-                          >
-                            {item.totalPrice}
-                          </Text>
+                          <Dropdown
+                            items={networks}
+                            selectedIndex={networks.findIndex(
+                              n => n.id == selectedNetwork,
+                            )}
+                            onSelect={idx =>
+                              setSelectedNetwork(networks[idx]?.id || '')
+                            }
+                            placeholder="Select Network"
+                            style={{
+                              flex: 1,
+                              backgroundColor: theme.inputBackColor,
+                            }}
+                          />
                         </View>
                       </View>
-                    ))}
-                  </View>
-                )}
 
-                {pricingMatrix.length === 0 && (
-                  <Text
-                    style={[
-                      styles.emptyText,
-                      { color: theme.placeholderColor },
-                    ]}
-                  >
-                    Enter details above to calculate pricing
-                  </Text>
-                )}
-              </View>
-            )}
-          </View>
+                      <View style={styles.inputGroup}>
+                        <Text
+                          style={[styles.label, { color: theme.textColor }]}
+                        >
+                          Number of Messages
+                        </Text>
+                        <TextInput
+                          style={[
+                            styles.input,
+                            {
+                              color: theme.textColor,
+                              borderColor: theme.placeholderColor,
+                            },
+                          ]}
+                          placeholder="e.g., 5000"
+                          placeholderTextColor={theme.placeholderColor}
+                          value={messages}
+                          onChangeText={setMessages}
+                          keyboardType="number-pad"
+                        />
+                      </View>
+                    </>
+                  ) : (
+                    <>
+                      <View style={styles.inputGroup}>
+                        <Text
+                          style={[styles.label, { color: theme.textColor }]}
+                        >
+                          WhatsApp Conversations
+                        </Text>
+                        <TextInput
+                          style={[
+                            styles.input,
+                            {
+                              color: theme.textColor,
+                              borderColor: theme.placeholderColor,
+                            },
+                          ]}
+                          placeholder="e.g., 1000"
+                          placeholderTextColor={theme.placeholderColor}
+                          value={waConversations}
+                          onChangeText={setWaConversations}
+                          keyboardType="number-pad"
+                        />
+                      </View>
 
-          <View style={{ height: 20 }} />
-        </ScrollView>
+                      <View style={styles.checkboxGroup}>
+                        <Text
+                          style={[styles.label, { color: theme.textColor }]}
+                        >
+                          Include in Bundle
+                        </Text>
+                        <View style={styles.checkboxRow}>
+                          <View style={styles.checkbox}>
+                            <Switch
+                              value={includeSMS}
+                              onValueChange={setIncludeSMS}
+                              trackColor={{
+                                false: theme.placeholderColor,
+                                true: theme.selectedCheckBox,
+                              }}
+                              thumbColor={theme.selectedCheckBox}
+                            />
+                            <Text
+                              style={[
+                                styles.checkboxLabel,
+                                { color: theme.textColor },
+                              ]}
+                            >
+                              SMS
+                            </Text>
+                          </View>
+                          <View style={styles.checkbox}>
+                            <Switch
+                              value={includeEmail}
+                              onValueChange={setIncludeEmail}
+                              trackColor={{
+                                false: theme.placeholderColor,
+                                true: theme.selectedCheckBox,
+                              }}
+                              thumbColor={theme.selectedCheckBox}
+                            />
+                            <Text
+                              style={[
+                                styles.checkboxLabel,
+                                { color: theme.textColor },
+                              ]}
+                            >
+                              Email
+                            </Text>
+                          </View>
+                        </View>
+                      </View>
+                    </>
+                  )}
+
+                  {/* Pricing Summary */}
+                  {pricingMatrix.length > 0 && (
+                    <View
+                      style={[
+                        styles.summary,
+                        { backgroundColor: theme.backgroundColor },
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.summaryTitle,
+                          { color: theme.textColor },
+                        ]}
+                      >
+                        💰 Pricing Summary
+                      </Text>
+                      {pricingMatrix.map(item => (
+                        <View key={item.id}>
+                          {pricingMode === 'individual' ? (
+                            <>
+                              <View style={styles.summaryRow}>
+                                <Text
+                                  style={[
+                                    styles.summaryLabel,
+                                    { color: theme.placeholderColor },
+                                  ]}
+                                >
+                                  Network:
+                                </Text>
+                                <Text
+                                  style={[
+                                    styles.summaryValue,
+                                    { color: theme.textColor },
+                                  ]}
+                                >
+                                  {item.network}
+                                </Text>
+                              </View>
+                              <View style={styles.summaryRow}>
+                                <Text
+                                  style={[
+                                    styles.summaryLabel,
+                                    { color: theme.placeholderColor },
+                                  ]}
+                                >
+                                  Messages:
+                                </Text>
+                                <Text
+                                  style={[
+                                    styles.summaryValue,
+                                    { color: theme.textColor },
+                                  ]}
+                                >
+                                  {item.messages}
+                                </Text>
+                              </View>
+                              <View style={styles.summaryRow}>
+                                <Text
+                                  style={[
+                                    styles.summaryLabel,
+                                    { color: theme.placeholderColor },
+                                  ]}
+                                >
+                                  Duration:
+                                </Text>
+                                <Text
+                                  style={[
+                                    styles.summaryValue,
+                                    { color: theme.textColor },
+                                  ]}
+                                >
+                                  {item.duration}
+                                </Text>
+                              </View>
+                              <View style={styles.summaryRow}>
+                                <Text
+                                  style={[
+                                    styles.summaryLabel,
+                                    { color: theme.placeholderColor },
+                                  ]}
+                                >
+                                  Price/Unit:
+                                </Text>
+                                <Text
+                                  style={[
+                                    styles.summaryValue,
+                                    { color: theme.textColor },
+                                  ]}
+                                >
+                                  {item.pricePerMsg}
+                                </Text>
+                              </View>
+                            </>
+                          ) : (
+                            <>
+                              <View style={styles.summaryRow}>
+                                <Text
+                                  style={[
+                                    styles.summaryLabel,
+                                    { color: theme.placeholderColor },
+                                  ]}
+                                >
+                                  Bundle:
+                                </Text>
+                                <Text
+                                  style={[
+                                    styles.summaryValue,
+                                    { color: theme.textColor },
+                                  ]}
+                                >
+                                  {item.bundle}
+                                </Text>
+                              </View>
+                              <View style={styles.summaryRow}>
+                                <Text
+                                  style={[
+                                    styles.summaryLabel,
+                                    { color: theme.placeholderColor },
+                                  ]}
+                                >
+                                  Conversations:
+                                </Text>
+                                <Text
+                                  style={[
+                                    styles.summaryValue,
+                                    { color: theme.textColor },
+                                  ]}
+                                >
+                                  {item.waConversations}
+                                </Text>
+                              </View>
+                              <View style={styles.summaryRow}>
+                                <Text
+                                  style={[
+                                    styles.summaryLabel,
+                                    { color: theme.placeholderColor },
+                                  ]}
+                                >
+                                  Included:
+                                </Text>
+                                <Text
+                                  style={[
+                                    styles.summaryValue,
+                                    { color: theme.textColor },
+                                  ]}
+                                  numberOfLines={2}
+                                >
+                                  {item.included}
+                                </Text>
+                              </View>
+                            </>
+                          )}
+                          <View
+                            style={[
+                              styles.summaryRow,
+                              styles.summaryTotal,
+                              { borderTopColor: theme.placeholderColor },
+                            ]}
+                          >
+                            <Text
+                              style={[
+                                styles.summaryLabel,
+                                { color: theme.placeholderColor },
+                              ]}
+                            >
+                              Total Price:
+                            </Text>
+                            <Text
+                              style={[
+                                styles.totalPrice,
+                                { color: theme.selectedCheckBox },
+                              ]}
+                            >
+                              {item.totalPrice}
+                            </Text>
+                          </View>
+                        </View>
+                      ))}
+                    </View>
+                  )}
+
+                  {pricingMatrix.length === 0 && (
+                    <Text
+                      style={[
+                        styles.emptyText,
+                        { color: theme.placeholderColor },
+                      ]}
+                    >
+                      Enter details above to calculate pricing
+                    </Text>
+                  )}
+                </View>
+              )}
+            </View>
+
+            <View style={{ height: 20 }} />
+          </ScrollView>
+        </KeyboardAvoidingView>
       )}
     </View>
   );
