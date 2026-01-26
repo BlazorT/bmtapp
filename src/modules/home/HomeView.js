@@ -11,7 +11,6 @@ import Video from 'react-native-video';
 import { Text } from '../../components/StyledText';
 import { useTheme } from '../../hooks/useTheme';
 import { useUser } from '../../hooks/useUser';
-import { colors } from '../../styles';
 const NetworkFailed = require('../../../assets/images/BDMT.png');
 const mycampaignIcon = require('../../../assets/images/drawer/mycampaign.png');
 const compaign = require('../../../assets/images/drawer/compaign.png');
@@ -38,78 +37,64 @@ export default function HomeScreen(props) {
 
   return (
     <View style={styles.container}>
-      {global.NetworkFailed == 1 ? (
-        <View style={styles.networkfailed}>
-          <Image
-            resizeMode="contain"
-            source={NetworkFailed}
-            style={styles.NetworkRequestFailed}
-          />
-        </View>
-      ) : (
-        <Video
-          source={require('../../../assets/images/home.mp4')}
-          style={[
-            styles.backgroundVideo,
-            { height: isAuthenticated ? '70%' : '61%' },
-          ]}
-          muted={true}
-          repeat={true}
-          resizeMode={'stretch'}
-          rate={1.0}
-          ignoreSilentSwitch={'obey'}
-        />
-      )}
+      <Video
+        source={require('../../../assets/images/home.mp4')}
+        style={[
+          styles.backgroundVideo,
+          // { height: isAuthenticated ? '70%' : '61%' },
+        ]}
+        muted={true}
+        repeat={true}
+        resizeMode={'stretch'}
+        rate={1.0}
+        ignoreSilentSwitch={'obey'}
+      />
       <View
-        style={[styles.Buttoncontainer, { backgroundColor: theme.navBarBack }]}
+        style={[styles.bottomView, { backgroundColor: theme.modalBackColor }]}
       >
         {!isAuthenticated ? (
-          <View style={styles.Buttoncontainer2}>
-            {global.NetworkFailed == 1 ? null : (
-              <View>
-                <TouchableOpacity
-                  onPress={LoginClick}
-                  style={[
-                    styles.loginbutton,
-                    { backgroundColor: theme.buttonBackColor },
-                  ]}
-                >
-                  <Text style={styles.buttonText}>LOGIN</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={opensignup}
-                  style={[
-                    styles.loginbutton,
-                    { backgroundColor: theme.buttonBackColor },
-                  ]}
-                >
-                  <Text style={styles.buttonText}>SIGNUP</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => props.navigation.navigate('Pricing Plans')}
-                  style={[
-                    styles.loginbutton,
-                    { backgroundColor: theme.buttonBackColor },
-                  ]}
-                >
-                  <Text style={styles.buttonText}>Pricing Plans</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() =>
-                    props.navigation.navigate('Add & Edit Organization')
-                  }
-                  style={[
-                    styles.loginbutton,
-                    { backgroundColor: theme.buttonBackColor },
-                  ]}
-                >
-                  <Text style={styles.buttonText}>Register Organization</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          </View>
+          <>
+            <TouchableOpacity
+              onPress={LoginClick}
+              style={[
+                styles.loginbutton,
+                { backgroundColor: theme.buttonBackColor },
+              ]}
+            >
+              <Text style={styles.buttonText}>LOGIN</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={opensignup}
+              style={[
+                styles.loginbutton,
+                { backgroundColor: theme.buttonBackColor },
+              ]}
+            >
+              <Text style={styles.buttonText}>SIGNUP</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => props.navigation.navigate('Pricing Plans')}
+              style={[
+                styles.loginbutton,
+                { backgroundColor: theme.buttonBackColor },
+              ]}
+            >
+              <Text style={styles.buttonText}>Pricing Plans</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() =>
+                props.navigation.navigate('Add & Edit Organization')
+              }
+              style={[
+                styles.loginbutton,
+                { backgroundColor: theme.buttonBackColor },
+              ]}
+            >
+              <Text style={styles.buttonText}>Register Organization</Text>
+            </TouchableOpacity>
+          </>
         ) : (
-          <View style={styles.Buttoncontainer2}>
+          <>
             {isAdminOrSuperAdmin(user?.roleId) && ( //!!only admin and superadmin can create campaign
               <TouchableOpacity
                 onPress={() => AddCampaignClick()}
@@ -143,11 +128,11 @@ export default function HomeScreen(props) {
                 { backgroundColor: theme.buttonBackColor },
               ]}
             >
-              <View style={styles.Buy_SellView}>
+              <View style={styles.Buy_SellView1}>
                 <Image
                   resizeMode="contain"
                   source={mycampaignIcon}
-                  style={styles.SellVehicleImg}
+                  style={styles.BuyVehicleImg}
                 />
               </View>
               <View style={styles.Buy_SellDetail}>
@@ -163,17 +148,13 @@ export default function HomeScreen(props) {
                 </Text>
               </View>
             </TouchableOpacity>
-          </View>
+          </>
         )}
-      </View>
-      <View
-        style={[styles.Buttoncontainer3, { backgroundColor: theme.navBarBack }]}
-      >
+
         <View
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            width: 100 + '%',
             justifyContent: 'center',
           }}
         >
@@ -190,75 +171,41 @@ export default function HomeScreen(props) {
 } //  Login
 const styles = StyleSheet.create({
   backgroundVideo: {
-    width: Dimensions.get('window').width,
-    height: Platform.OS === 'ios' ? '40%' : '60%',
+    ...StyleSheet.absoluteFillObject,
   },
   container: {
     flex: 1,
     flexDirection: 'column',
   },
-  networkfailed: {
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
-    backgroundColor: '#545454',
-  },
-  NetworkRequestFailed: {
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
-
+  bottomView: {
     position: 'absolute',
-
-    top: -70,
-  },
-  image: {
-    flex: 1,
-    resizeMode: 'cover',
+    bottom: 0,
+    flex: 1, // Changed from height: '100%'
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+    width: '100%',
     justifyContent: 'center',
-  },
-  btnTryAgain: {
-    position: 'absolute',
-    bottom: 18 + '%',
-    left: 27 + '%',
-
-    paddingVertical: 9,
-    paddingHorizontal: 8,
-    marginVertical: 10,
-    borderRadius: 5,
-    backgroundColor: '#242323b8',
-    width: 170,
     alignItems: 'center',
-  },
-  Buy_SellView: {
-    opacity: 0.8,
-    padding: 8,
-    borderRadius: 100,
-    borderWidth: 1,
-    borderColor: 'gray',
+    paddingVertical: 10,
+    rowGap: 6,
   },
   Buy_SellView1: {
     opacity: 0.8,
     padding: 5,
     borderRadius: 100,
     borderWidth: 1,
-    borderColor: 'gray',
+    borderColor: 'white',
   },
   BuyVehicleImg: {
     height: 35,
     width: 35,
-    tintColor: colors.white,
-  },
-  SellVehicleImg: {
-    height: 25,
-    tintColor: colors.white,
-    width: 25,
+    tintColor: 'white',
   },
   loginbutton: {
     flexDirection: 'row',
     paddingVertical: 14,
-    marginVertical: 5,
     borderRadius: 5,
-    backgroundColor: colors.BlazorbuttonOpacity,
-    width: Dimensions.get('window').width - 30,
+    width: '95%',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -268,16 +215,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   Buy_SellButton: {
-    fontFamily: 'Roboto',
     flexDirection: 'row',
     paddingVertical: 7,
     paddingHorizontal: 8,
-    marginVertical: 7,
     borderRadius: 5,
-    backgroundColor: colors.BlazorbuttonOpacity,
     alignItems: 'center',
+    width: '95%',
+    borderColor: 'white',
   },
-
   buttonText: {
     color: '#FFFAE4',
     fontSize: 20,
@@ -290,56 +235,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: 100 + '%',
-    color: colors.white,
     fontSize: 20,
+    color: 'white',
   },
   Buy_SellHeadDetailIOS: {
     alignItems: 'center',
     justifyContent: 'center',
     width: 100 + '%',
-    color: colors.white,
     fontSize: 10,
+    color: 'white',
   },
   Buy_SellHeadDetail: {
     alignItems: 'center',
     justifyContent: 'center',
     width: 100 + '%',
-    color: colors.white,
     fontSize: 14,
-  },
-  // Update Buttoncontainer style:
-  Buttoncontainer: {
-    marginTop: -10,
-    width: Dimensions.get('window').width,
-    flex: 1, // Changed from height: '100%'
-    shadowColor: '#000',
-    shadowOffset: { width: 4, height: 6 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-    justifyContent: 'space-between', // Add this
-  },
-
-  // Update Buttoncontainer2:
-  Buttoncontainer2: {
-    width: Dimensions.get('window').width - 30,
-    marginHorizontal: 15,
-    marginVertical: 12,
-    flex: 1, // Changed from fixed height
-  },
-
-  // Update Buttoncontainer3:
-  Buttoncontainer3: {
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingBottom: Platform.OS === 'ios' ? 10 : 15, // Remove absolute positioning
+    color: 'white',
   },
   copyrirgttext: {
-    marginTop: 5,
     fontSize: 15,
     fontWeight: 'bold',
-    color: colors.TextColorOther,
   },
 });

@@ -418,7 +418,7 @@ export default function App() {
         screenOptions={{
           drawerStyle: {
             backgroundColor: theme.backgroundColor,
-            opacity: Platform.OS === 'ios' ? 1 : 0.7,
+            opacity: Platform.OS === 'ios' ? 0.7 : 0.7,
           },
           headerShown: false,
         }}

@@ -1,12 +1,19 @@
-import {Header, createStackNavigator} from '@react-navigation/stack';
+import { Header, createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Image,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import 'react-native-gesture-handler';
 import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
-import {useDispatch, useSelector} from 'react-redux';
-import {useTheme} from '../../hooks/useTheme';
-import {toggleTheme} from '../../redux/features/theme/themeSlice';
-import {colors} from '../../styles';
+import { useDispatch, useSelector } from 'react-redux';
+import { useTheme } from '../../hooks/useTheme';
+import { toggleTheme } from '../../redux/features/theme/themeSlice';
+import { colors } from '../../styles';
 import StackNavigationData from './stackNavigationData';
 
 const Stack = createStackNavigator();
@@ -24,13 +31,15 @@ export default function NavigatorView(props) {
           flexDirection: 'row',
           alignItems: 'center',
           marginRight: 10,
-        }}>
+        }}
+      >
         <Text
           style={{
             color: theme.textColor,
             fontSize: 16,
             marginRight: 5,
-          }}>
+          }}
+        >
           {appTheme === 'dark' ? 'Dark' : 'Light'}
         </Text>
         <TouchableOpacity onPress={() => dispatch(toggleTheme())}>
@@ -51,7 +60,8 @@ export default function NavigatorView(props) {
         style={{
           paddingHorizontal: 16,
           paddingVertical: 12,
-        }}>
+        }}
+      >
         <Image
           source={require('../../../assets/images/drawer/menu.png')}
           resizeMode="contain"
@@ -78,12 +88,14 @@ export default function NavigatorView(props) {
               <View
                 style={[
                   styles.headerImage,
-                  {backgroundColor: theme.navBarBack},
-                ]}></View>
+                  { backgroundColor: theme.navBarBack },
+                ]}
+              ></View>
             ),
             headerRight: headerRightComponentMenu,
             headerTitleStyle: {
               ...item.headerTitleStyle,
+              fontSize: Platform.OS === 'ios' ? 16 : 18,
               color: theme.textColor,
             },
           }}

@@ -189,7 +189,7 @@ export default function LoginScreen(props) {
     // authenticateorguser
     fetch(
       servicesettings.baseuri +
-      `Common/login?email=${Email.trim()}&password=${Password.trim()}`,
+        `Common/login?email=${Email.trim()}&password=${Password.trim()}`,
       headerFetch,
     )
       .then(response => response.json())
@@ -230,8 +230,8 @@ export default function LoginScreen(props) {
             responseJson.message != ''
               ? Toast.show(' ' + responseJson.message + ' ')
               : Toast.show(
-                'Too many requests, must be 40 Seconds interval between next request!',
-              );
+                  'Too many requests, must be 40 Seconds interval between next request!',
+                );
           }
           return;
         } else if (!responseJson?.data) {
@@ -429,8 +429,8 @@ export default function LoginScreen(props) {
                   responseJson.message != ''
                     ? Toast.show(' ' + responseJson.message + ' ')
                     : Toast.show(
-                      'Too many requests, must be 40 Seconds interval between next request!',
-                    );
+                        'Too many requests, must be 40 Seconds interval between next request!',
+                      );
                   return;
                 }
               } else if (!responseJson?.data) {
@@ -466,7 +466,7 @@ export default function LoginScreen(props) {
               //*********need to some disscuss*********/
               Toast.showWithGravity(
                 error?.message ||
-                'Internet connection failed, try another time !!!',
+                  'Internet connection failed, try another time !!!',
                 Toast.LONG,
                 Toast.CENTER,
               );
@@ -795,7 +795,7 @@ export default function LoginScreen(props) {
             <View style={{ alignItems: 'center', marginBottom: 34 }}>
               <Text
                 style={{
-                  fontSize: 22,
+                  fontSize: Platform.OS === 'ios' ? 16 : 22,
                   fontWeight: '900',
                   fontFamily: 'sans-serif-medium',
                   color: theme.textColor,
@@ -954,7 +954,7 @@ const styles = StyleSheet.create({
   },
   termOfUse: {
     marginTop: 3,
-    fontSize: 17,
+    fontSize: Platform.OS === 'ios' ? 14 : 17,
     fontWeight: 'bold',
     color: colors.TextColor,
     textAlign: 'center',
@@ -1186,7 +1186,7 @@ const styles = StyleSheet.create({
   },
   copyrirgttext: {
     marginTop: 3,
-    fontSize: 15,
+    fontSize: Platform.OS === 'ios' ? 13 : 15,
     fontWeight: '400',
     color: colors.TextColorOther,
     fontFamily: 'sans-serif-medium',

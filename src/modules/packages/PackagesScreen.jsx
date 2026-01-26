@@ -1,5 +1,5 @@
 // screens/PricingDetailsScreen.js
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -101,6 +101,9 @@ export default function PricingDetailsScreen() {
     calculator: false,
   });
 
+  //REF
+  const scrollRef = useRef();
+
   const bundlingDetails = useMemo(() => data?.bundlingDetails || [], [data]);
   const orgPackageDetails = useMemo(
     () => data?.orgPackageDetails || [],
@@ -201,10 +204,10 @@ export default function PricingDetailsScreen() {
           name: 'Business',
           qty: 50000,
           discount: 0.2,
-          period: '/Yearly',
+          period: '/Year',
           badge: 'SAVE 20%',
           features: [
-            '50,000 emails/Yearly',
+            '50,000 emails/Year',
             'Automation workflows',
             'Priority support',
           ],
@@ -247,7 +250,8 @@ export default function PricingDetailsScreen() {
       // Bulk plans with 10%, 15%, 20% discounts
       const quantities = [1000, 5000, 10000];
       const discounts = [0.1, 0.15, 0.2]; // 10%, 15%, 20%
-      const durations = ['Monthly', '6 Month', 'Yearly'];
+      const durations = ['Month', '6 Month', 'Year'];
+      const featureDuration = ['1 Month', '6 Month', '1 Year'];
 
       quantities.forEach((qty, idx) => {
         const discountRate = discounts[idx];
@@ -264,7 +268,7 @@ export default function PricingDetailsScreen() {
           badge: badgeText,
           features: [
             `${qty} credits`,
-            `Valid for ${durations[idx].toLowerCase()}`,
+            `Valid for ${featureDuration[idx].toLowerCase()}`,
             `Best value at ${Math.round(discountRate * 100)}% off`,
           ],
           qouta: qty,
@@ -743,6 +747,13 @@ export default function PricingDetailsScreen() {
   // HELPERS
   // =======================
   const toggleSection = section => {
+    if (section === 'calculator' && !expandedSections?.calculator) {
+      scrollRef.current?.scrollToEnd({ animated: true });
+      setExpandedSections({
+        calculator: true,
+      });
+      return;
+    }
     setExpandedSections(prev => ({
       ...prev,
       [section]: !prev[section],
@@ -1462,7 +1473,7 @@ export default function PricingDetailsScreen() {
           style={{ flex: 1 }}
           keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 90}
         >
-          <ScrollView showsVerticalScrollIndicator={false}>
+          <ScrollView showsVerticalScrollIndicator={false} ref={scrollRef}>
             {/* SMS Plans */}
             <View style={styles.sectionContainer}>
               <SectionHeader title="📱 SMS Marketing" section="sms" />

@@ -150,8 +150,6 @@ const styles = {
   container: {
     height: 40,
     borderWidth: 1,
-    backgroundColor: colors.blue,
-    borderColor: colors.borderColor,
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 10,

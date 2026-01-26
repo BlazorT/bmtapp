@@ -165,14 +165,14 @@ export const useOrgSubmit = ({
         Contact: Contact,
         Address: orgAddress,
         Email: Email,
-        Strength: strength,
+        Strength: strength || 0,
         Instagram: instagramId,
         WhatsApp: whatsapp,
         Fb: facebookId,
         IbanorWireTransferId: iban,
         CurrencyId: selectedCurrencyId,
         StateId: selectCountryId,
-        CityId: selectCityId,
+        CityId: selectCityId || 0,
         CityName: cityNameAdd || '',
         Status: selectedStatusId || 1,
         LastUpdatedAt: moment.utc().format(),
@@ -180,10 +180,9 @@ export const useOrgSubmit = ({
         CreatedBy: orgCreatedAt?.createdBy || user?.id || 1,
         LastUpdatedBy: user?.id || 1,
         LogoAvatar: imageUrlOrg,
-        Signature: signatureData, // Add signature field
+        Signature: signatureData || '', // Add signature field
         RowVer: 0,
       };
-
       const response = await fetch(
         servicesettings.baseuri + 'BlazorApi/adupdateorg',
         {
