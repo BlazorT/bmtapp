@@ -549,16 +549,16 @@ const ContactsModal = ({
     const uniqueMap = new Map();
 
     contacts.forEach(contact => {
-      if (!uniqueMap.has(contact.id)) {
-        uniqueMap.set(contact.id, contact);
+      if (!uniqueMap.has(contact.primaryContact)) {
+        uniqueMap.set(contact.primaryContact, contact);
       }
     });
 
     let list = Array.from(uniqueMap.values());
 
     // 2. Search filter
-    if (searchText.trim()) {
-      const searchLower = searchText.toLowerCase();
+    if (searchText?.trim()) {
+      const searchLower = searchText?.replace('0', '').toLowerCase();
       list = list.filter(
         contact =>
           contact.name?.toLowerCase().includes(searchLower) ||
