@@ -544,26 +544,62 @@ const ContactsModal = ({
     }
   };
 
-  const filteredContacts = useMemo(() => {
-    // 1. Deduplicate
-    const uniqueMap = new Map();
+  const normalizePhone = phone => {
+    if (!phone) return '';
 
-    contacts.forEach(contact => {
-      if (!uniqueMap.has(contact.primaryContact)) {
-        uniqueMap.set(contact.primaryContact, contact);
+    // keep digits only
+    const digits = phone.replace(/\D/g, '');
+
+    // take last 10 digits (most reliable universal match)
+    return digits.slice(-10);
+  };
+
+  // const dedupeContacts = contacts => {
+  //   const seen = new Set();
+
+  //   return contacts.filter(contact => {
+  //     const key = normalizePhone(contact.primaryContact);
+
+  //     if (!key || seen.has(key)) {
+  //       return false;
+  //     }
+
+  //     seen.add(key);
+  //     return true;
+  //   });
+  // };
+
+  const filteredContacts = useMemo(() => {
+    // 1. Deduplicate using normalized phone
+    const seen = new Set();
+    let list = contacts.filter(contact => {
+      const key = normalizePhone(contact.primaryContact);
+
+      if (!key || seen.has(key)) {
+        return false;
       }
+
+      seen.add(key);
+      return true;
     });
 
-    let list = Array.from(uniqueMap.values());
-
-    // 2. Search filter
+    // 2. Search filter (name OR normalized phone)
     if (searchText?.trim()) {
-      const searchLower = searchText?.replace('0', '').toLowerCase();
-      list = list.filter(
-        contact =>
-          contact.name?.toLowerCase().includes(searchLower) ||
-          contact.primaryContact?.toLowerCase().includes(searchLower),
-      );
+      const searchLower = searchText.toLowerCase();
+      const searchDigits = searchText.replace(/\D/g, '');
+      const searchKey = searchDigits ? searchDigits.slice(-10) : '';
+
+      list = list.filter(contact => {
+        const nameMatch = contact.name?.toLowerCase().includes(searchLower);
+
+        const phoneMatch =
+          searchKey &&
+          normalizePhone(contact.primaryContact).includes(
+            searchKey.replace(/^0/, ''),
+          );
+
+        return nameMatch || phoneMatch;
+      });
     }
 
     // 3. Sort (selected first, then name)
