@@ -545,25 +545,36 @@ const ContactsModal = ({
   };
 
   const filteredContacts = useMemo(() => {
-    let list = contacts;
+    // 1. Deduplicate
+    const uniqueMap = new Map();
 
+    contacts.forEach(contact => {
+      if (!uniqueMap.has(contact.id)) {
+        uniqueMap.set(contact.id, contact);
+      }
+    });
+
+    let list = Array.from(uniqueMap.values());
+
+    // 2. Search filter
     if (searchText.trim()) {
       const searchLower = searchText.toLowerCase();
-      list = contacts.filter(
+      list = list.filter(
         contact =>
           contact.name?.toLowerCase().includes(searchLower) ||
           contact.primaryContact?.toLowerCase().includes(searchLower),
       );
     }
 
-    return [...list].sort((a, b) => {
+    // 3. Sort (selected first, then name)
+    return list.sort((a, b) => {
       const aSelected = selectedContacts.has(a.id);
       const bSelected = selectedContacts.has(b.id);
 
       if (aSelected && !bSelected) return -1;
       if (!aSelected && bSelected) return 1;
 
-      return a.name.localeCompare(b.name);
+      return (a.name ?? '').localeCompare(b.name ?? '');
     });
   }, [contacts, searchText, selectedContacts]);
 
