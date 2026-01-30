@@ -25,98 +25,98 @@ export default function RNSButton(props) {
 
   let content;
 
-  if (props.bordered) {
-    const borderedStyle = [
-      styles.button,
-      props.small && styles.buttonSmall,
-      styles.border,
-      props.primary && {
-        borderColor: colors.bgColor,
-      },
-      props.secondary && {
-        borderColor: colors.bgColor,
-      },
-      props.bgColor && {
-        backgroundColor: props.bgColor,
-      },
-      props.rounded && styles.rounded,
-    ];
-    const textStyle = [
-      styles.caption,
-      props.small && styles.captionSmall,
-      styles.secondaryCaption,
-      icon && styles.captionWithIcon,
-      props.primary && {
-        color: colors.primary,
-      },
-      props.secondary && {
-        color: colors.secondary,
-      },
-      props.bgColor && {},
-      props.textColor && {
-        color: props.textColor,
-      },
-    ];
+  const borderedStyle = [
+    styles.button,
+    styles.primaryButton,
+    props.small && styles.buttonSmall,
+    props.bordered && styles.border,
+    props.primary && {
+      borderColor: colors.bgColor,
+    },
+    props.secondary && {
+      borderColor: colors.bgColor,
+    },
+    props.bgColor && {
+      backgroundColor: props.bgColor,
+    },
+    props.rounded && styles.rounded,
+  ];
+  const textStyle = [
+    styles.caption,
+    props.small && styles.captionSmall,
+    styles.secondaryCaption,
+    icon && styles.captionWithIcon,
+    props.primary && {
+      color: colors.primary,
+    },
+    props.secondary && {
+      color: colors.secondary,
+    },
+    props.bgColor && {},
+    props.textColor && {
+      color: props.textColor,
+    },
+  ];
 
-    content = (
-      <View style={borderedStyle}>
-        {icon && <View>{icon}</View>}
-        {props.loading && <ActivityIndicator color="white" />}
-        {!props.loading && props.caption && (
-          <Text style={textStyle}>{caption}</Text>
-        )}
-        {props.children && props.children}
-      </View>
-    );
-  } else {
-    const isPrimary = props.primary || (!props.primary && !props.secondary);
-    let gradientArray =
-      props.bgGradientStart && props.bgGradientEnd
-        ? [props.bgGradientStart, props.bgGradientEnd]
-        : undefined;
+  content = (
+    <View style={borderedStyle}>
+      {icon && <View>{icon}</View>}
+      {props.loading && <ActivityIndicator color="white" />}
+      {!props.loading && props.caption && (
+        <Text style={textStyle}>{caption}</Text>
+      )}
+      {props.children && props.children}
+    </View>
+  );
+  // else {
+  //   const isPrimary = props.primary || (!props.primary && !props.secondary);
+  //   let gradientArray =
+  //     props.bgGradientStart && props.bgGradientEnd
+  //       ? [props.bgGradientStart, props.bgGradientEnd]
+  //       : undefined;
 
-    if (!gradientArray) {
-      gradientArray = isPrimary
-        ? [colors.primaryGradientStart, colors.primaryGradientEnd]
-        : [colors.secondaryGradientStart, colors.secondaryGradientEnd];
-    }
+  //   if (!gradientArray) {
+  //     gradientArray = isPrimary
+  //       ? [colors.primaryGradientStart, colors.primaryGradientEnd]
+  //       : [colors.secondaryGradientStart, colors.secondaryGradientEnd];
+  //   }
 
-    if (props.bgColor) {
-      gradientArray = [props.bgColor, props.bgColor];
-    }
+  //   if (props.bgColor) {
+  //     gradientArray = [props.bgColor, props.bgColor];
+  //   }
 
-    content = (
-      <LinearGradient
-        start={{ x: 0.5, y: 1 }}
-        end={{ x: 1, y: 1 }}
-        colors={gradientArray}
-        style={[
-          styles.button,
-          props.small && styles.buttonSmall,
-          styles.primaryButton,
-          props.rounded && { borderRadius },
-          props.action && styles.action,
-        ]}
-      >
-        {icon && <View>{icon}</View>}
-        {props.loading && <ActivityIndicator color="white" />}
-        {!props.loading && props.caption && (
-          <Text
-            style={[
-              styles.caption,
-              props.small && styles.captionSmall,
-              icon && styles.captionWithIcon,
-              styles.primaryCaption,
-              props?.textStyle && props.textStyle,
-            ]}
-          >
-            {caption}
-          </Text>
-        )}
-        {!props.loading && props.children && props.children}
-      </LinearGradient>
-    );
-  }
+  //   content = (
+  //     <LinearGradient
+  //       start={{ x: 0.5, y: 1 }}
+  //       end={{ x: 1, y: 1 }}
+  //       colors={gradientArray}
+  //       style={[
+  //         styles.button,
+  //         props.small && styles.buttonSmall,
+  //         styles.primaryButton,
+  //         props.rounded && { borderRadius },
+  //         props.action && styles.action,
+  //       ]}
+  //     >
+  //       {icon && <View>{icon}</View>}
+  //       {props.loading && <ActivityIndicator color="white" />}
+  //       {!props.loading && props.caption && (
+  //         <Text
+  //           style={[
+  //             styles.caption,
+  //             props.small && styles.captionSmall,
+  //             icon && styles.captionWithIcon,
+  //             styles.primaryCaption,
+  //             props?.textStyle && props.textStyle,
+  //           ]}
+  //         >
+  //           {caption}
+  //         </Text>
+  //       )}
+  //       {!props.loading && props.children && props.children}
+  //     </LinearGradient>
+  //   );
+  // }
 
   return (
     <TouchableOpacity
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     color: '#a2a2a2',
   },
   captionWithIcon: {
-    marginLeft: 12, // Consistent spacing with icon for both platforms
+    marginLeft: 6, // Consistent spacing with icon for both platforms
   },
   primaryCaption: {
     color: 'white',

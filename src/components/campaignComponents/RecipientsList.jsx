@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   View,
   ScrollView,
+  Platform,
 } from 'react-native';
 import Toast from 'react-native-simple-toast';
 import AntdIcon from 'react-native-vector-icons/AntDesign';
@@ -412,7 +413,7 @@ const RecipientsList = () => {
               style={[
                 styles.searchInput,
                 {
-                  width: 245,
+                  width: 230,
                   backgroundColor: theme.inputBackColor,
                   color: theme.textColor,
                   borderColor: theme.containerBorderColor,
@@ -427,7 +428,11 @@ const RecipientsList = () => {
                 onPress={toggleContactsOpen}
                 small
                 nIcon={
-                  <AntdIcon name="contacts" size={20} color={theme.tintColor} />
+                  <AntdIcon
+                    name="contacts"
+                    size={20}
+                    color={theme.backgroundColor}
+                  />
                 }
               />
             </View>
@@ -439,7 +444,11 @@ const RecipientsList = () => {
             onPress={toggleAddAlbumModal}
             small
             nIcon={
-              <MaterialIcon name="add" size={20} color={theme.tintColor} />
+              <MaterialIcon
+                name="add"
+                size={20}
+                color={theme.backgroundColor}
+              />
             }
           />
 
@@ -691,6 +700,7 @@ const styles = StyleSheet.create({
   buttonGroup: {
     flexDirection: 'row',
     gap: 8,
+    marginLeft: Platform.OS == 'ios' ? 5 : 0,
   },
   searchInput: {
     borderRadius: 8,

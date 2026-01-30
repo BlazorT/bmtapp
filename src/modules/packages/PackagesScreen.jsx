@@ -748,12 +748,15 @@ export default function PricingDetailsScreen() {
   // =======================
   const toggleSection = section => {
     if (section === 'calculator' && !expandedSections?.calculator) {
-      scrollRef.current?.scrollToEnd({ animated: true });
-      setExpandedSections({
-        calculator: true,
-      });
+      setExpandedSections({ calculator: true });
+
+      setTimeout(() => {
+        scrollRef.current?.scrollToEnd({ animated: true });
+      }, 50); // iOS needs this delay
+
       return;
     }
+
     setExpandedSections(prev => ({
       ...prev,
       [section]: !prev[section],

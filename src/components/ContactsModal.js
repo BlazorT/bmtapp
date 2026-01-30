@@ -673,13 +673,14 @@ const ContactsModal = ({
       (sum, item) => sum + item.existingCount,
       0,
     );
-
+    if (!showConfirmation) return null;
     return (
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={showConfirmation}
-        onRequestClose={() => setShowConfirmation(false)}
+      <View
+        // animationType="fade"
+        // transparent={true}
+        // visible={showConfirmation}
+        // onRequestClose={() => setShowConfirmation(false)}
+        style={{ ...StyleSheet.absoluteFillObject, zIndex: 999 }}
       >
         <View style={styles.confirmationOverlay}>
           <View
@@ -793,7 +794,7 @@ const ContactsModal = ({
             </View>
           </View>
         </View>
-      </Modal>
+      </View>
     );
   };
 
@@ -1131,6 +1132,7 @@ const ContactsModal = ({
                   bgColor={theme.buttonBackColor}
                   onPress={() => {
                     if (selectedAlbums.size > 0) {
+                      setShowAlbumSelector(false);
                       setShowConfirmation(true);
                     } else {
                       Toast.show('Please select at least one album');
@@ -1158,9 +1160,9 @@ const ContactsModal = ({
       visible={isOpen}
       onRequestClose={onClose}
     >
+      {renderConfirmationModal()}
       <View style={styles.centeredView}>
         {renderAlbumSelector()}
-        {renderConfirmationModal()}
 
         <SafeAreaView style={{ flex: 1, width: '100%' }}>
           <View
@@ -1199,10 +1201,11 @@ const ContactsModal = ({
                     style={[
                       styles.searchInput,
                       {
-                        width: 240,
+                        width: 220,
                         backgroundColor: theme.inputBackColor,
                         color: theme.textColor,
                         borderColor: theme.containerBorderColor,
+                        marginRight: Platform.OS === 'ios' ? 5 : 0,
                       },
                     ]}
                   />
@@ -1215,8 +1218,8 @@ const ContactsModal = ({
                     nIcon={
                       <MaterialIcon
                         name="select-all"
-                        size={20}
-                        color={theme.tintColor}
+                        size={16}
+                        color={theme.backgroundColor}
                       />
                     }
                     style={styles.importAllBtn}
@@ -1834,7 +1837,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   confirmationSummary: {
-    flex: 1,
+    // flex: 1,
   },
   summaryTitle: {
     fontSize: 15,
