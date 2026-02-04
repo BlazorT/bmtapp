@@ -18,6 +18,7 @@ import RNSButton from '../Button';
 import RNSDropDown from '../Dropdown';
 import AlbumSelectionModal from './AlbumSelectionModal';
 import CampaignNetwork from './CampaignNetwork';
+import { padding } from 'aes-js';
 
 const AddSchedule = ({
   campaignInfo,
@@ -575,7 +576,7 @@ const AddSchedule = ({
         bgColor={theme.buttonBackColor}
         style={{
           marginTop: 10,
-          height: 'auto',
+          height: scheduleList?.albums?.length > 0 ? 'auto' : 40,
         }}
         onPress={() => setShowRecipientAlbumMdl(true)}
       />

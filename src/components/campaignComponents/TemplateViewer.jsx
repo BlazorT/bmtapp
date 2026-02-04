@@ -83,9 +83,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalView: {
-    width: '90%',
-    maxHeight: '85%',
-    borderRadius: 12,
+    width: '100%',
+    maxHeight: '100%',
+    // borderRadius: 12,
     paddingHorizontal: 10,
     paddingTop: 10,
     shadowColor: '#000',
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     borderBottomWidth: 0.5,
-    marginBottom: 5,
+    marginBottom: 0,
   },
   closeBtn: {
     padding: 6,

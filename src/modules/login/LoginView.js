@@ -30,6 +30,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/FontAwesome';
 import {
   GoogleSignin,
   statusCodes,
+  isErrorWithCode,
+  isSuccessResponse,
 } from '@react-native-google-signin/google-signin';
 
 import { LoginManager } from 'react-native-fbsdk-next';
@@ -95,54 +97,67 @@ export default function LoginScreen(props) {
         showPlayServicesUpdateDialog: true,
       });
       let userInfo = await GoogleSignin.signIn();
-      userInfo = userInfo.data;
+      console.log({ userInfo });
+      if (isSuccessResponse(userInfo)) {
+        userInfo = userInfo.data;
 
-      var givenName = userInfo.user.givenName;
-      var name = userInfo.user.name;
+        var givenName = userInfo.user.givenName;
+        var name = userInfo.user.name;
 
-      if (givenName.length >= '0' && givenName.includes(' ')) {
-        var firstName = givenName.split(' ')[0];
-        var lastName = givenName.split(' ')[1];
-        var userName = givenName.replace(' ', '.');
-      } else if (name.length >= '0' && name.includes(' ')) {
-        var firstName = name.split(' ')[0];
-        var lastName = name.split(' ')[1];
-        var userName = name.replace(' ', '.');
+        if (givenName.length >= '0' && givenName.includes(' ')) {
+          var firstName = givenName.split(' ')[0];
+          var lastName = givenName.split(' ')[1];
+          var userName = givenName.replace(' ', '.');
+        } else if (name.length >= '0' && name.includes(' ')) {
+          var firstName = name.split(' ')[0];
+          var lastName = name.split(' ')[1];
+          var userName = name.replace(' ', '.');
+        } else {
+          var firstName = givenName || name;
+          var lastName = givenName || name;
+          var userName = givenName || name;
+        }
+        var facebookOS = 5;
+        AsyncStorage.removeItem('SignupWithGoogle_Facebook');
+        var GoogleData = {
+          firstName: firstName,
+          lastName: lastName,
+          userName: userName,
+          facebookOS: facebookOS,
+          userID: userInfo.user.id,
+          picture: userInfo.user.photo,
+          email: userInfo.user.email,
+          authtoken: userInfo.idToken,
+        };
+        AsyncStorage.setItem(
+          'SignupWithGoogle_Facebook',
+          JSON.stringify(GoogleData),
+        );
+
+        setmodalVisiblecamera(false);
+        if (global.Signup_LoginWithGoogle == 1) {
+          ContinueWithSocialMedia();
+        } else if (global.Signup_LoginWithGoogle == 2) {
+          ContinueWithSocialMedia();
+        }
       } else {
-        var firstName = givenName || name;
-        var lastName = givenName || name;
-        var userName = givenName || name;
-      }
-      var facebookOS = 5;
-      AsyncStorage.removeItem('SignupWithGoogle_Facebook');
-      var GoogleData = {
-        firstName: firstName,
-        lastName: lastName,
-        userName: userName,
-        facebookOS: facebookOS,
-        userID: userInfo.user.id,
-        picture: userInfo.user.photo,
-        email: userInfo.user.email,
-        authtoken: userInfo.idToken,
-      };
-      AsyncStorage.setItem(
-        'SignupWithGoogle_Facebook',
-        JSON.stringify(GoogleData),
-      );
-
-      setmodalVisiblecamera(false);
-      if (global.Signup_LoginWithGoogle == 1) {
-        ContinueWithSocialMedia();
-      } else if (global.Signup_LoginWithGoogle == 2) {
-        ContinueWithSocialMedia();
+        Toast.show('Google sign in not available');
       }
     } catch (error) {
-      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        alert('User Cancelled the Login Flow');
-      } else if (error.code === statusCodes.IN_PROGRESS) {
-        alert('Signing In');
-      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        alert('Play Services Not Available or Outdated');
+      if (isErrorWithCode(error)) {
+        if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+          Toast.show('User Cancelled the Login Flow');
+        } else if (error.code === statusCodes.IN_PROGRESS) {
+          Toast.show('Signing In');
+        } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+          Toast.show('Play Services Not Available or Outdated');
+        } else if (error.code === statusCodes.SIGN_IN_REQUIRED) {
+          Toast.show(
+            'The user is not signed in and a sign-in action is required.',
+          );
+        }
+      } else {
+        Toast.show(error?.message);
       }
     }
   };

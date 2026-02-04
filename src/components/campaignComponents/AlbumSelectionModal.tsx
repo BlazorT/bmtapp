@@ -1,4 +1,4 @@
-// AlbumSelectionModal.tsx
+// AlbumSelectionModal.tsx (UPDATED VERSION)
 import React, { useEffect, useState } from 'react';
 import {
   Modal,
@@ -11,6 +11,7 @@ import {
   StyleSheet,
   SafeAreaView,
   Platform,
+  TextInput,
 } from 'react-native';
 import AntdIcon from 'react-native-vector-icons/AntDesign';
 import Toast from 'react-native-simple-toast';
@@ -22,6 +23,13 @@ import RNSButton from '../Button';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { isTab } from '../../constants';
+import AddAlbumModal from './AddAlbumModal';
+import ImportContactsModal from './ImportContactsModal';
+import {
+  validateContact,
+  getFormatGuidance,
+  parseMultipleContacts,
+} from '../../helper/contactValidation';
 
 interface Album {
   id: number;
@@ -36,7 +44,7 @@ interface Props {
   disabled?: boolean;
   onSubmit: (selectedAlbums: Album[]) => void;
   onClose: () => void;
-  selectedAlbums: Record<number, number[]>; // Changed to array
+  selectedAlbums: Record<number, number[]>;
   setSelectedAlbums: any;
 }
 
@@ -54,6 +62,7 @@ const AlbumSelectionModal: React.FC<Props> = ({
   const { user } = useUser();
   const lovs = useSelector((state: any) => state.lovs).lovs;
   const networks = lovs?.lovs?.networks;
+
   const [loading, setLoading] = useState(true);
   const [recipientsLoading, setRecipientsLoading] = useState(true);
   const [albumsByNetwork, setAlbumsByNetwork] = useState<
@@ -61,10 +70,24 @@ const AlbumSelectionModal: React.FC<Props> = ({
   >({});
   const [recipients, setRecipients] = useState([]);
   const [albumList, setAlbumList] = useState([]);
-
+  const [showAddAlbumModal, setShowAddAlbumModal] = useState(false);
   const [activeTab, setActiveTab] = useState<number>(networkIds[0]);
 
-  // Fetch albums for given networkIds
+  // Contact input states
+  const [selectedAlbumForContacts, setSelectedAlbumForContacts] = useState<
+    number | null
+  >(null);
+  const [showContactInput, setShowContactInput] = useState(false);
+  const [contactInput, setContactInput] = useState('');
+  const [newContacts, setNewContacts] = useState<string[]>([]);
+  const [isAddingContacts, setIsAddingContacts] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
+
+  const toggleAddAlbumModal = () => {
+    setShowAddAlbumModal(prev => !prev);
+  };
+
+  // Fetch albums
   const fetchAlbums = async () => {
     setLoading(true);
     try {
@@ -98,7 +121,7 @@ const AlbumSelectionModal: React.FC<Props> = ({
       setAlbumList(res?.data || []);
       const allAlbums: Album[] = res?.data || [];
 
-      // Group albums by networkId and filter only allowed networks
+      // Group albums by networkId
       const grouped: Record<number, Album[]> = {};
       networkIds.forEach(nid => {
         grouped[nid] = allAlbums.filter(a => a.networkid === nid);
@@ -107,12 +130,13 @@ const AlbumSelectionModal: React.FC<Props> = ({
       setAlbumsByNetwork(grouped);
     } catch (error) {
       console.error(error);
-      Toast.show('Failed to load albums', 1000);
+      Toast.show('Failed to load albums', Toast.LONG);
     } finally {
       setLoading(false);
     }
   };
 
+  // Fetch recipients
   const fetchRecipients = async () => {
     setRecipientsLoading(true);
     try {
@@ -140,14 +164,14 @@ const AlbumSelectionModal: React.FC<Props> = ({
       );
 
       if (!response.ok) {
-        Toast.show('Something went wrong, please try again', 1000);
+        Toast.show('Something went wrong, please try again', Toast.LONG);
         return;
       }
       const res = await response.json();
       setRecipients(res?.data || []);
     } catch (error) {
       console.error('Error fetching recipients:', error);
-      Toast.show('Something went wrong, please try again', 1000);
+      Toast.show('Something went wrong, please try again', Toast.LONG);
     } finally {
       setRecipientsLoading(false);
     }
@@ -158,6 +182,14 @@ const AlbumSelectionModal: React.FC<Props> = ({
       fetchRecipients();
       fetchAlbums();
       setActiveTab(networkIds[0]);
+    }
+
+    // Reset contact input when modal closes
+    if (!visible) {
+      setShowContactInput(false);
+      setContactInput('');
+      setNewContacts([]);
+      setSelectedAlbumForContacts(null);
     }
   }, [visible]);
 
@@ -180,7 +212,6 @@ const AlbumSelectionModal: React.FC<Props> = ({
     const currentSelections = selectedAlbums[networkId] || [];
     const allAlbumIds = currentAlbums.map(a => a.id);
 
-    // Check if all are selected
     const allSelected =
       allAlbumIds.length > 0 &&
       allAlbumIds.every(id => currentSelections.includes(id));
@@ -191,8 +222,193 @@ const AlbumSelectionModal: React.FC<Props> = ({
     }));
   };
 
+  // Get current network name
+  const getCurrentNetworkName = () => {
+    return networks?.find((n: any) => n.id === activeTab)?.name || '';
+  };
+
+  // Get existing contacts for an album
+  const getExistingContacts = (albumId: number) => {
+    if (!albumId) return [];
+
+    return (
+      recipients
+        ?.filter(
+          (r: any) => r?.albumid === albumId && r?.networkId === activeTab,
+        )
+        ?.map((r: any) => r.contentId) || []
+    );
+  };
+
+  // Add contact with validation
+  const addContact = (value: string) => {
+    const networkName = getCurrentNetworkName();
+    const validation = validateContact(networkName, value);
+
+    if (!validation.isValid) {
+      Toast.show(`❌ ${validation.message}`, Toast.LONG);
+      return false;
+    }
+
+    const trimmedValue = value.trim();
+
+    // Check against existing contacts
+    const existingContacts = getExistingContacts(selectedAlbumForContacts!);
+
+    if (networkName === 'SMS' || networkName === 'WHATSAPP') {
+      const normalize = n => n.replace(/\D/g, '').slice(-10);
+
+      const exists = existingContacts.some(
+        c => normalize(c) === normalize(trimmedValue),
+      );
+      if (exists) {
+        Toast.show(`"${trimmedValue}" is already in this album.`, Toast.LONG);
+        return false;
+      }
+      const existsInNew = newContacts.some(
+        c => normalize(c) === normalize(trimmedValue),
+      );
+
+      if (existsInNew) {
+        Toast.show(`"${trimmedValue}" is already added.`, Toast.LONG);
+        return false;
+      }
+    } else {
+      if (existingContacts.includes(trimmedValue)) {
+        Toast.show(`"${trimmedValue}" is already in this album.`, Toast.LONG);
+        return false;
+      }
+      // Check against newly added contacts
+      if (newContacts.includes(trimmedValue)) {
+        Toast.show(`"${trimmedValue}" is already added.`, Toast.LONG);
+        return false;
+      }
+    }
+
+    setNewContacts(prev => [...prev, trimmedValue]);
+    return true;
+  };
+
+  // Handle manual contact input
+  const handleAddContactManually = () => {
+    const value = contactInput.trim();
+    if (!value) return;
+
+    if (addContact(value)) {
+      setContactInput('');
+    }
+  };
+
+  // Handle paste - parse multiple contacts
+  const handlePaste = (text: string) => {
+    const contacts = parseMultipleContacts(text);
+    let addedCount = 0;
+
+    contacts.forEach(contact => {
+      if (addContact(contact)) {
+        addedCount++;
+      }
+    });
+
+    if (addedCount > 0) {
+      Toast.show(`Added ${addedCount} contact(s)`, Toast.SHORT);
+    }
+    setContactInput('');
+  };
+
+  // Remove new contact
+  const handleDeleteNewContact = (index: number) => {
+    const updated = [...newContacts];
+    updated.splice(index, 1);
+    setNewContacts(updated);
+  };
+
+  // Save new contacts to database
+  const handleSaveNewContacts = async () => {
+    if (newContacts.length === 0) {
+      Toast.show('No contacts to add.', Toast.LONG);
+      return;
+    }
+
+    if (!selectedAlbumForContacts) {
+      Toast.show('Please select an album first.', Toast.LONG);
+      return;
+    }
+
+    setIsAddingContacts(true);
+
+    try {
+      const payload = [
+        {
+          Id: 0,
+          OrgId: user?.orgId,
+          NetworkId: activeTab,
+          Albumid: selectedAlbumForContacts,
+          Contentlst: newContacts,
+          Desc: '',
+          CreatedBy: user?.id,
+          CreatedAt: new Date(),
+          LastUpdatedAt: new Date(),
+          RowVer: 1,
+        },
+      ];
+      const response = await fetch(
+        servicesettings.baseuri + 'Compaigns/postCompaignContactData',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: servicesettings.AuthorizationKey,
+          },
+          body: JSON.stringify(payload),
+        },
+      );
+
+      if (!response.ok) {
+        const errorResult = await response.json().catch(() => ({}));
+        Toast.show(errorResult.message || 'Server error occurred.', Toast.LONG);
+        return;
+      }
+
+      const result = await response.json();
+
+      if (result.status) {
+        Toast.show(
+          `${newContacts.length} contact(s) added successfully!`,
+          Toast.LONG,
+        );
+        setNewContacts([]);
+        setContactInput('');
+
+        // Refresh recipients
+        await fetchRecipients();
+      } else {
+        Toast.show(result.message || 'Failed to add contacts.', Toast.LONG);
+      }
+    } catch (error) {
+      console.error('Error adding contacts:', error);
+      Toast.show('Error while adding contacts.', Toast.LONG);
+    } finally {
+      setIsAddingContacts(false);
+    }
+  };
+
+  // Handle import from other albums
+  const handleImportContacts = (importedContacts: string[]) => {
+    const existingContacts = getExistingContacts(selectedAlbumForContacts!);
+    const newImportedContacts = importedContacts.filter(
+      c => !existingContacts.includes(c) && !newContacts.includes(c),
+    );
+
+    setNewContacts(prev => [...prev, ...newImportedContacts]);
+    Toast.show(
+      `Added ${newImportedContacts.length} contact(s) from album`,
+      Toast.SHORT,
+    );
+  };
+
+  // Handle submit
   const handleSubmit = () => {
-    // Flatten all selected album IDs from all networks
     const selectedIds = Object.values(selectedAlbums)
       .flat()
       .filter(id => id !== null) as number[];
@@ -216,11 +432,6 @@ const AlbumSelectionModal: React.FC<Props> = ({
     onClose();
   };
 
-  const toAddAlbum = () => {
-    onClose();
-    navigate('Recipients', { toCampaign: true });
-  };
-
   const isSubmitDisabled =
     Object.values(selectedAlbums).every(
       (arr: number[]) => !arr || arr.length === 0,
@@ -229,13 +440,29 @@ const AlbumSelectionModal: React.FC<Props> = ({
   const currentAlbums = albumsByNetwork[activeTab] || [];
   const currentSelections = selectedAlbums[activeTab] || [];
 
-  // Check if all albums in current network are selected
   const allCurrentSelected =
     currentAlbums.length > 0 &&
     currentAlbums.every(album => currentSelections.includes(album.id));
 
   return (
     <Modal visible={visible} transparent animationType="slide">
+      <AddAlbumModal
+        fetchAlbumList={fetchAlbums}
+        showAddAlbumModal={showAddAlbumModal}
+        toggleAddAlbumModal={toggleAddAlbumModal}
+        networkId={activeTab}
+      />
+
+      <ImportContactsModal
+        visible={showImportModal}
+        onClose={() => setShowImportModal(false)}
+        currentAlbumId={selectedAlbumForContacts!}
+        networkId={activeTab}
+        albums={albumList}
+        recipients={recipients}
+        onImport={handleImportContacts}
+      />
+
       <SafeAreaView style={styles.modalOverlay}>
         <View
           style={[
@@ -266,7 +493,13 @@ const AlbumSelectionModal: React.FC<Props> = ({
             {networkIds.map(nid => (
               <TouchableOpacity
                 key={nid}
-                onPress={() => setActiveTab(nid)}
+                onPress={() => {
+                  setActiveTab(nid);
+                  setShowContactInput(false);
+                  setContactInput('');
+                  setNewContacts([]);
+                  setSelectedAlbumForContacts(null);
+                }}
                 style={[
                   styles.tab,
                   {
@@ -287,7 +520,7 @@ const AlbumSelectionModal: React.FC<Props> = ({
                     },
                   ]}
                 >
-                  {networks?.find(n => n.id === nid)?.name || ''}
+                  {networks?.find((n: any) => n.id === nid)?.name || ''}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -302,146 +535,415 @@ const AlbumSelectionModal: React.FC<Props> = ({
                   Loading albums...
                 </Text>
               </View>
-            ) : currentAlbums.length === 0 ? (
-              <View style={styles.empty}>
-                <Text
-                  style={[styles.emptyText, { color: theme.placeholderColor }]}
-                >
-                  No albums found for this network
-                </Text>
-                <RNSButton
-                  caption="Add Album"
-                  onPress={toAddAlbum}
-                  bgColor={theme.darkGray}
-                  style={{ marginRight: 10, width: '48%' }}
-                />
-              </View>
             ) : (
               <>
                 {/* Select All Button */}
-                <TouchableOpacity
-                  onPress={() => handleSelectAll(activeTab)}
-                  style={[
-                    styles.selectAllContainer,
-                    { backgroundColor: theme.modalBackColor },
-                  ]}
-                >
-                  <View style={styles.selectAllContent}>
-                    <View
-                      style={[
-                        styles.checkbox,
-                        {
-                          borderColor: theme.containerBorderColor,
-                          backgroundColor: allCurrentSelected
-                            ? theme.buttonBackColor
-                            : 'transparent',
-                        },
-                      ]}
-                    >
-                      {allCurrentSelected && (
-                        <AntdIcon
-                          name="check"
-                          size={16}
-                          color={theme.backgroundColor}
-                        />
-                      )}
+                <View style={styles.topActions}>
+                  <TouchableOpacity
+                    onPress={() => handleSelectAll(activeTab)}
+                    style={[
+                      styles.selectAllContainer,
+                      { backgroundColor: theme.modalBackColor },
+                    ]}
+                  >
+                    <View style={styles.selectAllContent}>
+                      <View
+                        style={[
+                          styles.checkbox,
+                          {
+                            borderColor: theme.containerBorderColor,
+                            backgroundColor: allCurrentSelected
+                              ? theme.buttonBackColor
+                              : 'transparent',
+                          },
+                        ]}
+                      >
+                        {allCurrentSelected && (
+                          <AntdIcon
+                            name="check"
+                            size={16}
+                            color={theme.backgroundColor}
+                          />
+                        )}
+                      </View>
+                      <Text
+                        style={[
+                          styles.selectAllText,
+                          { color: theme.textColor, fontWeight: '600' },
+                        ]}
+                      >
+                        Select All ({currentSelections.length}/
+                        {currentAlbums.length})
+                      </Text>
                     </View>
-                    <Text
-                      style={[
-                        styles.selectAllText,
-                        { color: theme.textColor, fontWeight: '600' },
-                      ]}
-                    >
-                      Select All Albums ({currentSelections.length}/
-                      {currentAlbums.length})
-                    </Text>
-                  </View>
-                </TouchableOpacity>
+                  </TouchableOpacity>
+                  <RNSButton
+                    caption="Add Album"
+                    onPress={toggleAddAlbumModal}
+                    bgColor={theme.darkGray}
+                    style={{ marginRight: 0, width: '35%' }}
+                  />
+                </View>
 
                 {/* Album List */}
-                <FlatList
-                  data={currentAlbums}
-                  keyExtractor={item => item.id.toString()}
+                <ScrollView
+                  style={styles.albumScrollView}
                   showsVerticalScrollIndicator={false}
-                  renderItem={({ item }) => {
+                >
+                  {currentAlbums.map(item => {
                     const isSelected = currentSelections.includes(item.id);
                     const contactCount =
                       recipients?.filter((r: any) => r?.albumid === item.id)
                         ?.length || 0;
 
                     return (
-                      <TouchableOpacity
-                        onPress={() => handleAlbumSelect(activeTab, item.id)}
-                        style={[
-                          styles.albumItem,
-                          {
-                            backgroundColor: isSelected
-                              ? theme.buttonBackColor + '20'
-                              : theme.modalBackColor,
-                            borderColor: isSelected
-                              ? theme.buttonBackColor
-                              : theme.containerBorderColor,
-                          },
-                        ]}
-                      >
-                        <View style={styles.albumItemContent}>
-                          {/* Checkbox */}
-                          <View
-                            style={[
-                              styles.checkbox,
-                              {
-                                borderColor: isSelected
-                                  ? theme.buttonBackColor
-                                  : theme.containerBorderColor,
-                                backgroundColor: isSelected
-                                  ? theme.buttonBackColor
-                                  : 'transparent',
-                              },
-                            ]}
-                          >
+                      <View key={item.id}>
+                        <TouchableOpacity
+                          onPress={() => handleAlbumSelect(activeTab, item.id)}
+                          style={[
+                            styles.albumItem,
+                            {
+                              backgroundColor: isSelected
+                                ? theme.buttonBackColor + '20'
+                                : theme.modalBackColor,
+                              borderColor: isSelected
+                                ? theme.buttonBackColor
+                                : theme.containerBorderColor,
+                            },
+                          ]}
+                        >
+                          <View style={styles.albumItemContent}>
+                            <View
+                              style={[
+                                styles.checkbox,
+                                {
+                                  borderColor: isSelected
+                                    ? theme.buttonBackColor
+                                    : theme.containerBorderColor,
+                                  backgroundColor: isSelected
+                                    ? theme.buttonBackColor
+                                    : 'transparent',
+                                },
+                              ]}
+                            >
+                              {isSelected && (
+                                <AntdIcon
+                                  name="check"
+                                  size={16}
+                                  color={theme.backgroundColor}
+                                />
+                              )}
+                            </View>
+
+                            <View style={styles.albumInfo}>
+                              <Text
+                                style={[
+                                  styles.albumName,
+                                  { color: theme.textColor },
+                                ]}
+                              >
+                                {item.name}
+                              </Text>
+                              <Text
+                                style={[
+                                  styles.contactCount,
+                                  { color: theme.placeholderColor },
+                                ]}
+                              >
+                                {contactCount} contact
+                                {contactCount === 1 ? '' : 's'}
+                              </Text>
+                            </View>
+
                             {isSelected && (
-                              <AntdIcon
-                                name="check"
-                                size={16}
-                                color={theme.backgroundColor}
-                              />
+                              <>
+                                <AntdIcon
+                                  name="checkcircle"
+                                  size={22}
+                                  color={theme.buttonBackColor}
+                                />
+                                <TouchableOpacity
+                                  onPress={(e: any) => {
+                                    e?.stopPropagation?.();
+                                    setSelectedAlbumForContacts(item.id);
+                                    setShowContactInput(true);
+                                    setContactInput('');
+                                    setNewContacts([]);
+                                  }}
+                                  style={{
+                                    backgroundColor: theme.buttonBackColor,
+                                    padding: 6,
+                                    borderRadius: 6,
+                                    marginLeft: 6,
+                                  }}
+                                >
+                                  <Text style={{ color: theme.white }}>
+                                    Add Contacts
+                                  </Text>
+                                </TouchableOpacity>
+                                {/* <RNSButton
+                                  caption="Add Contacts"
+                                  onPress={(e: any) => {
+                                    e?.stopPropagation?.();
+                                    setSelectedAlbumForContacts(item.id);
+                                    setShowContactInput(true);
+                                    setContactInput('');
+                                    setNewContacts([]);
+                                  }}
+                                  bgColor={theme.buttonBackColor}
+                                  style={{
+                                    width: 'auto',
+                                    paddingLeft: 6,
+                                  }}
+                                  textStyle={{ fontSize: 12 }}
+                                  small
+                                /> */}
+                              </>
                             )}
                           </View>
+                        </TouchableOpacity>
 
-                          {/* Album Info */}
-                          <View style={styles.albumInfo}>
-                            <Text
+                        {/* Contact Input Section */}
+                        {selectedAlbumForContacts === item.id &&
+                          showContactInput && (
+                            <View
                               style={[
-                                styles.albumName,
-                                { color: theme.textColor },
+                                styles.contactInputSection,
+                                {
+                                  backgroundColor: theme.modalBackColor,
+                                  borderColor: theme.containerBorderColor,
+                                },
                               ]}
                             >
-                              {item.name}
-                            </Text>
-                            <Text
-                              style={[
-                                styles.contactCount,
-                                { color: theme.placeholderColor },
-                              ]}
-                            >
-                              {contactCount} contact
-                              {contactCount === 1 ? '' : 's'}
-                            </Text>
-                          </View>
+                              {/* Section Header */}
+                              <View style={styles.contactInputHeader}>
+                                <Text
+                                  style={[
+                                    styles.contactInputTitle,
+                                    { color: theme.textColor },
+                                  ]}
+                                >
+                                  Add Contacts to {item.name}
+                                </Text>
+                                <TouchableOpacity
+                                  onPress={() => {
+                                    setShowContactInput(false);
+                                    setSelectedAlbumForContacts(null);
+                                    setContactInput('');
+                                    setNewContacts([]);
+                                  }}
+                                >
+                                  <AntdIcon
+                                    name="close"
+                                    size={20}
+                                    color={theme.textColor}
+                                  />
+                                </TouchableOpacity>
+                              </View>
 
-                          {/* Check Icon */}
-                          {isSelected && (
-                            <AntdIcon
-                              name="checkcircle"
-                              size={22}
-                              color={theme.buttonBackColor}
-                            />
+                              {/* Format Guidance */}
+                              <View
+                                style={[
+                                  styles.guidanceBox,
+                                  {
+                                    backgroundColor:
+                                      theme.buttonBackColor + '20',
+                                  },
+                                ]}
+                              >
+                                <AntdIcon
+                                  name="infocirlceo"
+                                  size={16}
+                                  color={theme.buttonBackColor}
+                                  style={{ marginRight: 8 }}
+                                />
+                                <Text
+                                  style={[
+                                    styles.guidanceText,
+                                    { color: theme.textColor },
+                                  ]}
+                                >
+                                  {getFormatGuidance(getCurrentNetworkName())}
+                                </Text>
+                              </View>
+
+                              {/* Contact Input */}
+                              <View style={styles.inputRow}>
+                                <TextInput
+                                  style={[
+                                    styles.contactInput,
+                                    {
+                                      backgroundColor: theme.backgroundColor,
+                                      color: theme.textColor,
+                                      borderColor: theme.containerBorderColor,
+                                    },
+                                  ]}
+                                  placeholder="Enter contact"
+                                  placeholderTextColor={theme.placeholderColor}
+                                  value={contactInput}
+                                  onChangeText={setContactInput}
+                                  autoCapitalize="none"
+                                  autoCorrect={false}
+                                />
+                                <RNSButton
+                                  caption="Add"
+                                  onPress={handleAddContactManually}
+                                  bgColor={theme.buttonBackColor}
+                                  style={{
+                                    width: 'auto',
+                                    paddingHorizontal: 0,
+                                    marginLeft: 8,
+                                  }}
+                                  disabled={!contactInput.trim()}
+                                  small
+                                />
+                              </View>
+
+                              {/* Import Button */}
+                              <RNSButton
+                                caption="Import from Albums"
+                                onPress={() => setShowImportModal(true)}
+                                bgColor={theme.darkGray}
+                                style={{ marginTop: 8 }}
+                                nIcon={
+                                  <AntdIcon
+                                    name="download"
+                                    size={16}
+                                    color={theme.white}
+                                    style={{ marginRight: 6 }}
+                                  />
+                                }
+                              />
+
+                              {/* New Contacts List */}
+                              {newContacts.length > 0 && (
+                                <View style={styles.newContactsSection}>
+                                  <Text
+                                    style={[
+                                      styles.sectionLabel,
+                                      { color: theme.textColor },
+                                    ]}
+                                  >
+                                    New Contacts ({newContacts.length})
+                                  </Text>
+                                  <ScrollView
+                                    style={styles.contactTags}
+                                    horizontal
+                                    showsHorizontalScrollIndicator={false}
+                                    contentContainerStyle={{
+                                      columnGap: 5,
+                                      rowGap: 5,
+                                    }}
+                                  >
+                                    {newContacts.map((contact, idx) => (
+                                      <View
+                                        key={idx}
+                                        style={[
+                                          styles.contactTag,
+                                          {
+                                            backgroundColor:
+                                              theme.buttonBackColor,
+                                          },
+                                        ]}
+                                      >
+                                        <Text
+                                          style={[
+                                            styles.contactTagText,
+                                            { color: theme.white },
+                                          ]}
+                                        >
+                                          {contact}
+                                        </Text>
+                                        <TouchableOpacity
+                                          onPress={() =>
+                                            handleDeleteNewContact(idx)
+                                          }
+                                          style={styles.deleteIcon}
+                                        >
+                                          <AntdIcon
+                                            name="close"
+                                            size={14}
+                                            color={theme.white}
+                                          />
+                                        </TouchableOpacity>
+                                      </View>
+                                    ))}
+                                  </ScrollView>
+
+                                  <RNSButton
+                                    caption={
+                                      isAddingContacts
+                                        ? 'Saving...'
+                                        : `Save ${newContacts.length} Contact(s)`
+                                    }
+                                    onPress={handleSaveNewContacts}
+                                    disabled={isAddingContacts}
+                                    bgColor={theme.buttonBackColor}
+                                    style={{ marginTop: 12 }}
+                                  />
+                                </View>
+                              )}
+
+                              {/* Existing Contacts */}
+                              {getExistingContacts(item.id).length > 0 && (
+                                <View style={styles.existingContactsSection}>
+                                  <Text
+                                    style={[
+                                      styles.sectionLabel,
+                                      { color: theme.placeholderColor },
+                                    ]}
+                                  >
+                                    Existing Contacts (
+                                    {getExistingContacts(item.id).length})
+                                  </Text>
+                                  <ScrollView
+                                    style={[
+                                      styles.existingContactsList,
+                                      {
+                                        borderColor: theme.containerBorderColor,
+                                        backgroundColor: theme.backgroundColor,
+                                      },
+                                    ]}
+                                    contentContainerStyle={{
+                                      flexDirection: 'row',
+                                      rowGap: 5,
+                                      columnGap: 5,
+                                      flexWrap: 'wrap',
+                                    }}
+                                    nestedScrollEnabled
+                                  >
+                                    {getExistingContacts(item.id).map(
+                                      (contact, idx) => (
+                                        <View
+                                          key={idx}
+                                          style={[
+                                            styles.existingContactItem,
+                                            {
+                                              backgroundColor:
+                                                theme.modalBackColor,
+                                            },
+                                          ]}
+                                        >
+                                          <Text
+                                            style={[
+                                              styles.existingContactText,
+                                              { color: theme.textColor },
+                                            ]}
+                                          >
+                                            {contact}
+                                          </Text>
+                                        </View>
+                                      ),
+                                    )}
+                                  </ScrollView>
+                                </View>
+                              )}
+                            </View>
                           )}
-                        </View>
-                      </TouchableOpacity>
+                      </View>
                     );
-                  }}
-                />
+                  })}
+                </ScrollView>
               </>
             )}
           </View>
@@ -478,7 +980,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalContent: {
-    height: '85%',
+    height: '99%',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 20,
@@ -511,10 +1013,16 @@ const styles = StyleSheet.create({
   listContainer: {
     flex: 1,
   },
-  selectAllContainer: {
-    padding: 14,
-    borderRadius: 10,
+  topActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: 12,
+  },
+  selectAllContainer: {
+    padding: 12,
+    borderRadius: 10,
+    width: '60%',
   },
   selectAllContent: {
     flexDirection: 'row',
@@ -531,6 +1039,9 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  albumScrollView: {
+    flex: 1,
   },
   albumItem: {
     borderRadius: 10,
@@ -554,6 +1065,90 @@ const styles = StyleSheet.create({
     fontSize: 13,
     marginTop: 4,
   },
+  contactInputSection: {
+    marginTop: 8,
+    marginBottom: 12,
+    padding: 16,
+    borderRadius: 10,
+    borderWidth: 1,
+  },
+  contactInputHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  contactInputTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    flex: 1,
+  },
+  guidanceBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 12,
+  },
+  guidanceText: {
+    fontSize: 13,
+    flex: 1,
+  },
+  inputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  contactInput: {
+    flex: 1,
+    height: 45,
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    fontSize: 14,
+  },
+  newContactsSection: {
+    marginTop: 12,
+  },
+  sectionLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  contactTags: {
+    maxHeight: 100,
+  },
+  contactTag: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 4,
+    paddingHorizontal: 6,
+    borderRadius: 8,
+  },
+  contactTagText: {
+    fontSize: 13,
+    marginRight: 6,
+  },
+  deleteIcon: {
+    padding: 2,
+  },
+  existingContactsSection: {
+    marginTop: 16,
+  },
+  existingContactsList: {
+    maxHeight: 120,
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 5,
+  },
+  existingContactItem: {
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 6,
+    marginBottom: 6,
+  },
+  existingContactText: {
+    fontSize: 13,
+  },
   loading: {
     flex: 1,
     justifyContent: 'center',
@@ -561,15 +1156,6 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 12,
-  },
-  empty: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    rowGap: 10,
-  },
-  emptyText: {
-    fontSize: 16,
   },
   footer: {
     flexDirection: 'row',

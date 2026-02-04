@@ -12,6 +12,7 @@ import {
   View,
   ScrollView,
   Platform,
+  Dimensions,
 } from 'react-native';
 import Toast from 'react-native-simple-toast';
 import AntdIcon from 'react-native-vector-icons/AntDesign';
@@ -21,7 +22,7 @@ import { useTheme } from '../../hooks/useTheme';
 import { useUser } from '../../hooks/useUser';
 import servicesettings from '../../modules/dataservices/servicesettings';
 import RNSButton from '../Button';
-import ContactsModal from '../ContactsModal';
+import ContactsModal from '../ContactsModal/ContactsModal';
 import RNSDropDown from '../Dropdown';
 import RNSTextInput from '../TextInput';
 
@@ -413,7 +414,10 @@ const RecipientsList = () => {
               style={[
                 styles.searchInput,
                 {
-                  width: 230,
+                  width:
+                    Platform.OS === 'ios'
+                      ? 230
+                      : Dimensions.get('window').width - 150,
                   backgroundColor: theme.inputBackColor,
                   color: theme.textColor,
                   borderColor: theme.containerBorderColor,

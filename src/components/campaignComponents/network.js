@@ -25,6 +25,7 @@ import servicesettings from '../../modules/dataservices/servicesettings';
 import Toast from 'react-native-simple-toast';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import TemplateViewer from './TemplateViewer';
+import TemplateEditorModal from './TemplateEditorModal';
 
 const getIcon = networkId => {
   if (networkId == 1) {
@@ -346,7 +347,11 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
           </Text>
           <FlatList
             keyExtractor={(item, id) => id.toString()}
-            data={templates || []}
+            data={
+              templates?.filter(t =>
+                t?.networkId === 2 ? t?.templateJson : true,
+              ) || []
+            }
             nestedScrollEnabled={true}
             style={{ maxHeight: 200 }} // set a maxHeight on the FlatList itself
             contentContainerStyle={{ rowGap: 5, paddingBottom: 10 }}
@@ -377,7 +382,7 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
                     }}
                   >
                     <FontAwesome
-                      name={'external-link'}
+                      name={'edit'}
                       size={Platform.OS === 'ios' ? 20 : 26}
                       color={theme.tintColor}
                     />
@@ -509,11 +514,46 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
           />
         </View>
       ) : null}
-      <TemplateViewer
+      <TemplateEditorModal
         isOpen={showTemplate}
         onClose={closeTemplate}
         template={selectedTemplate}
+        onSave={updatedTemplate => {
+          // 1️⃣ Update templates list by template.id
+          setTemplates(prev =>
+            prev.map(tpl =>
+              tpl.id === updatedTemplate.id
+                ? { ...tpl, ...updatedTemplate }
+                : tpl,
+            ),
+          );
+
+          // 2️⃣ Update campaignInfo -> networks -> Template by id
+          if (isNetworkSelected) {
+            setCampaignInfo(prev => ({
+              ...prev,
+              networks: prev.networks.map(nt =>
+                nt.networkId === network.networkId
+                  ? {
+                      ...nt,
+                      Template:
+                        nt.Template?.id === updatedTemplate.id
+                          ? { ...nt.Template, ...updatedTemplate }
+                          : nt.Template,
+                    }
+                  : nt,
+              ),
+            }));
+          }
+          closeTemplate();
+        }}
       />
+
+      {/* <TemplateViewer
+        isOpen={showTemplate}
+        onClose={closeTemplate}
+        template={selectedTemplate}
+      /> */}
     </View>
   );
 };
