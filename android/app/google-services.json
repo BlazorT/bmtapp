@@ -2,7 +2,7 @@
   "project_info": {
     "project_number": "545864141345",
     "project_id": "blazor-media-toolkit",
-    "storage_bucket": "blazor-media-toolkit.appspot.com"
+    "storage_bucket": "blazor-media-toolkit.firebasestorage.app"
   },
   "client": [
     {
@@ -29,6 +29,13 @@
             {
               "client_id": "545864141345-57s5a3f1mepovbqqv4m4o1us2ucka4k8.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "545864141345-91ptj0q3n2cvnfugf60nbpr80b8tupko.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.blazor.bdmt"
+              }
             }
           ]
         }

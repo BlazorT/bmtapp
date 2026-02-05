@@ -77,8 +77,7 @@ export default function LoginScreen(props) {
   useEffect(() => {
     global.SocialMedia = 0;
     GoogleSignin.configure({
-      webClientId:
-        '344400656576-n1btnvu3unr8ioidunk8i6d6ne6qb903.apps.googleusercontent.com',
+      webClientId: servicesettings.gWebClientId,
       offlineAccess: true,
     });
 
