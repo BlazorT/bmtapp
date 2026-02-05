@@ -290,7 +290,7 @@ export default function VehicalSallerScreen(props) {
 
       try {
         const res = await fetch(
-          servicesettings.baseuri + 'BlazorApi/uploadsingleattachment',
+          servicesettings.baseuri + 'BlazorApi/uploadAttachment',
           {
             method: 'post',
             body: data,
