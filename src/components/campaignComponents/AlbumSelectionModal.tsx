@@ -957,7 +957,7 @@ const AlbumSelectionModal: React.FC<Props> = ({
               style={{ marginRight: 10, width: '48%' }}
             />
             <RNSButton
-              caption="Confirm Selection"
+              caption="Confirm"
               onPress={handleSubmit}
               disabled={isSubmitDisabled}
               bgColor={

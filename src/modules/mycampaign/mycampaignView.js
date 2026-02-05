@@ -252,7 +252,7 @@ export default function MyCampaignScreen(props) {
           <CapaignItem item={item} loadCampiagns={Loaddata} />
         )}
         contentContainerStyle={{
-          paddingBottom: 3 + '%',
+          paddingBottom: 10 + '%',
           marginTop: 3 + '%',
           marginLeft: 2 + '%',
           marginRight: 2 + '%',

@@ -1,6 +1,13 @@
 import { createContext, useEffect } from 'react';
-import { ActivityIndicator, Image, StyleSheet, Text, View } from 'react-native';
-import { useDispatch } from 'react-redux';
+import {
+  ActivityIndicator,
+  Image,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import { Button } from '../components';
 import { GET_COUNTRY_INFO } from '../constants';
 import useFetchData from '../hooks/useFetchData';
@@ -66,6 +73,8 @@ const LOVContext = createContext({
 
 export const LOVProvider = ({ children }) => {
   const theme = useTheme();
+  const themeMode = useSelector(state => state.theme.mode);
+
   const dispatch = useDispatch();
 
   const { data, loading, error, fetchData } = useFetchData(apiConfigs);
@@ -82,36 +91,46 @@ export const LOVProvider = ({ children }) => {
 
   if (loading) {
     return (
-      <View
-        style={[styles.container, { backgroundColor: theme.backgroundColor }]}
-      >
-        <Image
-          source={profilelogo}
-          style={{ width: 300, height: 100, marginBottom: 10 }}
+      <>
+        <StatusBar
+          barStyle={themeMode === 'dark' ? 'light-content' : 'dark-content'}
         />
-        <ActivityIndicator size={'small'} color={theme.textColor} />
-        <Text style={styles.errorText}>Initializing App...</Text>
-      </View>
+        <View
+          style={[styles.container, { backgroundColor: theme.backgroundColor }]}
+        >
+          <Image
+            source={profilelogo}
+            style={{ width: 300, height: 100, marginBottom: 10 }}
+          />
+          <ActivityIndicator size={'small'} color={theme.textColor} />
+          <Text style={styles.errorText}>Initializing App...</Text>
+        </View>
+      </>
     );
   }
 
   if (error) {
     return (
-      <View
-        style={[styles.container, { backgroundColor: theme.backgroundColor }]}
-      >
-        <Image source={profilelogo} style={{ width: 300, height: 100 }} />
-        <Text style={styles.errorText}>
-          We’re having trouble connecting right now. Please check your internet
-          connection or try again in a moment.
-        </Text>
-        <Button
-          style={{ width: '50%', marginTop: 10 }}
-          bgColor={theme.buttonBackColor}
-          caption="Retry"
-          onPress={fetchData}
+      <>
+        <StatusBar
+          barStyle={themeMode === 'dark' ? 'light-content' : 'dark-content'}
         />
-      </View>
+        <View
+          style={[styles.container, { backgroundColor: theme.backgroundColor }]}
+        >
+          <Image source={profilelogo} style={{ width: 300, height: 100 }} />
+          <Text style={styles.errorText}>
+            We’re having trouble connecting right now. Please check your
+            internet connection or try again in a moment.
+          </Text>
+          <Button
+            style={{ width: '50%', marginTop: 10 }}
+            bgColor={theme.buttonBackColor}
+            caption="Retry"
+            onPress={fetchData}
+          />
+        </View>
+      </>
     );
   }
 

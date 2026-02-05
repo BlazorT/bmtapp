@@ -26,6 +26,7 @@ import Toast from 'react-native-simple-toast';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import TemplateViewer from './TemplateViewer';
 import TemplateEditorModal from './TemplateEditorModal';
+import { safeJSONParse } from '../../helper/dateFormatter';
 
 const getIcon = networkId => {
   if (networkId == 1) {
@@ -323,7 +324,15 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
               fontSize: 14,
             }}
           >
-            {truncateText(selectedNetwork?.Template?.template, 50)}
+            {selectedNetwork?.Template?.networkId === 2
+              ? truncateText(
+                  safeJSONParse(
+                    selectedNetwork?.Template?.templateJson,
+                  )?.components?.find(c => c.type === 'BODY')?.text ||
+                    selectedNetwork?.Template?.template,
+                  80,
+                )
+              : truncateText(selectedNetwork?.Template?.template, 50)}
           </Text>
         </TouchableOpacity>
       ) : null}
@@ -355,122 +364,90 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
             nestedScrollEnabled={true}
             style={{ maxHeight: 200 }} // set a maxHeight on the FlatList itself
             contentContainerStyle={{ rowGap: 5, paddingBottom: 10 }}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                onPress={() => {
-                  openTemplate(item);
-                }}
-                style={[
-                  styles.card,
-                  { backgroundColor: theme.buttonBackColor },
-                ]}
-              >
-                <View
-                  style={{
-                    position: 'absolute',
-                    right: 5,
-                    top: 5,
-                    gap: 8,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
+            renderItem={({ item }) => {
+              const templateJson =
+                item?.networkId == 2 && item?.templateJson
+                  ? safeJSONParse(item.templateJson)
+                  : null;
+              return (
+                <TouchableOpacity
+                  onPress={() => {
+                    openTemplate(item);
                   }}
+                  style={[
+                    styles.card,
+                    { backgroundColor: theme.buttonBackColor },
+                  ]}
                 >
-                  <TouchableOpacity
-                    onPress={() => {
-                      openTemplate(item);
+                  <View
+                    style={{
+                      position: 'absolute',
+                      right: 5,
+                      top: 5,
+                      gap: 8,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'center',
                     }}
                   >
-                    <FontAwesome
-                      name={'edit'}
-                      size={Platform.OS === 'ios' ? 20 : 26}
-                      color={theme.tintColor}
-                    />
-                  </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => {
+                        openTemplate(item);
+                      }}
+                    >
+                      <FontAwesome
+                        name={'edit'}
+                        size={Platform.OS === 'ios' ? 20 : 26}
+                        color={theme.tintColor}
+                      />
+                    </TouchableOpacity>
 
-                  <CheckBox
-                    style={{
-                      transform: [
-                        { scaleX: Platform.OS === 'ios' ? 0.8 : 1.5 },
-                        { scaleY: Platform.OS === 'ios' ? 0.8 : 1.5 },
-                      ],
-                      zIndex: 999,
-                    }}
-                    value={selectedNetwork?.Template?.id === item.id}
-                    onValueChange={v => {
-                      if (v) {
-                        // add postType
-                        setCampaignInfo({
-                          ...campaignInfo,
-                          networks: campaignInfo.networks.map(nt =>
-                            nt.networkId === network.networkId
-                              ? {
-                                  ...nt,
-                                  Template: item,
-                                }
-                              : nt,
-                          ),
-                        });
-                        setShowTemplateList(false);
-                      } else {
-                        // remove postType
-                        setCampaignInfo({
-                          ...campaignInfo,
-                          networks: campaignInfo.networks.map(nt =>
-                            nt.networkId === network.networkId
-                              ? {
-                                  ...nt,
-                                  Template: '',
-                                }
-                              : nt,
-                          ),
-                        });
-                      }
-                    }}
-                    boxType={'square'}
-                    tintColors={{
-                      true: theme.selectedCheckBox,
-                      false: theme.modalBackColor,
-                    }}
-                  />
-                </View>
-                <Text
-                  style={{
-                    color: theme.textColor,
-                    fontSize: 14,
-                    fontWeight: 'bold',
-                  }}
-                >
-                  Name :{' '}
-                  <Text
-                    style={{
-                      color: theme.textColor,
-                      fontSize: 14,
-                      fontWeight: 'normal',
-                    }}
-                  >
-                    {item?.name}
-                  </Text>
-                </Text>
-                <Text
-                  style={{
-                    color: theme.textColor,
-                    fontSize: 14,
-                    fontWeight: 'bold',
-                  }}
-                >
-                  Title :{' '}
-                  <Text
-                    style={{
-                      color: theme.textColor,
-                      fontSize: 14,
-                      fontWeight: 'normal',
-                    }}
-                  >
-                    {item?.title}
-                  </Text>
-                </Text>
-                {item?.subject ? (
+                    <CheckBox
+                      style={{
+                        transform: [
+                          { scaleX: Platform.OS === 'ios' ? 0.8 : 1.5 },
+                          { scaleY: Platform.OS === 'ios' ? 0.8 : 1.5 },
+                        ],
+                        zIndex: 999,
+                      }}
+                      value={selectedNetwork?.Template?.id === item.id}
+                      onValueChange={v => {
+                        if (v) {
+                          // add postType
+                          setCampaignInfo({
+                            ...campaignInfo,
+                            networks: campaignInfo.networks.map(nt =>
+                              nt.networkId === network.networkId
+                                ? {
+                                    ...nt,
+                                    Template: item,
+                                  }
+                                : nt,
+                            ),
+                          });
+                          setShowTemplateList(false);
+                        } else {
+                          // remove postType
+                          setCampaignInfo({
+                            ...campaignInfo,
+                            networks: campaignInfo.networks.map(nt =>
+                              nt.networkId === network.networkId
+                                ? {
+                                    ...nt,
+                                    Template: '',
+                                  }
+                                : nt,
+                            ),
+                          });
+                        }
+                      }}
+                      boxType={'square'}
+                      tintColors={{
+                        true: theme.selectedCheckBox,
+                        false: theme.modalBackColor,
+                      }}
+                    />
+                  </View>
                   <Text
                     style={{
                       color: theme.textColor,
@@ -478,7 +455,7 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
                       fontWeight: 'bold',
                     }}
                   >
-                    Subject :{' '}
+                    Name :{' '}
                     <Text
                       style={{
                         color: theme.textColor,
@@ -486,31 +463,99 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
                         fontWeight: 'normal',
                       }}
                     >
-                      {item?.subject}
+                      {templateJson?.templateName || item?.name}
                     </Text>
                   </Text>
-                ) : null}
+                  {!templateJson ? (
+                    <>
+                      <Text
+                        style={{
+                          color: theme.textColor,
+                          fontSize: 14,
+                          fontWeight: 'bold',
+                        }}
+                      >
+                        Title :{' '}
+                        <Text
+                          style={{
+                            color: theme.textColor,
+                            fontSize: 14,
+                            fontWeight: 'normal',
+                          }}
+                        >
+                          {item?.title}
+                        </Text>
+                      </Text>
+                      {item?.subject ? (
+                        <Text
+                          style={{
+                            color: theme.textColor,
+                            fontSize: 14,
+                            fontWeight: 'bold',
+                          }}
+                        >
+                          Subject :{' '}
+                          <Text
+                            style={{
+                              color: theme.textColor,
+                              fontSize: 14,
+                              fontWeight: 'normal',
+                            }}
+                          >
+                            {item?.subject}
+                          </Text>
+                        </Text>
+                      ) : null}
+                    </>
+                  ) : (
+                    <Text
+                      style={{
+                        color: theme.textColor,
+                        fontSize: 14,
+                        fontWeight: 'bold',
+                      }}
+                    >
+                      Language :{' '}
+                      <Text
+                        style={{
+                          color: theme.textColor,
+                          fontSize: 14,
+                          fontWeight: 'normal',
+                        }}
+                      >
+                        {templateJson?.templateLanguage}
+                      </Text>
+                    </Text>
+                  )}
 
-                <Text
-                  style={{
-                    color: theme.textColor,
-                    fontSize: 14,
-                    fontWeight: 'bold',
-                  }}
-                >
-                  Content :{' '}
                   <Text
                     style={{
                       color: theme.textColor,
                       fontSize: 14,
-                      fontWeight: 'normal',
+                      fontWeight: 'bold',
                     }}
                   >
-                    {truncateText(item?.template, 50)}
+                    Content :{' '}
+                    <Text
+                      style={{
+                        color: theme.textColor,
+                        fontSize: 14,
+                        fontWeight: 'normal',
+                      }}
+                    >
+                      {item?.networkId === 2
+                        ? truncateText(
+                            templateJson?.components?.find(
+                              c => c.type === 'BODY',
+                            )?.text || item.template,
+                            80,
+                          )
+                        : truncateText(item?.template, 50)}
+                    </Text>
                   </Text>
-                </Text>
-              </TouchableOpacity>
-            )}
+                </TouchableOpacity>
+              );
+            }}
           />
         </View>
       ) : null}

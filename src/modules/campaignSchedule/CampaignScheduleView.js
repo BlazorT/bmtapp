@@ -466,6 +466,7 @@ export default function CampaignScheduleScreen(props) {
               priceData={priceData}
               recipients={recipients}
               orgData={orgData}
+              fetchRecipients={fetchRecipients}
             />
             <Spinner
               visible={spinner}

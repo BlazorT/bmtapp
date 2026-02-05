@@ -42,6 +42,7 @@ const CampaignSchedule = ({
   setspinner,
   recipients,
   orgData,
+  fetchRecipients,
 }) => {
   const theme = useTheme();
   const { user } = useUser();
@@ -771,6 +772,7 @@ const CampaignSchedule = ({
           priceData={priceData}
           setIsUpdate={setIsUpdate}
           recipients={recipients}
+          fetchRecipients={fetchRecipients}
         />
       )}
       {scheduleTab == 1 && (

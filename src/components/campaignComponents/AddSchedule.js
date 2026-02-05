@@ -31,6 +31,7 @@ const AddSchedule = ({
   setIsUpdate,
   priceData,
   recipients,
+  fetchRecipients,
 }) => {
   const theme = useTheme();
   const { user } = useUser();
@@ -45,6 +46,7 @@ const AddSchedule = ({
     setShowRecipientAlbumMdl(false);
   };
   const onSubmitAlbum = albums => {
+    fetchRecipients();
     setScheduleList(prev => ({ ...prev, albums }));
   };
   const days = [

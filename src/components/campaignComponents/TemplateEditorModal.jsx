@@ -18,9 +18,12 @@ import RNSTextInput from '../../components/TextInput';
 import WhatsAppTemplateEditor from './WhatsAppTemplateEditor';
 import SocialMediaTemplateEditor from './SocialMediaTemplateEditor';
 import EmailTemplateViewer from './EmailTemplateViewer';
+import { useSelector } from 'react-redux';
 
 const TemplateEditorModal = ({ isOpen, onClose, template, onSave }) => {
   const theme = useTheme();
+  const lovs = useSelector(state => state.lovs).lovs;
+  const networks = lovs?.lovs?.networks || [];
   const [templateData, setTemplateData] = useState({
     id: 0,
     name: '',
@@ -182,7 +185,7 @@ const TemplateEditorModal = ({ isOpen, onClose, template, onSave }) => {
                 ]}
               >
                 <Text style={styles.badgeText}>
-                  {getNetworkName(templateData.networkId)}
+                  {getNetworkName(templateData.networkId, networks)}
                 </Text>
               </View>
             </View>
@@ -285,15 +288,9 @@ const TemplateEditorModal = ({ isOpen, onClose, template, onSave }) => {
 };
 
 // Helper functions
-const getNetworkName = networkId => {
-  const networks = {
-    1: 'SMS',
-    2: 'WhatsApp',
-    3: 'Email',
-    4: 'Facebook',
-    5: 'Twitter',
-  };
-  return networks[networkId] || 'Unknown';
+const getNetworkName = (networkId, networks) => {
+  const findNetwork = networks?.find(n => n?.id == networkId);
+  return findNetwork?.name || 'Unknown';
 };
 
 const getNetworkColor = networkId => {
