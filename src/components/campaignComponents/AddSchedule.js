@@ -406,6 +406,7 @@ const AddSchedule = ({
     };
   }
   const currencyId = lovs['orgs']?.find(c => c.id === user?.orgId)?.currencyId;
+
   return (
     <View style={{ marginTop: 10 }}>
       <View

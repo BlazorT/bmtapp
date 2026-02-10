@@ -470,7 +470,7 @@ export default function CampaignScheduleScreen(props) {
             />
             <Spinner
               visible={spinner}
-              textContent="Submitting..."
+              textContent=""
               textStyle={{ color: theme.buttonBackColor }}
               color={theme.buttonBackColor}
             />

@@ -21,6 +21,7 @@ import {
 import {
   extractTagValue,
   keepOnlyAlphanumeric,
+  safeJSONParse,
 } from '../../helper/dateFormatter';
 import { useJazzCash } from '../../hooks/useJazzCash';
 import { useTheme } from '../../hooks/useTheme';
@@ -178,11 +179,23 @@ const CampaignSchedule = ({
         Code: '',
         posttypejson: JSON.stringify(n?.postTypes || []),
         Template: n?.Template
-          ? JSON.stringify({
-              template: n?.Template?.template,
-              subject: n?.Template?.subject,
-              title: n?.Template?.title,
-            })
+          ? safeJSONParse(n?.Template?.templateJson)?.templateType === 2
+            ? JSON.stringify({
+                template: JSON.stringify({
+                  template: n?.Template?.template,
+                  templateType: 2,
+                }),
+                subject: n?.Template?.subject,
+                title: n?.Template?.title,
+              })
+            : JSON.stringify({
+                template:
+                  n?.Template?.networkId === 2
+                    ? n?.Template?.templateJson
+                    : n?.Template?.template,
+                subject: n?.Template?.subject,
+                title: n?.Template?.title,
+              })
           : '',
       })),
       compaignExecutionSchedules: campaignInfo.schedules?.map(s => ({
