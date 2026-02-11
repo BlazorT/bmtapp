@@ -678,6 +678,7 @@ const CampaignSchedule = ({
       listener.remove();
     };
   }, []);
+
   return (
     <View style={{ marginTop: 5 }}>
       <View

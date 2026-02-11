@@ -19,6 +19,7 @@ import RNSDropDown from '../Dropdown';
 import AlbumSelectionModal from './AlbumSelectionModal';
 import CampaignNetwork from './CampaignNetwork';
 import { padding } from 'aes-js';
+import QuotaBadge from './QuotaBadge';
 
 const AddSchedule = ({
   campaignInfo,
@@ -305,13 +306,13 @@ const AddSchedule = ({
       }
       validDays = validDays * calculateFractionOfDay(scheduleList.interval);
     }
-    setCampaignInfo(prevState => ({
-      ...prevState,
-      networks: prevState.networks.map(item => ({
-        ...item,
-        usedQuota: validDays,
-      })),
-    }));
+    // setCampaignInfo(prevState => ({
+    //   ...prevState,
+    //   networks: prevState.networks.map(item => ({
+    //     ...item,
+    //     usedQuota: validDays,
+    //   })),
+    // }));
 
     setScheduleList(prevState => {
       let totalBudget = 0;
@@ -406,7 +407,7 @@ const AddSchedule = ({
     };
   }
   const currencyId = lovs['orgs']?.find(c => c.id === user?.orgId)?.currencyId;
-
+  // console.log({ campaignInfo, scheduleList });
   return (
     <View style={{ marginTop: 10 }}>
       <View
@@ -420,24 +421,32 @@ const AddSchedule = ({
           marginBottom: 10,
         }}
       >
-        {campaignInfo.networks.map((network, index) => (
-          <View
-            key={index}
-            style={{
-              backgroundColor: theme.cardBackColor,
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              paddingHorizontal: 6,
-              paddingVertical: 6,
-              borderRadius: 6,
-            }}
-          >
-            <Text
-              style={{ color: theme.textColor, fontSize: 16, marginRight: 1 }}
+        {campaignInfo.networks.map((network, index) => {
+          const networkMessageCount = campaignInfo?.schedules?.reduce(
+            (sum, item) =>
+              item.networkId === network?.networkId
+                ? (sum = sum + item?.messageCount)
+                : 0,
+            0,
+          );
+          return (
+            <View
+              key={index}
+              style={{
+                backgroundColor: theme.cardBackColor,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                paddingHorizontal: 6,
+                paddingVertical: 6,
+                borderRadius: 6,
+              }}
             >
-              {network.desc || network.networkName || network?.name}{' '}
               <Text
+                style={{ color: theme.textColor, fontSize: 16, marginRight: 1 }}
+              >
+                {network.desc || network.networkName || network?.name}{' '}
+                {/* <Text
                 style={{
                   color: theme.textColor,
                   fontSize: 12,
@@ -446,66 +455,75 @@ const AddSchedule = ({
                 (Free allowed :
                 {priceData?.find(p => p?.networkId === network.networkId)
                   ?.freeAllowed || 0}
-                ){/* ({network.purchasedQouta || network.compaignQouta})  */}
+                )
+              </Text> */}
               </Text>
-            </Text>
-            <CheckBox
-              style={{
-                transform: [{ scale: Platform.OS === 'ios' ? 0.8 : 1.2 }],
-              }}
-              boxType={'square'}
-              tintColors={{
-                true: theme.selectedCheckBox,
-                false: theme.buttonBackColor,
-              }}
-              onValueChange={value => {
-                if (value) {
-                  setScheduleList({
-                    ...scheduleList,
-                    networkId: network.networkId,
-                    CompaignNetworks: [
-                      ...scheduleList.CompaignNetworks,
-                      {
-                        networkId: network.networkId,
-                        orgId: user.orgId,
-                        rowVer: 0,
-                        purchasedQouta: network.purchasedQouta,
-                        unitPriceInclTax: network.unitPriceInclTax,
-                        usedQuota: network.usedQuota,
-                        compaignId: 0,
-                        id: 0,
-                        desc: network.desc,
-                        status: network.status,
-                        createdBy: parseInt(user.id),
-                        lastUpdatedBy: parseInt(user.id),
-                        createdAt: moment().format(),
-                        lastUpdatedAt: moment().format(),
-                      },
-                    ],
-                  });
-                } else {
-                  setScheduleList({
-                    ...scheduleList,
-                    networkId:
-                      CampaignNetwork.length == 0
-                        ? CampaignNetwork[0].networkId
-                        : 0,
-                    CompaignNetworks: scheduleList.CompaignNetworks.filter(
-                      item => item.networkId != network.networkId,
-                    ),
-                  });
+              <QuotaBadge
+                remainingQuota={
+                  network?.purchasedQouta -
+                  (network?.usedQuota + networkMessageCount)
                 }
-              }}
-              value={
-                scheduleList.CompaignNetworks.length > 0
-                  ? scheduleList.CompaignNetworks.some(
-                      item => item.networkId == network.networkId,
-                    )
-                  : false
-              }
-            />
-          </View>
-        ))}
+                usedQuota={network?.usedQuota + networkMessageCount}
+                totalQuota={network?.purchasedQouta}
+              />
+              <CheckBox
+                style={{
+                  transform: [{ scale: Platform.OS === 'ios' ? 0.8 : 1.2 }],
+                }}
+                boxType={'square'}
+                tintColors={{
+                  true: theme.selectedCheckBox,
+                  false: theme.buttonBackColor,
+                }}
+                onValueChange={value => {
+                  if (value) {
+                    setScheduleList({
+                      ...scheduleList,
+                      networkId: network.networkId,
+                      CompaignNetworks: [
+                        ...scheduleList.CompaignNetworks,
+                        {
+                          networkId: network.networkId,
+                          orgId: user.orgId,
+                          rowVer: 0,
+                          purchasedQouta: network.purchasedQouta,
+                          unitPriceInclTax: network.unitPriceInclTax,
+                          usedQuota: network.usedQuota,
+                          compaignId: 0,
+                          id: 0,
+                          desc: network.desc,
+                          status: network.status,
+                          createdBy: parseInt(user.id),
+                          lastUpdatedBy: parseInt(user.id),
+                          createdAt: moment().format(),
+                          lastUpdatedAt: moment().format(),
+                        },
+                      ],
+                    });
+                  } else {
+                    setScheduleList({
+                      ...scheduleList,
+                      networkId:
+                        CampaignNetwork.length == 0
+                          ? CampaignNetwork[0].networkId
+                          : 0,
+                      CompaignNetworks: scheduleList.CompaignNetworks.filter(
+                        item => item.networkId != network.networkId,
+                      ),
+                    });
+                  }
+                }}
+                value={
+                  scheduleList.CompaignNetworks.length > 0
+                    ? scheduleList.CompaignNetworks.some(
+                        item => item.networkId == network.networkId,
+                      )
+                    : false
+                }
+              />
+            </View>
+          );
+        })}
       </View>
       <View
         style={{
