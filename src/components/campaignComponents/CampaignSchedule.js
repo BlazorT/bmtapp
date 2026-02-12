@@ -140,210 +140,256 @@ const CampaignSchedule = ({
   }, [isUpdate]);
 
   const addSchedule = async ref => {
-    console.log({ campaignInfo });
-    let campaignBody = {
-      id: campaignInfo.id,
-      targetaudiance: JSON.stringify({
-        interests: campaignInfo.interests
-          .map(index => {
-            const found = CAMPAIGN_INTERESTS[index];
-            return found ? found.name : null;
-          })
-          .filter(Boolean), // removes nulls if index not found
-        genderId:
-          campaignInfo.genderId === ''
-            ? 0
-            : GENDER_LIST[campaignInfo.genderId]?.id,
-        locations: campaignInfo?.locations,
-        minAge: campaignInfo.minAge,
-        maxAge: campaignInfo.maxAge,
-      }),
-      createdBy: Number(user.id),
-      lastUpdatedBy: Number(user.id),
-      status: !orgData?.signature ? 4 : campaignInfo.status,
-      orgId: Number(user.orgId),
-      hashTags: campaignInfo.hashtag,
-      description: campaignInfo?.template,
-      name: campaignInfo?.template,
-      title: campaignInfo?.template,
-      autoGenerateLeads: campaignInfo.autoLead ? 1 : 0,
-      createdAt: moment.utc().format(),
-      startTime: moment.utc(campaignInfo.campaignStartDate).format(),
-      finishTime: moment.utc(campaignInfo.campaignEndDate).format(),
-      CompaignNetworks: campaignInfo.networks?.map(n => ({
-        CompaignId: n?.id ? campaignInfo.id : 0,
-        id: n?.id || 0,
-        NetworkId: n?.networkId,
-        Desc: n?.desc,
-        Status: n?.status,
-        Code: '',
-        posttypejson: JSON.stringify(n?.postTypes || []),
-        Template: n?.Template
-          ? safeJSONParse(n?.Template?.templateJson)?.templateType === 2
-            ? JSON.stringify({
-                template: JSON.stringify({
-                  template: n?.Template?.template,
-                  templateType: 2,
-                }),
-                subject: n?.Template?.subject,
-                title: n?.Template?.title,
-              })
-            : JSON.stringify({
-                template:
-                  n?.Template?.networkId === 2
-                    ? n?.Template?.templateJson
-                    : n?.Template?.template,
-                subject: n?.Template?.subject,
-                title: n?.Template?.title,
-              })
-          : '',
-      })),
-      compaignExecutionSchedules: campaignInfo.schedules?.map(s => ({
-        Id: s?.id,
-        NetworkId: s?.networkId,
-        CompaignDetailId: s?.compaignDetailId,
-        Budget: s?.budget,
-        Intervalval: s?.interval ? parseInt(s?.interval) : 0,
-        IntervalTypeId: s?.intervalTypeId + 1,
-        MessageCount: parseInt(s?.messageCount),
-        FinishTime: s?.finishTime,
-        StartTime: s?.startTime,
-        LastUpdatedAt: moment.utc().format(),
-        CreatedBy: user?.id,
-        CreatedAt: moment.utc().format(),
-        LastUpdatedBy: user?.id,
-        Status: s?.status,
-        RowVer: 0,
-        days: JSON.stringify(s?.days || []),
-        Budget: s?.budget || 0,
-        ContactsAlbums: JSON.stringify(s?.albums?.map(a => a.id)),
-      })),
-      totalBudget: campaignInfo.schedules.reduce((a, b) => a + b.budget, 0),
-      Budget: campaignInfo.schedules.reduce((a, b) => a + b.budget, 0),
-      discount: 0,
-      remarks: '',
-      paymentStatus: ref ? 1 : 0,
-      paymentRef: ref || '',
-      rowVer: 0,
-    };
-    console.log({ campaignBody });
-    // navigation.navigate('Payment', { campaignBody });
-    // return;
+    console.log({ campaignInfo: JSON.stringify(campaignInfo.schedules) });
+    try {
+      let campaignBody = {
+        id: campaignInfo.id,
+        targetaudiance: JSON.stringify({
+          interests: campaignInfo.interests
+            ? campaignInfo.interests
+                .map(index => {
+                  const found = CAMPAIGN_INTERESTS[index];
+                  return found ? found.name : null;
+                })
+                .filter(Boolean)
+            : [], // removes nulls if index not found
+          genderId:
+            campaignInfo.genderId === ''
+              ? 0
+              : GENDER_LIST[campaignInfo.genderId]?.id,
+          locations: campaignInfo?.locations,
+          minAge: campaignInfo.minAge,
+          maxAge: campaignInfo.maxAge,
+        }),
+        createdBy: Number(user.id),
+        lastUpdatedBy: Number(user.id),
+        status: !orgData?.signature ? 4 : campaignInfo.status,
+        orgId: Number(user.orgId),
+        hashTags: campaignInfo.hashtag,
+        description: campaignInfo?.template,
+        name: campaignInfo?.template,
+        title: campaignInfo?.template,
+        autoGenerateLeads: campaignInfo.autoLead ? 1 : 0,
+        createdAt: moment.utc().format(),
+        startTime: moment
+          .utc(campaignInfo.campaignStartDate)
+          .format('YYYY-MM-DDTHH:mm:ss'),
+        finishTime: moment
+          .utc(campaignInfo.campaignEndDate)
+          .format('YYYY-MM-DDTHH:mm:ss'),
+        CompaignNetworks: campaignInfo.networks?.map(n => ({
+          CompaignId: n?.id ? campaignInfo.id : 0,
+          id: n?.id || 0,
+          NetworkId: n?.networkId,
+          Desc: n?.desc,
+          Status: n?.status,
+          Code: '',
+          posttypejson: JSON.stringify(n?.postTypes || []),
+          Template: n?.Template
+            ? safeJSONParse(n?.Template?.templateJson)?.templateType === 2
+              ? JSON.stringify({
+                  template: JSON.stringify({
+                    template: n?.Template?.template,
+                    templateType: 2,
+                  }),
+                  subject: n?.Template?.subject,
+                  title: n?.Template?.title,
+                })
+              : JSON.stringify({
+                  template:
+                    n?.Template?.networkId === 2
+                      ? n?.Template?.templateJson
+                      : n?.Template?.template,
+                  subject: n?.Template?.subject,
+                  title: n?.Template?.title,
+                })
+            : '',
+        })),
+        compaignExecutionSchedules: campaignInfo.schedules?.map(s => ({
+          Id: s?.id,
+          NetworkId: s?.networkId,
+          CompaignDetailId: s?.compaignDetailId,
+          Budget: s?.budget,
+          Intervalval: s?.interval ? parseInt(s?.interval) : 0,
+          IntervalTypeId: s?.intervalTypeId + 1,
+          MessageCount: parseInt(s?.messageCount),
+          FinishTime: moment(s?.finishTime)
+            .local()
+            .format('YYYY-MM-DDTHH:mm:ss'),
+          StartTime: moment(s?.startTime).local().format('YYYY-MM-DDTHH:mm:ss'),
+          LastUpdatedAt: moment.utc().format(),
+          CreatedBy: user?.id,
+          CreatedAt: moment.utc().format(),
+          LastUpdatedBy: user?.id,
+          Status: s?.status,
+          RowVer: 0,
+          days: JSON.stringify(s?.days || []),
+          Budget: s?.budget || 0,
+          ContactsAlbums: JSON.stringify(s?.albums?.map(a => a.id)),
+        })),
+        totalBudget: campaignInfo.schedules.reduce((a, b) => a + b.budget, 0),
+        Budget: campaignInfo.schedules.reduce((a, b) => a + b.budget, 0),
+        discount: 0,
+        remarks: '',
+        paymentStatus: ref ? 1 : 2,
+        paymentRef: ref || '',
+        rowVer: 0,
+      };
+      console.log({ campaignBody: JSON.stringify(campaignBody) });
+      // navigation.navigate('Payment', { campaignBody });
+      // return;
 
-    setUpdateMessage(
-      `${campaignInfo?.template} has been created successfully.`,
-    );
-    setspinner(true);
+      setUpdateMessage(
+        `${campaignInfo?.template} has been created successfully.`,
+      );
+      setspinner(true);
 
-    let headerFetch = {
-      method: 'POST',
-      body: JSON.stringify(campaignBody),
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
-        Accept: 'application/json',
-        Authorization: servicesettings.AuthorizationKey,
-      },
-    };
-    const response = await fetch(
-      // createcompletecompaign
-      servicesettings.baseuri + 'Compaigns/submitmycompaign',
-      headerFetch,
-    );
-    setspinner(false);
-    // if (!response.ok) {
-    //   Toast.show('Something went wrong, please try again');
-    //   return;
-    // }
-    const res = await response.json();
-    console.log({ res });
-    if (res.status == false || res.status == '408' || res.status == '400') {
-      Toast.show(res.message || 'Something went wrong, please try again');
-    } else {
-      if (
-        (campaignInfo.image !== '' &&
-          campaignInfo.image.fileName !== undefined) ||
-        (campaignInfo.video !== '' &&
-          campaignInfo.video.fileName !== undefined) ||
-        (campaignInfo.pdf !== '' && campaignInfo.pdf.name !== undefined)
-      ) {
-        const data = new FormData();
-
+      let headerFetch = {
+        method: 'POST',
+        body: JSON.stringify(campaignBody),
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          Accept: 'application/json',
+          Authorization: servicesettings.AuthorizationKey,
+        },
+      };
+      const response = await fetch(
+        // createcompletecompaign
+        servicesettings.baseuri + 'Compaigns/submitmycompaign',
+        headerFetch,
+      );
+      setspinner(false);
+      // if (!response.ok) {
+      //   Toast.show('Something went wrong, please try again');
+      //   return;
+      // }
+      const res = await response.json();
+      console.log({ res });
+      if (res.status == false || res.status == '408' || res.status == '400') {
+        Toast.show(res.message || 'Something went wrong, please try again');
+      } else {
         if (
-          campaignInfo.image != '' &&
-          campaignInfo.image.fileName != undefined
+          (campaignInfo.image !== '' &&
+            campaignInfo.image.fileName !== undefined) ||
+          (campaignInfo.video !== '' &&
+            campaignInfo.video.fileName !== undefined) ||
+          (campaignInfo.pdf !== '' && campaignInfo.pdf.name !== undefined)
         ) {
-          const fileTypeMake = campaignInfo.image.fileName;
-          const fileNameType = '.' + fileTypeMake.split('.')[1];
-          const imageName = '1' + fileNameType;
+          const data = new FormData();
 
-          data.append('files', {
-            id: campaignInfo.image.id,
-            name: imageName,
-            uri: campaignInfo.image.uri,
-            type: campaignInfo.image.type,
-          });
-        }
-        if (
-          campaignInfo.video != '' &&
-          campaignInfo.video.fileName != undefined
-        ) {
-          const fileTypeMake = campaignInfo.video.fileName;
-          const fileNameType = '.' + fileTypeMake.split('.')[1];
-          const imageName = '2' + fileNameType;
+          if (
+            campaignInfo.image != '' &&
+            campaignInfo.image.fileName != undefined
+          ) {
+            const fileTypeMake = campaignInfo.image.fileName;
+            const fileNameType = '.' + fileTypeMake.split('.')[1];
+            const imageName = '1' + fileNameType;
 
-          data.append('files', {
-            id: campaignInfo.video.id,
-            name: imageName,
-            uri: campaignInfo.video.uri,
-            type: campaignInfo.video.type,
-          });
-        }
-        if (campaignInfo.pdf != '' && campaignInfo.pdf.name != undefined) {
-          const fileTypeMake = campaignInfo.pdf.name;
-          const fileNameType = '.' + fileTypeMake.split('.')[1];
-          const imageName = '3' + fileNameType;
+            data.append('files', {
+              id: campaignInfo.image.id,
+              name: imageName,
+              uri: campaignInfo.image.uri,
+              type: campaignInfo.image.type,
+            });
+          }
+          if (
+            campaignInfo.video != '' &&
+            campaignInfo.video.fileName != undefined
+          ) {
+            const fileTypeMake = campaignInfo.video.fileName;
+            const fileNameType = '.' + fileTypeMake.split('.')[1];
+            const imageName = '2' + fileNameType;
 
-          data.append('files', {
-            id: campaignInfo.pdf.id,
-            name: imageName,
-            uri: campaignInfo.pdf.uri,
-            type: campaignInfo.pdf.type,
-          });
-        }
+            data.append('files', {
+              id: campaignInfo.video.id,
+              name: imageName,
+              uri: campaignInfo.video.uri,
+              type: campaignInfo.video.type,
+            });
+          }
+          if (campaignInfo.pdf != '' && campaignInfo.pdf.name != undefined) {
+            const fileTypeMake = campaignInfo.pdf.name;
+            const fileNameType = '.' + fileTypeMake.split('.')[1];
+            const imageName = '3' + fileNameType;
 
-        data.append('compaignid', res.data);
-        data.append('userid', user.id);
-        data.append('remarks', 'Remarks Text');
-        const ImageheaderFetch = {
-          enctype: 'multipart/form-data',
-          processData: false,
-          contentType: false,
-          cache: false,
-          timeout: 6000,
-          method: 'post',
-          body: data,
-          headers: {
-            Authorization: servicesettings.AuthorizationKey,
-          },
-        };
-        setspinner(true);
+            data.append('files', {
+              id: campaignInfo.pdf.id,
+              name: imageName,
+              uri: campaignInfo.pdf.uri,
+              type: campaignInfo.pdf.type,
+            });
+          }
 
-        const imageResponse = await fetch(
-          servicesettings.baseuri + 'BlazorApi/uploadattachments',
-          ImageheaderFetch,
-        );
-        setspinner(false);
+          data.append('compaignid', res.data);
+          data.append('userid', user.id);
+          data.append('remarks', 'Remarks Text');
+          const ImageheaderFetch = {
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            cache: false,
+            timeout: 6000,
+            method: 'post',
+            body: data,
+            headers: {
+              Authorization: servicesettings.AuthorizationKey,
+            },
+          };
+          setspinner(true);
 
-        const attachmentRes = await imageResponse.json();
-        if (attachmentRes.status == false || attachmentRes.status == '408') {
+          const imageResponse = await fetch(
+            servicesettings.baseuri + 'BlazorApi/uploadattachments',
+            ImageheaderFetch,
+          );
           setspinner(false);
-          Toast.show(res.message || 'Something went wrong, please try again');
+
+          const attachmentRes = await imageResponse.json();
+          if (attachmentRes.status == false || attachmentRes.status == '408') {
+            setspinner(false);
+            Toast.show(res.message || 'Something went wrong, please try again');
+          } else {
+            localNotification('Campaign Created', campaignInfo.subject);
+            setspinner(false);
+            setModalVisible(true);
+            setTimeout(() => {
+              setModalVisible(false);
+              navigation.navigate('Campaigns', { isReload: true });
+              setIndex(0);
+              setCampaignInfo({
+                id: 0,
+                subject: '',
+                hashtag: '',
+                template: '',
+                country: '',
+                state: '',
+                campaignStartDate: '',
+                campaignEndDate: '',
+                status: 1,
+                autoLead: false,
+                image: '',
+                video: '',
+                pdf: '',
+                networks: [],
+                schedules: [],
+                totalBudget: 0,
+                discount: 0,
+                genderId: '',
+                radius: 10,
+                locations: [],
+                interests: [],
+                minAge: MIN_AGE,
+                maxAge: MAX_AGE,
+              });
+            }, 4000);
+          }
         } else {
           localNotification('Campaign Created', campaignInfo.subject);
           setspinner(false);
           setModalVisible(true);
           setTimeout(() => {
             setModalVisible(false);
+          }, 2000);
+          setTimeout(() => {
             navigation.navigate('Campaigns', { isReload: true });
             setIndex(0);
             setCampaignInfo({
@@ -371,45 +417,11 @@ const CampaignSchedule = ({
               minAge: MIN_AGE,
               maxAge: MAX_AGE,
             });
-          }, 4000);
+          }, 2500);
         }
-      } else {
-        localNotification('Campaign Created', campaignInfo.subject);
-        setspinner(false);
-        setModalVisible(true);
-        setTimeout(() => {
-          setModalVisible(false);
-        }, 2000);
-        setTimeout(() => {
-          navigation.navigate('Campaigns', { isReload: true });
-          setIndex(0);
-          setCampaignInfo({
-            id: 0,
-            subject: '',
-            hashtag: '',
-            template: '',
-            country: '',
-            state: '',
-            campaignStartDate: '',
-            campaignEndDate: '',
-            status: 1,
-            autoLead: false,
-            image: '',
-            video: '',
-            pdf: '',
-            networks: [],
-            schedules: [],
-            totalBudget: 0,
-            discount: 0,
-            genderId: '',
-            radius: 10,
-            locations: [],
-            interests: [],
-            minAge: MIN_AGE,
-            maxAge: MAX_AGE,
-          });
-        }, 2500);
       }
+    } catch (e) {
+      console.log(e);
     }
   };
 
@@ -435,7 +447,36 @@ const CampaignSchedule = ({
     });
   };
 
-  const toPay = campaignInfo.schedules.reduce((a, b) => a + b.budget, 0);
+  const messagesByNetwork = campaignInfo?.schedules?.reduce((acc, curr) => {
+    const networkId = curr.networkId;
+    acc[networkId] = (acc[networkId] || 0) + (Number(curr.messageCount) || 0);
+    return acc;
+  }, {});
+
+  const totalToPay = Object.entries(messagesByNetwork).reduce(
+    (sum, [networkId, totalMessages]) => {
+      const pricing = priceData?.find(p => p.networkId == networkId);
+      if (!pricing) return sum;
+
+      const quota = campaignInfo?.schedules?.find(
+        n => n.networkId == networkId,
+      );
+      if (!quota) return sum;
+      const remainingQuota =
+        (Number(quota.purchasedQouta) || 0) - (Number(quota.usedQuota) || 0);
+
+      const overUsed = Math.max(0, totalMessages - remainingQuota);
+
+      const unitPrice =
+        Number(pricing.unitPrice) - (Number(pricing.discount) || 0);
+      const overUsedPrice = overUsed * unitPrice;
+
+      return sum + overUsedPrice;
+    },
+    0,
+  );
+
+  const toPay = totalToPay;
 
   const easyPaisaQuickPay = async () => {
     const orderId =
@@ -679,6 +720,7 @@ const CampaignSchedule = ({
     };
   }, []);
 
+  // // ✅ format at the end
   return (
     <View style={{ marginTop: 5 }}>
       <View
@@ -797,24 +839,15 @@ const CampaignSchedule = ({
             setCampaignInfo={setCampaignInfo}
             setScheduleList={setScheduleList}
             setIsUpdate={setIsUpdate}
+            totalToPay={totalToPay}
           />
           <RNSButton
             style={{ width: '100%', marginTop: 10 }}
             bgColor={theme.buttonBackColor}
-            caption={
-              campaignInfo?.schedules
-                .map((s, i) => s?.budget || 0)
-                .reduce((a, b) => a + b, 0) > 0
-                ? 'Checkout'
-                : 'Submit'
-            }
+            caption={totalToPay > 0 ? 'Checkout' : 'Submit'}
             // onPress={addSchedule}
             onPress={() =>
-              campaignInfo?.schedules
-                .map((s, i) => s?.budget || 0)
-                .reduce((a, b) => a + b, 0) > 0
-                ? setScheduleTab(2)
-                : addSchedule('')
+              totalToPay > 0 ? setScheduleTab(2) : addSchedule('')
             }
           />
         </>

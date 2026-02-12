@@ -322,9 +322,9 @@ const AddSchedule = ({
         const matchedPrice =
           priceData?.find(pd => pd.networkId === item.networkId)?.unitPrice ||
           0;
-        const freeAllowed =
-          priceData?.find(pd => pd.networkId === item.networkId)?.freeAllowed ||
-          0;
+        // const freeAllowed =
+        //   priceData?.find(pd => pd.networkId === item.networkId)?.freeAllowed ||
+        //   0;
         // check if this specific network is special
         const isSpecial = [1, 2, 3].includes(item.networkId);
 
@@ -350,13 +350,13 @@ const AddSchedule = ({
         // used quota for this network
         const usedQuota = validDays * (recipientsForNetwork.length || 1);
         messageCount += validDays * (recipientsForNetwork.length || 1);
-        totalBudget += usedQuota <= freeAllowed ? 0 : matchedPrice * usedQuota;
+        totalBudget += matchedPrice * usedQuota;
         // accumulate budget
 
         return {
           ...item,
-          usedQuota,
-          budget: usedQuota <= freeAllowed ? 0 : matchedPrice * usedQuota,
+          // usedQuota,
+          budget: matchedPrice * usedQuota,
           messageCount: validDays * (recipientsForNetwork.length || 1), // this is global, unchanged
         };
       });
@@ -407,7 +407,7 @@ const AddSchedule = ({
     };
   }
   const currencyId = lovs['orgs']?.find(c => c.id === user?.orgId)?.currencyId;
-  // console.log({ campaignInfo, scheduleList });
+  console.log({ campaignInfo });
   return (
     <View style={{ marginTop: 10 }}>
       <View
@@ -709,17 +709,17 @@ const AddSchedule = ({
         >
           <Text style={{ color: theme.textColor, fontSize: 17 }}>
             {scheduleList.startTime
-              ? moment(scheduleList.startTime).format('DD-MM-YYYY')
+              ? moment(scheduleList.startTime).format('MMM DD, YYYY . hh:mm A')
               : 'Campaign Start'}
           </Text>
         </TouchableOpacity>
         <DateTimePicker
           isVisible={showStartDatePicker}
-          minimumDate={new Date()}
+          minimumDate={new Date(campaignInfo?.campaignStartDate)}
           maximumDate={
             campaignInfo.campaignEndDate !== ''
               ? new Date(campaignInfo.campaignEndDate)
-              : new Date(new Date().setMonth(new Date().getMonth() + 4))
+              : new Date()
           }
           date={
             scheduleList.startTime !== ''
@@ -728,6 +728,11 @@ const AddSchedule = ({
           }
           mode="datetime"
           onConfirm={date => {
+            if (date < new Date()) {
+              Toast.show('Please select a future date and time');
+              setShowStartDatePicker(false);
+              return;
+            }
             setScheduleList({ ...scheduleList, startTime: date });
             setShowStartDatePicker(false);
           }}
@@ -778,19 +783,25 @@ const AddSchedule = ({
         >
           <Text style={{ color: theme.textColor, fontSize: 17 }}>
             {scheduleList.finishTime
-              ? moment(scheduleList.finishTime).format('DD-MM-YYYY')
+              ? moment(scheduleList.finishTime).format('MMM DD, YYYY . hh:mm A')
               : 'Campaign End'}
           </Text>
           <DateTimePicker
             isVisible={showEndDatePicker}
             minimumDate={new Date(scheduleList.startTime)}
+            maximumDate={new Date(campaignInfo.campaignEndDate)}
             mode="datetime"
-            // date={
-            //   campaignInfo.campaignEndDate !== ''
-            //     ? new Date(campaignInfo.campaignEndDate)
-            //     : new Date(new Date().setMonth(new Date().getDay() + 2))
-            // }
+            date={
+              campaignInfo.campaignEndDate !== ''
+                ? new Date(campaignInfo.campaignEndDate)
+                : new Date(campaignInfo.campaignEndDate)
+            }
             onConfirm={date => {
+              if (date < new Date()) {
+                Toast.show('Please select a future date and time');
+                setShowStartDatePicker(false);
+                return;
+              }
               setScheduleList({ ...scheduleList, finishTime: date });
               setShowEndDatePicker(false);
             }}

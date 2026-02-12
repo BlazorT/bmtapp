@@ -14,17 +14,19 @@ import Icons from 'react-native-vector-icons/FontAwesome';
 import { TextInput } from '../../components';
 import { colors } from '../../styles';
 
-import { useRoute } from '@react-navigation/native';
+import { useIsFocused, useRoute } from '@react-navigation/native';
 import CapaignItem from '../../components/CapaignItem';
 import { useTheme } from '../../hooks/useTheme';
 import { useUser } from '../../hooks/useUser';
 import servicesettings from '../dataservices/servicesettings';
 import { isAdminOrSuperAdmin } from '../home/HomeView';
+import moment from 'moment';
 
 export default function MyCampaignScreen(props) {
   const { user, isAuthenticated } = useUser();
   const theme = useTheme();
   const route = useRoute();
+  const isFocused = useIsFocused();
   global.currentscreen = route.name;
 
   const [shouldShow, setShouldShow] = useState(false);
@@ -42,8 +44,8 @@ export default function MyCampaignScreen(props) {
   }, [isReload]);
 
   useEffect(() => {
-    if (!isReload) Loaddata();
-  }, [isReload]);
+    if (!isReload || isFocused) Loaddata();
+  }, [isReload, isFocused]);
 
   function Loaddata() {
     setspinner(true);
@@ -59,6 +61,8 @@ export default function MyCampaignScreen(props) {
           networkId: 0,
           id: 0,
           lastUpdatedBy: user.id,
+          createdAt: moment().utc().startOf('month').format(),
+          lastUpdatedAt: moment().utc().add(4, 'month').startOf('day').format(),
         }),
         headers: {
           Accept: 'application/json',
@@ -114,6 +118,8 @@ export default function MyCampaignScreen(props) {
         networkId: 0,
         id: 0,
         lastUpdatedBy: userId,
+        createdAt: moment().utc().startOf('month').format(),
+        lastUpdatedAt: moment().utc().add(4, 'month').startOf('day').format(),
       }),
       headers: {
         Accept: 'application/json',

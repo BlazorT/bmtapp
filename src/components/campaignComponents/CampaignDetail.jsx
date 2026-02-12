@@ -1,20 +1,21 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  ScrollView,
-  Linking,
-} from 'react-native';
+import moment from 'moment';
 import React, { useState } from 'react';
-import { useTheme } from '../../hooks/useTheme';
-import { dateFormatter, safeJSONParse } from '../../helper/dateFormatter';
-import { GENDER_LIST } from '../../constants';
+import {
+  Image,
+  Linking,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
 import FontAwesome6Icon from 'react-native-vector-icons/FontAwesome5';
-import servicesettings from '../../modules/dataservices/servicesettings';
 import Video from 'react-native-video';
+import { GENDER_LIST } from '../../constants';
+import { safeJSONParse } from '../../helper/dateFormatter';
+import { useTheme } from '../../hooks/useTheme';
+import servicesettings from '../../modules/dataservices/servicesettings';
 const CampaignDetail = ({ campaign }) => {
   const theme = useTheme();
   const [showAttachments, setShowAttachments] = useState(false);
@@ -45,11 +46,11 @@ const CampaignDetail = ({ campaign }) => {
       <RowView label={'Description'} value={campaign?.description} />
       <RowView
         label={'Start Time'}
-        value={dateFormatter(campaign?.startTime)}
+        value={moment(campaign.startTime).format('MMM DD, YYYY')}
       />
       <RowView
         label={'Finish Time'}
-        value={dateFormatter(campaign?.finishTime)}
+        value={moment(campaign.finishTime).format('MMM DD, YYYY')}
       />
       <RowView
         label={'Networks'}

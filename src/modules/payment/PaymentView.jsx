@@ -191,8 +191,8 @@ const PaymentView = ({
             borderRadius: 6,
             borderStyle: 'dashed',
           }}
+          textColor={theme.textColor}
           bgColor={'transparent'}
-          textStyle={{ color: theme.textColor }}
           caption="Change Payment Method"
           onPress={() => setSelectedGetway(null)}
         />
