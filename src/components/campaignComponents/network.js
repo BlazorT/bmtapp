@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import {
   FlatList,
   Image,
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -200,9 +201,9 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
             />
             <View
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                columnGap: 2,
+                flexDirection: 'column',
+                justifyContent: 'center',
+                rowGaps: 2,
               }}
             >
               <Text
@@ -234,12 +235,13 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
           loading={templateLoading}
           onPress={() => getTemplates(network?.networkId)}
           style={{
-            paddingHorizontal: 2,
-            maxHeight: 35,
+            paddingHorizontal: 0,
+            maxHeight: 30,
             paddingVertical: 0,
             width: 'auto',
             // minWidth: 60,
           }}
+          textStyle={{ fontSize: Platform.OS === 'ios' ? 12 : 14 }}
         />
       </View>
       {isNetworkSelected && network_postype?.length > 1 && (
