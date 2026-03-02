@@ -59,12 +59,16 @@ export const useAlbumOperations = ({
   }, [albumList, networks]);
 
   // Create new album
-  const createNewAlbum = async () => {
-    if (
-      !newAlbumName.trim() ||
-      !newAlbumCode.trim() ||
-      newAlbumNetworkId === -1
-    ) {
+  const createNewAlbum = async (albumData = null) => {
+    const albumName = albumData?.name || newAlbumName;
+    const albumCode = albumData?.code || newAlbumCode;
+    const albumDesc = albumData?.desc || newAlbumDesc;
+    const albumNetworkId =
+      albumData?.networkId !== undefined
+        ? albumData.networkId
+        : newAlbumNetworkId;
+
+    if (!albumName.trim() || !albumCode.trim() || albumNetworkId === -1) {
       Toast.show('Please enter album name, code, and select network');
       return { albumId: null, networkId: null };
     }
@@ -74,10 +78,10 @@ export const useAlbumOperations = ({
       const body = {
         Id: 0,
         Orgid: user?.orgId,
-        Name: newAlbumName.trim(),
-        Code: newAlbumCode.trim(),
-        Desc: newAlbumDesc.trim(),
-        Networkid: networks[newAlbumNetworkId]?.id,
+        Name: albumName.trim(),
+        Code: albumCode.trim(),
+        Desc: albumDesc.trim(),
+        Networkid: networks[albumNetworkId]?.id,
         Status: 1,
         CreatedBy: user?.id,
         LastUpdatedBy: user?.id,

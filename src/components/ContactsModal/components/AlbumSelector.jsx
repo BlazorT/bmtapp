@@ -253,8 +253,8 @@ const AlbumSelector = ({
             <NewAlbumForm
               networks={networks}
               onCancel={() => setShowNewAlbumForm(false)}
-              onCreate={async () => {
-                const { albumId, networkId } = await createNewAlbum();
+              onCreate={async data => {
+                const { albumId, networkId } = await createNewAlbum(data);
                 if (albumId && (networkId === 1 || networkId === 2)) {
                   toggleAlbumSelection(albumId);
                 }

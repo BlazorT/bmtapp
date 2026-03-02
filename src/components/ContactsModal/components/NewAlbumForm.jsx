@@ -19,7 +19,12 @@ const NewAlbumForm = ({ networks, onCancel, onCreate }) => {
 
   const handleCreate = async () => {
     setLoading(true);
-    await onCreate();
+    await onCreate({
+      name: newAlbumName,
+      code: newAlbumCode,
+      desc: newAlbumDesc,
+      networkId: newAlbumNetworkId,
+    });
     setLoading(false);
 
     // Reset form
