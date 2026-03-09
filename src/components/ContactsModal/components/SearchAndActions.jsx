@@ -38,11 +38,7 @@ const SearchAndActions = ({
         disabled={loading || availableCount === 0}
         small
         nIcon={
-          <MaterialIcon
-            name="select-all"
-            size={16}
-            color={theme.backgroundColor}
-          />
+          <MaterialIcon name="select-all" size={16} color={theme.textColor} />
         }
         style={styles.button}
       />
@@ -57,12 +53,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   searchInput: {
-    width: Platform.OS === 'ios' ? 230 : Dimensions.get('window').width - 155,
+    width: Platform.OS === 'ios' ? 200 : Dimensions.get('window').width - 155,
     borderRadius: 6,
     paddingHorizontal: 12,
     fontSize: 15,
     height: 40,
-    borderWidth: 1,
+    // borderWidth: 1,
   },
   button: {
     width: 'auto',

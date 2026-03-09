@@ -58,7 +58,7 @@ export default function BottomTabs() {
                 tabBarLabel: ({ focused }) => (
                   <Text
                     style={{
-                      fontSize: Platform.OS === 'ios' ? 10 : 11,
+                      fontSize: Platform.OS === 'ios' ? 9 : 11,
                       bottom: 2,
                       color: focused ? theme.textColor : 'gray',
                     }}

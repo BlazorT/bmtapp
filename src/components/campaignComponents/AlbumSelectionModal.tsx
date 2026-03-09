@@ -581,7 +581,7 @@ const AlbumSelectionModal: React.FC<Props> = ({
                     caption="Add Album"
                     onPress={toggleAddAlbumModal}
                     bgColor={theme.darkGray}
-                    style={{ marginRight: 0, width: '35%' }}
+                    style={{ marginRight: 0, width: 'auto' }}
                   />
                 </View>
 
