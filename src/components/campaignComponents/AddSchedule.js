@@ -47,8 +47,10 @@ const AddSchedule = ({
     setShowRecipientAlbumMdl(false);
   };
   const onSubmitAlbum = albums => {
-    fetchRecipients();
     setScheduleList(prev => ({ ...prev, albums }));
+    setTimeout(() => {
+      fetchRecipients();
+    }, 1000);
   };
   const days = [
     { name: 'Sun' },

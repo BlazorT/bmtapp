@@ -93,6 +93,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 6,
+    marginTop: Platform.OS === 'ios' ? 70 : 0,
   },
   header: {
     flexDirection: 'row',
