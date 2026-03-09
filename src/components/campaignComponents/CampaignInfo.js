@@ -478,11 +478,11 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex, orgData }) => {
             isVisible={showEndDatePicker}
             minimumDate={new Date(campaignInfo.campaignStartDate)}
             mode="date"
-            // date={
-            //   campaignInfo.campaignEndDate !== ''
-            //     ? new Date(campaignInfo.campaignEndDate)
-            //     : new Date(new Date().setMonth(new Date().getDay() + 2))
-            // }
+            date={
+              campaignInfo.campaignEndDate !== ''
+                ? new Date(campaignInfo.campaignEndDate)
+                : new Date()
+            }
             onConfirm={date => {
               handleCampaignInfo('campaignEndDate', date);
 

@@ -19,6 +19,7 @@ const ScheduleList = ({
   setCampaignInfo,
   setScheduleList,
   setIsUpdate,
+  totalToPay,
 }) => {
   const theme = useTheme();
   const { user } = useUser();
@@ -259,29 +260,85 @@ const ScheduleList = ({
           paddingVertical: 5,
         }}
       >
-        <Text
-          style={{ color: theme.textColor, fontSize: 18, fontWeight: '600' }}
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            width: '100%',
+          }}
         >
-          Campaign Messages: {'      '}
-          {campaignInfo.schedules
-            .map((s, i) => s.messageCount)
-            .reduce((a, b) => a + b, 0)}
-        </Text>
-        <Text
-          style={{ color: theme.textColor, fontSize: 18, fontWeight: '600' }}
+          <Text
+            style={{ color: theme.textColor, fontSize: 18, fontWeight: '600' }}
+          >
+            Campaign Messages
+          </Text>
+          <Text
+            style={{ color: theme.textColor, fontSize: 18, fontWeight: '600' }}
+          >
+            {campaignInfo.schedules
+              .map((s, i) => s.messageCount)
+              .reduce((a, b) => a + b, 0)}
+          </Text>
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            width: '100%',
+          }}
         >
-          Campaign Budget: {'            '}
-          {campaignInfo?.schedules
-            .map((s, i) => s?.budget || 0)
-            .reduce((a, b) => a + b, 0)
-            .toFixed(2)}{' '}
-          {lovs['lovs']?.currencies?.find(c => c.id === currencyId)?.code || ''}
-        </Text>
+          <Text
+            style={{ color: theme.textColor, fontSize: 18, fontWeight: '600' }}
+          >
+            Campaign Budget
+          </Text>
+          <Text
+            style={{ color: theme.textColor, fontSize: 18, fontWeight: '600' }}
+          >
+            {campaignInfo?.schedules
+              .map((s, i) => s?.budget || 0)
+              .reduce((a, b) => a + b, 0)
+              .toFixed(2)}{' '}
+            {lovs['lovs']?.currencies?.find(c => c.id === currencyId)?.code ||
+              ''}
+          </Text>
+        </View>
+        {totalToPay > 0 ? (
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              width: '100%',
+            }}
+          >
+            <Text
+              style={{
+                color: theme.textColor,
+                fontSize: 18,
+                fontWeight: '600',
+              }}
+            >
+              To Pay
+            </Text>
+            <Text
+              style={{
+                color: theme.textColor,
+                fontSize: 18,
+                fontWeight: '600',
+              }}
+            >
+              {totalToPay.toFixed(2)}{' '}
+              {lovs['lovs']?.currencies?.find(c => c.id === currencyId)?.code ||
+                ''}
+            </Text>
+          </View>
+        ) : null}
       </View>
     </View>
   );
 };
 
 export default ScheduleList;
-
-const styles = StyleSheet.create({});

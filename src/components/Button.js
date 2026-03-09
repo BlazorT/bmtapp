@@ -56,6 +56,7 @@ export default function RNSButton(props) {
     props.textColor && {
       color: props.textColor,
     },
+    props.textStyle && props.textStyle,
   ];
 
   content = (

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -6,13 +6,30 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
+  Modal,
+  Platform,
+  ActionSheetIOS,
+  Linking,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import RNSTextInput from '../TextInput';
 import { useTheme } from '../../hooks/useTheme';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import DocumentPicker from '@react-native-documents/picker';
+import Toast from 'react-native-simple-toast';
+import Spinner from 'react-native-loading-spinner-overlay';
+import Alert from '../Alert';
+import servicesettings from '../../modules/dataservices/servicesettings';
 
 const WhatsAppTemplateEditor = ({ value, onChange, onClear }) => {
   const theme = useTheme();
+  const [uploadingMedia, setUploadingMedia] = useState(false);
+  const [currentUploadParam, setCurrentUploadParam] = useState(null);
+  const [sourceModalVisible, setSourceModalVisible] = useState(false);
+  const [permissionVisible, setPermissionVisible] = useState(false);
+  const [permissionType, setPermissionType] = useState('');
+
   if (!value || !value.components) {
     return (
       <View
@@ -21,7 +38,7 @@ const WhatsAppTemplateEditor = ({ value, onChange, onClear }) => {
           { backgroundColor: theme.cardBackground },
         ]}
       >
-        <Icon name="information" size={24} color="#2196F3" />
+        <Icon name="info" size={24} color="#2196F3" />
         <Text style={[styles.alertText, { color: theme.textColor }]}>
           No WhatsApp template selected
         </Text>
@@ -44,6 +61,216 @@ const WhatsAppTemplateEditor = ({ value, onChange, onClear }) => {
     }
 
     onChange({ ...value, parameters: updatedParams });
+  };
+
+  // Upload media file to server
+  const uploadMediaFile = async (file, section, index) => {
+    setUploadingMedia(true);
+    const data = new FormData();
+
+    data.append('file', {
+      name: file.fileName || file.name,
+      uri: file.uri,
+      type: file.type,
+    });
+
+    try {
+      const ImageheaderFetch = {
+        enctype: 'multipart/form-data',
+        processData: false,
+        contentType: false,
+        cache: false,
+        timeout: 6000,
+        method: 'post',
+        body: data,
+        headers: {
+          Authorization: servicesettings.AuthorizationKey,
+          'Content-Type': 'multipart/form-data',
+        },
+      };
+      const res = await fetch(
+        servicesettings.baseuri + 'BlazorApi/uploadAttachment',
+        ImageheaderFetch,
+      );
+      if (!res.ok) {
+        throw new Error(`Upload failed with status: ${res.status}`);
+      }
+
+      const response = await res.json();
+      const uploadedUrl =
+        response?.data?.replace(/^\\\\?wwwroot[\\/]/, '').replace(/\\/g, '/') ||
+        '';
+      if (uploadedUrl) {
+        // Convert to full URL
+        const fullUrl =
+          servicesettings.baseuri.replace('/api/', '') + uploadedUrl;
+        handleParameterChange(section, index, fullUrl);
+        Toast.show('Media uploaded successfully');
+      } else {
+        throw new Error('No URL returned from upload');
+      }
+    } catch (error) {
+      Toast.showWithGravity(
+        error?.message || 'Upload failed',
+        Toast.LONG,
+        Toast.CENTER,
+      );
+    } finally {
+      setUploadingMedia(false);
+    }
+  };
+
+  // Camera permission handling
+  const requestCameraPermission = async (section, index, mediaType) => {
+    const permission =
+      Platform.OS === 'ios'
+        ? PERMISSIONS.IOS.CAMERA
+        : PERMISSIONS.ANDROID.CAMERA;
+
+    const result = await check(permission);
+
+    switch (result) {
+      case RESULTS.GRANTED:
+        launchCameraHandler(section, index, mediaType);
+        break;
+      case RESULTS.DENIED:
+        const reqResult = await request(permission);
+        if (reqResult === RESULTS.GRANTED) {
+          launchCameraHandler(section, index, mediaType);
+        }
+        break;
+      case RESULTS.BLOCKED:
+        setPermissionType('camera');
+        setPermissionVisible(true);
+        break;
+      default:
+        break;
+    }
+  };
+
+  // Gallery permission handling
+  const requestGalleryPermission = async (section, index, mediaType) => {
+    if (Platform.OS === 'android') {
+      launchGalleryHandler(section, index, mediaType);
+      return;
+    }
+
+    const permission = PERMISSIONS.IOS.PHOTO_LIBRARY;
+    const result = await check(permission);
+
+    switch (result) {
+      case RESULTS.GRANTED:
+        launchGalleryHandler(section, index, mediaType);
+        break;
+      case RESULTS.DENIED:
+        const reqResult = await request(permission);
+        if (reqResult === RESULTS.GRANTED) {
+          launchGalleryHandler(section, index, mediaType);
+        }
+        break;
+      case RESULTS.BLOCKED:
+        setPermissionType('gallery');
+        setPermissionVisible(true);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const launchCameraHandler = (section, index, mediaType) => {
+    launchCamera(
+      {
+        mediaType: mediaType === 'video' ? 'video' : 'photo',
+        includeBase64: false,
+      },
+      response => {
+        if (response.assets && response.assets.length > 0) {
+          uploadMediaFile(response.assets[0], section, index);
+        }
+      },
+    );
+  };
+
+  const launchGalleryHandler = (section, index, mediaType) => {
+    launchImageLibrary(
+      {
+        mediaType: mediaType === 'video' ? 'video' : 'photo',
+        includeBase64: false,
+        selectionLimit: 1,
+      },
+      response => {
+        if (!response.didCancel && !response.errorCode) {
+          if (response.assets && response.assets.length > 0) {
+            uploadMediaFile(response.assets[0], section, index);
+          }
+        }
+      },
+    );
+  };
+
+  const launchDocumentPicker = async (section, index) => {
+    try {
+      const result = await DocumentPicker.pick({
+        type: [DocumentPicker.types.pdf, DocumentPicker.types.allFiles],
+      });
+
+      if (result && result.length > 0) {
+        uploadMediaFile(result[0], section, index);
+      }
+    } catch (err) {
+      if (!DocumentPicker.isCancel(err)) {
+        Toast.show('Error picking document');
+      }
+    }
+  };
+
+  const handleMediaUploadOption = (section, index, mediaType) => {
+    setCurrentUploadParam({ section, index, mediaType });
+
+    if (mediaType === 'document') {
+      launchDocumentPicker(section, index);
+      return;
+    }
+
+    if (Platform.OS === 'ios') {
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options: ['Cancel', 'Camera', 'Gallery'],
+          cancelButtonIndex: 0,
+          userInterfaceStyle: 'dark',
+        },
+        buttonIndex => {
+          if (buttonIndex === 1) {
+            requestCameraPermission(section, index, mediaType);
+          } else if (buttonIndex === 2) {
+            requestGalleryPermission(section, index, mediaType);
+          }
+        },
+      );
+    } else {
+      setSourceModalVisible(true);
+    }
+  };
+
+  const handleCameraPress = () => {
+    setSourceModalVisible(false);
+    const { section, index, mediaType } = currentUploadParam;
+    requestCameraPermission(section, index, mediaType);
+  };
+
+  const handleGalleryPress = () => {
+    setSourceModalVisible(false);
+    const { section, index, mediaType } = currentUploadParam;
+    requestGalleryPermission(section, index, mediaType);
+  };
+
+  const getPermissionMessage = () => {
+    if (permissionType === 'camera') {
+      return '"BDMT" would like to access your camera';
+    } else if (permissionType === 'gallery') {
+      return '"BDMT" would like to access your photos';
+    }
+    return '"BDMT" would like to access your device';
   };
 
   // Replace {{1}}, {{2}} etc. in text with parameter values
@@ -89,9 +316,15 @@ const WhatsAppTemplateEditor = ({ value, onChange, onClear }) => {
     }
 
     const mediaLabels = {
-      image: 'Header Image URL',
-      video: 'Header Video URL',
-      document: 'Header Document URL',
+      image: 'Header Image',
+      video: 'Header Video',
+      document: 'Header Document',
+    };
+
+    const mediaIcons = {
+      image: 'image',
+      video: 'videocam',
+      document: 'description',
     };
 
     if (mediaLabels[param.type]) {
@@ -100,10 +333,12 @@ const WhatsAppTemplateEditor = ({ value, onChange, onClear }) => {
           <Text style={[styles.paramLabel, { color: theme.textColor }]}>
             {mediaLabels[param.type]}
           </Text>
+
+          {/* URL Input */}
           <RNSTextInput
             value={param[param.type]?.link || ''}
             onChangeText={value => handleParameterChange(section, index, value)}
-            placeholder="Enter media URL..."
+            placeholder="Enter media URL or upload..."
             placeholderTextColor={theme.placeholderColor}
             style={[
               styles.paramInput,
@@ -115,6 +350,20 @@ const WhatsAppTemplateEditor = ({ value, onChange, onClear }) => {
             autoCapitalize="none"
             keyboardType="url"
           />
+
+          {/* Upload Button */}
+          <TouchableOpacity
+            style={[
+              styles.uploadButton,
+              { backgroundColor: theme.buttonBackColor },
+            ]}
+            onPress={() => handleMediaUploadOption(section, index, param.type)}
+          >
+            <Icon name={mediaIcons[param.type]} size={20} color="#fff" />
+            <Text style={styles.uploadButtonText}>
+              Upload {param.type === 'document' ? 'File' : 'from Device'}
+            </Text>
+          </TouchableOpacity>
         </View>
       );
     }
@@ -129,6 +378,88 @@ const WhatsAppTemplateEditor = ({ value, onChange, onClear }) => {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ rowGap: 12 }}>
+      <Spinner
+        visible={uploadingMedia}
+        textContent={'Uploading...'}
+        textStyle={{ color: '#FFF' }}
+      />
+
+      {/* Permission Alert */}
+      <Alert
+        massagetype={'warning'}
+        hide={() => setPermissionVisible(false)}
+        confirm={() => {
+          setPermissionVisible(false);
+          Linking.openSettings();
+        }}
+        Visible={permissionVisible}
+        alerttype={'confirmation'}
+        Title={'Permission Required'}
+        Massage={getPermissionMessage()}
+      />
+
+      {/* Source Selection Modal (Android) */}
+      <Modal
+        visible={sourceModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setSourceModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View
+            style={[
+              styles.modalContainer,
+              { backgroundColor: theme.modalBackColor },
+            ]}
+          >
+            <Text
+              style={[styles.modalTitle, { color: theme.selectedCheckBox }]}
+            >
+              Select Source
+            </Text>
+            <Text
+              style={[styles.modalSubtitle, { color: theme.placeholderColor }]}
+            >
+              Choose where to pick your media from
+            </Text>
+
+            <TouchableOpacity
+              style={[
+                styles.modalButton,
+                { backgroundColor: theme.buttonBackColor },
+              ]}
+              onPress={handleCameraPress}
+            >
+              <Text style={styles.modalButtonText}>📷 Camera</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.modalButton,
+                { backgroundColor: theme.buttonBackColor },
+              ]}
+              onPress={handleGalleryPress}
+            >
+              <Text style={styles.modalButtonText}>🖼️ Gallery</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.modalButton, styles.cancelButton]}
+              onPress={() => setSourceModalVisible(false)}
+            >
+              <Text
+                style={[
+                  styles.modalButtonText,
+                  { color: theme.placeholderColor },
+                ]}
+              >
+                Cancel
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       {/* Template Preview */}
       <View
         style={[styles.previewCard, { backgroundColor: theme.cardBackColor }]}
@@ -144,11 +475,6 @@ const WhatsAppTemplateEditor = ({ value, onChange, onClear }) => {
               <Text style={styles.categoryText}>{category}</Text>
             </View>
           </View>
-          {/* {onClear && (
-            <TouchableOpacity onPress={onClear} style={styles.clearButton}>
-              <Icon name="close" size={24} color="#DC3545" />
-            </TouchableOpacity>
-          )} */}
         </View>
 
         {/* WhatsApp Message Bubble */}
@@ -176,12 +502,12 @@ const WhatsAppTemplateEditor = ({ value, onChange, onClear }) => {
                       />
                     ) : parameters.header[0].type === 'video' ? (
                       <View style={styles.videoPlaceholder}>
-                        <Icon name="video" size={40} color="#666" />
+                        <Icon name="videocam" size={40} color="#666" />
                         <Text style={styles.mediaText}>Video</Text>
                       </View>
                     ) : (
                       <View style={styles.documentPlaceholder}>
-                        <Icon name="file-document" size={32} color="#666" />
+                        <Icon name="description" size={32} color="#666" />
                         <Text style={styles.mediaText} numberOfLines={1}>
                           {parameters.header[0].document.link}
                         </Text>
@@ -189,7 +515,7 @@ const WhatsAppTemplateEditor = ({ value, onChange, onClear }) => {
                     )
                   ) : (
                     <View style={styles.mediaPlaceholder}>
-                      <Icon name="image-off" size={40} color="#999" />
+                      <Icon name="hide-image" size={40} color="#999" />
                       <Text style={[styles.placeholderText, { color: '#999' }]}>
                         [{headerComponent.format}]
                       </Text>
@@ -247,44 +573,36 @@ const WhatsAppTemplateEditor = ({ value, onChange, onClear }) => {
                   BUTTONS ({buttonsComponent.buttons.length})
                 </Text>
               </View>
-              <View style={[styles.buttonsContainer]}>
-                {buttonsComponent.buttons.map(
-                  (btn, idx) => (
-                    { backgroundColor: theme.buttonBackColor },
-                    (
-                      <View
-                        key={idx}
-                        style={[
-                          styles.buttonItem,
-                          {
-                            backgroundColor: theme.buttonBackColor,
-                            borderColor: theme.textColor,
-                          },
-                        ]}
-                      >
-                        <Icon
-                          name={
-                            btn.type === 'URL'
-                              ? 'link'
-                              : btn.type === 'PHONE_NUMBER'
-                                ? 'phone'
-                                : 'reply'
-                          }
-                          size={16}
-                          color={theme.textColor}
-                        />
-                        <Text
-                          style={[
-                            styles.buttonText,
-                            { color: theme.textColor },
-                          ]}
-                        >
-                          {btn.text}
-                        </Text>
-                      </View>
-                    )
-                  ),
-                )}
+              <View style={styles.buttonsContainer}>
+                {buttonsComponent.buttons.map((btn, idx) => (
+                  <View
+                    key={idx}
+                    style={[
+                      styles.buttonItem,
+                      {
+                        backgroundColor: theme.buttonBackColor,
+                        borderColor: theme.textColor,
+                      },
+                    ]}
+                  >
+                    <Icon
+                      name={
+                        btn.type === 'URL'
+                          ? 'link'
+                          : btn.type === 'PHONE_NUMBER'
+                            ? 'phone'
+                            : 'reply'
+                      }
+                      size={16}
+                      color={theme.textColor}
+                    />
+                    <Text
+                      style={[styles.buttonText, { color: theme.textColor }]}
+                    >
+                      {btn.text}
+                    </Text>
+                  </View>
+                ))}
               </View>
             </View>
           )}
@@ -385,9 +703,6 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 10,
     fontWeight: 'bold',
-  },
-  clearButton: {
-    padding: 4,
   },
   messageBubble: {
     borderRadius: 8,
@@ -509,6 +824,21 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     fontSize: 14,
   },
+  uploadButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    marginTop: 8,
+    gap: 8,
+  },
+  uploadButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+  },
   noParamsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -518,6 +848,54 @@ const styles = StyleSheet.create({
   },
   noParamsText: {
     fontSize: 14,
+  },
+  // Modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    borderRadius: 12,
+    padding: 20,
+    width: '80%',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  modalSubtitle: {
+    fontSize: 14,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  modalButton: {
+    width: '100%',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginVertical: 8,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  modalButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#fff',
+  },
+  cancelButton: {
+    backgroundColor: '#e0e0e0',
+    marginTop: 16,
   },
 });
 

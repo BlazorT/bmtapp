@@ -1,12 +1,17 @@
+import CheckBox from '@react-native-community/checkbox';
+import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
   FlatList,
+  Image,
+  Platform,
+  StyleSheet,
+  Text,
   TouchableOpacity,
+  View,
 } from 'react-native';
-import React, { useActionState, useState } from 'react';
+import Toast from 'react-native-simple-toast';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import { useSelector } from 'react-redux';
 import emailIcon from '../../../assets/images/Email.png';
 import facebookIcon from '../../../assets/images/Facebook.png';
 import smsIcon from '../../../assets/images/SMS.png';
@@ -16,17 +21,13 @@ import instagramIcon from '../../../assets/images/instagram.png';
 import linkedinIcon from '../../../assets/images/linkedin.png';
 import snapchatIcon from '../../../assets/images/snapchat.png';
 import tiktokIcon from '../../../assets/images/tiktok.png';
+import { safeJSONParse } from '../../helper/dateFormatter';
 import { useTheme } from '../../hooks/useTheme';
 import { useUser } from '../../hooks/useUser';
-import { useSelector } from 'react-redux';
-import CheckBox from '@react-native-community/checkbox';
-import RNSButton from '../Button';
 import servicesettings from '../../modules/dataservices/servicesettings';
-import Toast from 'react-native-simple-toast';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import TemplateViewer from './TemplateViewer';
+import RNSButton from '../Button';
+import QuotaBadge from './QuotaBadge';
 import TemplateEditorModal from './TemplateEditorModal';
-import { safeJSONParse } from '../../helper/dateFormatter';
 
 const getIcon = networkId => {
   if (networkId == 1) {
@@ -198,7 +199,13 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
               source={getIcon(network.networkId)}
               style={styles.networkIcon}
             />
-            <View>
+            <View
+              style={{
+                flexDirection: 'column',
+                justifyContent: 'center',
+                rowGaps: 2,
+              }}
+            >
               <Text
                 style={[
                   styles.networkName,
@@ -207,12 +214,16 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
                   },
                 ]}
               >
-                {network.networkName || network?.name} ({network.purchasedQouta}
-                )
+                {network.networkName || network?.name}
               </Text>
-              <Text style={{ color: theme.textColor, fontSize: 14 }}>
+              <QuotaBadge
+                remainingQuota={network?.purchasedQouta - network?.usedQuota}
+                usedQuota={network?.usedQuota}
+                totalQuota={network?.purchasedQouta}
+              />
+              {/* <Text style={{ color: theme.textColor, fontSize: 14 }}>
                 {network.networkName || network.name}
-              </Text>
+              </Text> */}
             </View>
           </View>
         </View>
@@ -224,12 +235,13 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
           loading={templateLoading}
           onPress={() => getTemplates(network?.networkId)}
           style={{
-            paddingHorizontal: 2,
-            maxHeight: 35,
+            paddingHorizontal: 0,
+            maxHeight: 30,
             paddingVertical: 0,
             width: 'auto',
             // minWidth: 60,
           }}
+          textStyle={{ fontSize: Platform.OS === 'ios' ? 12 : 14 }}
         />
       </View>
       {isNetworkSelected && network_postype?.length > 1 && (

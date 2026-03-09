@@ -19,6 +19,7 @@ import WhatsAppTemplateEditor from './WhatsAppTemplateEditor';
 import SocialMediaTemplateEditor from './SocialMediaTemplateEditor';
 import EmailTemplateViewer from './EmailTemplateViewer';
 import { useSelector } from 'react-redux';
+import { safeJSONParse } from '../../helper/dateFormatter';
 
 const TemplateEditorModal = ({ isOpen, onClose, template, onSave }) => {
   const theme = useTheme();
@@ -104,41 +105,41 @@ const TemplateEditorModal = ({ isOpen, onClose, template, onSave }) => {
   };
 
   const renderTemplateEditor = () => {
-    switch (templateData.networkId) {
-      case 2: // WhatsApp
-        return (
-          <WhatsAppTemplateEditor
-            value={
-              templateData.templateJson
-                ? JSON.parse(templateData.templateJson)
-                : null
-            }
-            onChange={updatedData => {
-              handleInputChange('templateJson', JSON.stringify(updatedData));
-            }}
-            onClear={() => handleInputChange('templateJson', '')}
-            theme={theme}
-          />
-        );
+    const templateType =
+      safeJSONParse(templateData?.templateJson)?.templateType || 1;
 
-      case 3: // Email
-        return (
-          <EmailTemplateViewer
-            html={templateData.template}
-            subject={templateData.subject}
-            theme={theme}
-          />
-        );
-
-      default: // SMS and other social media
-        return (
-          <SocialMediaTemplateEditor
-            value={templateData.template}
-            onChange={value => handleInputChange('template', value)}
-            networkId={templateData.networkId}
-            theme={theme}
-          />
-        );
+    if (templateData.networkId === 2 && templateType == 1) {
+      return (
+        <WhatsAppTemplateEditor
+          value={
+            templateData.templateJson
+              ? JSON.parse(templateData.templateJson)
+              : null
+          }
+          onChange={updatedData => {
+            handleInputChange('templateJson', JSON.stringify(updatedData));
+          }}
+          onClear={() => handleInputChange('templateJson', '')}
+          theme={theme}
+        />
+      );
+    } else if (templateData.networkId === 3) {
+      return (
+        <EmailTemplateViewer
+          html={templateData.template}
+          subject={templateData.subject}
+          theme={theme}
+        />
+      );
+    } else {
+      return (
+        <SocialMediaTemplateEditor
+          value={templateData.template}
+          onChange={value => handleInputChange('template', value)}
+          networkId={templateData.networkId}
+          theme={theme}
+        />
+      );
     }
   };
 

@@ -1,14 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Dimensions,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
+import { ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import AppBreadcrumb from '../../components/AppBreadcrumb';
 import Model from '../../components/Model';
 
 import NetInfo from '@react-native-community/netinfo';
+import moment from 'moment';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Toast from 'react-native-simple-toast';
@@ -16,43 +12,45 @@ import { useSelector } from 'react-redux';
 import CampaignInfo from '../../components/campaignComponents/CampaignInfo';
 import CampaignNetwork from '../../components/campaignComponents/CampaignNetwork';
 import CampaignSchedule from '../../components/campaignComponents/CampaignSchedule';
+import { MAX_AGE, MIN_AGE } from '../../constants';
 import { useTheme } from '../../hooks/useTheme';
 import { useUser } from '../../hooks/useUser';
 import servicesettings from '../dataservices/servicesettings';
-import moment from 'moment';
-import { MAX_AGE, MIN_AGE } from '../../constants';
-import PaymentView from '../payment/PaymentView';
+import { useIsFocused } from '@react-navigation/native';
+
+const campaignInitialState = {
+  id: 0,
+  subject: '',
+  hashtag: '',
+  template: '',
+  country: '',
+  state: '',
+  campaignStartDate: moment().local().format(),
+  campaignEndDate: '',
+  status: 1,
+  autoLead: false,
+  image: '',
+  video: '',
+  pdf: '',
+  networks: [],
+  schedules: [],
+  totalBudget: 0,
+  discount: 0,
+  genderId: '',
+  radius: 10,
+  locations: [],
+  interests: [],
+  minAge: MIN_AGE,
+  maxAge: MAX_AGE,
+};
 
 export default function CampaignScheduleScreen(props) {
   const theme = useTheme();
+  const isFocused = useIsFocused();
   const { isAuthenticated, user } = useUser();
   const lovs = useSelector(state => state.lovs).lovs;
 
-  const [campaignInfo, setCampaignInfo] = useState({
-    id: 0,
-    subject: '',
-    hashtag: '',
-    template: '',
-    country: '',
-    state: '',
-    campaignStartDate: moment().local().format(),
-    campaignEndDate: '',
-    status: 1,
-    autoLead: false,
-    image: '',
-    video: '',
-    pdf: '',
-    networks: [],
-    schedules: [],
-    totalBudget: 0,
-    discount: 0,
-    genderId: '',
-    radius: 10,
-    locations: [],
-    interests: [],
-    minAge: MIN_AGE,
-    maxAge: MAX_AGE,
-  });
+  const [campaignInfo, setCampaignInfo] = useState(campaignInitialState);
   const [Index, setIndex] = useState(0);
   const [updateMessage, setUpdateMessage] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
@@ -73,14 +71,16 @@ export default function CampaignScheduleScreen(props) {
         return;
       }
     });
-    loadOrganization();
-    loadInitialData();
-    fetchRecipients();
-    loadNetworkPricing();
-    if (props.route.params) {
-      updateCampaignData(props.route.params.campaign);
+    if (isFocused) {
+      loadOrganization();
+      loadInitialData();
+      fetchRecipients();
+      loadNetworkPricing();
+      if (props.route.params) {
+        updateCampaignData(props.route.params.campaign);
+      }
     }
-  }, [props.route.params]);
+  }, [props.route.params, isFocused]);
   /**************************************** validation ************************************************/
   const loadInitialData = async () => {
     try {
@@ -470,7 +470,7 @@ export default function CampaignScheduleScreen(props) {
             />
             <Spinner
               visible={spinner}
-              textContent="Submitting..."
+              textContent=""
               textStyle={{ color: theme.buttonBackColor }}
               color={theme.buttonBackColor}
             />
