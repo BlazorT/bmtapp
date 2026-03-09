@@ -250,7 +250,10 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
               >
                 <CheckBox
                   style={{
-                    transform: [{ scaleX: 1.2 }, { scaleY: 1.2 }],
+                    transform: [
+                      { scaleX: Platform.OS === 'ios' ? 0.8 : 1.2 },
+                      { scaleY: Platform.OS === 'ios' ? 0.8 : 1.2 },
+                    ],
                   }}
                   value={selectedNetwork?.postTypes?.includes(np) ?? false}
                   onValueChange={v => {
@@ -370,10 +373,7 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
                   ? safeJSONParse(item.templateJson)
                   : null;
               return (
-                <TouchableOpacity
-                  onPress={() => {
-                    openTemplate(item);
-                  }}
+                <View
                   style={[
                     styles.card,
                     { backgroundColor: theme.buttonBackColor },
@@ -383,11 +383,12 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
                     style={{
                       position: 'absolute',
                       right: 5,
-                      top: 5,
+                      top: 3,
                       gap: 8,
                       flexDirection: 'row',
                       alignItems: 'center',
                       justifyContent: 'center',
+                      zIndex: 999,
                     }}
                   >
                     <TouchableOpacity
@@ -397,7 +398,7 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
                     >
                       <FontAwesome
                         name={'edit'}
-                        size={Platform.OS === 'ios' ? 20 : 26}
+                        size={Platform.OS === 'ios' ? 26 : 26}
                         color={theme.tintColor}
                       />
                     </TouchableOpacity>
@@ -446,6 +447,9 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
                         true: theme.selectedCheckBox,
                         false: theme.modalBackColor,
                       }}
+                      tintColor={theme.textColor}
+                      onTintColor={theme.white}
+                      onCheckColor={theme.white}
                     />
                   </View>
                   <Text
@@ -553,7 +557,7 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
                         : truncateText(item?.template, 50)}
                     </Text>
                   </Text>
-                </TouchableOpacity>
+                </View>
               );
             }}
           />
@@ -625,7 +629,7 @@ const styles = StyleSheet.create({
   },
   networkIcon: { width: 40, height: 40, marginRight: 10 },
   networkName: {
-    fontSize: 14,
+    fontSize: Platform.OS === 'ios' ? 12 : 14,
     fontWeight: 'bold',
   },
 });
