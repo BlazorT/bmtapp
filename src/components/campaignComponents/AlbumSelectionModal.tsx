@@ -210,15 +210,22 @@ const AlbumSelectionModal: React.FC<Props> = ({
   const handleSelectAll = (networkId: number) => {
     const currentAlbums = albumsByNetwork[networkId] || [];
     const currentSelections = selectedAlbums[networkId] || [];
-    const allAlbumIds = currentAlbums.map(a => a.id);
 
+    // Only consider albums that have contacts
+    const selectableAlbums = currentAlbums.filter(album => {
+      const contactCount =
+        recipients?.filter((r: any) => r?.albumid === album.id)?.length || 0;
+      return contactCount > 0;
+    });
+
+    const selectableIds = selectableAlbums.map(a => a.id);
     const allSelected =
-      allAlbumIds.length > 0 &&
-      allAlbumIds.every(id => currentSelections.includes(id));
+      selectableIds.length > 0 &&
+      selectableIds.every(id => currentSelections.includes(id));
 
     setSelectedAlbums((prev: Record<number, number[]>) => ({
       ...prev,
-      [networkId]: allSelected ? [] : allAlbumIds,
+      [networkId]: allSelected ? [] : selectableIds,
     }));
   };
 
@@ -439,10 +446,15 @@ const AlbumSelectionModal: React.FC<Props> = ({
 
   const currentAlbums = albumsByNetwork[activeTab] || [];
   const currentSelections = selectedAlbums[activeTab] || [];
-  console.log({ selectedAlbums });
+  const selectableAlbums = currentAlbums.filter(album => {
+    const contactCount =
+      recipients?.filter((r: any) => r?.albumid === album.id)?.length || 0;
+    return contactCount > 0;
+  });
+
   const allCurrentSelected =
-    currentAlbums.length > 0 &&
-    currentAlbums.every(album => currentSelections.includes(album.id));
+    selectableAlbums.length > 0 &&
+    selectableAlbums.every(album => currentSelections.includes(album.id));
 
   return (
     <Modal visible={visible} transparent animationType="slide">
