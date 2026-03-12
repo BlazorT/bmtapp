@@ -600,6 +600,7 @@ const AlbumSelectionModal: React.FC<Props> = ({
                       <View key={item.id}>
                         <TouchableOpacity
                           onPress={() => handleAlbumSelect(activeTab, item.id)}
+                          disabled={contactCount === 0}
                           style={[
                             styles.albumItem,
                             {
@@ -655,13 +656,15 @@ const AlbumSelectionModal: React.FC<Props> = ({
                               </Text>
                             </View>
 
-                            {isSelected && (
+                            {(isSelected || contactCount === 0) && (
                               <>
-                                <AntdIcon
-                                  name="checkcircle"
-                                  size={22}
-                                  color={theme.buttonBackColor}
-                                />
+                                {isSelected ? (
+                                  <AntdIcon
+                                    name="checkcircle"
+                                    size={22}
+                                    color={theme.buttonBackColor}
+                                  />
+                                ) : null}
                                 <TouchableOpacity
                                   onPress={(e: any) => {
                                     e?.stopPropagation?.();

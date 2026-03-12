@@ -157,9 +157,11 @@ const CampaignSchedule = ({
         createdAt: moment.utc().format(),
         startTime: moment
           .utc(campaignInfo.campaignStartDate)
+          .local()
           .format('YYYY-MM-DDTHH:mm:ss'),
         finishTime: moment
           .utc(campaignInfo.campaignEndDate)
+          .local()
           .format('YYYY-MM-DDTHH:mm:ss'),
         CompaignNetworks: campaignInfo.networks?.map(n => ({
           CompaignId: n?.id ? campaignInfo.id : 0,

@@ -293,21 +293,21 @@ function CustomDrawerContent(props) {
         icon: iconPages,
         condition: isAuthenticated,
       },
-      {
-        name: 'Panel',
-        icon: iconPages,
-        condition: true,
-      },
+      // {
+      //   name: 'Panel',
+      //   icon: iconPages,
+      //   condition: true,
+      // },
       {
         name: 'Pricing Plans',
         icon: iconPages,
         condition: true,
       },
-      // {
-      //   name: 'About',
-      //   icon: iconAbout,
-      //   condition: true,
-      // },
+      {
+        name: 'About',
+        icon: iconAbout,
+        condition: true,
+      },
       {
         name: 'Unsubscribe',
         icon: 'user-delete',

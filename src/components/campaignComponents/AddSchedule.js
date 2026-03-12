@@ -129,6 +129,11 @@ const AddSchedule = ({
       return;
     }
 
+    if (!scheduleList.finishTime) {
+      Toast.show('Select end time');
+      return;
+    }
+
     const selectedNetworkSet = new Set(
       scheduleList.albums?.map(al => al?.networkid),
     );
@@ -735,7 +740,7 @@ const AddSchedule = ({
                 ? moment(scheduleList.startTime).format('MMM DD, YYYY') +
                   '\n' +
                   moment(scheduleList.startTime).format('hh:mm A')
-                : 'Campaign Start'}
+                : 'Start Time'}
             </Text>
           </TouchableOpacity>
         </View>
@@ -834,7 +839,7 @@ const AddSchedule = ({
                 ? moment(scheduleList.finishTime).format('MMM DD, YYYY') +
                   '\n' +
                   moment(scheduleList.finishTime).format('hh:mm A')
-                : 'Campaign End'}
+                : 'End Time'}
             </Text>
           </TouchableOpacity>
           <DateTimePicker

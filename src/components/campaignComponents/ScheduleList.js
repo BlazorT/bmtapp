@@ -25,7 +25,8 @@ const ScheduleList = ({
   const { user } = useUser();
   const lovs = useSelector(state => state.lovs).lovs;
 
-  const [showEditDelBtns, setShowEditDelBtns] = React.useState(false);
+  // After
+  const [activeSwipeId, setActiveSwipeId] = React.useState(null);
 
   const getIntervalName = id => {
     const intervals = lovs['lovs'].intervals;
@@ -42,8 +43,8 @@ const ScheduleList = ({
           <GestureRecognizer
             key={index}
             // config={{velocityThreshold: 0.3, directionalOffsetThreshold: 80}}
-            onSwipeRight={() => setShowEditDelBtns(false)}
-            onSwipeLeft={() => setShowEditDelBtns(true)}
+            onSwipeRight={() => setActiveSwipeId(null)}
+            onSwipeLeft={() => setActiveSwipeId(schedule.randomId)}
           >
             <TouchableOpacity
               style={{
@@ -158,7 +159,7 @@ const ScheduleList = ({
                   </Text>
                 </View>
               </View>
-              {showEditDelBtns && (
+              {activeSwipeId === schedule.randomId && (
                 <View
                   style={{
                     position: 'absolute',
@@ -172,7 +173,7 @@ const ScheduleList = ({
                   }}
                 >
                   <TouchableOpacity
-                    onPress={() => setShowEditDelBtns(false)}
+                    onPress={() => setActiveSwipeId(null)}
                     style={{
                       backgroundColor: theme.buttonBackColor,
                       paddingHorizontal: 30,

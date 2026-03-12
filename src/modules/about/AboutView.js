@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     alignItems: 'center',
     position: 'absolute',
-    paddingBottom: 5,
+    paddingBottom: 20,
     bottom: 0,
     width: '100%',
   },

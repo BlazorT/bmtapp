@@ -395,9 +395,10 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   btnDetail_Delete: {
-    marginHorizontal: 10,
-    width: 152,
-    height: 38,
+    // marginHorizontal: 10,
+    paddingVertical: 10,
+    // paddingHorizontal: 10,
+    width: '60%',
     borderRadius: 6,
     borderWidth: 0,
     backgroundColor: colors.Blazorbutton,
@@ -407,7 +408,7 @@ const styles = StyleSheet.create({
   },
   Delete_Play_PauseTxt: {
     fontSize: 15,
-    paddingHorizontal: 15,
+    // paddingHorizontal: 15,
     fontWeight: 'bold',
     color: 'white',
   },
