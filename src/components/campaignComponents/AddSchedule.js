@@ -634,7 +634,7 @@ const AddSchedule = ({
           </Text>
           <CheckBox
             style={{
-              transform: [{ scale: Platform.OS === 'ios' ? 0.7 : 1.4 }],
+              transform: [{ scale: Platform.OS === 'ios' ? 0.7 : 1.0 }],
             }}
             value={allDaysSelected}
             onValueChange={toggleAllDays}

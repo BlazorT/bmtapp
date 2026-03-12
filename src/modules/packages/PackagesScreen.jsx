@@ -1077,11 +1077,12 @@ export default function PricingDetailsScreen() {
       } else {
         Toast.show(
           'Payment is not success, possible reasons, account holder acceptance is not done or easy paisa account does not exist!',
+          Toast.LONG,
         );
         return;
       }
     } catch (e) {
-      Toast.show(e?.message || 'Something went wrong, try again later!');
+      // Toast.show(e?.message || 'Something went wrong, try again later!');
       await easyPaisaCheckStatus(orderId);
     } finally {
       setspinner(false);
@@ -1132,6 +1133,7 @@ export default function PricingDetailsScreen() {
         if (transactionStatus === 'FAILED') {
           Toast.show(
             'Payment is not success, possible reasons, account holder acceptance is not done or easy paisa account does not exist!',
+            Toast.LONG,
           );
         }
         if (transactionStatus === 'PENDING') {
@@ -1141,6 +1143,7 @@ export default function PricingDetailsScreen() {
       } else if (responseCode) {
         Toast.show(
           'Payment is not success, possible reasons, account holder acceptance is not done or easy paisa account does not exist!',
+          Toast.LONG,
         );
         return;
       }
