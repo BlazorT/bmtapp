@@ -303,11 +303,11 @@ function CustomDrawerContent(props) {
         icon: iconPages,
         condition: true,
       },
-      {
-        name: 'About',
-        icon: iconAbout,
-        condition: true,
-      },
+      // {
+      //   name: 'About',
+      //   icon: iconAbout,
+      //   condition: true,
+      // },
       {
         name: 'Unsubscribe',
         icon: 'user-delete',

@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import {
   FlatList,
   Image,
+  Modal,
   Platform,
   StyleSheet,
   Text,
@@ -50,7 +51,13 @@ const getIcon = networkId => {
     return snapchatIcon;
   }
 };
-const Network = ({ campaignInfo, network, setCampaignInfo }) => {
+
+const Network = ({
+  campaignInfo,
+  network,
+  setCampaignInfo,
+  setScheduleList,
+}) => {
   const theme = useTheme();
   const { user } = useUser();
   const lovs = useSelector(state => state.lovs?.lovs?.lovs);
@@ -60,6 +67,8 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
   const [showTemplate, setShowTemplate] = useState(false);
   const [showTemplateList, setShowTemplateList] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
+  // ── NEW: confirmation modal state ──
+  const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
 
   const openTemplate = item => {
     setSelectedTemplate(item);
@@ -105,7 +114,6 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
         },
       };
       const response = await fetch(
-        // createcompletecompaign
         servicesettings.baseuri + 'Template/campaigntemplatesallnetworks',
         headerFetch,
       );
@@ -115,7 +123,6 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
       }
 
       const res = await response.json();
-      // Store templates for this specific network
       setShowTemplateList(true);
       setTemplates(res?.data || []);
     } catch (error) {
@@ -125,11 +132,52 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
       setTemplateLoading(false);
     }
   };
+
   const truncateText = (text, maxLength = 100) => {
     if (!text) return '';
     return text.length > maxLength
       ? text.substring(0, maxLength) + '...'
       : text;
+  };
+
+  // ── NEW: performs the actual removal after user confirms ──
+  const handleConfirmedRemove = () => {
+    setShowRemoveConfirm(false);
+
+    // Remove network from campaignInfo.networks AND
+    // remove all schedules that reference this network
+    setCampaignInfo(prev => ({
+      ...prev,
+      networks: prev.networks.filter(
+        item => item.networkId !== network.networkId,
+      ),
+      schedules: prev.schedules?.filter(
+        s =>
+          s.networkId !== network.networkId &&
+          !s.CompaignNetworks?.some(cn => cn.networkId === network.networkId),
+      ),
+    }));
+
+    // Reset scheduleList
+    setScheduleList({
+      CompaignNetworks: [],
+      id: 0,
+      budget: 0,
+      rowVer: 0,
+      messageCount: 0,
+      orgId: user.orgId,
+      days: [],
+      networkId: 0,
+      albums: [],
+      compaignDetailId: 0,
+      isFixedTime: 1,
+      startTime: campaignInfo.campaignStartDate,
+      finishTime: campaignInfo.campaignEndDate,
+      interval: 0,
+      status: 1,
+      intervalTypeId: 0,
+      randomId: Math.floor(100000 + Math.random() * 900000),
+    });
   };
 
   const selectedNetwork = campaignInfo.networks.find(
@@ -146,13 +194,14 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
     >
       <View style={styles.flexBW}>
         <CheckBox
+          key={`network-cb-${network.networkId}-${isNetworkSelected}-${showRemoveConfirm}`} // ← ADD THIS
           style={{
             transform: [
-              { scaleX: Platform.OS === 'ios' ? 0.8 : 1.6 },
-              { scaleY: Platform.OS === 'ios' ? 0.8 : 1.6 },
+              { scaleX: Platform.OS === 'ios' ? 0.9 : 1.6 },
+              { scaleY: Platform.OS === 'ios' ? 0.9 : 1.6 },
             ],
           }}
-          value={isNetworkSelected}
+          value={isNetworkSelected ? true : false}
           onValueChange={v => {
             if (v) {
               setCampaignInfo({
@@ -179,12 +228,27 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
                 ],
               });
             } else {
-              setCampaignInfo({
-                ...campaignInfo,
-                networks: campaignInfo.networks.filter(
-                  item => item.networkId != network.networkId,
-                ),
-              });
+              // ── NEW: check if this network is used in any schedule ──
+              const networkInSchedules = campaignInfo.schedules?.some(
+                s =>
+                  s.networkId === network.networkId ||
+                  s.CompaignNetworks?.some(
+                    cn => cn.networkId === network.networkId,
+                  ),
+              );
+
+              if (networkInSchedules) {
+                // Show confirmation modal instead of removing directly
+                setShowRemoveConfirm(true);
+              } else {
+                // Safe to remove directly — no schedules affected
+                setCampaignInfo({
+                  ...campaignInfo,
+                  networks: campaignInfo.networks.filter(
+                    item => item.networkId !== network.networkId,
+                  ),
+                });
+              }
             }
           }}
           boxType={'square'}
@@ -221,9 +285,6 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
                 usedQuota={network?.usedQuota}
                 totalQuota={network?.purchasedQouta}
               />
-              {/* <Text style={{ color: theme.textColor, fontSize: 14 }}>
-                {network.networkName || network.name}
-              </Text> */}
             </View>
           </View>
         </View>
@@ -239,11 +300,11 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
             maxHeight: 30,
             paddingVertical: 0,
             width: 'auto',
-            // minWidth: 60,
           }}
           textStyle={{ fontSize: Platform.OS === 'ios' ? 12 : 14 }}
         />
       </View>
+
       {isNetworkSelected && network_postype?.length > 1 && (
         <View style={{ flexDirection: 'row', marginTop: 5 }}>
           {network_postype?.map(np => {
@@ -270,7 +331,6 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
                   value={selectedNetwork?.postTypes?.includes(np) ?? false}
                   onValueChange={v => {
                     if (v) {
-                      // add postType
                       setCampaignInfo({
                         ...campaignInfo,
                         networks: campaignInfo.networks.map(item =>
@@ -283,7 +343,6 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
                         ),
                       });
                     } else {
-                      // remove postType
                       setCampaignInfo({
                         ...campaignInfo,
                         networks: campaignInfo.networks.map(item =>
@@ -313,6 +372,7 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
           })}
         </View>
       )}
+
       {selectedNetwork?.Template && isNetworkSelected ? (
         <TouchableOpacity
           onPress={() => {
@@ -351,6 +411,7 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
           </Text>
         </TouchableOpacity>
       ) : null}
+
       {isNetworkSelected && showTemplateList && templates?.length > 0 ? (
         <View
           style={{
@@ -377,7 +438,7 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
               ) || []
             }
             nestedScrollEnabled={true}
-            style={{ maxHeight: 200 }} // set a maxHeight on the FlatList itself
+            style={{ maxHeight: 200 }}
             contentContainerStyle={{ rowGap: 5, paddingBottom: 10 }}
             renderItem={({ item }) => {
               const templateJson =
@@ -426,7 +487,6 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
                       value={selectedNetwork?.Template?.id === item.id}
                       onValueChange={v => {
                         if (v) {
-                          // add postType
                           setCampaignInfo({
                             ...campaignInfo,
                             networks: campaignInfo.networks.map(nt =>
@@ -440,7 +500,6 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
                           });
                           setShowTemplateList(false);
                         } else {
-                          // remove postType
                           setCampaignInfo({
                             ...campaignInfo,
                             networks: campaignInfo.networks.map(nt =>
@@ -575,12 +634,12 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
           />
         </View>
       ) : null}
+
       <TemplateEditorModal
         isOpen={showTemplate}
         onClose={closeTemplate}
         template={selectedTemplate}
         onSave={updatedTemplate => {
-          // 1️⃣ Update templates list by template.id
           setTemplates(prev =>
             prev.map(tpl =>
               tpl.id === updatedTemplate.id
@@ -589,7 +648,6 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
             ),
           );
 
-          // 2️⃣ Update campaignInfo -> networks -> Template by id
           if (isNetworkSelected) {
             setCampaignInfo(prev => ({
               ...prev,
@@ -610,14 +668,66 @@ const Network = ({ campaignInfo, network, setCampaignInfo }) => {
         }}
       />
 
-      {/* <TemplateViewer
-        isOpen={showTemplate}
-        onClose={closeTemplate}
-        template={selectedTemplate}
-      /> */}
+      {/* ── NEW: Remove network confirmation modal ── */}
+      <Modal
+        visible={showRemoveConfirm}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowRemoveConfirm(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View
+            style={[
+              styles.modalContainer,
+              { backgroundColor: theme.cardBackColor },
+            ]}
+          >
+            {/* Title */}
+            <Text style={[styles.modalTitle, { color: theme.textColor }]}>
+              Remove Network
+            </Text>
+
+            {/* Body */}
+            <Text style={[styles.modalBody, { color: theme.textColor }]}>
+              <Text style={{ fontWeight: 'bold' }}>
+                {network.networkName || network?.name}
+              </Text>{' '}
+              is currently used in one or more schedules. Removing it will also
+              delete those schedules. Do you want to continue?
+            </Text>
+
+            {/* Buttons */}
+            <View style={styles.modalButtons}>
+              {/* No */}
+              <TouchableOpacity
+                onPress={() => setShowRemoveConfirm(false)}
+                style={[
+                  styles.modalBtn,
+                  { backgroundColor: theme.buttonBackColor },
+                ]}
+              >
+                <Text style={[styles.modalBtnText, { color: theme.textColor }]}>
+                  No
+                </Text>
+              </TouchableOpacity>
+
+              {/* Yes */}
+              <TouchableOpacity
+                onPress={handleConfirmedRemove}
+                style={[styles.modalBtn, styles.modalBtnDanger]}
+              >
+                <Text style={[styles.modalBtnText, { color: '#fff' }]}>
+                  Yes, Remove
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     width: '100%',
@@ -642,6 +752,49 @@ const styles = StyleSheet.create({
   networkIcon: { width: 40, height: 40, marginRight: 10 },
   networkName: {
     fontSize: Platform.OS === 'ios' ? 12 : 14,
+    fontWeight: 'bold',
+  },
+  // ── Modal styles ──
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+  },
+  modalContainer: {
+    width: '100%',
+    borderRadius: 12,
+    padding: 24,
+  },
+  modalTitle: {
+    fontSize: 17,
+    fontWeight: 'bold',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  modalBody: {
+    fontSize: 14,
+    lineHeight: 22,
+    textAlign: 'center',
+    marginBottom: 24,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  modalBtn: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  modalBtnDanger: {
+    backgroundColor: '#e53935',
+  },
+  modalBtnText: {
+    fontSize: 15,
     fontWeight: 'bold',
   },
 });

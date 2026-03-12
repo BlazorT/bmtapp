@@ -1,4 +1,11 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Image,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React from 'react';
 import noImage from '../../../assets/images/picture.png';
 import { useTheme } from '../../hooks/useTheme';
@@ -13,6 +20,9 @@ import { pick, types } from '@react-native-documents/picker';
 
 import Video from 'react-native-video';
 
+// Reduces font size by 2 on iOS
+const fs = size => (Platform.OS === 'ios' ? size - 2 : size);
+
 const CampaignAttachment = ({ handleCampaignInfo, campaignInfo }) => {
   const theme = useTheme();
 
@@ -24,6 +34,7 @@ const CampaignAttachment = ({ handleCampaignInfo, campaignInfo }) => {
     // Request camera and storage permissions on component mount
     requestPermissions();
   }, []);
+
   const requestPermissions = async () => {
     try {
       if (Platform.OS === 'android') {
@@ -40,7 +51,6 @@ const CampaignAttachment = ({ handleCampaignInfo, campaignInfo }) => {
           setIsPermissions(true);
         } else {
           setIsPermissions(false);
-          // Alert.alert('Permissions not granted');
         }
       } else {
         // iOS permissions
@@ -75,13 +85,13 @@ const CampaignAttachment = ({ handleCampaignInfo, campaignInfo }) => {
       console.error('Error requesting permissions: ', error);
     }
   };
+
   const openCamera = () => {
     setIsMediaMdlOpen(false);
     launchCamera(
       {
         mediaType: isImage ? 'photo' : 'video',
         durationLimit: 180,
-        // includeBase64: true,
       },
       response => {
         if (response.didCancel) {
@@ -138,6 +148,7 @@ const CampaignAttachment = ({ handleCampaignInfo, campaignInfo }) => {
       });
     }
   };
+
   return (
     <View
       style={{
@@ -150,7 +161,7 @@ const CampaignAttachment = ({ handleCampaignInfo, campaignInfo }) => {
         <Text
           style={{
             color: theme.textColor,
-            fontSize: 17,
+            fontSize: fs(17),
             textAlign: 'center',
             marginBottom: 10,
           }}
@@ -211,7 +222,7 @@ const CampaignAttachment = ({ handleCampaignInfo, campaignInfo }) => {
         <Text
           style={{
             color: theme.textColor,
-            fontSize: 17,
+            fontSize: fs(17),
             textAlign: 'center',
             marginBottom: 10,
           }}
@@ -286,7 +297,7 @@ const CampaignAttachment = ({ handleCampaignInfo, campaignInfo }) => {
         <Text
           style={{
             color: theme.textColor,
-            fontSize: 17,
+            fontSize: fs(17),
             textAlign: 'center',
             marginBottom: 10,
           }}

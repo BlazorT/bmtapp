@@ -100,6 +100,9 @@ export default function PricingDetailsScreen() {
     linkedin: false,
     calculator: false,
   });
+  // ── NEW: live exchange rate ──
+  const [exchangeRate, setExchangeRate] = useState(280.67);
+  const [rateLoading, setRateLoading] = useState(false);
 
   //REF
   const scrollRef = useRef();
@@ -109,10 +112,33 @@ export default function PricingDetailsScreen() {
     () => data?.orgPackageDetails || [],
     [data],
   );
+
   useEffect(() => {
     fetchData();
   }, []);
-  // console.log({ data, user });
+
+  // ── NEW: fetch live PKR exchange rate on mount ──
+  useEffect(() => {
+    const fetchExchangeRate = async () => {
+      setExchangeRate(280.48);
+      // setRateLoading(true);
+      // try {
+      //   const res = await fetch(
+      //     'https://api.exchangerate-api.com/v4/latest/USD',
+      //   );
+      //   const json = await res.json();
+      //   if (json?.rates?.PKR) {
+      //     setExchangeRate(parseFloat(json.rates.PKR.toFixed(2)));
+      //   }
+      // } catch {
+      //   // silently fall back to default 280.67
+      // } finally {
+      //   setRateLoading(false);
+      // }
+    };
+    fetchExchangeRate();
+  }, []);
+
   // =======================
   // HELPER: Get latest bundling detail for network
   // =======================
@@ -122,7 +148,6 @@ export default function PricingDetailsScreen() {
     );
     if (networkDetails.length === 0) return null;
 
-    // Sort by lastUpdatedAt descending and get first
     return networkDetails.sort(
       (a, b) => new Date(b.lastUpdatedAt) - new Date(a.lastUpdatedAt),
     )[0];
@@ -140,7 +165,6 @@ export default function PricingDetailsScreen() {
     const freeAllowed = bundlingDetail.freeAllowed || 0;
     const plans = [];
 
-    // Free plan (if freeAllowed exists)
     if (freeAllowed > 0) {
       plans.push({
         id: 0,
@@ -156,7 +180,6 @@ export default function PricingDetailsScreen() {
       });
     }
 
-    // Special handling for Email (networkId === 3)
     if (networkId === 3) {
       plans.push({
         id: 1,
@@ -171,7 +194,6 @@ export default function PricingDetailsScreen() {
         networkId,
       });
 
-      // Email-specific plans
       const emailPlans = [
         {
           id: 2,
@@ -232,8 +254,6 @@ export default function PricingDetailsScreen() {
         });
       });
     } else {
-      // Original logic for other networks
-      // Pay As You Go
       plans.push({
         id: 1,
         name: 'Pay As You Go',
@@ -247,9 +267,8 @@ export default function PricingDetailsScreen() {
         networkId,
       });
 
-      // Bulk plans with 10%, 15%, 20% discounts
       const quantities = [1000, 5000, 10000];
-      const discounts = [0.1, 0.15, 0.2]; // 10%, 15%, 20%
+      const discounts = [0.1, 0.15, 0.2];
       const durations = ['Month', '6 Month', 'Year'];
       const featureDuration = ['1 Month', '6 Month', '1 Year'];
 
@@ -280,7 +299,7 @@ export default function PricingDetailsScreen() {
     return plans;
   };
 
-  // Fallback static plans (when no dynamic data)
+  // Fallback static plans
   const fallbackPlans = {
     sms: [
       {
@@ -626,12 +645,11 @@ export default function PricingDetailsScreen() {
   };
 
   // =======================
-  // PRICING DATA - Static fallback
+  // PRICING DATA
   // =======================
   const pricingPlans = useMemo(() => {
     const networkMap = {};
 
-    // Build dynamic plans for each network
     networks.forEach(network => {
       const dynamicPlans = generateDynamicPlans(network.id, network.name);
       if (dynamicPlans.length > 0) {
@@ -752,7 +770,7 @@ export default function PricingDetailsScreen() {
 
       setTimeout(() => {
         scrollRef.current?.scrollToEnd({ animated: true });
-      }, 50); // iOS needs this delay
+      }, 50);
 
       return;
     }
@@ -763,9 +781,6 @@ export default function PricingDetailsScreen() {
     }));
   };
 
-  // =======================
-  // HELPER: Check if package is valid
-  // =======================
   const isPackageValid = (startTime, finishTime) => {
     const now = moment();
     const start = moment(startTime);
@@ -773,18 +788,12 @@ export default function PricingDetailsScreen() {
     return now.isBetween(start, finish);
   };
 
-  // =======================
-  // HELPER: Check if package is expired
-  // =======================
   const isPackageExpired = finishTime => {
     const now = moment();
     const finish = moment(finishTime);
     return now.isAfter(finish);
   };
 
-  // =======================
-  // HELPER: Calculate remaining days
-  // =======================
   const getRemainingDays = finishTime => {
     const now = moment();
     const finish = moment(finishTime);
@@ -792,9 +801,6 @@ export default function PricingDetailsScreen() {
     return days > 0 ? days : 0;
   };
 
-  // =======================
-  // HELPER: Get current valid package for network
-  // =======================
   const getCurrentValidPackage = networkId => {
     const npackage = orgPackageDetails?.find(
       op =>
@@ -804,9 +810,6 @@ export default function PricingDetailsScreen() {
     return npackage || null;
   };
 
-  // =======================
-  // HELPER: Get expired package for network
-  // =======================
   const getExpiredPackage = networkId => {
     const npackage = orgPackageDetails?.find(
       op => op?.networkId === networkId && isPackageExpired(op.finishTime),
@@ -829,7 +832,6 @@ export default function PricingDetailsScreen() {
     const isThisCardTheExpiredPlan =
       expiredPackage && expiredPackage.purchasedQouta === plan.qouta;
 
-    // Check if THIS specific plan card matches the purchased quota
     const isThisCardThePurchasedPlan =
       currentValidPackage &&
       currentValidPackage.purchasedQouta === plan.qouta &&
@@ -847,7 +849,6 @@ export default function PricingDetailsScreen() {
           </View>
         )}
 
-        {/* Show active badge only on the card with matching purchased quota */}
         {isThisCardThePurchasedPlan && (
           <View
             style={[
@@ -861,7 +862,6 @@ export default function PricingDetailsScreen() {
           </View>
         )}
 
-        {/* Show expired badge only on the card with matching expired quota */}
         {isThisCardTheExpiredPlan && (
           <View
             style={[
@@ -894,7 +894,6 @@ export default function PricingDetailsScreen() {
           </Text>
         </View>
 
-        {/* Show package details only if this card is the active one */}
         {isThisCardThePurchasedPlan && (
           <View
             style={[
@@ -1028,7 +1027,7 @@ export default function PricingDetailsScreen() {
       'D' +
       moment().format('YYYYMMDDHHmmss');
     const transactionAmount = parseFloat(
-      ((isBuying?.toPay || 0.0) * 280.67)?.toFixed(2),
+      ((isBuying?.toPay || 0.0) * exchangeRate)?.toFixed(2),
     );
 
     const xmlBody = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
@@ -1066,14 +1065,12 @@ export default function PricingDetailsScreen() {
           headers: {
             'Content-Type': 'text/xml',
             SOAPAction: 'initiateTransaction',
-            // Credentials: `${encodeBase64('znawazch@gmail.com:Blazor@025')}`,
           },
           body: xmlBody,
         },
       );
       const data = await res.text();
       const responseCode = extractTagValue(data, 'ns2:responseCode');
-      const transactionId = extractTagValue(data, 'transactionId');
       if (data && responseCode == '0000') {
         updatePurchasedQuota(btoa(data));
         Toast.show('Payment successful');
@@ -1120,7 +1117,6 @@ export default function PricingDetailsScreen() {
           headers: {
             'Content-Type': 'text/xml',
             SOAPAction: 'inquireTransactionResponseType',
-            // Credentials: `${encodeBase64('znawazch@gmail.com:Blazor@025')}`,
           },
           body: xmlBody,
         },
@@ -1141,9 +1137,6 @@ export default function PricingDetailsScreen() {
         if (transactionStatus === 'PENDING') {
           setspinner(true);
           return;
-          // Toast.show(
-          //   'Payment is not success, possible reasons, account holder acceptance is not done or easy paisa account does not exist!',
-          // );
         }
       } else if (responseCode) {
         Toast.show(
@@ -1161,15 +1154,13 @@ export default function PricingDetailsScreen() {
   const makeJCMwalltet = async () => {
     const now = moment().local();
     const txnDateTime = now.format('YYYYMMDDHHmmss');
-
-    // Generate TxnRefNo (first three letters of domain + timestamp)
     const txnRef = `BMT${txnDateTime}`;
     setJazzCashTxnRefNo(txnRef);
 
     const jcBody = {
       amount: parseInt(
-        parseFloat(((isBuying?.toPay || 0.0) * 280.67)?.toFixed(2)) * 100,
-      )?.toString(), // will be sent as 200 (Rs 2.00)
+        parseFloat(((isBuying?.toPay || 0.0) * exchangeRate)?.toFixed(2)) * 100,
+      )?.toString(),
       mobile: jazzCashMobileNumber,
       description: 'mobile',
       billRef:
@@ -1181,7 +1172,6 @@ export default function PricingDetailsScreen() {
       txnRef,
       ppmpf_2: '',
     };
-    console.log({ jcBody });
     const res = await payJC(jcBody);
     if (res) {
       const filteredResponse = {
@@ -1199,7 +1189,6 @@ export default function PricingDetailsScreen() {
         pp_SecureHash: res.pp_SecureHash || '',
       };
       if (res?.pp_ResponseCode === '157') {
-        // toggleJCPayment();
         setShowJCPayment(true);
       } else if (res?.pp_ResponseCode === '000') {
         Toast.show(res?.pp_ResponseMessage);
@@ -1243,8 +1232,8 @@ export default function PricingDetailsScreen() {
       await makeJCMwalltet();
     }
   };
+
   const getPackageTimeRange = () => {
-    // /Monthly, /6 Month , /Yearly
     const period = isBuying?.period;
 
     if (period === '/Monthly') {
@@ -1422,6 +1411,7 @@ export default function PricingDetailsScreen() {
               </Text>
             </View>
           </Modal>
+
           <PaymentView
             onPayComplete={updatePurchasedQuota}
             selectedGateway={selectedGateway}
@@ -1436,8 +1426,9 @@ export default function PricingDetailsScreen() {
             setJazzCashMobileNumber={setJazzCashMobileNumber}
             setJazzCashNic={setJazzCashNic}
             setJazzCashOption={setJazzCashOption}
-            toPay={(isBuying?.toPay || 0.0) * 280.67}
+            toPay={(isBuying?.toPay || 0.0) * exchangeRate}
           />
+
           <JCPaymentConfirm
             isVisible={showJCPayment}
             toggleModal={() => setShowJCPayment(prev => !prev)}
@@ -1445,7 +1436,54 @@ export default function PricingDetailsScreen() {
             onCheckout={updatePurchasedQuota}
             jazzCashTxnRefNo={jazzCashTxnRefNo}
           />
+
           <PricingCard plan={isBuying} />
+
+          {/* ── NEW: Exchange Rate Banner ── */}
+          <View
+            style={[
+              styles.exchangeRateBanner,
+              { backgroundColor: theme.inputBackColor },
+            ]}
+          >
+            <Text
+              style={[
+                styles.exchangeRateLabel,
+                { color: theme.placeholderColor },
+              ]}
+            >
+              Exchange Rate
+            </Text>
+            <View style={styles.exchangeRateRight}>
+              {rateLoading ? (
+                <ActivityIndicator
+                  size="small"
+                  color={theme.buttonBackColor}
+                  style={{ marginRight: 8 }}
+                />
+              ) : (
+                <>
+                  <Text
+                    style={[
+                      styles.exchangeRateValue,
+                      { color: theme.textColor },
+                    ]}
+                  >
+                    $1 = Rs. {exchangeRate.toFixed(2)}
+                  </Text>
+                  {/* <View
+                    style={[
+                      styles.liveBadge,
+                      { backgroundColor: theme.buttonBackColor },
+                    ]}
+                  >
+                    <Text style={styles.liveBadgeText}>LIVE</Text>
+                  </View> */}
+                </>
+              )}
+            </View>
+          </View>
+
           <View
             style={{
               flexDirection: 'row',
@@ -1464,10 +1502,22 @@ export default function PricingDetailsScreen() {
             <RNSButton
               style={{ width: '49%' }}
               bgColor={theme.buttonBackColor}
-              caption={`Pay PKR ${((isBuying?.toPay || 0.0) * 280.67)?.toFixed(2)}`}
               onPress={payAndPlace}
-              textStyle={{ fontSize: 14 }}
-            />
+            >
+              <Text
+                style={{
+                  fontSize: 14,
+                  textAlign: 'center',
+                  color: theme.white,
+                  fontWeight: '700',
+                }}
+              >
+                Pay{'\n'}
+                <Text style={{ fontSize: 10, color: theme.white }}>
+                  Rs. {((isBuying?.toPay || 0.0) * exchangeRate)?.toFixed(2)}
+                </Text>
+              </Text>
+            </RNSButton>
           </View>
         </View>
       ) : (
@@ -2310,5 +2360,38 @@ const styles = StyleSheet.create({
   detailValue: {
     fontSize: 13,
     fontWeight: '600',
+  },
+  // ── NEW: Exchange rate banner styles ──
+  exchangeRateBanner: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  exchangeRateLabel: {
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  exchangeRateRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  exchangeRateValue: {
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  liveBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  liveBadgeText: {
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: '700',
   },
 });

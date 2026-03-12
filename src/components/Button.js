@@ -2,6 +2,7 @@ import React from 'react';
 import {
   ActivityIndicator,
   Image,
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -12,7 +13,7 @@ import { colors, fonts } from '../styles';
 const borderRadius = 40;
 
 export default function RNSButton(props) {
-  const caption = props.caption || props.caption.toUpperCase();
+  const caption = props?.caption || props?.caption?.toUpperCase() || '';
   let icon;
   if (props.icon) {
     icon = (
@@ -183,7 +184,7 @@ const styles = StyleSheet.create({
   },
   caption: {
     letterSpacing: 1,
-    fontSize: 18,
+    fontSize: Platform.OS === 'ios' ? 16 : 18,
     fontFamily: fonts.primaryBold,
     textAlign: 'center', // Center text properly
   },

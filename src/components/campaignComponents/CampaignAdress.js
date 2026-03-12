@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -16,6 +17,9 @@ import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome5';
 import { useSelector } from 'react-redux';
 import { GET_ADDRESS_LIST } from '../../constants';
 import CampaignMap from './CampaignMap';
+
+// Reduces font size by 2 on iOS
+const fs = size => (Platform.OS === 'ios' ? size - 2 : size);
 
 const CampaignAdress = ({ label, campaignInfo, setCampaignInfo }) => {
   const theme = useTheme();
@@ -68,6 +72,7 @@ const CampaignAdress = ({ label, campaignInfo, setCampaignInfo }) => {
       setLoading(false);
     }
   };
+
   const onAdressClick = item => {
     setCampaignInfo(prev => ({
       ...prev,
@@ -84,18 +89,19 @@ const CampaignAdress = ({ label, campaignInfo, setCampaignInfo }) => {
     setQuery('');
     setAddressList([]);
   };
+
   return (
     <View>
       {label ? (
-        <Text style={[styles.label, { color: theme.textColor }]}>{label}</Text>
+        <Text
+          style={[styles.label, { color: theme.textColor, fontSize: fs(16) }]}
+        >
+          {label}
+        </Text>
       ) : null}
 
       <View style={styles.wrapper}>
-        <View
-          style={{
-            width: '90%',
-          }}
-        >
+        <View style={{ width: '90%' }}>
           <RNSTextInput
             placeholder="Search Area..."
             placeholderTextColor={theme.placeholderColor}
@@ -106,9 +112,7 @@ const CampaignAdress = ({ label, campaignInfo, setCampaignInfo }) => {
               color: theme.textColor,
               borderRadius: 6,
               paddingHorizontal: 10,
-              fontSize: 16,
-              // maxHeight: 60,
-              // maxWidth: '90%',
+              fontSize: fs(16),
             }}
           />
           {loading && (
@@ -142,6 +146,7 @@ const CampaignAdress = ({ label, campaignInfo, setCampaignInfo }) => {
           setCampaignInfo={setCampaignInfo}
         />
       </View>
+
       {query && addressList?.length > 0 && (
         <FlatList
           data={addressList}
@@ -159,10 +164,10 @@ const CampaignAdress = ({ label, campaignInfo, setCampaignInfo }) => {
           nestedScrollEnabled
           renderItem={({ item }) => (
             <TouchableOpacity onPress={() => onAdressClick(item)}>
-              <Text style={[{ color: theme.textColor, fontWeight: 'bold' }]}>
+              <Text style={{ color: theme.textColor, fontWeight: 'bold' }}>
                 {item?.name}
               </Text>
-              <Text style={[{ color: theme.lightGray, fontSize: 12 }]}>
+              <Text style={{ color: theme.lightGray, fontSize: fs(12) }}>
                 {item?.display_name}
               </Text>
             </TouchableOpacity>
@@ -188,7 +193,6 @@ const CampaignAdress = ({ label, campaignInfo, setCampaignInfo }) => {
                 {cl?.AreaName}
               </Text>
               <TouchableOpacity
-                // style={styles.crossIcon}
                 onPress={() =>
                   setCampaignInfo(prev => ({
                     ...prev,
@@ -235,7 +239,7 @@ const styles = StyleSheet.create({
   },
   bubble: { padding: 5, borderRadius: 6, flexDirection: 'row' },
   label: {
-    fontSize: 16,
+    fontSize: 16, // handled inline with fs()
     fontWeight: '600',
     marginBottom: 10,
   },

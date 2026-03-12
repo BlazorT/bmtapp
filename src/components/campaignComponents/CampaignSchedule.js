@@ -44,6 +44,8 @@ const CampaignSchedule = ({
   recipients,
   orgData,
   fetchRecipients,
+  scheduleList,
+  setScheduleList,
 }) => {
   const theme = useTheme();
   const { user } = useUser();
@@ -63,24 +65,6 @@ const CampaignSchedule = ({
 
   const [scheduleTab, setScheduleTab] = React.useState(0);
   const [isUpdate, setIsUpdate] = React.useState(false);
-  const [scheduleList, setScheduleList] = React.useState({
-    CompaignNetworks: [],
-    id: 0,
-    budget: 0,
-    rowVer: 0,
-    messageCount: 0,
-    orgId: user.orgId,
-    days: [],
-    networkId: 0,
-    compaignDetailId: 0,
-    isFixedTime: 1,
-    startTime: campaignInfo.campaignStartDate,
-    finishTime: campaignInfo.campaignEndDate,
-    interval: 0,
-    status: 1,
-    intervalTypeId: 1,
-    randomId: Math.floor(100000 + Math.random() * 900000),
-  });
 
   useEffect(() => {
     setTimeout(() => {
@@ -115,29 +99,29 @@ const CampaignSchedule = ({
     }, 100);
   }, []);
 
-  useEffect(() => {
-    if (!isUpdate) {
-      setScheduleList({
-        CompaignNetworks: [],
-        id: 0,
-        budget: 0,
-        rowVer: 0,
-        messageCount: 0,
-        orgId: user.orgId,
-        days: [],
-        networkId: 0,
-        albums: [],
-        compaignDetailId: 0,
-        isFixedTime: 1,
-        startTime: campaignInfo.campaignStartDate,
-        finishTime: campaignInfo.campaignEndDate,
-        interval: 0,
-        status: 1,
-        intervalTypeId: 0,
-        randomId: Math.floor(100000 + Math.random() * 900000),
-      });
-    }
-  }, [isUpdate]);
+  // useEffect(() => {
+  //   if (!isUpdate) {
+  //     setScheduleList({
+  //       CompaignNetworks: [],
+  //       id: 0,
+  //       budget: 0,
+  //       rowVer: 0,
+  //       messageCount: 0,
+  //       orgId: user.orgId,
+  //       days: [],
+  //       networkId: 0,
+  //       albums: [],
+  //       compaignDetailId: 0,
+  //       isFixedTime: 1,
+  //       startTime: campaignInfo.campaignStartDate,
+  //       finishTime: campaignInfo.campaignEndDate,
+  //       interval: 0,
+  //       status: 1,
+  //       intervalTypeId: 0,
+  //       randomId: Math.floor(100000 + Math.random() * 900000),
+  //     });
+  //   }
+  // }, [isUpdate]);
 
   const addSchedule = async ref => {
     console.log({ campaignInfo: JSON.stringify(campaignInfo.schedules) });
@@ -362,7 +346,7 @@ const CampaignSchedule = ({
                 template: '',
                 country: '',
                 state: '',
-                campaignStartDate: '',
+                campaignStartDate: moment().local().startOf('day').format(),
                 campaignEndDate: '',
                 status: 1,
                 autoLead: false,
@@ -379,6 +363,24 @@ const CampaignSchedule = ({
                 interests: [],
                 minAge: MIN_AGE,
                 maxAge: MAX_AGE,
+              });
+              setScheduleList({
+                CompaignNetworks: [],
+                id: 0,
+                budget: 0,
+                rowVer: 0,
+                messageCount: 0,
+                orgId: user.orgId,
+                days: [],
+                networkId: 0,
+                compaignDetailId: 0,
+                isFixedTime: 1,
+                startTime: campaignInfo.campaignStartDate,
+                finishTime: campaignInfo.campaignEndDate,
+                interval: 0,
+                status: 1,
+                intervalTypeId: 0,
+                randomId: Math.floor(100000 + Math.random() * 900000),
               });
             }, 4000);
           }
@@ -399,7 +401,7 @@ const CampaignSchedule = ({
               template: '',
               country: '',
               state: '',
-              campaignStartDate: '',
+              campaignStartDate: moment().local().startOf('day').format(),
               campaignEndDate: '',
               status: 1,
               autoLead: false,
@@ -416,6 +418,24 @@ const CampaignSchedule = ({
               interests: [],
               minAge: MIN_AGE,
               maxAge: MAX_AGE,
+            });
+            setScheduleList({
+              CompaignNetworks: [],
+              id: 0,
+              budget: 0,
+              rowVer: 0,
+              messageCount: 0,
+              orgId: user.orgId,
+              days: [],
+              networkId: 0,
+              compaignDetailId: 0,
+              isFixedTime: 1,
+              startTime: campaignInfo.campaignStartDate,
+              finishTime: campaignInfo.campaignEndDate,
+              interval: 0,
+              status: 1,
+              intervalTypeId: 0,
+              randomId: Math.floor(100000 + Math.random() * 900000),
             });
           }, 2500);
         }

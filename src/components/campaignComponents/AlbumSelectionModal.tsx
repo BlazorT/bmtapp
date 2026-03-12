@@ -439,7 +439,7 @@ const AlbumSelectionModal: React.FC<Props> = ({
 
   const currentAlbums = albumsByNetwork[activeTab] || [];
   const currentSelections = selectedAlbums[activeTab] || [];
-
+  console.log({ selectedAlbums });
   const allCurrentSelected =
     currentAlbums.length > 0 &&
     currentAlbums.every(album => currentSelections.includes(album.id));

@@ -34,10 +34,10 @@ const tabNavigationData = [
     component: PagesScreen,
     icon: iconPages,
   },
-  {
-    name: 'About',
-    component: AboutScreen,
-    icon: iconAbout,
-  },
+  // {
+  //   name: 'About',
+  //   component: AboutScreen,
+  //   icon: iconAbout,
+  // },
 ];
 export default tabNavigationData;

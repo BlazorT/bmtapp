@@ -16,6 +16,7 @@ const CampaignNetwork = ({
   setCampaignInfo,
   setIndex,
   networks,
+  setScheduleList,
 }) => {
   const theme = useTheme();
   const navigation = useNavigation();
@@ -27,6 +28,7 @@ const CampaignNetwork = ({
   const nextStep = () => {
     setIndex(2);
   };
+  console.log({ campaignInfo });
   // const toRecipients = () => navigation.navigate('Recipients');
   return (
     <View>
@@ -48,6 +50,7 @@ const CampaignNetwork = ({
                 campaignInfo={campaignInfo}
                 network={network}
                 setCampaignInfo={setCampaignInfo}
+                setScheduleList={setScheduleList}
               />
             ))}
         <View

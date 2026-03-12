@@ -1,6 +1,7 @@
 import CheckBox from '@react-native-community/checkbox';
 import React, { useState } from 'react';
 import {
+  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -30,7 +31,16 @@ import {
 import CampaignAddress from './CampaignAdress';
 import Icon from 'react-native-vector-icons/MaterialIcons'; // or your preferred icon set
 
-const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex, orgData }) => {
+// Reduces font size by 2 on iOS
+const fs = size => (Platform.OS === 'ios' ? size - 2 : size);
+
+const CampaignInfo = ({
+  campaignInfo,
+  setCampaignInfo,
+  setIndex,
+  orgData,
+  setScheduleList,
+}) => {
   const theme = useTheme();
   const navigation = useNavigation();
 
@@ -122,7 +132,7 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex, orgData }) => {
             template: '',
             country: '',
             state: '',
-            campaignStartDate: '',
+            campaignStartDate: moment().local().startOf('day').format(),
             campaignEndDate: '',
             status: 1,
             autoLead: false,
@@ -134,32 +144,34 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex, orgData }) => {
             totalBudget: 0,
             discount: 0,
           });
+          setScheduleList({
+            CompaignNetworks: [],
+            id: 0,
+            budget: 0,
+            rowVer: 0,
+            messageCount: 0,
+            orgId: 0,
+            days: [],
+            networkId: 0,
+            compaignDetailId: 0,
+            isFixedTime: 1,
+            startTime: campaignInfo.campaignStartDate,
+            finishTime: campaignInfo.campaignEndDate,
+            interval: 0,
+            status: 1,
+            intervalTypeId: 0,
+            randomId: Math.floor(100000 + Math.random() * 900000),
+          });
         }}
         Visible={showCancelAlert}
         alerttype={'confirmation'}
         Title={'Confirmation'}
         Massage={'Do you want to discard?'}
       ></Alert>
-      {/* <TextInput
-        placeholder="Subject"
-        placeholderTextColor={theme.placeholderColor}
-        value={campaignInfo.subject}
-        onChangeText={value => handleCampaignInfo('subject', value)}
-        style={{
-          width: '100%',
-          backgroundColor: theme.inputBackColor,
-          color: theme.textColor,
-          borderRadius: 6,
-          paddingHorizontal: 10,
-          fontSize: 16,
-          borderColor: '#ff00003d',
-          borderWidth: 1,
-        }}
-      /> */}
       {!orgData?.signature ? (
         <Text
           style={{
-            fontSize: 12,
+            fontSize: fs(12),
             color: theme.selectedCheckBox,
             fontStyle: 'italic',
           }}
@@ -178,12 +190,11 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex, orgData }) => {
           color: theme.textColor,
           borderRadius: 6,
           paddingHorizontal: 10,
-          fontSize: 16,
+          fontSize: fs(16),
           borderColor: '#ff00003d',
           borderWidth: 1,
-          height: 100,
+          height: 45,
         }}
-        textAlignVertical="top"
       />
       <View style={styles.container}>
         {/* Display hashtags as chips */}
@@ -194,7 +205,12 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex, orgData }) => {
                 key={index}
                 style={[styles.tag, { backgroundColor: theme.inputBackColor }]}
               >
-                <Text style={[styles.tagText, { color: theme.textColor }]}>
+                <Text
+                  style={[
+                    styles.tagText,
+                    { color: theme.textColor, fontSize: fs(14) },
+                  ]}
+                >
                   #{tag}
                 </Text>
                 <TouchableOpacity
@@ -220,7 +236,7 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex, orgData }) => {
             color: theme.textColor,
             borderRadius: 6,
             paddingHorizontal: 10,
-            fontSize: 16,
+            fontSize: fs(16),
             borderColor: '#ff00003d',
             borderWidth: 1,
             height: 45,
@@ -236,9 +252,13 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex, orgData }) => {
         onPress={() => setAudienceShow(prevState => !prevState)}
       >
         <Text
-          style={{ color: theme.textColor, fontSize: 18, fontWeight: 'bold' }}
+          style={{
+            color: theme.textColor,
+            fontSize: fs(18),
+            fontWeight: 'bold',
+          }}
         >
-          Campaign Audience
+          Audience
         </Text>
         <AntdIcon
           name={audienceShow ? 'downcircle' : 'upcircle'}
@@ -266,7 +286,7 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex, orgData }) => {
               onChange={(low, high) => {
                 setCampaignInfo(prev => {
                   if (prev.radius === low) {
-                    return prev; // ✅ prevent unnecessary re-renders
+                    return prev;
                   }
                   return { ...prev, radius: low };
                 });
@@ -283,7 +303,7 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex, orgData }) => {
               onChange={(low, high) => {
                 setCampaignInfo(prev => {
                   if (prev.minAge === low && prev.maxAge === high) {
-                    return prev; // ✅ prevent unnecessary re-renders
+                    return prev;
                   }
                   return { ...prev, minAge: low, maxAge: high };
                 });
@@ -305,7 +325,7 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex, orgData }) => {
               color: theme.textColor,
               borderRadius: 6,
               paddingHorizontal: 10,
-              fontSize: 16,
+              fontSize: fs(16),
               borderColor: '#ff00003d',
               borderWidth: 1,
             }}
@@ -332,7 +352,7 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex, orgData }) => {
               color: theme.textColor,
               borderRadius: 6,
               paddingHorizontal: 10,
-              fontSize: 16,
+              fontSize: fs(16),
               borderColor: '#ff00003d',
               borderWidth: 1,
             }}
@@ -355,7 +375,7 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex, orgData }) => {
           <Text
             style={{
               color: theme.textColor,
-              fontSize: 18,
+              fontSize: fs(18),
               fontWeight: 'bold',
               marginRight: 10,
             }}
@@ -398,7 +418,7 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex, orgData }) => {
             borderWidth: 1,
           }}
         >
-          <Text style={{ color: theme.textColor, fontSize: 17 }}>
+          <Text style={{ color: theme.textColor, fontSize: fs(17) }}>
             {campaignInfo.campaignStartDate
               ? moment(campaignInfo.campaignStartDate).format('DD-MM-YYYY')
               : 'Start Time'}
@@ -419,7 +439,9 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex, orgData }) => {
           }
           mode="date"
           onConfirm={date => {
-            handleCampaignInfo('campaignStartDate', date);
+            const startOfDay = new Date(date);
+            startOfDay.setHours(0, 0, 0, 0); // start of selected day
+            handleCampaignInfo('campaignStartDate', startOfDay);
             setShowStartDatePicker(false);
           }}
           onCancel={() => setShowStartDatePicker(false)}
@@ -445,7 +467,7 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex, orgData }) => {
                 <Text
                   style={{
                     textAlign: 'center',
-                    fontSize: 20,
+                    fontSize: fs(20),
                     color: theme.textColor,
                   }}
                 >
@@ -469,7 +491,7 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex, orgData }) => {
             borderWidth: 1,
           }}
         >
-          <Text style={{ color: theme.textColor, fontSize: 17 }}>
+          <Text style={{ color: theme.textColor, fontSize: fs(17) }}>
             {campaignInfo.campaignEndDate
               ? moment(campaignInfo.campaignEndDate).format('DD-MM-YYYY')
               : 'End Time'}
@@ -484,8 +506,10 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex, orgData }) => {
                 : new Date()
             }
             onConfirm={date => {
-              handleCampaignInfo('campaignEndDate', date);
+              const endOfDay = new Date(date);
+              endOfDay.setHours(23, 59, 59, 999); // end of selected day
 
+              handleCampaignInfo('campaignEndDate', endOfDay);
               setShowEndDatePicker(false);
             }}
             onCancel={() => setShowEndDatePicker(false)}
@@ -511,7 +535,7 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex, orgData }) => {
                   <Text
                     style={{
                       textAlign: 'center',
-                      fontSize: 20,
+                      fontSize: fs(20),
                       color: theme.textColor,
                     }}
                   >
@@ -550,13 +574,15 @@ const CampaignInfo = ({ campaignInfo, setCampaignInfo, setIndex, orgData }) => {
             width: 110,
           }}
           radioButtonLabelStyle={{
-            fontSize: 16,
+            fontSize: fs(16),
             color: theme.textColor,
           }}
         />
       </View>
       <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Text style={{ color: theme.textColor, fontSize: 18, marginRight: 20 }}>
+        <Text
+          style={{ color: theme.textColor, fontSize: fs(18), marginRight: 20 }}
+        >
           Auto Generate Lead
         </Text>
         <CheckBox
@@ -639,7 +665,7 @@ const styles = StyleSheet.create({
     borderColor: '#ff00003d',
   },
   tagText: {
-    fontSize: 14,
+    fontSize: 14, // handled inline with fs()
     marginRight: 4,
   },
   removeButton: {

@@ -25,7 +25,7 @@ const campaignInitialState = {
   template: '',
   country: '',
   state: '',
-  campaignStartDate: moment().local().format(),
+  campaignStartDate: moment().local().startOf('day').format(),
   campaignEndDate: '',
   status: 1,
   autoLead: false,
@@ -51,6 +51,7 @@ export default function CampaignScheduleScreen(props) {
   const lovs = useSelector(state => state.lovs).lovs;
 
   const [campaignInfo, setCampaignInfo] = useState(campaignInitialState);
+  const [scheduleList, setScheduleList] = React.useState();
   const [Index, setIndex] = useState(0);
   const [updateMessage, setUpdateMessage] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
@@ -76,6 +77,24 @@ export default function CampaignScheduleScreen(props) {
       loadInitialData();
       fetchRecipients();
       loadNetworkPricing();
+      setScheduleList({
+        CompaignNetworks: [],
+        id: 0,
+        budget: 0,
+        rowVer: 0,
+        messageCount: 0,
+        orgId: user.orgId,
+        days: [],
+        networkId: 0,
+        compaignDetailId: 0,
+        isFixedTime: 1,
+        startTime: campaignInfo.campaignStartDate,
+        finishTime: campaignInfo.campaignEndDate,
+        interval: 0,
+        status: 1,
+        intervalTypeId: 0,
+        randomId: Math.floor(100000 + Math.random() * 900000),
+      });
       if (props.route.params) {
         updateCampaignData(props.route.params.campaign);
       }
@@ -444,6 +463,7 @@ export default function CampaignScheduleScreen(props) {
             setCampaignInfo={setCampaignInfo}
             setIndex={setIndex}
             orgData={orgData}
+            setScheduleList={setScheduleList}
           />
         )}
         {Index == 1 && (
@@ -452,6 +472,7 @@ export default function CampaignScheduleScreen(props) {
             setCampaignInfo={setCampaignInfo}
             setIndex={setIndex}
             networks={networkData}
+            setScheduleList={setScheduleList}
           />
         )}
         {Index == 2 && (
@@ -467,6 +488,8 @@ export default function CampaignScheduleScreen(props) {
               recipients={recipients}
               orgData={orgData}
               fetchRecipients={fetchRecipients}
+              setScheduleList={setScheduleList}
+              scheduleList={scheduleList}
             />
             <Spinner
               visible={spinner}
