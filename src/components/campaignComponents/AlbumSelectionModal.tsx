@@ -263,7 +263,7 @@ const AlbumSelectionModal: React.FC<Props> = ({
     const existingContacts = getExistingContacts(selectedAlbumForContacts!);
 
     if (networkName === 'SMS' || networkName === 'WHATSAPP') {
-      const normalize = n => n.replace(/\D/g, '').slice(-10);
+      const normalize = (n: string) => n.replace(/\D/g, '').slice(-10);
 
       const exists = existingContacts.some(
         c => normalize(c) === normalize(trimmedValue),
