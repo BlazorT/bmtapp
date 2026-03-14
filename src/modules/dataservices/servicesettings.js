@@ -19,7 +19,7 @@ let servicesettings = {
     'cVQ-h9G7QPCs3ErRdmsGNE:APA91bGlsWbE6ouc9jbIskdJOSF0SqwWq-9HXGGeewcs5ESpH-ryhoKYgcYIx19Iay_geMmufvWNb0M6woPo1jYNvIS0tiGZjXluSDuDbLeHyDeHJJ1ZGL_eq06EVb_0AyfsVeCjHND8',
   fcmToken: '',
   gWebClientId:
-    '49666104462-8pmscqjm4e7bskf5ego7os8g0k6vuk12.apps.googleusercontent.com',
+    '545864141345-p10t8lhkn05taeh7k0j0ojf6ij420470.apps.googleusercontent.com',
   WhatsappID: 1,
   FacebookID: 2,
   SMSID: 3,

@@ -14,8 +14,28 @@
       },
       "oauth_client": [
         {
-          "client_id": "545864141345-f65gk705g23hoi6ltc7imip3tsp7ga98.apps.googleusercontent.com",
-          "client_type": 3
+          "client_id": "545864141345-4a7u6e5nn5s127e4nj4qbn9rhi8p3c9m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.blazor.bdmt",
+            "certificate_hash": "bf7d3d5dc2bf3de53b5ac42201c426f26e11f521"
+          }
+        },
+        {
+          "client_id": "545864141345-72dmit0mknr1si1ebf3c1sf6tra9gn79.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.blazor.bdmt",
+            "certificate_hash": "aa895facca27d3a0b97c12ab1bfae262194d708d"
+          }
+        },
+        {
+          "client_id": "545864141345-laq8sh388rc62mjp7g10qhjefrm2io2a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.blazor.bdmt",
+            "certificate_hash": "fda1f2fd6abdb3a08504a3f5832559f93aac3c3d"
+          }
         }
       ],
       "api_key": [
@@ -27,15 +47,8 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "545864141345-57s5a3f1mepovbqqv4m4o1us2ucka4k8.apps.googleusercontent.com",
+              "client_id": "104400739758048642979",
               "client_type": 3
-            },
-            {
-              "client_id": "545864141345-91ptj0q3n2cvnfugf60nbpr80b8tupko.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.blazor.bdmt"
-              }
             }
           ]
         }

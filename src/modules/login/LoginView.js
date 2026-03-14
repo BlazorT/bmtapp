@@ -76,11 +76,11 @@ export default function LoginScreen(props) {
   };
 
   useEffect(() => {
-    global.SocialMedia = 0;
     GoogleSignin.configure({
       webClientId: servicesettings.gWebClientId,
       offlineAccess: true,
     });
+    global.SocialMedia = 0;
 
     if (global.SignUp_Login == 1) {
       setmodalVisiblecamera(false);
