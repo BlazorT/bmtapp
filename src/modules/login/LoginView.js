@@ -41,6 +41,7 @@ import { useTheme } from '../../hooks/useTheme';
 import { useUser } from '../../hooks/useUser';
 import { isTab } from '../../constants';
 import SignupWithFacebook from '../../components/SignupWithFacebook';
+import moment from 'moment';
 
 export default function LoginScreen(props) {
   const theme = useTheme();
@@ -369,7 +370,7 @@ export default function LoginScreen(props) {
           } else {
             data.append('email', email.trim());
             data.append('orgname', email.trim());
-            data.append('address', email.trim());
+            data.append('address', '');
             data.append('cityid', '0');
           }
           if (Password == null || Password == '' || Password == 'undefined') {
@@ -505,48 +506,117 @@ export default function LoginScreen(props) {
     ContinueWithSocialMedia();
   }
 
-  async function signInWithApple() {
-    const appleAuthRequestResponse = await appleAuth.performRequest({
-      requestedOperation: appleAuth.Operation.LOGIN,
-      // Note: it appears putting FULL_NAME first is important, see issue #293
-      requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
-    });
-    if (appleAuthRequestResponse !== null || appleAuthRequestResponse !== '') {
-      let { email, fullName } = appleAuthRequestResponse;
-      if (email === null || fullName === null) {
-        const foundUser = findAppleUser(appleAuthRequestResponse?.user);
-        if (foundUser) {
-          email = foundUser.email;
-          fullName = foundUser.fullName;
-        } else {
-          updateAppleUsers(appleAuthRequestResponse);
-        }
-      } else {
-        updateAppleUsers(appleAuthRequestResponse);
-      }
-      var facebookOS = 5;
+  async function getUsers() {
+    try {
+      const body = {
+        id: 0,
+        roleId: 0,
+        orgId: 0,
+        email: '',
+        userCode: '000772.af7a0b9c332d4281aa5b2037084fb59d.1631',
+        //userName: '',
+        //userName: filters ? (filters.userName === '' ? '' : filters.userName) : '',
+        lastName: '',
+        firstName: '',
+        password: '',
+        // contact: "",
+        rowVer: 0,
+        genderId: 0,
+        securityToken: '',
+        registrationTime: moment().utc().format(),
+        cityId: 0,
+        status: 0,
+        userName: '',
+        createdAt: moment.utc().subtract(100, 'year').format('YYYY-MM-DD'),
 
-      AsyncStorage.removeItem('SignupWithGoogle_Facebook');
-      var GoogleData = {
+        lastUpdatedAt: moment.utc().format('YYYY-MM-DD'),
+      };
+      // console.log({ body });
+      const response = await fetch(
+        servicesettings.baseuri + 'BlazorApi/users',
+        {
+          method: 'POST',
+          body: JSON.stringify(body),
+          headers: {
+            'Content-Type': 'application/json; charset=utf-8',
+            Accept: 'application/json',
+            Authorization: servicesettings.AuthorizationKey,
+          },
+        },
+      );
+      if (!response.ok) {
+        // Toast.show('Failed to create album');
+        return [];
+      }
+      const res = await response.json();
+      // console.log({ res });
+      return res?.data || [];
+    } catch {
+      return [];
+    }
+  }
+
+  // getUsers();
+  async function signInWithApple() {
+    try {
+      const response = await appleAuth.performRequest({
+        requestedOperation: appleAuth.Operation.LOGIN,
+        requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
+      });
+
+      if (!response) {
+        Toast.show('Something went wrong');
+        return;
+      }
+      // console.log({ response });
+      let { email, fullName, user } = response;
+
+      // Apple only sends email/name on first login — fallback to stored user
+      if (!email || !fullName) {
+        const users = await getUsers();
+        // console.log({ users });
+        const findUser = users?.find(u => u?.userCode === user);
+        // console.log({ findUser });
+        if (!findUser) {
+          Toast.show('User not found');
+          return; // stop here, don't continue
+        }
+
+        email = findUser.email;
+        fullName = {
+          givenName: findUser.firstName || '',
+          familyName: findUser.lastName || '',
+        };
+      } else {
+        // First time login — save to backend
+        // await updateAppleUsers(response);
+      }
+
+      const socialData = {
         firstName: fullName?.givenName ?? fullName?.nickname ?? '',
         lastName: fullName?.familyName ?? fullName?.middleName ?? '',
-        userName: `${fullName?.givenName ?? fullName?.nickname ?? ''}.${fullName?.familyName ?? fullName?.middleName ?? ''}`,
-        facebookOS: facebookOS,
-        userID: '',
+        userName: `${fullName?.givenName ?? ''}.${fullName?.familyName ?? ''}`,
+        facebookOS: 5,
+        userID: user || '',
         picture: '',
         email: email ?? '',
         authtoken: '',
       };
-      AsyncStorage.setItem(
+
+      await AsyncStorage.removeItem('SignupWithGoogle_Facebook');
+      await AsyncStorage.setItem(
         'SignupWithGoogle_Facebook',
-        JSON.stringify(GoogleData),
+        JSON.stringify(socialData),
       );
 
       ContinueWithSocialMedia();
-    } else {
-      Toast.show('Something went wrong');
+    } catch (error) {
+      if (error.code === appleAuth.Error.CANCELED) return;
+      Toast.show('Apple sign in failed');
+      console.error('Apple auth error:', error);
     }
   }
+
   function SignupWithGoogle() {
     global.Signup_LoginWithGoogle = 1;
     Signup();
