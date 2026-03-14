@@ -95,68 +95,72 @@ export default function LoginScreen(props) {
       await GoogleSignin.hasPlayServices({
         showPlayServicesUpdateDialog: true,
       });
+
       let userInfo = await GoogleSignin.signIn();
       console.log({ userInfo });
-      if (isSuccessResponse(userInfo)) {
-        userInfo = userInfo.data;
 
-        var givenName = userInfo.user.givenName;
-        var name = userInfo.user.name;
-
-        if (givenName.length >= '0' && givenName.includes(' ')) {
-          var firstName = givenName.split(' ')[0];
-          var lastName = givenName.split(' ')[1];
-          var userName = givenName.replace(' ', '.');
-        } else if (name.length >= '0' && name.includes(' ')) {
-          var firstName = name.split(' ')[0];
-          var lastName = name.split(' ')[1];
-          var userName = name.replace(' ', '.');
-        } else {
-          var firstName = givenName || name;
-          var lastName = givenName || name;
-          var userName = givenName || name;
-        }
-        var facebookOS = 5;
-        AsyncStorage.removeItem('SignupWithGoogle_Facebook');
-        var GoogleData = {
-          firstName: firstName,
-          lastName: lastName,
-          userName: userName,
-          facebookOS: facebookOS,
-          userID: userInfo.user.id,
-          picture: userInfo.user.photo,
-          email: userInfo.user.email,
-          authtoken: userInfo.idToken,
-        };
-        AsyncStorage.setItem(
-          'SignupWithGoogle_Facebook',
-          JSON.stringify(GoogleData),
-        );
-
-        setmodalVisiblecamera(false);
-        if (global.Signup_LoginWithGoogle == 1) {
-          ContinueWithSocialMedia();
-        } else if (global.Signup_LoginWithGoogle == 2) {
-          ContinueWithSocialMedia();
-        }
-      } else {
+      if (!isSuccessResponse(userInfo)) {
         Toast.show('Google sign in not available');
+        return;
       }
+
+      userInfo = userInfo.data;
+
+      // ✅ Safe fallbacks — givenName CAN be null from Google
+      const givenName = userInfo.user.givenName ?? '';
+      const name = userInfo.user.name ?? '';
+      const displayName = givenName || name;
+
+      let firstName, lastName, userName;
+
+      if (displayName.includes(' ')) {
+        const parts = displayName.split(' ');
+        firstName = parts[0];
+        lastName = parts[1];
+        userName = parts[0] + '.' + parts[1];
+      } else {
+        firstName = displayName;
+        lastName = displayName;
+        userName = displayName || userInfo.user.email?.split('@')[0] || 'user';
+      }
+
+      const GoogleData = {
+        firstName,
+        lastName,
+        userName,
+        facebookOS: 5,
+        userID: userInfo.user.id,
+        picture: userInfo.user.photo ?? '',
+        email: userInfo.user.email ?? '',
+        authtoken: userInfo.idToken ?? '',
+      };
+
+      await AsyncStorage.removeItem('SignupWithGoogle_Facebook');
+      await AsyncStorage.setItem(
+        'SignupWithGoogle_Facebook',
+        JSON.stringify(GoogleData),
+      );
+
+      setmodalVisiblecamera(false);
+      ContinueWithSocialMedia();
     } catch (error) {
+      console.log('Google Sign In Error:', error); // ✅ Always log
       if (isErrorWithCode(error)) {
-        if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-          Toast.show('User Cancelled the Login Flow');
-        } else if (error.code === statusCodes.IN_PROGRESS) {
-          Toast.show('Signing In');
-        } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-          Toast.show('Play Services Not Available or Outdated');
-        } else if (error.code === statusCodes.SIGN_IN_REQUIRED) {
-          Toast.show(
-            'The user is not signed in and a sign-in action is required.',
-          );
+        switch (error.code) {
+          case statusCodes.SIGN_IN_CANCELLED:
+            Toast.show('User cancelled the login');
+            break;
+          case statusCodes.IN_PROGRESS:
+            Toast.show('Sign in already in progress');
+            break;
+          case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
+            Toast.show('Play Services not available');
+            break;
+          default:
+            Toast.show(error?.message || 'Google sign in failed');
         }
       } else {
-        Toast.show(error?.message);
+        Toast.show(error?.message || 'Something went wrong');
       }
     }
   };
@@ -388,7 +392,7 @@ export default function LoginScreen(props) {
             },
           };
           //
-
+          console.log('ImageheaderFetch', data);
           fetch(
             servicesettings.baseuri + 'BlazorApi/useraccountwithlogin',
             ImageheaderFetch,
