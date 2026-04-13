@@ -74,14 +74,15 @@ const LOVContext = createContext({
 export const LOVProvider = ({ children }) => {
   const theme = useTheme();
   const themeMode = useSelector(state => state.theme.mode);
-
+  const isRehydrated = useSelector(state => state._persist?.rehydrated);
   const dispatch = useDispatch();
 
   const { data, loading, error, fetchData } = useFetchData(apiConfigs);
 
   useEffect(() => {
+    if (!isRehydrated) return; // ✅ wait for store to rehydrate
     fetchData();
-  }, []);
+  }, [isRehydrated]);
 
   useEffect(() => {
     if (loading || error) return;

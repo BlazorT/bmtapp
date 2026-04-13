@@ -7,9 +7,11 @@ import { useUser } from '../../hooks/useUser';
 import { isAdminOrSuperAdmin } from '../home/HomeView';
 import tabNavigationData from './tabNavigationData';
 import { isTab } from '../../constants';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const Tab = createBottomTabNavigator();
 
 export default function BottomTabs() {
+  const insets = useSafeAreaInsets();
   const { isAuthenticated, user } = useUser();
   const theme = useTheme();
 
@@ -19,6 +21,9 @@ export default function BottomTabs() {
         tabBarStyle: {
           height: Platform.OS === 'ios' ? 90 : isTab ? 70 : 60,
           backgroundColor: theme.navBarBack,
+          paddingBottom: insets.bottom > 0 ? insets.bottom : 8,
+          paddingTop: 4,
+          // remove marginBottom entirely
         },
 
         headerShown: false,

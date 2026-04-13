@@ -1,219 +1,234 @@
-import React, { useEffect, useState } from 'react';
-import { Dimensions, Modal, StyleSheet, Text, View } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import { Button } from '../components';
-import { colors } from '../styles';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useRef } from 'react';
+import {
+  Animated,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Pressable,
+} from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 import { isTab } from '../constants';
-export default function CustomeAlert(props) {
+
+const ICON_MAP = {
+  warning: { emoji: '⚠️', color: '#F59E0B', bg: '#FEF3C7' },
+  error: { emoji: '✕', color: '#EF4444', bg: '#FEE2E2' },
+  success: { emoji: '✓', color: '#10B981', bg: '#D1FAE5' },
+  default: { emoji: 'ℹ️', color: '#6366F1', bg: '#EEF2FF' },
+};
+
+export default function CustomAlert(props) {
   const theme = useTheme();
-  const isMode = useSelector(state => state.theme.mode);
-  const [customestyle, setcustomestyle] = useState(styles.Alert_Message);
+  const scaleAnim = useRef(new Animated.Value(0.85)).current;
+  const opacityAnim = useRef(new Animated.Value(0)).current;
+
+  const iconInfo = ICON_MAP[props.massagetype] ?? ICON_MAP.default;
+  const isConfirmation = props.alerttype === 'confirmation';
 
   useEffect(() => {
-    if (props.massagetype == 'warning') {
-      setcustomestyle(styles.Warning_Message);
-    } else if (props.massagetype == 'error') {
-      setcustomestyle(styles.Error_Message);
+    if (props.Visible) {
+      Animated.parallel([
+        Animated.spring(scaleAnim, {
+          toValue: 1,
+          useNativeDriver: true,
+          damping: 18,
+          stiffness: 220,
+        }),
+        Animated.timing(opacityAnim, {
+          toValue: 1,
+          duration: 180,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    } else {
+      scaleAnim.setValue(0.85);
+      opacityAnim.setValue(0);
     }
-  });
-  function Hide() {
-    props.hide();
-  }
-  ok_Button = () => {
-    props.OK();
-  };
-  function confirmation() {
-    props.confirm();
-  }
+  }, [props.Visible]);
 
   if (!props.Visible) return null;
+
   return (
-    <View>
-      {props.alerttype == 'confirmation' ? (
-        <Modal
-          style={styles.modalView}
-          visible={props.Visible}
-          transparent={true}
-          animationType={'fade'}
+    <Modal
+      visible={props.Visible}
+      transparent
+      animationType="none"
+      onRequestClose={props.hide}
+    >
+      {/* Backdrop */}
+      <Pressable
+        style={styles.backdrop}
+        onPress={isConfirmation ? undefined : props.hide}
+      >
+        <Animated.View
+          style={[
+            styles.card,
+            {
+              backgroundColor: theme.modalBackColor,
+              transform: [{ scale: scaleAnim }],
+              opacity: opacityAnim,
+              shadowColor: '#000',
+            },
+          ]}
         >
-          <View
-            style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
-          >
-            <LinearGradient
-              colors={[
-                theme.modalBackColor,
-                theme.modalBackColor,
-                theme.modalBackColor,
-              ]}
-              style={[
-                styles.Alert_Main_View,
-                {
-                  boxShadow: `-1px 1px 15px 0px ${theme.textColor}`,
-                },
-              ]}
-            >
-              <Text style={[styles.Alert_Title, { color: theme.textColor }]}>
-                {props.Title}
-              </Text>
-              <Text
-                style={[
-                  customestyle,
-                  styles.customestyleMessage,
-                  { color: theme.textColor },
-                ]}
-              >
-                {props.Massage}
-              </Text>
-              <View
-                style={{
-                  width: '100%',
-                  height: 0.3,
-                  backgroundColor: '#474747',
-                }}
-              />
-              <View style={styles.ButtonView}>
-                <Button
-                  style={styles.btnButton}
-                  bgColor={theme.buttonBackColor}
-                  caption="Cancel"
-                  onPress={() => Hide()}
-                />
-                <Button
-                  style={styles.btnButton}
-                  bgColor={theme.buttonBackColor}
-                  caption="Confirm"
-                  onPress={() => confirmation()}
-                />
-              </View>
-            </LinearGradient>
+          {/* Icon Badge */}
+          <View style={[styles.iconBadge, { backgroundColor: iconInfo.bg }]}>
+            <Text style={[styles.iconText, { color: iconInfo.color }]}>
+              {iconInfo.emoji}
+            </Text>
           </View>
-        </Modal>
-      ) : (
-        <Modal
-          visible={props.Visible}
-          transparent={true}
-          animationType={'fade'}
-          onRequestClose={() => Hide()}
-        >
-          <LinearGradient
-            colors={
-              isMode === 'light'
-                ? ['#cdcdcd', '#f5f5f5', '#cdcdcd']
-                : [
-                    theme.modalBackColor,
-                    theme.modalBackColor,
-                    theme.modalBackColor,
-                  ]
-            }
-            style={styles.Alert_Main_View}
+
+          {/* Title */}
+          <Text style={[styles.title, { color: theme.textColor }]}>
+            {props.Title}
+          </Text>
+
+          {/* Message */}
+          <Text
+            style={[
+              styles.message,
+              { color: theme.placeholderColor ?? '#888' },
+            ]}
           >
-            <Text style={[styles.Alert_Title, { color: theme.textColor }]}>
-              {props.Title}
-            </Text>
-            <Text
-              style={[
-                customestyle,
-                styles.customestyleMessage,
-                { color: theme.textColor },
-              ]}
-            >
-              {props.Massage}
-            </Text>
-            <View
-              style={{ width: '100%', height: 0.3, backgroundColor: '#fff' }}
-            />
-            <View style={styles.ButtonView}>
-              <Button
-                style={styles.btnButton}
-                bgColor={theme.buttonBackColor}
-                caption="Ok"
-                onPress={ok_Button}
-              />
+            {props.Massage}
+          </Text>
+
+          {/* Divider */}
+          <View
+            style={[
+              styles.divider,
+              { backgroundColor: theme.textColor + '18' },
+            ]}
+          />
+
+          {/* Buttons */}
+          {isConfirmation ? (
+            <View style={styles.buttonRow}>
+              <TouchableOpacity
+                style={[
+                  styles.btn,
+                  styles.cancelBtn,
+                  { borderColor: theme.textColor + '30' },
+                ]}
+                onPress={props.hide}
+                activeOpacity={0.7}
+              >
+                <Text style={[styles.cancelText, { color: theme.textColor }]}>
+                  Cancel
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.btn,
+                  styles.confirmBtn,
+                  { backgroundColor: iconInfo.color },
+                ]}
+                onPress={props.confirm}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.confirmText}>Confirm</Text>
+              </TouchableOpacity>
             </View>
-          </LinearGradient>
-        </Modal>
-      )}
-    </View>
+          ) : (
+            <View style={styles.buttonRow}>
+              <TouchableOpacity
+                style={[
+                  styles.btn,
+                  styles.okBtn,
+                  { backgroundColor: iconInfo.color },
+                ]}
+                onPress={props.OK}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.confirmText}>OK</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </Animated.View>
+      </Pressable>
+    </Modal>
   );
 }
+
 const styles = StyleSheet.create({
-  Alert_Main_View: {
+  backdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  card: {
+    width: isTab ? '55%' : '100%',
+    borderRadius: 20,
+    paddingTop: 32,
+    paddingBottom: 24,
+    paddingHorizontal: 24,
+    alignItems: 'center',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.15,
+    shadowRadius: 24,
+    elevation: 10,
+  },
+  iconBadge: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
     alignItems: 'center',
     justifyContent: 'center',
-    height: 200,
-    width: isTab ? '50%' : '90%',
-    borderRadius: 7,
+    marginBottom: 18,
   },
-  ButtonView: {
-    borderTopWidth: 1,
-    borderColor: '#474747',
-    width: 100 + '%',
-    paddingTop: 8,
-    marginBottom: 7,
-    //paddingVertical:10,
+  iconText: {
+    fontSize: 28,
+    fontWeight: '700',
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: '700',
+    textAlign: 'center',
+    marginBottom: 10,
+    letterSpacing: 0.2,
+  },
+  message: {
+    fontSize: 15,
+    textAlign: 'center',
+    lineHeight: 22,
+    marginBottom: 24,
+  },
+  divider: {
+    width: '100%',
+    height: 1,
+    marginBottom: 20,
+  },
+  buttonRow: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    gap: 12,
+    width: '100%',
   },
-  btnButton: {
-    width: 40 + '%',
+  btn: {
+    flex: 1,
     height: 48,
-    fontSize: 32,
     borderRadius: 12,
-  },
-  customestyleMessage: {
-    //height:55,
-    fontSize: 18,
-    color: 'black',
-  },
-  Alert_Title: {
-    fontSize: 22,
-    color: 'black',
-    textAlign: 'center',
-    //padding: 10,
-    // height: '11%'
-    marginBottom: 4,
-    marginTop: 15,
-  },
-  Alert_Message: {
-    fontSize: 22,
-    color: 'black',
-    textAlign: 'center',
-    padding: 10,
-    height: '42%',
-  },
-  Warning_Message: {
-    fontSize: 22,
-    color: 'orange',
-    textAlign: 'center',
-    padding: 10,
-    height: '40%',
-  },
-  Error_Message: {
-    fontSize: 22,
-    color: 'red',
-    textAlign: 'center',
-    padding: 10,
-    height: '42%',
-  },
-  modalView: {
-    justifyContent: 'space-around',
-    //width: '100%',
-    height: '100%',
-    backgroundColor: '#010c1fb8',
-    position: 'absolute',
-    bottom: 0,
-    //borderRadius: 20,
-    padding: 35,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+    justifyContent: 'center',
+  },
+  cancelBtn: {
+    borderWidth: 1.5,
+    backgroundColor: 'transparent',
+  },
+  confirmBtn: {},
+  okBtn: {
+    width: '100%',
+  },
+  cancelText: {
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  confirmText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#fff',
   },
 });

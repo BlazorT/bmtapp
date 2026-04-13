@@ -1,5 +1,12 @@
 import React, { useRef } from 'react';
-import { ActivityIndicator, Modal, Platform, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Image,
+  Modal,
+  Platform,
+  Text,
+  View,
+} from 'react-native';
 import { AppLifecycle } from 'react-native-applifecycle';
 import { useTheme } from '../hooks/useTheme';
 import { useJCInquiry } from '../hooks/useJazzCash';
@@ -13,6 +20,8 @@ const JCPaymentConfirm = ({
   onCheckout,
   setShowJCPayment,
   setOrderDetail,
+  selectedGateway,
+  setPaymentError,
 }) => {
   const theme = useTheme();
   const { inquireJC } = useJCInquiry();
@@ -30,7 +39,7 @@ const JCPaymentConfirm = ({
         handleConfirm();
       },
       // 5000,
-      1 * 60 * 1000,
+      30 * 1000,
     ); // 5 minutes
 
     return () => clearInterval(intervalId); // Cleanup
@@ -61,6 +70,7 @@ const JCPaymentConfirm = ({
     if (!jazzCashTxnRefNo) {
       setShowJCPayment(false);
       Toast.show('Payment has been canceled');
+      setPaymentError('Payment has been canceled');
       return;
     }
     const body = {
@@ -74,9 +84,12 @@ const JCPaymentConfirm = ({
         onCheckout(btoa(JSON.stringify(res)));
       } else if (res?.pp_PaymentResponseCode === '999') {
         setShowJCPayment(false);
-        Toast.show(
-          res?.pp_PaymentResponseMessage || 'Payment has been canceled',
-        );
+        const message = `Payment did not approved.\n${
+          res?.pp_PaymentResponseMessage ||
+          'JazzCash payment failed. Please try again.'
+        }`;
+        Toast.show(message);
+        setPaymentError(message);
       }
     }
   };
@@ -89,66 +102,187 @@ const JCPaymentConfirm = ({
     <Modal visible={isVisible} backdropColor={'transparent'} transparent>
       <View
         style={{
-          backgroundColor: theme.modalBackColor,
-          paddingHorizontal: 15,
-          paddingVertical: 15,
+          flex: 1,
           justifyContent: 'center',
           alignItems: 'center',
-          width: '90%',
-          borderRadius: 12,
-          shadowColor: theme.textColor,
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.3,
-          shadowRadius: 10,
-          elevation: 5,
-          alignSelf: 'center',
-          marginTop: Platform.OS === 'ios' ? 50 : 0,
+          backgroundColor: 'rgba(0,0,0,0.3)', // optional dim backdrop
         }}
       >
-        {/* <CloseIcon onPress={toggleModal} /> */}
-        <Text
+        <View
           style={{
-            color: theme.textColor,
-            fontSize: 22,
-            fontWeight: '700',
+            backgroundColor: theme.modalBackColor,
+            paddingHorizontal: 15,
+            paddingVertical: 15,
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: '90%',
+            borderRadius: 12,
+            shadowColor: theme.textColor,
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.3,
+            shadowRadius: 10,
+            elevation: 5,
+            alignSelf: 'center',
+            marginTop: Platform.OS === 'ios' ? 50 : 0,
           }}
         >
-          Jazz Cash
-        </Text>
-        {/* <SuccessIcon loop icon={require('../assets/gifs/loader.json')} /> */}
-        <View style={{ width: 200 }}>
+          {selectedGateway?.logo ? (
+            <Image
+              source={{
+                uri: `data:image/png;base64,${selectedGateway.logo}`,
+              }}
+              style={{
+                width: 50,
+                height: 50,
+              }}
+              resizeMode="contain"
+            />
+          ) : null}
+
+          {/* Spinner */}
           <ActivityIndicator
-            color={theme.buttonBackColor}
+            color={theme.selectedCheckBox}
+            size="large"
+            style={{ marginVertical: 20 }}
+          />
+
+          {/* Status text */}
+          <Text
             style={{
-              transform: [{ scaleX: 5 }, { scaleY: 5 }],
-              marginVertical: 50,
+              textAlign: 'center',
+              marginBottom: 4,
+              fontSize: 22,
+              color: theme.textColor,
+            }}
+          >
+            Waiting for Payment Approval
+          </Text>
+          <Text
+            style={{
+              textAlign: 'center',
+              color: theme.placeholderColor,
+              marginBottom: 20,
+            }}
+          >
+            This may take up to 10 minutes
+          </Text>
+
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 6,
+              backgroundColor: theme.selectedCheckBox,
+              paddingHorizontal: 14,
+              paddingVertical: 6,
+              borderRadius: 20,
+              marginBottom: 20,
+            }}
+          >
+            <Text
+              style={{
+                color: theme.textColor,
+                fontWeight: '700',
+                fontSize: 13,
+              }}
+            >
+              ⏱ Remaining:
+            </Text>
+            <Text
+              style={{
+                color: theme.textColor,
+                fontWeight: '700',
+                fontSize: 13,
+              }}
+              translate={false}
+            >
+              {timer}
+            </Text>
+          </View>
+
+          {/* Divider */}
+          <View
+            style={{
+              width: '100%',
+              height: 0.5,
+              backgroundColor: theme.placeholderColor,
+              marginBottom: 16,
             }}
           />
-        </View>
-        <Text style={{ color: theme.textColor, fontSize: 18 }}>
-          Confirming payment it may take some time, might be upto 10 min....
-        </Text>
-        <Text
-          style={{
-            color: theme.buttonBackColor,
-            fontSize: 18,
-            marginVertical: 6,
-          }}
-        >
-          Please approve the payment request in your JazzCash app to complete
-          your order.
-        </Text>
 
-        <Text
-          style={{ color: theme.textColor, fontSize: 18, marginVertical: 6 }}
-        >
-          Remaining time: {timer}
-        </Text>
-        {/* <Button
+          {/* Steps label */}
+          <Text
+            style={{
+              alignSelf: 'flex-start',
+              color: theme.placeholderColor,
+              marginBottom: 10,
+              letterSpacing: 0.5,
+              fontSize: 12,
+            }}
+          >
+            FOLLOW THESE STEPS
+          </Text>
+
+          {/* Steps */}
+          {[
+            { step: '1', text: 'Open your JazzCash app' },
+            { step: '2', text: 'Tap the 👤 profile icon at top right' },
+            { step: '3', text: 'Tap on Payment Requests' },
+            { step: '4', text: 'Select the Pending tab' },
+            { step: '5', text: 'Approve your payment' },
+          ].map(({ step, text }) => (
+            <View
+              key={step}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 12,
+                marginBottom: 10,
+                width: '100%',
+              }}
+            >
+              <View
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 14,
+                  backgroundColor: theme.selectedCheckBox,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Text
+                  style={{
+                    color: theme.textColor,
+                    fontSize: 13,
+                  }}
+                >
+                  {step}
+                </Text>
+              </View>
+              <Text
+                style={{
+                  flex: 1,
+                  fontWeight: '700',
+                  color: theme.textColor,
+                  fontSize: 13,
+                }}
+              >
+                {text}
+              </Text>
+            </View>
+          ))}
+          {/* <Text
+            style={{ color: theme.textColor, fontSize: 18, marginVertical: 6 }}
+          >
+            Remaining time: {timer}
+          </Text> */}
+          {/* <Button
           title={'Button.Cancel'}
           onPress={onCancel}
           style={{width: '100%'}}
         /> */}
+        </View>
       </View>
     </Modal>
   );

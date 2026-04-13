@@ -4,6 +4,7 @@ import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
+  Image,
   Modal,
   Platform,
   Text,
@@ -32,6 +33,7 @@ import RNSButton from '../Button';
 import JCPaymentConfirm from '../JCPaymentConfirm';
 import AddSchedule from './AddSchedule';
 import ScheduleList from './ScheduleList';
+import { useAlert } from '../../context/AlertContext';
 
 const CampaignSchedule = ({
   campaignInfo,
@@ -47,6 +49,8 @@ const CampaignSchedule = ({
   scheduleList,
   setScheduleList,
 }) => {
+  const { showAlert } = useAlert();
+
   const theme = useTheme();
   const { user } = useUser();
   const navigation = useNavigation();
@@ -555,9 +559,14 @@ const CampaignSchedule = ({
         addSchedule(btoa(data));
         Toast.show('Payment successful');
       } else {
-        Toast.show(
-          'Payment is not success, possible reasons, account holder acceptance is not done or easy paisa account does not exist!',
-        );
+        const message =
+          'Payment is not success, possible reasons, account holder acceptance is not done or easy paisa account does not exist!';
+        await showAlert({
+          title: 'EasyPaisa Payment',
+          message: message,
+          type: 'error',
+        });
+
         return;
       }
     } catch (e) {
@@ -611,23 +620,29 @@ const CampaignSchedule = ({
           addSchedule(btoa(data));
         }
         if (transactionStatus === 'FAILED') {
-          Toast.show(
-            'Payment is not success, possible reasons, account holder acceptance is not done or easy paisa account does not exist!',
-          );
+          const message =
+            'Payment is not success, possible reasons, account holder acceptance is not done or easy paisa account does not exist!';
+          await showAlert({
+            title: 'EasyPaisa Payment',
+            message: message,
+            type: 'error',
+          });
+
           setEasypaisaOrderId('');
         }
         if (transactionStatus === 'PENDING') {
           setspinner(true);
           return;
-          // Toast.show(
-          //   'Payment is not success, possible reasons, account holder acceptance is not done or easy paisa account does not exist!',
-          // );
-          // setEasypaisaOrderId('');
         }
       } else if (responseCode) {
-        Toast.show(
-          'Payment is not success, possible reasons, account holder acceptance is not done or easy paisa account does not exist!',
-        );
+        const message =
+          'Payment could not be processed. Please verify your EasyPaisa account details and try again.';
+        await showAlert({
+          title: 'EasyPaisa Payment',
+          message: message,
+          type: 'error',
+        });
+
         return;
       }
     } catch (e) {
@@ -656,9 +671,12 @@ const CampaignSchedule = ({
       cnic: jazzCashNic,
       ppmpf_1: keepOnlyAlphanumeric(user?.email ?? ''),
       txnRef,
+      txnDT: txnDateTime,
       ppmpf_2: '',
     };
+    console.log({ jcBody });
     const res = await payJC(jcBody);
+    console.log({ res });
     if (res) {
       const filteredResponse = {
         pp_TxnType: res.pp_TxnType || '',
@@ -674,16 +692,31 @@ const CampaignSchedule = ({
         pp_CNIC: res.pp_CNIC || '',
         pp_SecureHash: res.pp_SecureHash || '',
       };
-      if (res?.pp_ResponseCode === '157') {
-        // toggleJCPayment();
-        setShowJCPayment(true);
-      } else if (res?.pp_ResponseCode === '000') {
-        Toast.show(res?.pp_ResponseMessage);
-        addSchedule(1, btoa(JSON.stringify(filteredResponse)));
-      } else if (res?.pp_ResponseMessage) {
-        setJazzCashTxnRefNo('');
-        Toast.show(res?.pp_ResponseMessage);
-      }
+
+      setTimeout(
+        async () => {
+          if (res?.pp_ResponseCode === '157') {
+            // toggleJCPayment();
+            setShowJCPayment(true);
+          } else if (res?.pp_ResponseCode === '000') {
+            Toast.show(res?.pp_ResponseMessage);
+            addSchedule(btoa(JSON.stringify(filteredResponse)));
+          } else if (res?.pp_ResponseMessage) {
+            setJazzCashTxnRefNo('');
+            const message = `Payment did not approved.\n${
+              res?.pp_ResponseMessage ||
+              'JazzCash payment failed. Please try again.'
+            }`;
+            await showAlert({
+              title: 'JazzCash Payment',
+              message: message,
+              type: 'error',
+            });
+            // Toast.show(message);
+          }
+        },
+        Platform.OS === 'ios' ? 1000 : 0,
+      );
     }
   };
 
@@ -725,7 +758,7 @@ const CampaignSchedule = ({
 
     const listener = AppLifecycle.addEventListener('change', state => {
       if (!isMounted) return;
-
+      console.log({ state, jazzCashTxnRefNo });
       if (state === 'active') {
         if (jazzCashTxnRefNo && jazzCashTxnRefNo !== '') {
           setShowJCPayment(true);
@@ -741,7 +774,6 @@ const CampaignSchedule = ({
       listener.remove();
     };
   }, []);
-
   // // ✅ format at the end
   return (
     <View style={{ marginTop: 5 }}>
@@ -879,55 +911,145 @@ const CampaignSchedule = ({
           <Modal visible={jcLoading} backdropColor={'transparent'} transparent>
             <View
               style={{
-                backgroundColor: theme.modalBackColor,
-                paddingHorizontal: 15,
-                paddingVertical: 15,
+                flex: 1,
                 justifyContent: 'center',
                 alignItems: 'center',
-                width: '90%',
-                borderRadius: 12,
-                shadowColor: theme.textColor,
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.3,
-                shadowRadius: 10,
-                elevation: 5,
-                alignSelf: 'center',
-                marginTop: Platform.OS === 'ios' ? 50 : 0,
+                backgroundColor: 'rgba(0,0,0,0.3)', // optional dim backdrop
               }}
             >
-              <Text
+              <View
                 style={{
-                  color: theme.textColor,
-                  fontSize: 22,
-                  fontWeight: '700',
+                  backgroundColor: theme.modalBackColor,
+                  paddingHorizontal: 15,
+                  paddingVertical: 15,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  width: '90%',
+                  borderRadius: 12,
+                  shadowColor: theme.textColor,
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 10,
+                  elevation: 5,
                 }}
               >
-                Jazz Cash
-              </Text>
-              <View style={{ width: 200 }}>
+                {selectedGateway?.logo ? (
+                  <Image
+                    source={{
+                      uri: `data:image/png;base64,${selectedGateway.logo}`,
+                    }}
+                    style={{
+                      width: 50,
+                      height: 50,
+                    }}
+                    resizeMode="contain"
+                  />
+                ) : null}
+
+                {/* Spinner */}
                 <ActivityIndicator
-                  color={theme.buttonBackColor}
+                  color={theme.selectedCheckBox}
+                  size="large"
+                  style={{ marginVertical: 20 }}
+                />
+
+                {/* Status text */}
+                <Text
                   style={{
-                    transform: [{ scaleX: 5 }, { scaleY: 5 }],
-                    marginVertical: 50,
+                    textAlign: 'center',
+                    marginBottom: 4,
+                    fontSize: 22,
+                    color: theme.textColor,
+                  }}
+                >
+                  Waiting for Payment Approval
+                </Text>
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    color: theme.placeholderColor,
+                    marginBottom: 20,
+                  }}
+                >
+                  This may take up to 10 minutes
+                </Text>
+
+                {/* Divider */}
+                <View
+                  style={{
+                    width: '100%',
+                    height: 0.5,
+                    backgroundColor: theme.placeholderColor,
+                    marginBottom: 16,
                   }}
                 />
+
+                {/* Steps label */}
+                <Text
+                  style={{
+                    alignSelf: 'flex-start',
+                    color: theme.placeholderColor,
+                    marginBottom: 10,
+                    letterSpacing: 0.5,
+                    fontSize: 12,
+                  }}
+                >
+                  FOLLOW THESE STEPS
+                </Text>
+
+                {/* Steps */}
+                {[
+                  { step: '1', text: 'Open your JazzCash app' },
+                  { step: '2', text: 'Tap the 👤 profile icon at top right' },
+                  { step: '3', text: 'Tap on Payment Requests' },
+                  { step: '4', text: 'Select the Pending tab' },
+                  { step: '5', text: 'Approve your payment' },
+                ].map(({ step, text }) => (
+                  <View
+                    key={step}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 12,
+                      marginBottom: 10,
+                      width: '100%',
+                    }}
+                  >
+                    <View
+                      style={{
+                        width: 28,
+                        height: 28,
+                        borderRadius: 14,
+                        backgroundColor: theme.selectedCheckBox,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: theme.textColor,
+                          fontSize: 13,
+                        }}
+                      >
+                        {step}
+                      </Text>
+                    </View>
+                    <Text
+                      style={{
+                        flex: 1,
+                        fontWeight: '700',
+                        color: theme.textColor,
+                        fontSize: 13,
+                      }}
+                    >
+                      {text}
+                    </Text>
+                  </View>
+                ))}
               </View>
-              <Text style={{ color: theme.textColor, fontSize: 18 }}>
-                Confirming payment it may take some time, might be upto 10
-                min....
-              </Text>
-              <Text
-                style={{
-                  color: theme.buttonBackColor,
-                  fontSize: 18,
-                }}
-              >
-                Please approve the payment request in your JazzCash app to
-                complete your order.
-              </Text>
             </View>
           </Modal>
+
           <PaymentView
             onPayComplete={addSchedule}
             selectedGateway={selectedGateway}
@@ -950,6 +1072,15 @@ const CampaignSchedule = ({
             setShowJCPayment={setShowJCPayment}
             onCheckout={addSchedule}
             jazzCashTxnRefNo={jazzCashTxnRefNo}
+            selectedGateway={selectedGateway}
+            setPaymentError={async error => {
+              const message = error;
+              await showAlert({
+                title: 'JazzCash Payment',
+                message: message,
+                type: 'error',
+              });
+            }}
           />
           <View
             style={{

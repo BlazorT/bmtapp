@@ -5,7 +5,7 @@ import {
 } from '@react-navigation/drawer';
 import { useNavigation } from '@react-navigation/native';
 import moment from 'moment';
-import React, { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   Image,
   Platform,
@@ -27,7 +27,7 @@ import mycampaignIcon from '../../../assets/images/drawer/mycampaign.png';
 import iconAbout from '../../../assets/images/drawer/pencil.png';
 import Logout from '../../../assets/images/pages/Logout.png';
 import Login from '../../../assets/images/pages/login.png';
-import Alert from '../../components/Alert';
+import { useAlert } from '../../context/AlertContext';
 import { useTheme } from '../../hooks/useTheme';
 import { useUser } from '../../hooks/useUser';
 import { colors } from '../../styles';
@@ -191,7 +191,7 @@ const DrawerMenuItem = ({ item, theme, onPress }) => {
         />
       );
     }
-    if (item.name === 'Unsubscribe') {
+    if (item.name === 'Delete Account') {
       return (
         <AntdIcon
           name="user"
@@ -240,17 +240,15 @@ const DrawerMenuItem = ({ item, theme, onPress }) => {
 // Main Component
 function CustomDrawerContent(props) {
   const theme = useTheme();
+  const { showConfirm } = useAlert();
   const { navigate } = useNavigation();
   const { user, isAuthenticated, logoutUser } = useUser();
 
-  const [logoutAlertVisible, setLogoutAlertVisible] = useState(false);
-  const [unsubscribeAlertVisible, setUnsubscribeAlertVisible] = useState(false);
   const [isImageError, setIsImageError] = useState(false);
 
   const { unsubscribe, isLoading } = useUnsubscribe(user, logoutUser, navigate);
 
   const handleLogout = useCallback(() => {
-    setLogoutAlertVisible(false);
     setTimeout(
       () => {
         logoutUser();
@@ -267,7 +265,6 @@ function CustomDrawerContent(props) {
   }, [logoutUser, navigate]);
 
   const handleUnsubscribe = useCallback(async () => {
-    setUnsubscribeAlertVisible(false);
     await unsubscribe();
   }, [unsubscribe]);
 
@@ -309,7 +306,7 @@ function CustomDrawerContent(props) {
         condition: true,
       },
       {
-        name: 'Unsubscribe',
+        name: 'Delete Account',
         icon: 'user-delete',
         condition: isAuthenticated,
       },
@@ -328,14 +325,24 @@ function CustomDrawerContent(props) {
   );
 
   const handleMenuPress = useCallback(
-    itemName => {
+    async itemName => {
       if (itemName === 'Log In') {
         global.SignUp_Login = 1;
         navigate('Login');
-      } else if (itemName === 'Unsubscribe') {
-        setUnsubscribeAlertVisible(true);
+      } else if (itemName === 'Delete Account') {
+        const confirmed = await showConfirm({
+          title: 'Confirmation',
+          message: `Are you sure you want to delete your account from Blazor Media ToolKit?\n\nYour account will be no more available.`,
+          type: 'warning',
+        });
+        if (confirmed) await handleUnsubscribe();
       } else if (itemName === 'Log Out') {
-        setLogoutAlertVisible(true);
+        const confirmed = await showConfirm({
+          title: 'Confirmation',
+          message: 'Are you sure you want to logout?',
+          type: 'warning',
+        });
+        if (confirmed) handleLogout();
       } else {
         navigate(itemName);
       }
@@ -368,26 +375,6 @@ function CustomDrawerContent(props) {
             setIsImageError={setIsImageError}
           />
         )}
-
-        <Alert
-          massagetype="warning"
-          hide={() => setLogoutAlertVisible(false)}
-          confirm={handleLogout}
-          Visible={logoutAlertVisible}
-          alerttype="confirmation"
-          Title="Confirmation"
-          Massage="Are you sure you want to logout?"
-        />
-
-        <Alert
-          massagetype="warning"
-          hide={() => setUnsubscribeAlertVisible(false)}
-          confirm={handleUnsubscribe}
-          Visible={unsubscribeAlertVisible}
-          alerttype="confirmation"
-          Title="Confirmation"
-          Massage="Are you sure you want to unsubscribe from Blazor Media ToolKit?"
-        />
 
         {drawerData.map((item, idx) =>
           item.condition ? (

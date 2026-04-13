@@ -1,5 +1,5 @@
-import {configureStore, isImmutableDefault} from '@reduxjs/toolkit';
-import {persistStore, persistReducer} from 'redux-persist';
+import { configureStore, isImmutableDefault } from '@reduxjs/toolkit';
+import { persistStore, persistReducer } from 'redux-persist';
 import rootReducer from './reducer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 // Define the root state type

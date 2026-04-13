@@ -513,7 +513,7 @@ export default function LoginScreen(props) {
         roleId: 0,
         orgId: 0,
         email: '',
-        userCode: '000772.af7a0b9c332d4281aa5b2037084fb59d.1631',
+        userCode: '',
         //userName: '',
         //userName: filters ? (filters.userName === '' ? '' : filters.userName) : '',
         lastName: '',
