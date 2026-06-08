@@ -34,6 +34,7 @@ import {
 } from '../../helper/dateFormatter';
 import moment from 'moment';
 import servicesettings from '../dataservices/servicesettings';
+import { PRICING_URL } from '../../constants';
 
 const DURATION = [
   { id: 1, name: '1 Month' },
@@ -967,9 +968,7 @@ export default function PricingDetailsScreen() {
                   });
                 } else {
                   if (Platform.OS === 'ios') {
-                    Linking.openURL(
-                      'https://bmt.blazortech.com/pricingDetails',
-                    );
+                    Linking.openURL(PRICING_URL);
                     return;
                   }
 

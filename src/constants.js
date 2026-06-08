@@ -45,3 +45,4 @@ export const MIN_AGE = 18;
 export const MAX_AGE = 65;
 export const EASYPAISA_EXPIRY_TIME = 5;
 export const isTab = isTablet();
+export const PRICING_URL = 'https://bmt.blazortech.com/pricingDetails';
