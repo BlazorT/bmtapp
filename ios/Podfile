@@ -85,5 +85,16 @@ target 'BDMT' do
       config[:reactNativePath],
       :mac_catalyst_enabled => false
     )
+  # ✅ Fix FMT_CONSTEVAL for Xcode 26
+  fmt_base = "#{installer.sandbox.root}/fmt/include/fmt/base.h"
+  if File.exist?(fmt_base)
+    content = File.read(fmt_base)
+    if content.include?('#  define FMT_CONSTEVAL consteval')
+      puts "✅ Patching fmt/base.h for Xcode 26..."
+      File.write(fmt_base, content.gsub('#  define FMT_CONSTEVAL consteval', '#  define FMT_CONSTEVAL '))
+    else
+      puts "ℹ️ fmt/base.h already patched."
+    end
   end
+end
 end
