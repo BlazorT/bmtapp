@@ -4,6 +4,7 @@ import {
   ActivityIndicator,
   FlatList,
   KeyboardAvoidingView,
+  Linking,
   Modal,
   Platform,
   ScrollView,
@@ -965,6 +966,13 @@ export default function PricingDetailsScreen() {
                     screen: 'Campaign (+)',
                   });
                 } else {
+                  if (Platform.OS === 'ios') {
+                    Linking.openURL(
+                      'https://bmt.blazortech.com/pricingDetails',
+                    );
+                    return;
+                  }
+
                   setIsBuying({
                     ...plan,
                     toPay: parseFloat(plan.price?.replace('$', '')),
