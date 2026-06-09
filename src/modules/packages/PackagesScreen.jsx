@@ -978,6 +978,10 @@ export default function PricingDetailsScreen() {
                   });
                 }
               } else {
+                if (Platform.OS === 'ios') {
+                  Linking.openURL(PRICING_URL);
+                  return;
+                }
                 navigation.navigate('Login');
               }
             }}
