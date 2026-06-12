@@ -103,7 +103,6 @@ export default function LoginScreen(props) {
       });
 
       let userInfo = await GoogleSignin.signIn();
-      console.log({ userInfo });
 
       if (!isSuccessResponse(userInfo)) {
         if (userInfo?.type === 'cancelled') {
@@ -154,7 +153,7 @@ export default function LoginScreen(props) {
       setmodalVisiblecamera(false);
       ContinueWithSocialMedia();
     } catch (error) {
-      console.log('Google Sign In Error:', error); // ✅ Always log
+      console.error('Google Sign In Error:', error); // ✅ Always log
       if (isErrorWithCode(error)) {
         switch (error.code) {
           case statusCodes.SIGN_IN_CANCELLED:
@@ -403,7 +402,6 @@ export default function LoginScreen(props) {
             },
           };
           //
-          console.log('ImageheaderFetch', data);
           fetch(
             servicesettings.baseuri + 'BlazorApi/useraccountwithlogin',
             ImageheaderFetch,
@@ -418,7 +416,6 @@ export default function LoginScreen(props) {
             })
             .then(responseJson => {
               setspinner(false);
-              console.log({ responseJson });
               if (
                 responseJson.status == false &&
                 responseJson.errorCode == '404'
@@ -541,7 +538,6 @@ export default function LoginScreen(props) {
 
         lastUpdatedAt: moment.utc().format('YYYY-MM-DD'),
       };
-      // console.log({ body });
       const response = await fetch(
         servicesettings.baseuri + 'BlazorApi/users',
         {
@@ -559,7 +555,6 @@ export default function LoginScreen(props) {
         return [];
       }
       const res = await response.json();
-      // console.log({ res });
       return res?.data || [];
     } catch {
       return [];
@@ -584,7 +579,7 @@ export default function LoginScreen(props) {
 
         console.log(decoded);
       }
-      // console.log({ response });
+
       let { email, fullName, user } = response;
 
       // Apple only sends email/name on first login — fallback to stored user

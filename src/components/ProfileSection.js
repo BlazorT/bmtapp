@@ -243,7 +243,6 @@ export default function ProfileSection({ img, setimg, EditImgURI }) {
                   : profileIcon
             }
             style={styles.profileImage}
-            // onError={() => console.log('Error loading image')}
           />
         </TouchableOpacity>
       </View>

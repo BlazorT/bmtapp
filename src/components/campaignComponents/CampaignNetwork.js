@@ -28,7 +28,6 @@ const CampaignNetwork = ({
   const nextStep = () => {
     setIndex(2);
   };
-  console.log({ campaignInfo });
   // const toRecipients = () => navigation.navigate('Recipients');
   return (
     <View>

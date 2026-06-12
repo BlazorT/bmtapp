@@ -281,7 +281,7 @@ export const generateOrgAgreementPDF = async (
           });
         });
       } catch (err) {
-        console.log('SVG parse/draw failed', err);
+        console.error('SVG parse/draw failed', err);
       }
     }
 

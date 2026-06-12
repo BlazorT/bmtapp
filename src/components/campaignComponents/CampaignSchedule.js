@@ -103,32 +103,7 @@ const CampaignSchedule = ({
     }, 100);
   }, []);
 
-  // useEffect(() => {
-  //   if (!isUpdate) {
-  //     setScheduleList({
-  //       CompaignNetworks: [],
-  //       id: 0,
-  //       budget: 0,
-  //       rowVer: 0,
-  //       messageCount: 0,
-  //       orgId: user.orgId,
-  //       days: [],
-  //       networkId: 0,
-  //       albums: [],
-  //       compaignDetailId: 0,
-  //       isFixedTime: 1,
-  //       startTime: campaignInfo.campaignStartDate,
-  //       finishTime: campaignInfo.campaignEndDate,
-  //       interval: 0,
-  //       status: 1,
-  //       intervalTypeId: 0,
-  //       randomId: Math.floor(100000 + Math.random() * 900000),
-  //     });
-  //   }
-  // }, [isUpdate]);
-
   const addSchedule = async ref => {
-    console.log({ campaignInfo: JSON.stringify(campaignInfo.schedules) });
     try {
       let campaignBody = {
         id: campaignInfo.id,
@@ -225,7 +200,6 @@ const CampaignSchedule = ({
         paymentRef: ref || '',
         rowVer: 0,
       };
-      console.log({ campaignBody: JSON.stringify(campaignBody) });
       // navigation.navigate('Payment', { campaignBody });
       // return;
 
@@ -254,7 +228,6 @@ const CampaignSchedule = ({
       //   return;
       // }
       const res = await response.json();
-      console.log({ res });
       if (res.status == false || res.status == '408' || res.status == '400') {
         Toast.show(res.message || 'Something went wrong, please try again');
       } else {
@@ -447,7 +420,7 @@ const CampaignSchedule = ({
         }
       }
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   };
 
@@ -674,9 +647,7 @@ const CampaignSchedule = ({
       txnDT: txnDateTime,
       ppmpf_2: '',
     };
-    console.log({ jcBody });
     const res = await payJC(jcBody);
-    console.log({ res });
     if (res) {
       const filteredResponse = {
         pp_TxnType: res.pp_TxnType || '',
@@ -758,7 +729,6 @@ const CampaignSchedule = ({
 
     const listener = AppLifecycle.addEventListener('change', state => {
       if (!isMounted) return;
-      console.log({ state, jazzCashTxnRefNo });
       if (state === 'active') {
         if (jazzCashTxnRefNo && jazzCashTxnRefNo !== '') {
           setShowJCPayment(true);

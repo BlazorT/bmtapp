@@ -80,11 +80,11 @@ export default function PDFViewerModal({ visible, onClose, pdfUri }) {
 
         <Pdf
           source={{ uri: pdfUri, cache: true }}
-          onLoadComplete={numberOfPages => {
-            console.log(`PDF loaded — ${numberOfPages} pages`);
-          }}
-          onPageChanged={page => console.log(`Page: ${page}`)}
-          onError={error => console.log('PDF error:', error)}
+          // onLoadComplete={numberOfPages => {
+          //   console.log(`PDF loaded — ${numberOfPages} pages`);
+          // }}
+          // onPageChanged={page => console.log(`Page: ${page}`)}
+          onError={error => console.error('PDF error:', error)}
           style={styles.pdf}
         />
       </View>

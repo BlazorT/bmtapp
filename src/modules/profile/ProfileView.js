@@ -340,7 +340,6 @@ export default function VehicalSallerScreen(props) {
       Avatar: imageUrlOrg,
       UserCode: '',
     };
-    console.log({ bodyUser });
     var ImageheaderFetch = {
       method: 'post',
       body: JSON.stringify(bodyUser),
@@ -357,7 +356,6 @@ export default function VehicalSallerScreen(props) {
         return response.json();
       })
       .then(responseJson => {
-        console.log({ responseJson });
         if (responseJson.status == true) {
           Toast.show(
             `${responseJson.data.firstName} ${responseJson.data.lastName} has been added successfully`,

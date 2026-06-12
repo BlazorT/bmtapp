@@ -95,7 +95,6 @@ const AddSchedule = ({
         return acc;
       }, {});
 
-      // console.log({ albumsMap }, scheduleList.albums);
       setSelectedAlbums(albumsMap);
     }
   }, [isUpdate, scheduleList]);
@@ -407,7 +406,6 @@ const AddSchedule = ({
   }
 
   const currencyId = lovs['orgs']?.find(c => c.id === user?.orgId)?.currencyId;
-  // console.log(lovs['lovs'].intervals);
 
   return (
     <View style={{ marginTop: 10 }}>

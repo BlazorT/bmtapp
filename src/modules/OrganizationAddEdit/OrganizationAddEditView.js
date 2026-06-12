@@ -7,7 +7,7 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
-  View
+  View,
 } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Toast from 'react-native-simple-toast';
@@ -28,7 +28,11 @@ import SocialControlSection from '../../components/SocialControlSection';
 import StatusSection from '../../components/StatusSection';
 import TermsCheckboxSection from '../../components/TermsCheckboxSection';
 import { generateOrgAgreementPDF } from '../../helper/generateAgreementPDF';
-import { useImageHandler, useOrgData, useOrgSubmit } from '../../hooks/useOrgSubmit';
+import {
+  useImageHandler,
+  useOrgData,
+  useOrgSubmit,
+} from '../../hooks/useOrgSubmit';
 import servicesettings from '../dataservices/servicesettings';
 
 export default function OrganizationAddEditScreen(props) {
@@ -226,10 +230,10 @@ export default function OrganizationAddEditScreen(props) {
   const populateOrgData = EditOrg => {
     const EditImg = EditOrg.logoAvatar
       ? servicesettings.Imagebaseuri +
-      EditOrg.logoAvatar
-        .replace(/\\/g, '/')
-        .replace(',', '')
-        .replace('//', '')
+        EditOrg.logoAvatar
+          .replace(/\\/g, '/')
+          .replace(',', '')
+          .replace('//', '')
       : '';
 
     setEditImgURI(EditImg);
@@ -321,7 +325,6 @@ export default function OrganizationAddEditScreen(props) {
           signatureJSON?.adminName || '',
           signatureJSON?.dt || new Date(),
         );
-        console.log({ pdfPath });
         setGeneratedPdfUri(`file://${pdfPath}`);
         setPdfViewerVisible(true);
       } catch (err) {

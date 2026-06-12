@@ -29,7 +29,6 @@ const CapaignItem = ({ item, loadCampiagns }) => {
   };
 
   const isPaid = item?.paymentStatus === 1;
-  // console.log({ item });
   return (
     <AppSwipeable
       swipeableRef={swipeableRow}

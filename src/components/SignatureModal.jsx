@@ -35,11 +35,6 @@ const SignatureModal = ({
 
   const [isLoading, setIsLoading] = useState(false);
   const [showCanvas, setShowCanvas] = useState(false);
-  //   const handleSignature = signature => {
-  //     console.log('Signature captured:', signature);
-  //     setSignature(signature);
-  //     setIsLoading(false);
-  //   };
 
   useEffect(() => {
     if (visible) {
@@ -55,12 +50,10 @@ const SignatureModal = ({
   }, [visible]);
 
   const handleEmpty = () => {
-    console.log('Signature is empty');
     setIsLoading(false);
   };
 
   const handleClear = () => {
-    console.log('Signature cleared');
     ref?.current?.clearSignature();
 
     setShowCanvas(false);

@@ -253,8 +253,6 @@ export default function CampaignScheduleScreen(props) {
   };
 
   const updateCampaignData = async data => {
-    console.log({ data });
-
     const headerFetch = {
       method: 'POST',
       body: JSON.stringify({
@@ -287,7 +285,7 @@ export default function CampaignScheduleScreen(props) {
       data.targetaudiance !== '' ? JSON.parse(data.targetaudiance) : [];
     const userNetworks = JSON.parse(data.compaignsdetails);
     const networkData = lovs['mybundlings'];
-    console.log({ userNetworks });
+
     const transformNetworks = userNetworks.map(item => {
       const selectedNetwork = networkData.find(
         network => item.networkId == network.networkId,
@@ -314,7 +312,6 @@ export default function CampaignScheduleScreen(props) {
     //   networks.some(network => network.networkId === item.networkId),
     // );
     const schedule = JSON.parse(data.compaignschedules);
-    console.log({ schedule });
 
     const scheduleList = schedule.map(item => {
       const scheduleNetworks = transformNetworks.filter(
@@ -341,7 +338,7 @@ export default function CampaignScheduleScreen(props) {
         randomId: item.id,
       };
     });
-    // console.log({ scheduleList });
+
     const uris = attachments.map(item => ({
       Id: item.Id,
       uri: `${servicesettings.Imagebaseuri}${item.image}`,
