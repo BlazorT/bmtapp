@@ -988,15 +988,17 @@ export default function PricingDetailsScreen() {
             }
           >
             <Text style={styles.buttonText}>
-              {isThisCardThePurchasedPlan &&
-              plan.name !== 'Free' &&
-              plan.name !== 'Pay As You Go'
-                ? 'Active Package'
-                : plan.name?.includes('Bulk')
-                  ? 'Buy Now'
-                  : plan.name === 'Enterprise'
-                    ? 'Contact Sales'
-                    : 'Get Started'}
+              {Platform.OS === 'ios'
+                ? 'View Package'
+                : isThisCardThePurchasedPlan &&
+                    plan.name !== 'Free' &&
+                    plan.name !== 'Pay As You Go'
+                  ? 'Active Package'
+                  : plan.name?.includes('Bulk')
+                    ? 'Buy Now'
+                    : plan.name === 'Enterprise'
+                      ? 'Contact Sales'
+                      : 'Get Started'}
             </Text>
           </TouchableOpacity>
         )}

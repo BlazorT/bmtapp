@@ -11,7 +11,6 @@ import { useNavigation } from '@react-navigation/native';
 import moment from 'moment';
 
 const CapaignItem = ({ item, loadCampiagns }) => {
-  console.log({ item });
   const theme = useTheme();
   const { navigate } = useNavigation();
   const [imgErr, setImgErr] = useState(false);

@@ -15,7 +15,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { appleAuth } from '@invertase/react-native-apple-authentication';
+import {
+  appleAuth,
+  appleAuthAndroid,
+} from '@invertase/react-native-apple-authentication';
+import { jwtDecode } from 'jwt-decode';
 
 import DeviceInfo from 'react-native-device-info';
 import Spinner from 'react-native-loading-spinner-overlay';
@@ -92,6 +96,7 @@ export default function LoginScreen(props) {
   const Signup = async () => {
     global.SocialMedia = 1;
     try {
+      setspinner(true);
       await GoogleSignin.signOut();
       await GoogleSignin.hasPlayServices({
         showPlayServicesUpdateDialog: true,
@@ -101,7 +106,11 @@ export default function LoginScreen(props) {
       console.log({ userInfo });
 
       if (!isSuccessResponse(userInfo)) {
-        Toast.show('Google sign in not available');
+        if (userInfo?.type === 'cancelled') {
+          Toast.show('Google sign in cancelled');
+        } else {
+          Toast.show('Google sign in not available');
+        }
         return;
       }
 
@@ -163,6 +172,8 @@ export default function LoginScreen(props) {
       } else {
         Toast.show(error?.message || 'Something went wrong');
       }
+    } finally {
+      setspinner(false);
     }
   };
 
@@ -318,7 +329,6 @@ export default function LoginScreen(props) {
           let uniqueId = '';
           //let uniqueId = DeviceInfo.getUniqueId();
           let OS = 0;
-          setspinner(true);
           if (Platform.OS === 'ios') {
             // OS = 3;
             var checkSignupSocialMedia = Asyncdata.facebookOS;
@@ -563,10 +573,16 @@ export default function LoginScreen(props) {
         requestedOperation: appleAuth.Operation.LOGIN,
         requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
       });
-
+      console.log({ appleres: response });
       if (!response) {
         Toast.show('Something went wrong');
         return;
+      }
+
+      if (response?.identityToken) {
+        const decoded = jwtDecode(response.identityToken);
+
+        console.log(decoded);
       }
       // console.log({ response });
       let { email, fullName, user } = response;
@@ -574,9 +590,9 @@ export default function LoginScreen(props) {
       // Apple only sends email/name on first login — fallback to stored user
       if (!email || !fullName) {
         const users = await getUsers();
-        // console.log({ users });
+        console.log({ users });
         const findUser = users?.find(u => u?.userCode === user);
-        // console.log({ findUser });
+        console.log({ findUser });
         if (!findUser) {
           Toast.show('User not found');
           return; // stop here, don't continue
