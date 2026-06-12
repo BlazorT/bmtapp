@@ -877,6 +877,11 @@ export default function LoginScreen(props) {
           supportedOrientations={['portrait']}
           visible={modalVisiblecamera}
         >
+          <Spinner
+            visible={spinner}
+            textContent={'Loading...'}
+            textStyle={{ color: '#FFF' }}
+          />
           <View
             style={[
               styles.ModalMainView,
