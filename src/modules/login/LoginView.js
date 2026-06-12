@@ -568,26 +568,23 @@ export default function LoginScreen(props) {
         requestedOperation: appleAuth.Operation.LOGIN,
         requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
       });
-      console.log({ appleres: response });
       if (!response) {
         Toast.show('Something went wrong');
         return;
       }
 
-      if (response?.identityToken) {
-        const decoded = jwtDecode(response.identityToken);
+      // if (response?.identityToken) {
+      //   const decoded = jwtDecode(response.identityToken);
 
-        console.log(decoded);
-      }
+      //   console.log(decoded);
+      // }
 
       let { email, fullName, user } = response;
 
       // Apple only sends email/name on first login — fallback to stored user
       if (!email || !fullName) {
         const users = await getUsers();
-        console.log({ users });
         const findUser = users?.find(u => u?.userCode === user);
-        console.log({ findUser });
         if (!findUser) {
           Toast.show('User not found');
           return; // stop here, don't continue
