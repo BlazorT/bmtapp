@@ -979,7 +979,11 @@ export default function PricingDetailsScreen() {
                 }
               } else {
                 if (Platform.OS === 'ios') {
-                  Linking.openURL(PRICING_URL);
+                  if (plan.name === 'Free' || plan.name === 'Pay As You Go') {
+                    navigation.navigate('Login'); // no payment involved, Login is fine
+                  } else {
+                    Linking.openURL(PRICING_URL); // paid plan → web
+                  }
                   return;
                 }
                 navigation.navigate('Login');
@@ -993,7 +997,9 @@ export default function PricingDetailsScreen() {
           >
             <Text style={styles.buttonText}>
               {Platform.OS === 'ios'
-                ? 'View Package'
+                ? plan.name === 'Free' || plan.name === 'Pay As You Go'
+                  ? 'Get Started'
+                  : 'View on Website'
                 : isThisCardThePurchasedPlan &&
                     plan.name !== 'Free' &&
                     plan.name !== 'Pay As You Go'
@@ -1382,7 +1388,7 @@ export default function PricingDetailsScreen() {
       style={[styles.container, { backgroundColor: theme.backgroundColor }]}
     >
       <Spinner visible={loading || spinner} />
-      {isBuying ? (
+      {isBuying && Platform.OS !== 'ios' ? (
         <View style={{ flex: 1 }}>
           <Modal visible={jcLoading} backdropColor={'transparent'} transparent>
             <View
