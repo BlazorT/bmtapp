@@ -961,17 +961,16 @@ export default function PricingDetailsScreen() {
               },
             ]}
             onPress={() => {
+              if (Platform.OS === 'ios') {
+                Linking.openURL(PRICING_URL);
+                return;
+              }
               if (isAuthenticated) {
                 if (plan.name === 'Free' || plan.name === 'Pay As You Go') {
                   navigation.navigate('Blazor Media ToolKit', {
                     screen: 'Campaign (+)',
                   });
                 } else {
-                  if (Platform.OS === 'ios') {
-                    Linking.openURL(PRICING_URL);
-                    return;
-                  }
-
                   setIsBuying({
                     ...plan,
                     toPay: parseFloat(plan.price?.replace('$', '')),
