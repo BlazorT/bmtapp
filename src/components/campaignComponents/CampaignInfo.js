@@ -273,7 +273,7 @@ const CampaignInfo = ({
               flexDirection: 'row',
               flex: 1,
               alignItems: 'center',
-              columnGap: 10,
+              columnGap: 0,
             }}
           >
             <RNSRangeSlider
@@ -292,6 +292,7 @@ const CampaignInfo = ({
                 });
               }}
               label={'Radius (km)'}
+              sliderLength={150}
             />
             <RNSRangeSlider
               min={MIN_AGE}
@@ -309,6 +310,7 @@ const CampaignInfo = ({
                 });
               }}
               label={'Age'}
+              sliderLength={180}
             />
           </View>
           <CampaignAddress

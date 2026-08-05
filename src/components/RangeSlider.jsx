@@ -1,6 +1,6 @@
+import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import React, { memo, useCallback } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import RangeSlider from 'react-native-sticky-range-slider';
 import { useTheme } from '../hooks/useTheme';
 
 const THUMB_RADIUS = 10;
@@ -15,53 +15,55 @@ const RNSRangeSlider = ({
   onChange,
   label, // ✅ optional label
   disableRange,
+  sliderLength = 320,
 }) => {
   const theme = useTheme();
 
-  const Thumb = useCallback(
-    () => (
-      <View
-        style={[
-          styles.thumb,
-          {
-            backgroundColor: theme.buttonBackColor,
-            borderColor: theme.buttonBackColor,
-          },
-        ]}
-      />
-    ),
-    [theme],
+  // MultiSlider works with a `values` array instead of separate low/high props.
+  const values = disableRange ? [low ?? min] : [low ?? min, high ?? max];
+
+  const handleValuesChangeFinish = useCallback(
+    newValues => {
+      if (!onChange) return;
+      if (disableRange) {
+        onChange(newValues[0]);
+      } else {
+        onChange(newValues[0], newValues[1]);
+      }
+    },
+    [onChange, disableRange],
   );
 
-  const Rail = useCallback(() => <View style={styles.rail} />, []);
-  const RailSelected = useCallback(
-    () => (
-      <View
-        style={[
-          styles.railSelected,
-          { backgroundColor: theme.selectedCheckBox },
-        ]}
-      />
+  const renderCustomLabel = useCallback(
+    props => (
+      <>
+        <View
+          style={[
+            styles.valueLabelWrap,
+            { left: props.oneMarkerLeftPosition - 10 },
+          ]}
+        >
+          <Text style={[styles.valueText, { color: theme.textColor }]}>
+            {props.oneMarkerValue}
+          </Text>
+        </View>
+        {!disableRange && (
+          <View
+            style={[
+              styles.valueLabelWrap,
+              { left: props.twoMarkerLeftPosition - 10 },
+            ]}
+          >
+            <Text style={[styles.valueText, { color: theme.textColor }]}>
+              {props.twoMarkerValue === max
+                ? `+${props.twoMarkerValue}`
+                : props.twoMarkerValue}
+            </Text>
+          </View>
+        )}
+      </>
     ),
-    [theme],
-  );
-
-  const renderLowValue = useCallback(
-    value => (
-      <Text style={[styles.valueText, { color: theme.textColor }]}>
-        {value}
-      </Text>
-    ),
-    [theme],
-  );
-
-  const renderHighValue = useCallback(
-    value => (
-      <Text style={[styles.valueText, { color: theme.textColor }]}>
-        {value === max ? `+${value}` : value}
-      </Text>
-    ),
-    [theme, max],
+    [theme, max, disableRange],
   );
 
   return (
@@ -70,27 +72,48 @@ const RNSRangeSlider = ({
         <Text style={[styles.label, { color: theme.textColor }]}>{label}</Text>
       ) : null}
 
-      <RangeSlider
-        disableRange={disableRange}
-        style={styles.slider}
+      <MultiSlider
+        values={values}
         min={min}
         max={max}
         step={step}
-        minRange={minRange}
-        low={low}
-        high={high}
-        onValueChanged={onChange}
-        renderLowValue={renderLowValue}
-        renderHighValue={renderHighValue}
-        renderThumb={Thumb}
-        renderRail={Rail}
-        renderRailSelected={RailSelected}
+        // Closest MultiSlider equivalent to `minRange`: minimum pixel
+        // distance enforced between the two markers.
+        minMarkerOverlapDistance={minRange}
+        onValuesChangeFinish={handleValuesChangeFinish}
+        enabledOne
+        enabledTwo={!disableRange}
+        allowOverlap={false}
+        isMarkersSeparated
+        enableLabel
+        sliderLength={sliderLength}
+        containerStyle={styles.slider}
+        trackStyle={{ backgroundColor: theme.darkGray, height: 3 }}
+        selectedStyle={[
+          styles.railSelected,
+          { backgroundColor: theme.selectedCheckBox },
+        ]}
+        markerStyle={[
+          styles.thumb,
+          {
+            backgroundColor: theme.selectedCheckBox,
+            borderColor: theme.selectedCheckBox,
+          },
+        ]}
+        pressedMarkerStyle={[
+          styles.thumb,
+          {
+            backgroundColor: theme.selectedCheckBox,
+            borderColor: theme.selectedCheckBox,
+          },
+        ]}
+        customLabel={renderCustomLabel}
       />
     </View>
   );
 };
 
-export default RNSRangeSlider;
+export default memo(RNSRangeSlider);
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -105,6 +128,10 @@ const styles = StyleSheet.create({
   slider: {
     marginVertical: 0,
     marginRight: 0,
+  },
+  valueLabelWrap: {
+    position: 'absolute',
+    top: -20,
   },
   valueText: {
     fontSize: 12,

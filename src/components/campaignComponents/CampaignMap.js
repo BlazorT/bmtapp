@@ -32,8 +32,10 @@ import Toast from 'react-native-simple-toast';
 import { add } from 'lodash';
 import RNSButton from '../Button';
 import RNSTextInput from '../TextInput';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const CampaignMap = ({ isOpen, toggleOpen, campaignInfo, setCampaignInfo }) => {
+  const insets = useSafeAreaInsets();
   const theme = useTheme();
   const themeMode = useSelector(state => state.theme?.mode);
   const ipinfo = useSelector(state => state?.lovs?.lovs?.ipinfo);
@@ -270,7 +272,7 @@ const CampaignMap = ({ isOpen, toggleOpen, campaignInfo, setCampaignInfo }) => {
             description={address}
           />
         </Animated>
-        <View style={styles.topView}>
+        <View style={[styles.topView, { top: insets.top }]}>
           <View
             style={{ flexDirection: 'row', columnGap: 4, alignItems: 'center' }}
           >
@@ -460,7 +462,7 @@ const CampaignMap = ({ isOpen, toggleOpen, campaignInfo, setCampaignInfo }) => {
 
 const styles = StyleSheet.create({
   container: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     height: Dimensions.get('window').height,
     width: Dimensions.get('window').width,
     justifyContent: 'flex-end',
@@ -469,9 +471,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   map: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     // overflow: 'hidden',
-    marginBottom: 40,
+    marginBottom: 0,
   },
   bottomView: {
     width: '95%',

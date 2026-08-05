@@ -11,11 +11,13 @@ import {
 } from 'react-native';
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import Pdf from 'react-native-pdf';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-simple-toast';
 
 const { width } = Dimensions.get('window');
 
 export default function PDFViewerModal({ visible, onClose, pdfUri }) {
+  const insets = useSafeAreaInsets();
   const handleDownload = async () => {
     try {
       const timestamp = new Date().getTime();
@@ -67,7 +69,7 @@ export default function PDFViewerModal({ visible, onClose, pdfUri }) {
       transparent={false}
       onRequestClose={onClose}
     >
-      <View style={styles.container}>
+      <View style={[styles.container, { paddingTop: insets.top }]}>
         <View style={styles.header}>
           <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
             <Text style={styles.closeText}>× Close</Text>

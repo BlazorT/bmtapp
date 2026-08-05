@@ -438,7 +438,7 @@ const Network = ({
               ) || []
             }
             nestedScrollEnabled={true}
-            style={{ maxHeight: 200 }}
+            style={{ maxHeight: 250 }}
             contentContainerStyle={{ rowGap: 5, paddingBottom: 10 }}
             renderItem={({ item }) => {
               const templateJson =

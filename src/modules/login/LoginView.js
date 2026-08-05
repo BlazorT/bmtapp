@@ -46,8 +46,10 @@ import { useUser } from '../../hooks/useUser';
 import { isTab } from '../../constants';
 import SignupWithFacebook from '../../components/SignupWithFacebook';
 import moment from 'moment';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function LoginScreen(props) {
+  const insets = useSafeAreaInsets();
   const theme = useTheme();
   const { loginUser, appleUsers, findAppleUser, updateAppleUsers } = useUser();
   const [spinner, setspinner] = useState(false);
@@ -884,6 +886,7 @@ export default function LoginScreen(props) {
               styles.ModalMainView,
               {
                 backgroundColor: theme.backgroundColor,
+                paddingTop: insets.top,
               },
             ]}
           >
@@ -1310,7 +1313,6 @@ const styles = StyleSheet.create({
     // height: Dimensions.get('window').height,
     flex: 1,
     paddingTop: 12,
-    top: 7 + '%',
     paddingBottom: 22,
   },
   centeredView: {

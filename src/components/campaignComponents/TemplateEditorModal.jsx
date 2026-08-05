@@ -20,8 +20,10 @@ import SocialMediaTemplateEditor from './SocialMediaTemplateEditor';
 import EmailTemplateViewer from './EmailTemplateViewer';
 import { useSelector } from 'react-redux';
 import { safeJSONParse } from '../../helper/dateFormatter';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const TemplateEditorModal = ({ isOpen, onClose, template, onSave }) => {
+  const insets = useSafeAreaInsets();
   const theme = useTheme();
   const lovs = useSelector(state => state.lovs).lovs;
   const networks = lovs?.lovs?.networks || [];
@@ -158,7 +160,10 @@ const TemplateEditorModal = ({ isOpen, onClose, template, onSave }) => {
         <View
           style={[
             styles.header,
-            { borderBottomColor: theme.containerBorderColor },
+            {
+              borderBottomColor: theme.containerBorderColor,
+              paddingTop: insets.top,
+            },
           ]}
         >
           <TouchableOpacity onPress={onClose} style={styles.headerButton}>

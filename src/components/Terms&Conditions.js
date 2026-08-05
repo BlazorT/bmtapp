@@ -11,9 +11,11 @@ import {
 } from 'react-native';
 import { colors } from '../styles';
 import { useTheme } from '../hooks/useTheme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const arrowback = require('../../assets/images/icons/BackArrow.png');
 
 const TermsAndConditions = props => {
+  const insets = useSafeAreaInsets();
   const theme = useTheme();
   const [modalVisible, setmodalVisible] = useState(false);
 
@@ -29,7 +31,10 @@ const TermsAndConditions = props => {
       }}
     >
       <View
-        style={[styles.modalView, { backgroundColor: theme.backgroundColor }]}
+        style={[
+          styles.modalView,
+          { backgroundColor: theme.backgroundColor, paddingTop: insets.top },
+        ]}
       >
         <View style={Platform.OS === 'ios' ? styles.Headerios : styles.Header}>
           <TouchableOpacity onPress={() => props.TermsAndConditionsClose()}>

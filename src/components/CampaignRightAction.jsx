@@ -102,7 +102,7 @@ const CampaignRightAction = ({ campaign, swipeableRow, loadCampiagns }) => {
   };
   return (
     <>
-      <RectButton
+      {/* <RectButton
         style={[
           {
             margin: 1.5,
@@ -126,7 +126,7 @@ const CampaignRightAction = ({ campaign, swipeableRow, loadCampiagns }) => {
         <Animated.Text style={{ color: theme.white, fontWeight: 'bold' }}>
           Update
         </Animated.Text>
-      </RectButton>
+      </RectButton> */}
       <RectButton
         style={[
           {

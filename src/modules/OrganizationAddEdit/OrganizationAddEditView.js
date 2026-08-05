@@ -115,7 +115,6 @@ export default function OrganizationAddEditScreen(props) {
   const stateList = lovs['lovs']?.states || [];
   const statusItem = lovs['lovs']?.statuses || [];
   const cityNameDetail = lovs['cities'] || [];
-
   const [userId, setUserId] = useState('');
   const [organizationId, setOrganizationId] = useState('');
 
@@ -306,6 +305,7 @@ export default function OrganizationAddEditScreen(props) {
 
   const filterCity = stateId => {
     const filtered = cityNameDetail.filter(item => item.stateId === stateId);
+    console.log({ filtered });
     setCityDataList(filtered);
   };
 

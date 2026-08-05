@@ -39,7 +39,10 @@ const CampaignNetwork = ({
         small
       /> */}
       {/* <RecipientsList isOpen={isShowRecipients} onClose={toggleRecipients} /> */}
-      <ScrollView contentContainerStyle={{ rowGap: 10, marginTop: 10 }}>
+      <ScrollView
+        contentContainerStyle={{ rowGap: 10, marginTop: 10 }}
+        nestedScrollEnabled
+      >
         {networks.length > 0 &&
           networks
             .filter(n => n?.purchasedQouta !== 0)

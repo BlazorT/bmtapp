@@ -65,7 +65,7 @@ const ConfirmationModal = ({
   );
 
   return (
-    <View style={{ ...StyleSheet.absoluteFillObject, zIndex: 999 }}>
+    <View style={{ ...StyleSheet.absoluteFill, zIndex: 999 }}>
       <View style={styles.overlay}>
         <View
           style={[styles.content, { backgroundColor: theme.modalBackColor }]}

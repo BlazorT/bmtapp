@@ -30,6 +30,7 @@ import { useContactsData } from './hooks/useContactsData';
 import { useAlbumOperations } from './hooks/useAlbumOperations';
 import { useWhatsAppVerification } from './hooks/useWhatsAppVerification';
 import { normalizePhone, processContacts } from './utils/contactUtils';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const ContactsModal = ({
   isOpen,
@@ -40,6 +41,7 @@ const ContactsModal = ({
   albumList,
   fetchAlbumList,
 }) => {
+  const insets = useSafeAreaInsets();
   const { user } = useUser();
   const networks = useSelector(state => state.lovs.lovs.lovs.networks);
   const theme = useTheme();
@@ -261,7 +263,10 @@ const ContactsModal = ({
           <View
             style={[
               styles.container,
-              { backgroundColor: theme.backgroundColor },
+              {
+                backgroundColor: theme.backgroundColor,
+                paddingTop: insets.top,
+              },
             ]}
           >
             {/* Header */}

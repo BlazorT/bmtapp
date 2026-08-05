@@ -171,7 +171,7 @@ export default function HomeScreen(props) {
 } //  Login
 const styles = StyleSheet.create({
   backgroundVideo: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   container: {
     flex: 1,

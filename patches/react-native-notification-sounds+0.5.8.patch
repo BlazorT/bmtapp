@@ -1,0 +1,104 @@
+diff --git a/node_modules/react-native-notification-sounds/android/build.gradle b/node_modules/react-native-notification-sounds/android/build.gradle
+index 772ad04..e296ae6 100644
+--- a/node_modules/react-native-notification-sounds/android/build.gradle
++++ b/node_modules/react-native-notification-sounds/android/build.gradle
+@@ -4,7 +4,7 @@ buildscript {
+     }
+     repositories {
+         google()
+-        jcenter()
++        mavenCentral()
+     }
+ 
+     dependencies {
+@@ -84,48 +84,48 @@ def configureReactNativePom(def pom) {
+     }
+ }
+ 
+-afterEvaluate { project ->
+-
+-    task androidJavadoc(type: Javadoc) {
+-        source = android.sourceSets.main.java.srcDirs
+-        classpath += files(android.bootClasspath)
+-        //classpath += files(project.getConfigurations().getByName('compile').asList())
+-        include '**/*.java'
+-    }
+-
+-    task androidJavadocJar(type: Jar, dependsOn: androidJavadoc) {
+-        archiveClassifier = 'javadoc'
+-        from androidJavadoc.destinationDir
+-    }
+-
+-    task androidSourcesJar(type: Jar) {
+-        archiveClassifier = 'sources'
+-        from android.sourceSets.main.java.srcDirs
+-        include '**/*.java'
+-    }
+-
+-    android.libraryVariants.all { variant ->
+-        def name = variant.name.capitalize()
+-        task "jar${name}"(type: Jar, dependsOn: variant.javaCompile) {
+-            from variant.javaCompile.destinationDir
+-        }
+-    }
+-
+-    artifacts {
+-        archives androidSourcesJar
+-        archives androidJavadocJar
+-    }
+-
+-    // task installArchives(type: Upload) {
+-    //     configuration = configurations.archives
+-    //     repositories.mavenDeployer {
+-    //         // Deploy to react-native-event-bridge/maven, ready to publish to npm
+-    //         repository url: "file://${projectDir}/../android/maven"
+-
+-    //         configureReactNativePom pom
+-    //     }
+-    // }
+-}
++// afterEvaluate { project ->
++
++//     task androidJavadoc(type: Javadoc) {
++//         source = android.sourceSets.main.java.srcDirs
++//         classpath += files(android.bootClasspath)
++//         //classpath += files(project.getConfigurations().getByName('compile').asList())
++//         include '**/*.java'
++//     }
++
++//     task androidJavadocJar(type: Jar, dependsOn: androidJavadoc) {
++//         archiveClassifier = 'javadoc'
++//         from androidJavadoc.destinationDir
++//     }
++
++//     task androidSourcesJar(type: Jar) {
++//         archiveClassifier = 'sources'
++//         from android.sourceSets.main.java.srcDirs
++//         include '**/*.java'
++//     }
++
++//     android.libraryVariants.all { variant ->
++//         def name = variant.name.capitalize()
++//         task "jar${name}"(type: Jar, dependsOn: variant.javaCompile) {
++//             from variant.javaCompile.destinationDir
++//         }
++//     }
++
++//     artifacts {
++//         archives androidSourcesJar
++//         archives androidJavadocJar
++//     }
++
++//     // task installArchives(type: Upload) {
++//     //     configuration = configurations.archives
++//     //     repositories.mavenDeployer {
++//     //         // Deploy to react-native-event-bridge/maven, ready to publish to npm
++//     //         repository url: "file://${projectDir}/../android/maven"
++
++//     //         configureReactNativePom pom
++//     //     }
++//     // }
++// }
+ subprojects { subproject ->
+         if(project['name'] == 'react-native-notification-sounds'){
+             project.configurations { compile { } }
